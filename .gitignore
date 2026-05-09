@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Env files
+.env
+.env.* 
+**/.env
+**/.env.*
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Builds
+dist/
+build/
+
+# Vite
+client/dist/
+
+# Backend
+server/node_modules/
