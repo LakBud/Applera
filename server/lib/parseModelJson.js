@@ -1,4 +1,4 @@
-export function parseModelJson(text) {
+export default function parseModelJson(text) {
   try {
     if (!text) throw new Error("Empty response");
 
