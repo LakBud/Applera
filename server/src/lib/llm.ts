@@ -1,6 +1,6 @@
-import { openai, model, isOllama } from "./aiClient.js";
+import { openai, model } from "./aiClient.js";
 import parseModelJson from "./parseModelJson.js";
-import env from "../config/env.js";
+import env, { IS_OLLAMA } from "../config/env.js";
 import type { ChatCompletion } from "openai/resources/chat/completions";
 import { getCache, setCache } from "../lib/cache.js";
 
@@ -71,7 +71,7 @@ export async function callLLM({
         model,
         temperature,
         max_tokens: maxTokens,
-        ...(jsonMode && !isOllama ? { response_format: { type: "json_object" } } : {}),
+        ...(jsonMode && !IS_OLLAMA ? { response_format: { type: "json_object" } } : {}),
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userContent },

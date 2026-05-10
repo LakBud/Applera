@@ -13,29 +13,8 @@
  * It is pure deterministic cleanup logic.
  */
 
-import { CVSchemaData } from "../../types/extractors.schema.js";
-
-// ─────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────
-
-function normalizeString(value: unknown): string {
-  if (typeof value !== "string") return "";
-  return value.trim();
-}
-
-function normalizeArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-
-  return value
-    .filter((v): v is string => typeof v === "string")
-    .map((v) => v.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-function dedupe<T>(arr: T[]): T[] {
-  return [...new Set(arr)];
-}
+import { CVSchemaData } from "../../types/schema.js";
+import { dedupe, normalizeArray, normalizeString } from "../../utils/repair.utils.js";
 
 // ─────────────────────────────────────────────────────────────
 // Main Repair Function

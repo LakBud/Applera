@@ -8,71 +8,12 @@ import {
   calculateTextOverlap,
   getConfidenceLevel,
   generateRecommendation,
+  isPlainObject,
+  calculateScore,
+  getSeniorityFit,
 } from "../utils/match.utils.js";
-import { CVData, JobData } from "../types/extractors.types.js";
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-export type ConfidenceLevel = "high" | "medium" | "low";
-
-export type MatchReport = {
-  score: number;
-  strengths: string[];
-  missing_skills: string[];
-  seniority_fit: "under" | "over" | "match";
-  domain_mismatch: boolean;
-  confidence: ConfidenceLevel;
-  recommendation: string;
-  text_overlap: number;
-};
-// ── Seniority ─────────────────────────────────────────────────────────────────
-
-const SENIORITY_RANK: Record<string, number> = {
-  junior: 1,
-  mid: 2,
-  senior: 3,
-  lead: 4,
-  principal: 5,
-};
-
-function rankSeniority(level: string = ""): number {
-  const key = level.toLowerCase().trim();
-  return SENIORITY_RANK[key] ?? 2; // default to mid if unknown
-}
-
-function getSeniorityFit(cvLevel: string, jobLevel: string): MatchReport["seniority_fit"] {
-  const diff = rankSeniority(cvLevel) - rankSeniority(jobLevel);
-
-  if (diff < 0) return "under";
-  if (diff > 0) return "over";
-  return "match";
-}
-
-// ── Score calculation ─────────────────────────────────────────────────────────
-//
-// Weighted blend:
-//   60% — skill overlap   (most important signal)
-//   40% — text overlap    (catches experience, domain language, responsibilities)
-
-function calculateScore(matchingSkills: string[], jobSkills: string[], textScore: number): number {
-  if (jobSkills.length === 0) return textScore;
-
-  const ratio = matchingSkills.length / jobSkills.length;
-
-  const skillScore = Math.pow(ratio, 0.75) * 100;
-
-  const presenceBoost = matchingSkills.length > 0 ? 10 : 0;
-
-  const score = skillScore * 0.55 + textScore * 0.45 + presenceBoost;
-
-  return Math.round(Math.max(0, Math.min(100, score)));
-}
-
-// ── Runtime guard (safe object check) ─────────────────────────────────────────
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
+import { CVData, JobData } from "../types/types.js";
+import { MatchReport } from "../types/match.types.js";
 
 // ── Public API ────────────────────────────────────────────────────────────────
 

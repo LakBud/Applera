@@ -1,22 +1,5 @@
-import { JobSchemaData } from "../../types/extractors.schema.js";
-
-function normalizeString(value: unknown): string {
-  if (typeof value !== "string") return "";
-  return value.trim();
-}
-
-function normalizeArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-
-  return value
-    .filter((v): v is string => typeof v === "string")
-    .map((v) => v.trim())
-    .filter(Boolean);
-}
-
-function dedupe<T>(arr: T[]): T[] {
-  return [...new Set(arr)];
-}
+import { JobSchemaData } from "../../types/schema.js";
+import { dedupe, normalizeArray, normalizeString } from "../../utils/repair.utils.js";
 
 export function repairJob(job: JobSchemaData): JobSchemaData {
   if (!job || typeof job !== "object") {

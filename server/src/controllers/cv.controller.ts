@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { Multer } from "multer";
 
 import { extractTextFromPdf } from "../lib/pdfParser.js";
 import { extractCVData } from "../services/extractors.service.js";

@@ -1,6 +1,8 @@
 // Pure utility functions for CV-to-job matching.
 // No side effects, no imports — easy to unit test in isolation.
 
+import { MatchReport } from "../types/match.types.js";
+
 /* ── Normalisation ────────────────────────────────────────────────────────── */
 
 /**
@@ -150,6 +152,55 @@ export function getConfidenceLevel({
   if (confidence >= 75) return "high";
   if (confidence >= 45) return "medium";
   return "low";
+}
+
+// ── Seniority ─────────────────────────────────────────────────────────────────
+
+const SENIORITY_RANK: Record<string, number> = {
+  junior: 1,
+  mid: 2,
+  senior: 3,
+  lead: 4,
+  principal: 5,
+};
+
+function rankSeniority(level: string = ""): number {
+  const key = level.toLowerCase().trim();
+  return SENIORITY_RANK[key] ?? 2; // default to mid if unknown
+}
+
+export function getSeniorityFit(cvLevel: string, jobLevel: string): MatchReport["seniority_fit"] {
+  const diff = rankSeniority(cvLevel) - rankSeniority(jobLevel);
+
+  if (diff < 0) return "under";
+  if (diff > 0) return "over";
+  return "match";
+}
+
+// ── Score calculation ─────────────────────────────────────────────────────────
+//
+// Weighted blend:
+//   60% — skill overlap   (most important signal)
+//   40% — text overlap    (catches experience, domain language, responsibilities)
+
+export function calculateScore(matchingSkills: string[], jobSkills: string[], textScore: number): number {
+  if (jobSkills.length === 0) return textScore;
+
+  const ratio = matchingSkills.length / jobSkills.length;
+
+  const skillScore = Math.pow(ratio, 0.75) * 100;
+
+  const presenceBoost = matchingSkills.length > 0 ? 10 : 0;
+
+  const score = skillScore * 0.55 + textScore * 0.45 + presenceBoost;
+
+  return Math.round(Math.max(0, Math.min(100, score)));
+}
+
+// ── Runtime guard (safe object check) ─────────────────────────────────────────
+
+export function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /* ── Recommendation ───────────────────────────────────────────────────────── */

@@ -1,4 +1,4 @@
-const MAX_LENGTH = 20000;
+import { MAX_LENGTH } from "../utils/utils.js";
 
 /**
  * CV Repair Service
