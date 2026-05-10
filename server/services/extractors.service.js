@@ -4,12 +4,36 @@ import { EXTRACT_JOB_PROMPT } from "../prompts/extractJobPrompt.js";
 
 const MAX_INPUT_LENGTH = 20_000;
 
+// ── Prompt injection patterns ─────────────────────────────────────────────────
+// Catches the most common injection attempts before the text reaches the LLM.
+// Not foolproof — defence in depth means the system prompt is the primary
+// guard, this is a secondary filter that catches obvious attacks cheaply.
+
+const INJECTION_PATTERNS = [
+  /ignore (all |previous |the |above )?instructions?/i,
+  /disregard (all |previous |the |above )?instructions?/i,
+  /you are now/i,
+  /new persona/i,
+  /forget (everything|all|your instructions)/i,
+  /system\s*:/i,
+  /<\s*system\s*>/i,
+];
+
+function detectInjection(text) {
+  return INJECTION_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+// ── Sanitise ──────────────────────────────────────────────────────────────────
+
 function sanitise(text, label) {
   if (typeof text !== "string" || !text.trim()) {
     throw new TypeError(`[extractors] "${label}" must be a non-empty string`);
   }
   if (text.length > MAX_INPUT_LENGTH) {
     throw new Error(`[extractors] "${label}" exceeds ${MAX_INPUT_LENGTH} character limit`);
+  }
+  if (detectInjection(text)) {
+    throw new Error(`[extractors] "${label}" contains disallowed content`);
   }
   return text.trim();
 }

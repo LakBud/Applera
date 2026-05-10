@@ -1,6 +1,3 @@
-// Single shared wrapper for all LLM calls.
-// DRY: every service (extractors, matcher, generator) calls this
-
 import { openai, model, isOllama } from "./aiClient.js";
 import parseModelJson from "./parseModelJson.js";
 import { IS_PROD } from "../config/env.js";
@@ -12,15 +9,18 @@ function sleep(ms) {
   return new Promise((res) => setTimeout(res, ms));
 }
 
-/**
- * @param {object} options
- * @param {string}  options.systemPrompt
- * @param {string}  options.userContent
- * @param {number}  [options.temperature=0.2]
- * @param {boolean} [options.jsonMode=true]   Forces JSON output on OpenAI models
- * @returns {Promise<object>} Parsed JSON from the model
- */
-export async function callLLM({ systemPrompt, userContent, temperature = 0.2, jsonMode = true }) {
+// ── PII-safe logger ───────────────────────────────────────────────────────────
+// CV text contains names, emails, phone numbers, and addresses.
+// Logging raw LLM output in dev is useful for debugging but must never
+// log the user content that was sent — only the response received.
+function debugLog(label, content) {
+  if (IS_PROD) return;
+  // Truncate to 300 chars so full CV/job data never appears in logs
+  const preview = content.length > 300 ? content.slice(0, 300) + `… [${content.length - 300} chars truncated]` : content;
+  console.debug(`[llm] ${label}:`, preview);
+}
+
+export async function callLLM({ systemPrompt, userContent, temperature = 0.2, jsonMode = true, maxTokens = 2000 }) {
   let lastError;
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
@@ -34,7 +34,7 @@ export async function callLLM({ systemPrompt, userContent, temperature = 0.2, js
       const response = await openai.chat.completions.create({
         model,
         temperature,
-        // response_format forces valid JSON on OpenAI; Ollama ignores it
+        max_tokens: maxTokens,
         ...(jsonMode && !isOllama ? { response_format: { type: "json_object" } } : {}),
         messages: [
           { role: "system", content: systemPrompt },
@@ -43,11 +43,9 @@ export async function callLLM({ systemPrompt, userContent, temperature = 0.2, js
       });
 
       const content = response.choices?.[0]?.message?.content?.trim();
-
       if (!content) throw new Error("Model returned an empty response");
 
-      if (!IS_PROD) console.debug("[llm] raw output:", content);
-
+      debugLog("raw output", content); // truncated, never logs user input
       return parseModelJson(content);
     } catch (err) {
       lastError = err;

@@ -1,20 +1,14 @@
-// Shared axios instance. All API modules import from here.
-// Configure base URL and timeout once — never scattered across files.
-
 import axios from "axios";
 import type { ApiError } from "./types";
 
 export const client = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:5005",
-  timeout: 60_000, // 60s — AI calls can be slow
+  timeout: 90_000, // 90s — matches the server-side aiTimeout
   headers: {
     "Content-Type": "application/json",
+    Authorization: `Bearer ${import.meta.env.VITE_API_KEY ?? ""}`,
   },
 });
-
-// ── Response interceptor ──────────────────────────────────────────────────────
-// Normalises every error into a plain Error with a readable message,
-// so hooks and components never need to inspect axios internals.
 
 client.interceptors.response.use(
   (response) => response,

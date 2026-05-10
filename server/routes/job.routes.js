@@ -1,6 +1,9 @@
 import express from "express";
-import { uploadJob, handleUploadError } from "../middleware/upload.js";
+import { uploadJob, validatePdfMagic, handleUploadError } from "../middleware/upload.js";
 import { parseJobPdf } from "../middleware/parsePdf.js";
+import { parseLimiter } from "../middleware/rateLimiter.js";
+import { validate } from "../middleware/validate.js";
+import { aiTimeout } from "../middleware/timeout.js";
 import { analyzeJob } from "../controllers/job.controller.js";
 
 const router = express.Router();
@@ -9,10 +12,14 @@ const router = express.Router();
 // Accepts: multipart/form-data "job" field (PDF), or plain { jobText } in body
 router.post(
   "/analyze",
-  uploadJob, // 1. multer: populates req.file
-  parseJobPdf, // 2. extracts text from PDF → req.pdfText (no-op if no file)
-  handleUploadError, // 3. catches multer errors as clean 400s
-  analyzeJob, // 4. controller
+  parseLimiter, // 1. rate limit
+  uploadJob, // 2. multer: buffer + MIME check
+  validatePdfMagic, // 3. magic byte check
+  validate("analyzeJob"), // 4. validate text body if no file provided
+  parseJobPdf, // 5. extract text from PDF buffer
+  handleUploadError, // 6. catch multer errors
+  aiTimeout, // 7. 90s hard deadline
+  analyzeJob, // 8. controller
 );
 
 export default router;
