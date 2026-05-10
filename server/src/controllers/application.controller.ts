@@ -4,9 +4,7 @@ import CV from "../models/CV.js";
 import Job from "../models/Job.js";
 import Application from "../models/Application.js";
 
-import { matchCVToJob } from "../services/matches.service.js";
-import { extractJobData, extractCVData } from "../services/extractors.service.js";
-import { generateApplication } from "../services/application.service.js";
+import { runApplicationPipeline } from "../services/pipeline.service.js";
 
 // ── Request body type ─────────────────────────────────────────────
 type CreateApplicationBody = {
@@ -14,7 +12,7 @@ type CreateApplicationBody = {
   jobText: string;
 };
 
-// ── LLM types (IMPORTANT) ─────────────────────────────────────────
+// ── LLM output type ───────────────────────────────────────────────
 type ApplicationLLMOutput = {
   cv_summary: string;
   application_letter: {
@@ -34,25 +32,29 @@ export const createApplication = async (req: Request<{}, {}, CreateApplicationBo
     const { cvText, jobText } = req.body;
 
     if (!cvText || !jobText) {
-      return res.status(400).json({ error: "cvText and jobText are required." });
+      return res.status(400).json({
+        error: "cvText and jobText are required.",
+      });
     }
 
-    // ── Step 1: Parse CV + job ─────────────────────────────────────
-    const [cv, job] = await Promise.all([extractCVData(cvText), extractJobData(jobText)]);
+    // ── Run full pipeline ────────────────────────────────────────
+    const { cv, job, match, application } = await runApplicationPipeline(cvText, jobText);
 
-    // ── Step 2: Match (sync) ───────────────────────────────────────
-    const match = matchCVToJob(cv, job);
+    const typedApplication = application as ApplicationLLMOutput;
 
-    // ── Step 3: Generate application (LLM) ─────────────────────────
-    const application = (await generateApplication(cv, job, match)) as ApplicationLLMOutput;
-
-    // ── Step 4: Persist CV + job ──────────────────────────────────
+    // ── Persist CV + Job ────────────────────────────────────────
     const [savedCV, savedJob] = await Promise.all([
-      CV.create({ rawText: cvText, parsed: cv }),
-      Job.create({ rawText: jobText, parsed: job }),
+      CV.create({
+        rawText: cvText,
+        parsed: cv,
+      }),
+      Job.create({
+        rawText: jobText,
+        parsed: job,
+      }),
     ]);
 
-    // ── Step 5: Persist application ───────────────────────────────
+    // ── Persist generated application ───────────────────────────
     const savedApplication = await Application.create({
       cv: savedCV._id,
       job: savedJob._id,
@@ -60,23 +62,23 @@ export const createApplication = async (req: Request<{}, {}, CreateApplicationBo
       match: {
         score: match.score,
         confidence: match.confidence,
-        strengths: match.matching_skills,
+        strengths: match.strengths,
         missing_skills: match.missing_skills,
       },
 
-      tailored_cv_summary: application.cv_summary,
+      tailored_cv_summary: typedApplication.cv_summary,
 
       cover_letter: [
-        application.application_letter?.introduction,
-        application.application_letter?.body,
-        application.application_letter?.closing,
+        typedApplication.application_letter?.introduction,
+        typedApplication.application_letter?.body,
+        typedApplication.application_letter?.closing,
       ]
         .filter((v): v is string => typeof v === "string" && v.length > 0)
         .join("\n\n"),
 
       application_email: {
-        subject: application.email_template.subject,
-        body: application.email_template.body,
+        subject: typedApplication.email_template.subject,
+        body: typedApplication.email_template.body,
       },
     });
 
@@ -90,6 +92,8 @@ export const createApplication = async (req: Request<{}, {}, CreateApplicationBo
 
     console.error("[createApplication]", message);
 
-    return res.status(500).json({ error: message });
+    return res.status(500).json({
+      error: message,
+    });
   }
 };

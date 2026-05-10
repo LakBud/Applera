@@ -1,3 +1,5 @@
+import { hash } from "../lib/hash.js";
+import { getCache, setCache } from "../lib/cache.js";
 import {
   normalizeSkills,
   isSkillMatch,
@@ -7,23 +9,22 @@ import {
   getConfidenceLevel,
   generateRecommendation,
 } from "../utils/match.utils.js";
+import { CVData, JobData } from "../types/extractors.types.js";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export type CVData = Record<string, unknown>;
-export type JobData = Record<string, unknown>;
+export type ConfidenceLevel = "high" | "medium" | "low";
 
 export type MatchReport = {
   score: number;
-  matching_skills: string[];
+  strengths: string[];
   missing_skills: string[];
   seniority_fit: "under" | "over" | "match";
   domain_mismatch: boolean;
-  confidence: string;
+  confidence: ConfidenceLevel;
   recommendation: string;
   text_overlap: number;
 };
-
 // ── Seniority ─────────────────────────────────────────────────────────────────
 
 const SENIORITY_RANK: Record<string, number> = {
@@ -54,9 +55,17 @@ function getSeniorityFit(cvLevel: string, jobLevel: string): MatchReport["senior
 //   40% — text overlap    (catches experience, domain language, responsibilities)
 
 function calculateScore(matchingSkills: string[], jobSkills: string[], textScore: number): number {
-  const skillScore = jobSkills.length === 0 ? 0 : (matchingSkills.length / jobSkills.length) * 100;
+  if (jobSkills.length === 0) return textScore;
 
-  return Math.round(skillScore * 0.6 + textScore * 0.4);
+  const ratio = matchingSkills.length / jobSkills.length;
+
+  const skillScore = Math.pow(ratio, 0.75) * 100;
+
+  const presenceBoost = matchingSkills.length > 0 ? 10 : 0;
+
+  const score = skillScore * 0.55 + textScore * 0.45 + presenceBoost;
+
+  return Math.round(Math.max(0, Math.min(100, score)));
 }
 
 // ── Runtime guard (safe object check) ─────────────────────────────────────────
@@ -72,7 +81,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
  * @param job  Structured job from extractJobData
  * @returns Match report — synchronous, no LLM call
  */
-export function matchCVToJob(cv: CVData, job: JobData): MatchReport {
+export async function matchCVToJob(cv: CVData, job: JobData): Promise<MatchReport> {
   for (const [label, val] of [
     ["cv", cv],
     ["job", job],
@@ -82,30 +91,43 @@ export function matchCVToJob(cv: CVData, job: JobData): MatchReport {
     }
   }
 
+  // ── Cache key (order-safe + deterministic) ───────────────────────────
+  const key = `match:${hash(
+    JSON.stringify({
+      cvSkills: cv.skills ?? [],
+      jobSkills: job.required_skills ?? [],
+      cvText: extractAllText(cv),
+      jobText: extractAllText(job),
+    }),
+  )}`;
+
+  // ── Try cache first ───────────────────────────────────────────────────
+  const cached = await getCache<MatchReport>(key);
+  if (cached) return cached;
+
+  // ── Compute match ─────────────────────────────────────────────────────
   const cvSkills = normalizeSkills((cv.skills ?? []) as unknown[]);
   const jobSkills = normalizeSkills((job.required_skills ?? []) as unknown[]);
 
-  // Which job skills does the CV cover?
   const matchingSkills = jobSkills.filter((jobSkill) => cvSkills.some((cvSkill) => isSkillMatch(cvSkill, jobSkill)));
 
-  // Which job skills are missing from the CV?
   const missingSkills = jobSkills.filter((jobSkill) => !matchingSkills.includes(jobSkill));
 
-  // Full-text overlap catches experience descriptions, domain language, etc.
   const cvText = extractAllText(cv);
   const jobText = extractAllText(job);
-  const textScore = calculateTextOverlap(cvText, jobText);
 
+  const textScore = calculateTextOverlap(cvText, jobText);
   const score = calculateScore(matchingSkills, jobSkills, textScore);
+
   const seniorityFit = getSeniorityFit((cv.seniority_level as string) ?? "", (job.seniority as string) ?? "");
 
   const domainMismatch = detectDomainMismatch(cvSkills, jobSkills);
   const confidence = getConfidenceLevel({ cvSkills, jobSkills, textScore });
   const recommendation = generateRecommendation(score);
 
-  return {
+  const result: MatchReport = {
     score,
-    matching_skills: matchingSkills,
+    strengths: matchingSkills,
     missing_skills: missingSkills,
     seniority_fit: seniorityFit,
     domain_mismatch: domainMismatch,
@@ -113,4 +135,9 @@ export function matchCVToJob(cv: CVData, job: JobData): MatchReport {
     recommendation,
     text_overlap: textScore,
   };
+
+  // ── Store in cache (24h is safe) ──────────────────────────────────────
+  await setCache(key, result, 60 * 60 * 24);
+
+  return result;
 }

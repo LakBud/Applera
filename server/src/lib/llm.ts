@@ -2,6 +2,7 @@ import { openai, model, isOllama } from "./aiClient.js";
 import parseModelJson from "./parseModelJson.js";
 import env from "../config/env.js";
 import type { ChatCompletion } from "openai/resources/chat/completions";
+import { getCache, setCache } from "../lib/cache.js";
 
 const MAX_RETRIES: number = 2;
 const RETRY_BASE_MS: number = 500;
@@ -94,4 +95,14 @@ export async function callLLM({
   const message = lastError instanceof Error ? lastError.message : "Unknown error";
 
   throw new Error(`[llm] Failed after ${MAX_RETRIES + 1} attempts: ${message}`);
+}
+
+export async function cachedLLM<T>({ cacheKey, ttl, fn }: { cacheKey: string; ttl: number; fn: () => Promise<T> }): Promise<T> {
+  const cached = await getCache<T>(cacheKey);
+  if (cached) return cached;
+
+  const result = await fn();
+
+  await setCache(cacheKey, result, ttl);
+  return result;
 }

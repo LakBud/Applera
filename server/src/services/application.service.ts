@@ -1,11 +1,10 @@
-import { callLLM } from "../lib/llm.js";
 import { APP_GEN_PROMPT } from "../prompts/applicationGenPrompt.js";
+import { cachedLLM, callLLM } from "../lib/llm.js";
+import { hash } from "../lib/hash.js";
+import type { CVData, JobData } from "../types/extractors.types.js";
+import type { MatchData } from "../types/application.types.ts";
 
 // ── Types ───────────────────────────────────────────────────────────────
-
-export type CVData = Record<string, unknown>;
-export type JobData = Record<string, unknown>;
-export type MatchData = Record<string, unknown>;
 
 export type ApplicationLLMOutput = {
   cv_summary: string;
@@ -54,6 +53,18 @@ export type ApplicationCreateInput = {
   };
 };
 
+// ── Cache key builder ───────────────────────────────────────────────────
+
+function buildCacheKey(cv: CVData, job: JobData, match: MatchData): string {
+  return `application:${hash(
+    JSON.stringify({
+      cv,
+      job,
+      match,
+    }),
+  )}`;
+}
+
 // ── Placeholder scrubber ───────────────────────────────────────────────
 
 function scrubPlaceholders(value: unknown): unknown {
@@ -79,7 +90,7 @@ function scrubPlaceholders(value: unknown): unknown {
   return value;
 }
 
-// ── Runtime guard (THIS is your safety layer) ──────────────────────────
+// ── Runtime guard ──────────────────────────────────────────────────────
 
 function isApplicationLLMOutput(value: any): value is ApplicationLLMOutput {
   return (
@@ -96,26 +107,12 @@ function isApplicationLLMOutput(value: any): value is ApplicationLLMOutput {
   );
 }
 
-// ── Transformer (LLM → DB shape) ───────────────────────────────────────
-
-function toApplicationDoc(cv: CVData, job: JobData, match: MatchData, llm: ApplicationLLMOutput): ApplicationCreateInput {
-  return {
-    cv,
-    job,
-    match,
-
-    tailored_cv_summary: llm.cv_summary,
-
-    cover_letter: [llm.application_letter?.introduction, llm.application_letter?.body, llm.application_letter?.closing]
-      .filter((v): v is string => typeof v === "string" && v.length > 0)
-      .join("\n\n"),
-
-    application_email: llm.email_template,
-  };
-}
-
 // ── Main function ───────────────────────────────────────────────────────
 
+/**
+ * Generates a full job application using LLM with caching.
+ * Expensive operation → cached by CV + Job + Match hash.
+ */
 export async function generateApplication(cv: CVData, job: JobData, match: MatchData): Promise<ApplicationLLMOutput> {
   for (const [label, val] of [
     ["cv", cv],
@@ -127,24 +124,32 @@ export async function generateApplication(cv: CVData, job: JobData, match: Match
     }
   }
 
-  const raw = await callLLM({
-    systemPrompt: APP_GEN_PROMPT,
-    userContent: [
-      "CV:",
-      JSON.stringify(cv, null, 2),
-      "",
-      "JOB:",
-      JSON.stringify(job, null, 2),
-      "",
-      "MATCH (DO NOT RECOMPUTE):",
-      JSON.stringify(match, null, 2),
-      "",
-      "TASK:",
-      "Generate the structured job application JSON.",
-    ].join("\n"),
-    temperature: 0.3,
-    jsonMode: true,
-    maxTokens: 4000,
+  const cacheKey = buildCacheKey(cv, job, match);
+
+  const raw = await cachedLLM({
+    cacheKey,
+    ttl: 60 * 60 * 24 * 7, // 7 days
+    fn: async () => {
+      return await callLLM({
+        systemPrompt: APP_GEN_PROMPT,
+        userContent: [
+          "CV:",
+          JSON.stringify(cv, null, 2),
+          "",
+          "JOB:",
+          JSON.stringify(job, null, 2),
+          "",
+          "MATCH (DO NOT RECOMPUTE):",
+          JSON.stringify(match, null, 2),
+          "",
+          "TASK:",
+          "Generate the structured job application JSON.",
+        ].join("\n"),
+        temperature: 0.3,
+        jsonMode: true,
+        maxTokens: 4000,
+      });
+    },
   });
 
   const cleaned = scrubPlaceholders(raw);
@@ -155,6 +160,5 @@ export async function generateApplication(cv: CVData, job: JobData, match: Match
     throw new Error(`[LLM] Invalid ApplicationLLMOutput shape: ${JSON.stringify(cleaned, null, 2)}`);
   }
 
-  // RETURN LLM OUTPUT ONLY
   return cleaned;
 }
