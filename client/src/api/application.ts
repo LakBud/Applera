@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export type ApplicationRequest = {
   cvText: string;
   jobText: string;
@@ -21,21 +23,14 @@ export async function createApplication(data: ApplicationRequest): Promise<Appli
   const timeout = setTimeout(() => controller.abort(), 60000); // 60s safety
 
   try {
-    const res = await fetch("http://localhost:5005/api/application/create", {
-      method: "POST",
+    const res = await axios.post("http://localhost:5005/api/application/create", data, {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
       signal: controller.signal,
     });
 
-    if (!res.ok) {
-      const error = await res.json().catch(() => null);
-      throw new Error(error?.error || "Failed to create application");
-    }
-
-    return (await res.json()) as ApplicationResponse;
+    return res.data as ApplicationResponse;
   } catch (err: any) {
     if (err.name === "AbortError") {
       throw new Error("Request timed out. Please try again.");
