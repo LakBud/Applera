@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { GUEST_SECRET } from "../config/env.js";
+import { GUEST_SECRET } from "../../config/env.js";
 import { createHmac, randomUUID } from "crypto";
 
 const COOKIE_NAME = "gid";

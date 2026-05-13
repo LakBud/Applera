@@ -12,15 +12,14 @@ import trackerRoutes from "./routes/tracker.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 
 import { globalLimiter } from "./middleware/rateLimiter.js";
-import { sanitizeHpp } from "./middleware/sanitize.js";
-import { requestLogger } from "./middleware/requestLogger.js";
+import { sanitizeHpp } from "./middleware/global/sanitize.js";
+import { requestLogger } from "./middleware/global/requestLogger.js";
 import { stripObject } from "./utils/utils.js";
 
 import { clerkMiddleware } from "@clerk/express";
 import { CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY } from "./config/env.js";
-import { attachIdentity } from "./middleware/identity.js";
+import { attachIdentity } from "./middleware/global/identity.js";
 import cookieParser from "cookie-parser";
-import { guestUsageLimiter } from "./middleware/usageLimiter.js";
 
 const app: express.Application = express();
 
@@ -88,7 +87,7 @@ app.use(globalLimiter);
 
 app.use("/api/cv", cvRoutes);
 app.use("/api/job", jobRoutes);
-app.use("/api/application", guestUsageLimiter, applicationRoutes);
+app.use("/api/application", applicationRoutes);
 app.use("/api/interview", interviewRoutes);
 app.use("/api/tracker", trackerRoutes);
 app.use("/api/dashboard", dashboardRoutes);

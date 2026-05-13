@@ -1,19 +1,29 @@
-// Import everything from here — never directly from individual files.
-//
-// YES - import { useCreateApplication, useUploadCVFile } from "@/api"
-// NO - import { useCreateApplication } from "@/api/hooks/useApplication"
+// =======================================================
+// PUBLIC API SURFACE (frontend SDK)
+// =======================================================
 
-// Hooks
+// ── Hooks ───────────────────────────────────────────────
 export { useCreateApplication } from "./hooks/useApplication";
+
 export { useUploadCVFile, useUploadCVText } from "./hooks/useCV";
+
 export { useAnalyzeJobFile, useAnalyzeJobText } from "./hooks/useJob";
 
-// Raw functions (use hooks in components — these are for non-component contexts)
-export { createApplication } from "./application.api";
-export { uploadCVFile, uploadCVText } from "./cv.api";
-export { analyzeJobFile, analyzeJobText } from "./job.api";
+export { useTracker, useUpdateApplicationStatus } from "./hooks/useTracker";
 
-// Types
+export { useInterviewPrep } from "./hooks/useInterviewPrep";
+
+export { useDashboard } from "./hooks/useDashboard";
+
+// ── Domain APIs (optional but clean) ────────────────────
+export * as applicationApi from "./application.api";
+export * as cvApi from "./cv.api";
+export * as jobApi from "./job.api";
+export * as trackerApi from "./tracker.api";
+export * as dashboardApi from "./dashboard.api";
+export * as interviewPrepApi from "./interviewPrep.api";
+
+// ── Types ───────────────────────────────────────────────
 export type {
   ApiError,
   CVParsed,
