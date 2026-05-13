@@ -56,12 +56,16 @@ type CreateApplicationBody = {
 // ── Shared save helper ────────────────────────────────────────────
 
 async function saveApplication(
+  ownerId: string,
+  ownerType: "user" | "guest",
   typedApp: ApplicationLLMOutput,
   match: Awaited<ReturnType<typeof matchCVToJob>>,
   cvId: Types.ObjectId,
   jobId: Types.ObjectId,
 ) {
   return Application.create({
+    ownerId,
+    ownerType,
     cv: cvId,
     job: jobId,
 
@@ -89,15 +93,26 @@ async function saveApplication(
   });
 }
 
-// ── Controller ────────────────────────────────────────────────────
-
 export const createApplication = async (req: Request<{}, {}, CreateApplicationBody>, res: Response) => {
   try {
     const { cvText, cvId, jobText } = req.body;
 
-    // ── Path A: cvId — reuse existing CV, skip CV parsing ─────────
+    const identity = req.identity;
+
+    if (!identity) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const ownerId = identity.id;
+    const ownerType = identity.type;
+
+    // ── Path A: reuse CV ─────────────────────────────
     if (cvId) {
-      const existingCV = (await CV.findById(cvId).lean()) as CVDoc | null;
+      const existingCV = await CV.findOne({
+        _id: cvId,
+        ownerId,
+        ownerType,
+      }).lean();
 
       if (!existingCV) {
         return res.status(404).json({
@@ -110,9 +125,14 @@ export const createApplication = async (req: Request<{}, {}, CreateApplicationBo
       const match = await matchCVToJob(cv, job);
       const application = (await generateApplication(cv, job, match)) as ApplicationLLMOutput;
 
-      const savedJob = (await Job.create({ rawText: jobText, parsed: job })) as unknown as JobDoc;
+      const savedJob = await Job.create({
+        ownerId,
+        ownerType,
+        rawText: jobText,
+        parsed: job,
+      });
 
-      const savedApplication = await saveApplication(application, match, existingCV._id, savedJob._id);
+      const savedApplication = await saveApplication(ownerId, ownerType, application, match, existingCV._id, savedJob._id);
 
       return res.status(201).json({
         application: savedApplication,
@@ -121,16 +141,27 @@ export const createApplication = async (req: Request<{}, {}, CreateApplicationBo
       });
     }
 
-    // ── Path B: cvText — full pipeline ────────────────────────────
+    // ── Path B: full pipeline ─────────────────────────
     const { cv, job, match, application } = await runApplicationPipeline(cvText!, jobText);
 
     const validatedCV = CVSchema.parse(cv);
     const typedApplication = application as ApplicationLLMOutput;
 
-    const savedCV = (await CV.create({ rawText: cvText, parsed: validatedCV })) as unknown as CVDoc;
-    const savedJob = (await Job.create({ rawText: jobText, parsed: job })) as unknown as JobDoc;
+    const savedCV = await CV.create({
+      ownerId,
+      ownerType,
+      rawText: cvText,
+      parsed: validatedCV,
+    });
 
-    const savedApplication = await saveApplication(typedApplication, match, savedCV._id, savedJob._id);
+    const savedJob = await Job.create({
+      ownerId,
+      ownerType,
+      rawText: jobText,
+      parsed: job,
+    });
+
+    const savedApplication = await saveApplication(ownerId, ownerType, typedApplication, match, savedCV._id, savedJob._id);
 
     return res.status(201).json({
       application: savedApplication,

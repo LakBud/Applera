@@ -2,6 +2,19 @@ import mongoose from "mongoose";
 
 const InterviewPrepSchema = new mongoose.Schema(
   {
+    ownerId: {
+      type: String,
+      required: true,
+      index: true,
+    },
+
+    ownerType: {
+      type: String,
+      required: true,
+      enum: ["user", "guest"],
+      index: true,
+    },
+
     application: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Application",
@@ -10,13 +23,13 @@ const InterviewPrepSchema = new mongoose.Schema(
 
     questions: [
       {
-        category: String, // e.g. "Technical", "Behavioural", "Culture fit"
+        category: String,
         question: String,
-        tip: String, // coaching tip for how to answer
+        tip: String,
       },
     ],
 
-    general_tips: [String], // overall advice for this specific interview
+    general_tips: [String],
   },
   { timestamps: true },
 );

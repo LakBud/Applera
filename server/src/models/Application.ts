@@ -13,6 +13,18 @@ export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
 const ApplicationSchema = new mongoose.Schema(
   {
+    ownerId: {
+      type: String,
+      required: true,
+      index: true,
+    },
+
+    ownerType: {
+      type: String,
+      enum: ["user", "guest"],
+      required: true,
+      index: true,
+    },
     cv: { type: mongoose.Schema.Types.ObjectId, ref: "CV" },
     job: { type: mongoose.Schema.Types.ObjectId, ref: "Job" },
 

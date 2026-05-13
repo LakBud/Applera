@@ -2,13 +2,25 @@ import { Request, Response } from "express";
 import Application, { APPLICATION_STATUSES } from "../models/Application.js";
 
 // GET /api/tracker/:cvId
-// Returns all applications for a given CV, sorted newest first
 export const getApplicationsByCv = async (req: Request, res: Response) => {
   try {
     const { cvId } = req.params;
 
-    const applications = await Application.find({ cv: cvId })
-      .populate("cv", "-rawText") // return CV without the raw text
+    const identity = req.identity;
+
+    if (!identity) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const identityId = identity.id;
+    const ownerType = identity.type;
+
+    const applications = await Application.find({
+      ownerId: identityId,
+      ownerType,
+      cv: cvId,
+    })
+      .populate("cv", "-rawText")
       .populate("job", "-rawText")
       .sort({ createdAt: -1 });
 
@@ -21,10 +33,24 @@ export const getApplicationsByCv = async (req: Request, res: Response) => {
 };
 
 // GET /api/tracker/application/:id
-// Returns a single application with full CV + job populated
 export const getApplication = async (req: Request, res: Response) => {
   try {
-    const application = await Application.findById(req.params.id).populate("cv").populate("job");
+    const identity = req.identity;
+
+    if (!identity) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const identityId = identity.id;
+    const ownerType = identity.type;
+
+    const application = await Application.findOne({
+      _id: req.params.id,
+      ownerId: identityId,
+      ownerType,
+    })
+      .populate("cv")
+      .populate("job");
 
     if (!application) {
       return res.status(404).json({ error: "Application not found." });
@@ -39,10 +65,18 @@ export const getApplication = async (req: Request, res: Response) => {
 };
 
 // PATCH /api/tracker/application/:id/status
-// Body: { status, notes? }
 export const updateStatus = async (req: Request, res: Response) => {
   try {
     const { status, notes } = req.body;
+
+    const identity = req.identity;
+
+    if (!identity) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const identityId = identity.id;
+    const ownerType = identity.type;
 
     if (!status) {
       return res.status(400).json({ error: "status is required." });
@@ -57,7 +91,15 @@ export const updateStatus = async (req: Request, res: Response) => {
     const update: Record<string, unknown> = { status };
     if (notes !== undefined) update.notes = notes;
 
-    const application = await Application.findByIdAndUpdate(req.params.id, update, { new: true });
+    const application = await Application.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        ownerId: identityId,
+        ownerType,
+      },
+      update,
+      { new: true },
+    );
 
     if (!application) {
       return res.status(404).json({ error: "Application not found." });

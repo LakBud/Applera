@@ -2,6 +2,18 @@ import mongoose from "mongoose";
 
 const JobSchema = new mongoose.Schema(
   {
+    ownerId: {
+      type: String,
+      required: true,
+      index: true,
+    },
+
+    ownerType: {
+      type: String,
+      enum: ["user", "guest"],
+      required: true,
+      index: true,
+    },
     rawText: String,
 
     parsed: {

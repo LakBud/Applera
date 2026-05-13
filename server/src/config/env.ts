@@ -35,6 +35,13 @@ const env = {
 
 export default env;
 
+export const GUEST_SECRET = requireEnv("GUEST_SECRET");
+
+// ── Auth (Clerk) ─────────────────────────────────────────────────────────────
+
+export const CLERK_SECRET_KEY = requireEnv("CLERK_SECRET_KEY");
+export const CLERK_PUBLISHABLE_KEY = optionalEnv("CLERK_PUBLISHABLE_KEY", "");
+
 // ── Server ────────────────────────────────────────────────────────────────────
 
 export const PORT = optionalEnv("PORT", "5005");

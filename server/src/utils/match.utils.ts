@@ -186,15 +186,21 @@ export function getSeniorityFit(cvLevel: string, jobLevel: string): MatchReport[
 export function calculateScore(matchingSkills: string[], jobSkills: string[], textScore: number): number {
   if (jobSkills.length === 0) return textScore;
 
-  const ratio = matchingSkills.length / jobSkills.length;
+  // 1. Core requirement coverage (MOST IMPORTANT)
+  const requiredCoverage = matchingSkills.length / jobSkills.length;
 
-  const skillScore = Math.pow(ratio, 0.75) * 100;
+  // 2. Hard skill score (dominant signal)
+  const skillScore = requiredCoverage * 100;
 
-  const presenceBoost = matchingSkills.length > 0 ? 10 : 0;
+  // 3. Text signal (light weight only)
+  const textComponent = textScore * 0.25;
 
-  const score = skillScore * 0.55 + textScore * 0.45 + presenceBoost;
+  // 4. Bonus for strong technical match
+  const bonus = requiredCoverage === 1 ? 12 : requiredCoverage >= 0.8 ? 6 : requiredCoverage > 0 ? 2 : 0;
 
-  return Math.round(Math.max(0, Math.min(100, score)));
+  const final = skillScore * 0.7 + textComponent + bonus;
+
+  return Math.round(Math.max(0, Math.min(100, final)));
 }
 
 // ── Runtime guard (safe object check) ─────────────────────────────────────────

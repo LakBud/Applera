@@ -24,11 +24,24 @@ export const generatePrep = async (req: Request, res: Response) => {
   try {
     const { applicationId } = req.body;
 
+    const identity = req.identity;
+
+    if (!identity) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const identityId = identity.id;
+    const ownerType = identity.type;
+
     if (!applicationId) {
       return res.status(400).json({ error: "applicationId is required." });
     }
 
-    const application = (await Application.findById(applicationId)
+    const application = (await Application.findOne({
+      _id: applicationId,
+      ownerId: identityId,
+      ownerType,
+    })
       .populate("cv")
       .populate("job")
       .lean()) as unknown as ApplicationDocument;
@@ -62,9 +75,15 @@ export const generatePrep = async (req: Request, res: Response) => {
     const prep = await generateInterviewPrep(cv, job, match, applicationId);
 
     const saved = await InterviewPrep.findOneAndUpdate(
-      { application: applicationId },
       {
         application: applicationId,
+        ownerId: identityId,
+        ownerType,
+      },
+      {
+        application: applicationId,
+        ownerId: identityId,
+        ownerType,
         questions: prep.questions,
         general_tips: prep.general_tips,
       },
@@ -89,8 +108,19 @@ export const getPrep = async (req: Request, res: Response) => {
   try {
     const { applicationId } = req.params;
 
+    const identity = req.identity;
+
+    if (!identity) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const ownerId = identity.id;
+    const ownerType = identity.type;
+
     const prep = await InterviewPrep.findOne({
       application: applicationId,
+      ownerId,
+      ownerType,
     });
 
     if (!prep) {
