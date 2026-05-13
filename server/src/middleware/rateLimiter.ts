@@ -16,7 +16,7 @@ export function limiter(windowMinutes: number, max: number, message: string): Ra
 // Route-specific headers
 
 // /api/application/create — triggers 3 LLM calls + DB writes, most expensive
-export const applicationLetter = limiter(
+export const applicationLimiter = limiter(
   15, // per 15 minutes
   10, // max 10 requests
   "Too many application requests. Please wait 15 minutes before trying again.",

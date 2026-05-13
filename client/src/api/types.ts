@@ -80,15 +80,20 @@ export interface MatchResult {
 
 export interface ApplicationDocument {
   _id: string;
-  cv: string;
-  job: string;
+
+  cv: string | CVDocument;
+  job: string | JobDocument;
+
   match: MatchResult;
+
   tailored_cv_summary: string;
   cover_letter: string;
+
   application_email: {
     subject: string;
     body: string;
   };
+
   createdAt: string;
   updatedAt: string;
 }

@@ -1,14 +1,22 @@
 import mongoose from "mongoose";
 
-export async function connectDB(): Promise<void> {
-  try {
-    const uri = process.env.MONGO_URI;
-
-    if (!uri) {
-      throw new Error("MONGO_URI is not defined in environment variables");
+function validateMongoUri(uri: string): void {
+  if (!uri.startsWith("mongodb+srv://") && !uri.includes("ssl=true") && !uri.includes("tls=true")) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("MONGO_URI must use TLS in production (mongodb+srv:// or ?tls=true)");
     }
 
-    const conn = await mongoose.connect(uri);
+    console.warn("[db] Warning: MongoDB connection is not using TLS");
+  }
+}
+
+export async function connectDB(): Promise<void> {
+  try {
+    validateMongoUri(process.env.MONGO_URI!);
+
+    const conn = await mongoose.connect(process.env.MONGO_URI!, {
+      tls: process.env.NODE_ENV === "production",
+    });
 
     console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (err: unknown) {

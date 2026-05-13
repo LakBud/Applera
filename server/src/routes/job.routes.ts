@@ -5,6 +5,7 @@ import { parseLimiter } from "../middleware/rateLimiter.js";
 import { validate } from "../middleware/validate.js";
 import { aiTimeout } from "../middleware/timeout.js";
 import { analyzeJob } from "../controllers/job.controller.js";
+import { concurrencyLimit } from "../middleware/concurrency.js";
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ const router = express.Router();
 // Accepts: multipart/form-data "job" field (PDF), or plain { jobText } in body
 router.post(
   "/analyze",
+  concurrencyLimit(5), // 0. Concurrency Limit
   parseLimiter, // 1. rate limit
   uploadJob, // 2. multer: buffer + MIME check
   validatePdfMagic, // 3. magic byte check

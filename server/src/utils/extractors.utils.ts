@@ -3,6 +3,7 @@
 // ─────────────────────────────────────────────────────────────
 
 const INJECTION_PATTERNS = [
+  // English
   /ignore (all |previous |the |above )?instructions?/i,
   /disregard (all |previous |the |above )?instructions?/i,
   /you are now/i,
@@ -10,6 +11,18 @@ const INJECTION_PATTERNS = [
   /forget (everything|all|your instructions)/i,
   /system\s*:/i,
   /<\s*system\s*>/i,
+
+  // Norwegian
+  /se bort fra/i,
+  /ignorer (alle |tidligere |instruksjonene)/i,
+  /glem (alt|instruksjonene|hva du ble fortalt)/i,
+  /du er n(å|a) en/i,
+  /ny (assistent|persona|rolle)/i,
+
+  // Structural injection
+  /```\s*(system|instructions?)/i,
+  /\[INST\]/i,
+  /<\|system\|>/i,
 ];
 
 export function detectInjection(text: string): boolean {

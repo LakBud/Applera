@@ -5,6 +5,7 @@ import { parseLimiter } from "../middleware/rateLimiter.js";
 import { validate } from "../middleware/validate.js";
 import { aiTimeout } from "../middleware/timeout.js";
 import { uploadCV as uploadCVController } from "../controllers/cv.controller.js";
+import { concurrencyLimit } from "../middleware/concurrency.js";
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ const router = express.Router();
 // Accepts: multipart/form-data "cv" field (PDF), or plain { cvText } in body
 router.post(
   "/upload",
+  concurrencyLimit(5), // 0. Concurrency Limit
   parseLimiter, // 1. rate limit
   uploadCV, // 2. multer: buffer + MIME check
   validatePdfMagic, // 3. magic byte check (catches spoofed MIME)
