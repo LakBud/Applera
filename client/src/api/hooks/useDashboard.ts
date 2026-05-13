@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getDashboard } from "../dashboard.api";
-import { queryKeys } from "../querykeys";
+import { queryKeys } from "../queryKeys";
 
 export function useDashboard(cvId: string) {
   return useQuery({

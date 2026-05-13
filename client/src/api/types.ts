@@ -56,7 +56,9 @@ export interface JobDocument {
 }
 
 export interface AnalyzeJobResponse {
-  job: JobDocument;
+  message: string;
+  rawText: string;
+  structured: JobParsed;
 }
 
 // ── Match ─────────────────────────────────────────────────────────────────────

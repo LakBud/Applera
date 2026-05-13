@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getInterviewPrep } from "../interviewPrep.api";
-import { queryKeys } from "../querykeys";
+import { queryKeys } from "../queryKeys";
 
 export function useInterviewPrep(applicationId: string) {
   return useQuery({

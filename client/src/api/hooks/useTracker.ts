@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getApplicationsByCv, updateApplicationStatus } from "../tracker.api";
-import { queryKeys } from "../querykeys";
+import { queryKeys } from "../queryKeys";
 
 export function useTracker(cvId: string) {
   return useQuery({

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createApplication } from "../application.api";
 import type { CreateApplicationRequest, CreateApplicationResponse } from "../types";
-import { queryKeys } from "../querykeys";
+import { queryKeys } from "../queryKeys";
 
 /**
  * Mutation hook for the full application generation pipeline.

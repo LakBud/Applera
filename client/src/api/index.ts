@@ -28,7 +28,6 @@ export type {
   ApiError,
   CVParsed,
   CVDocument,
-  UploadCVResponse,
   JobParsed,
   JobDocument,
   AnalyzeJobResponse,

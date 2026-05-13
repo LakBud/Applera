@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { uploadCVFile, uploadCVText } from "../cv.api";
-import type { UploadCVResponse } from "../types";
+import { uploadCVFile, uploadCVText, type UploadCVResponse } from "../cv.api";
 
 /**
  * Upload a CV as a PDF file.
