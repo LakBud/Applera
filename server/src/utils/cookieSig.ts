@@ -26,3 +26,5 @@ export function verify(id: string, sig: string): boolean {
     return false;
   }
 }
+
+export const COOKIE_NAME = "guest_identity";

@@ -4,18 +4,17 @@ import { queryKeys } from "../queryKeys";
 
 export function useTracker(cvId: string) {
   return useQuery({
-    queryKey: queryKeys.tracker(cvId),
+    queryKey: queryKeys.application.byCv(cvId),
     queryFn: () => getApplicationsByCv(cvId),
     enabled: !!cvId,
-    staleTime: 30_000,
   });
 }
 
 // PATCH application status
-type UpdateStatusVars = {
+export type UpdateStatusVars = {
   id: string;
   cvId: string;
-  status: string;
+  status: "generated" | "applied" | "interviewing" | "offered" | "rejected" | "withdrawn";
   notes?: string;
 };
 
@@ -25,45 +24,42 @@ export function useUpdateApplicationStatus() {
   return useMutation({
     mutationFn: ({ id, status, notes }: UpdateStatusVars) => updateApplicationStatus(id, status, notes),
 
-    // optimistic
     onMutate: async ({ id, cvId, status }) => {
       await queryClient.cancelQueries({
-        queryKey: queryKeys.tracker(cvId),
+        queryKey: queryKeys.application.byCv(cvId),
       });
 
-      const previous = queryClient.getQueryData<{ applications: any[] }>(queryKeys.tracker(cvId));
+      const previous = queryClient.getQueryData(queryKeys.application.byCv(cvId));
 
-      queryClient.setQueryData(queryKeys.tracker(cvId), (old: { applications: any[] } | undefined) => {
+      queryClient.setQueryData(queryKeys.application.byCv(cvId), (old: any) => {
         if (!old) return old;
 
         return {
           ...old,
-          applications: old.applications.map((app) => (app._id === id ? { ...app, status } : app)),
+          applications: old.applications.map((app: any) => (app._id === id ? { ...app, status } : app)),
         };
       });
 
       return { previous, cvId };
     },
 
-    // rollback
-    onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(queryKeys.tracker(context.cvId), context.previous);
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) {
+        queryClient.setQueryData(queryKeys.application.byCv(ctx.cvId), ctx.previous);
       }
     },
 
-    // sync
-    onSettled: (_data, _error, vars) => {
+    onSettled: (_data, _err, vars) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.tracker(vars.cvId),
+        queryKey: queryKeys.application.byCv(vars.cvId),
       });
 
       queryClient.invalidateQueries({
-        queryKey: queryKeys.application(vars.id),
+        queryKey: queryKeys.application.detail(vars.id),
       });
 
       queryClient.invalidateQueries({
-        queryKey: ["dashboard"],
+        queryKey: queryKeys.dashboard(vars.cvId),
       });
     },
   });

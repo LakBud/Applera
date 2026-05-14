@@ -3,7 +3,9 @@ import { matchCVToJob } from "./match.service.js";
 import { generateApplication } from "./application.service.js";
 import { normalizeText } from "./repair/repairText.service.js";
 import { toText } from "../utils/pipeline.utils.js";
-import { Input, PipelineResult } from "../types/pipeline.types.js";
+import { PipelineResult } from "../types/pipeline.types.js";
+
+export type Input = Buffer | string;
 
 // ─────────────────────────────────────────────────────────────
 // Main pipeline
@@ -33,6 +35,16 @@ export async function runApplicationPipeline(cvInput: Input, jobInput: Input): P
   console.info("[pipeline] Generating application...");
 
   const application = await generateApplication(cv, job, match);
+  const applicationLetter = application.application_letter ?? {};
+
+  const normalizedApplication = {
+    ...application,
+    application_letter: {
+      introduction: applicationLetter.introduction ?? "",
+      body: applicationLetter.body ?? "",
+      closing: applicationLetter.closing ?? "",
+    },
+  };
 
   console.info(`[pipeline] Done. Match score: ${match.score}`);
 
@@ -40,6 +52,6 @@ export async function runApplicationPipeline(cvInput: Input, jobInput: Input): P
     cv,
     job,
     match,
-    application,
+    application: normalizedApplication,
   };
 }

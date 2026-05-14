@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-// ── CV Schema ─────────────────────────────────────────────
+export const JobSchema = z.object({
+  title: z.string(),
+  required_skills: z.array(z.string()),
+  responsibilities: z.array(z.string()),
+  seniority: z.enum(["executive", "intern", "junior", "mid", "senior", "lead", "unknown"]),
+});
+
 export const CVSchema = z.object({
   name: z.string(),
   email: z.string(),
@@ -19,17 +25,9 @@ export const CVSchema = z.object({
   education: z.array(
     z.object({
       title: z.string(),
-      school: z.string().default(""),
+      school: z.string(),
     }),
   ),
-});
-
-// ── Job Schema ─────────────────────────────────────────────
-export const JobSchema = z.object({
-  title: z.string(),
-  required_skills: z.array(z.string()),
-  responsibilities: z.array(z.string()),
-  seniority: z.string(),
 });
 
 export type CVSchemaData = z.infer<typeof CVSchema>;

@@ -1,87 +1,117 @@
-import { Request, Response } from "express";
-import Application, { APPLICATION_STATUSES } from "../models/Application.js";
+import { Response, Request } from "express";
+
+import Application, { APPLICATION_STATUSES, type ApplicationStatus } from "../models/Application.js";
+
 import { auditLog } from "../middleware/log/audit.logger.js";
 
+import { getParam } from "../utils/req.js";
+
+// ─────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────
+
+type CvParams = {
+  cvId: string;
+};
+
+type IdParams = {
+  id: string;
+};
+
+type UpdateStatusBody = {
+  status: ApplicationStatus;
+  notes?: string;
+};
+
+// ─────────────────────────────────────────────
 // GET /api/tracker/:cvId
+// ─────────────────────────────────────────────
+
 export const getApplicationsByCv = async (req: Request, res: Response) => {
   try {
-    const { cvId } = req.params;
-
-    const identity = req.identity;
-
-    if (!identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+    if (!req.identity) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
     }
 
-    const identityId = identity.id;
-    const ownerType = identity.type;
+    const cvId = getParam(req.params.cvId);
 
     const applications = await Application.find({
-      ownerId: identityId,
-      ownerType,
+      ownerId: req.identity.id,
+      ownerType: req.identity.type,
       cv: cvId,
     })
       .populate("cv", "-rawText")
       .populate("job", "-rawText")
       .sort({ createdAt: -1 });
 
-    return res.json({ applications });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("[getApplicationsByCv]", message);
-    return res.status(500).json({ error: message });
+    return res.json({
+      applications,
+    });
+  } catch (err) {
+    console.error("[getApplicationsByCv]", err);
+
+    return res.status(500).json({
+      error: "Failed to fetch applications",
+    });
   }
 };
 
+// ─────────────────────────────────────────────
 // GET /api/tracker/application/:id
+// ─────────────────────────────────────────────
+
 export const getApplication = async (req: Request, res: Response) => {
   try {
-    const identity = req.identity;
-
-    if (!identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+    if (!req.identity) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
     }
 
-    const identityId = identity.id;
-    const ownerType = identity.type;
+    const id = getParam(req.params.id);
 
     const application = await Application.findOne({
-      _id: req.params.id,
-      ownerId: identityId,
-      ownerType,
+      _id: id,
+      ownerId: req.identity.id,
+      ownerType: req.identity.type,
     })
       .populate("cv")
       .populate("job");
 
     if (!application) {
-      return res.status(404).json({ error: "Application not found." });
+      return res.status(404).json({
+        error: "Application not found.",
+      });
     }
 
-    return res.json({ application });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("[getApplication]", message);
-    return res.status(500).json({ error: message });
+    return res.json({
+      application,
+    });
+  } catch (err) {
+    console.error("[getApplication]", err);
+
+    return res.status(500).json({
+      error: "Failed to fetch application",
+    });
   }
 };
 
+// ─────────────────────────────────────────────
 // PATCH /api/tracker/application/:id/status
+// ─────────────────────────────────────────────
+
 export const updateStatus = async (req: Request, res: Response) => {
   try {
+    if (!req.identity) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
+    }
+
+    const id = getParam(req.params.id);
     const { status, notes } = req.body;
-
-    const identity = req.identity;
-
-    if (!identity) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    const identityId = identity.id;
-    const ownerType = identity.type;
-
-    if (!status) {
-      return res.status(400).json({ error: "status is required." });
-    }
 
     if (!APPLICATION_STATUSES.includes(status)) {
       return res.status(400).json({
@@ -89,29 +119,36 @@ export const updateStatus = async (req: Request, res: Response) => {
       });
     }
 
-    const update: Record<string, unknown> = { status };
-    if (notes !== undefined) update.notes = notes;
+    const update: Record<string, unknown> = {
+      status,
+    };
+
+    if (notes !== undefined) {
+      update.notes = notes;
+    }
 
     const application = await Application.findOneAndUpdate(
       {
-        _id: req.params.id,
-        ownerId: identityId,
-        ownerType,
+        _id: id,
+        ownerId: req.identity.id,
+        ownerType: req.identity.type,
       },
       update,
       { new: true },
     );
 
     if (!application) {
-      return res.status(404).json({ error: "Application not found." });
+      return res.status(404).json({
+        error: "Application not found.",
+      });
     }
 
     await auditLog({
       event: "APPLICATION_STATUS_CHANGED",
-      userId: identityId,
-      userType: ownerType,
-      resourceId: Array.isArray(req.params.id) ? req.params.id[0] : req.params.id,
-      requestId: res.locals.requestId,
+      userId: req.identity.id,
+      userType: req.identity.type,
+      resourceId: id,
+      requestId: req.requestId,
       ip: req.ip,
       userAgent: req.headers["user-agent"],
       metadata: {
@@ -120,10 +157,14 @@ export const updateStatus = async (req: Request, res: Response) => {
       },
     });
 
-    return res.json({ application });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("[updateStatus]", message);
-    return res.status(500).json({ error: message });
+    return res.json({
+      application,
+    });
+  } catch (err) {
+    console.error("[updateStatus]", err);
+
+    return res.status(500).json({
+      error: "Failed to update status",
+    });
   }
 };

@@ -5,7 +5,7 @@
 // ── Hooks ───────────────────────────────────────────────
 export { useCreateApplication } from "./hooks/useApplication";
 
-export { useUploadCVFile, useUploadCVText } from "./hooks/useCV";
+export { useUploadCVFile, useUploadCVText, useCVs } from "./hooks/useCV";
 
 export { useAnalyzeJobFile, useAnalyzeJobText } from "./hooks/useJob";
 

@@ -1,37 +1,42 @@
 import { Request, Response, NextFunction } from "express";
 import { redis } from "../lib/redis.js";
+import { getUserId } from "../lib/getUserId.js";
+import { getUsageLimit } from "../lib/getUsageLimit.js";
 
-const LIMIT = 3;
+export async function usageLimiter(req: Request, res: Response, next: NextFunction) {
+  const userId = getUserId(req);
+  const limit = getUsageLimit(req);
 
-export async function guestUsageLimiter(req: Request, res: Response, next: NextFunction) {
-  const identity = req.identity;
-
-  // logged-in users bypass
-  if (!identity || identity.type === "user") {
-    return next();
-  }
-
-  const key = `guest:usage:${identity.id}`;
+  const key = `usage:${userId}`;
 
   try {
     const count = await redis.incr(key);
 
+    // first request → set expiry (rolling window)
     if (count === 1) {
-      await redis.expire(key, 60 * 60 * 24 * 7); // 7 days
+      await redis.expire(key, 60 * 60 * 24 * 7); // 7 days rolling
     }
 
-    if (count > LIMIT) {
+    if (count > limit) {
       return res.status(403).json({
-        error: "Free limit reached. Please sign in to continue.",
+        error: "Free limit reached",
+        limit,
       });
     }
 
-    next();
+    // optional: attach usage info for downstream
+    res.locals.usage = {
+      count,
+      limit,
+      remaining: limit - count,
+    };
+
+    return next();
   } catch (err) {
-    console.error("[guestUsageLimiter]", err);
+    console.error("[usageLimiter]", err);
 
     return res.status(503).json({
-      error: "Usage service unavailable. Try again later.",
+      error: "Usage service unavailable",
     });
   }
 }

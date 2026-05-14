@@ -11,23 +11,32 @@ import { Request, Response, NextFunction } from "express";
  * @param {number} ms  Timeout in milliseconds
  */
 
-export function timeout(ms: number) {
+export function aiTimeout(ms: number) {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const timer: NodeJS.Timeout = setTimeout(() => {
-      if (res.headersSent) return;
+    let finished = false;
 
-      res.status(503).json({
-        error: "Request timed out. The server took too long to respond.",
-      });
+    const timer = setTimeout(() => {
+      if (finished) return;
+
+      finished = true;
+
+      if (!res.headersSent) {
+        res.status(503).json({
+          error: "Request timed out",
+        });
+      }
     }, ms);
 
-    // Clear the timer as soon as the response finishes
-    res.on("finish", () => clearTimeout(timer));
-    res.on("close", () => clearTimeout(timer));
+    res.on("finish", () => {
+      finished = true;
+      clearTimeout(timer);
+    });
+
+    res.on("close", () => {
+      finished = true;
+      clearTimeout(timer);
+    });
 
     next();
   };
 }
-// ── Named timeouts ────────────────────────────────────────────────────────────
-
-export const aiTimeout = timeout(90_000); // 90s — LLM calls can be slow

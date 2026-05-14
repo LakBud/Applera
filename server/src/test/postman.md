@@ -1,172 +1,369 @@
-# Backend Testing Guide (Postman)
+──────────────────────────────────────────────
+API DOCUMENTATION (JOB APPLICATION SYSTEM)
+──────────────────────────────────────────────
 
-## 1. Base Setup
+BASE URL:
+http://localhost:PORT/api
 
-**Base URL:**
-http://localhost:5005
+(Replace PORT with your backend port, usually 3000 or 5000)
 
-If deployed, replace with production URL.
+──────────────────────────────────────────────
+AUTH
+──────────────────────────────────────────────
 
-**Headers (when needed):**
+All routes require:
+req.identity
 
-- Content-Type: application/json
+So in Postman you must simulate auth (depending on your setup):
 
-If using Clerk authentication:
+Either JWT in headers
+Or mocked middleware in dev
 
-- Authorization header (if used by frontend)
-- OR cookies (recommended in your setup)
+Header example:
+Authorization: Bearer <token>
 
----
+OR (if dev bypass exists):
+just ensure identity middleware injects identity
 
-## 2. Health Check
+──────────────────────────────────────────────
+CV ENDPOINTS
+──────────────────────────────────────────────
 
-### GET /health
+CREATE CV
 
-**URL:**
-http://localhost:5005/health
+POST /cv
 
-**Response:**
+Body (multipart/form-data):
 
-```json
+file: PDF (optional)
+cvText: string (optional)
+
+Rules:
+
+Either file OR cvText must be provided
+
+Response:
 {
-  "status": "ok"
+message: "CV created successfully",
+cv: { ... }
 }
-```
 
----
+──────────────────────────────────────────────
 
-## 3. Create Application (MAIN FLOW)
+GET ALL CVS
 
-### POST /api/application/create
+GET /cv
 
-**URL:**
-http://localhost:5005/api/application/create
-
-### Body (Option A - full pipeline)
-
-```json
+Response:
+[
 {
-  "cvText": "My CV text here...",
-  "jobText": "Job description here..."
+_id,
+parsed,
+createdAt
 }
-```
+]
 
-### Body (Option B - reuse CV)
+──────────────────────────────────────────────
 
-```json
+GET CV BY ID
+
+GET /cv/:id
+
+Response:
 {
-  "cvId": "YOUR_CV_ID",
-  "jobText": "Job description here..."
+\_id,
+parsed,
+rawText
 }
-```
 
-**Response:**
+──────────────────────────────────────────────
 
-```json
+DELETE CV
+
+DELETE /cv/:id
+
+Response:
 {
-  "application": {},
-  "cv": {},
-  "job": {}
+message: "CV deleted successfully"
 }
-```
 
----
+──────────────────────────────────────────────
+JOB ENDPOINTS
+──────────────────────────────────────────────
 
-## 4. Dashboard
+CREATE JOB
 
-### GET /api/dashboard/:cvId
+POST /job
 
-Example:
-http://localhost:5005/api/dashboard/1234567890
+Body (multipart/form-data):
 
-**Response:**
+file: PDF (optional)
+jobText: string (optional)
 
-```json
+Response:
 {
-  "total": 0,
-  "average_score": 0,
-  "highest_score": 0,
-  "applications": []
+message: "Job created successfully",
+job: { ... }
 }
-```
 
----
+──────────────────────────────────────────────
 
-## 5. Tracker - Get Applications
+GET ALL JOBS
 
-### GET /api/tracker/:cvId
+GET /job
 
-Example:
-http://localhost:5005/api/tracker/1234567890
+Response:
+[
+{ ...jobs }
+]
 
----
+──────────────────────────────────────────────
 
-## 6. Tracker - Get Single Application
+GET JOB BY ID
 
-### GET /api/tracker/application/:id
+GET /job/:id
 
-Example:
-http://localhost:5005/api/tracker/application/APP_ID
-
----
-
-## 7. Update Application Status
-
-### PATCH /api/tracker/application/:id/status
-
-```json
+Response:
 {
-  "status": "applied"
+\_id,
+parsed,
+rawText
 }
-```
 
-Optional:
+──────────────────────────────────────────────
 
-```json
+DELETE JOB
+
+DELETE /job/:id
+
+Response:
 {
-  "status": "interview",
-  "notes": "Had first call"
+message: "Job deleted successfully"
 }
-```
 
----
+──────────────────────────────────────────────
+APPLICATION ENDPOINTS
+──────────────────────────────────────────────
 
-## 8. Interview Prep - Generate
+CREATE APPLICATION
 
-### POST /api/interview/generate
+POST /application
 
-```json
+Body (JSON):
 {
-  "applicationId": "APP_ID"
+"cvId": "string",
+"jobId": "string"
 }
-```
 
----
+What happens internally:
 
-## 9. Interview Prep - Get
+CV + Job fetched from DB
+CV repaired (repairCV)
+Job repaired (repairJob)
+Match calculated (matchCVToJob)
+LLM generates application (generateApplication)
+Stored in DB
 
-### GET /api/interview/:applicationId
+Response:
+{
+application: {
+\_id,
+match,
+cover_letter,
+application_email,
+status
+}
+}
 
----
+──────────────────────────────────────────────
 
-## 10. Common Issues
+GET ALL APPLICATIONS
 
-- 401 Unauthorized → missing identity (Clerk or guest cookie not set)
-- 404 CV not found → wrong cvId or ownership mismatch
-- 500 ownerType error → model mismatch in createApplication
-- empty response → DB not connected or pipeline failed
+GET /application
 
----
+Response:
+{
+applications: [...]
+}
 
-## 11. Recommended Test Flow
+──────────────────────────────────────────────
 
-1. GET /health
-2. POST /api/application/create
-3. GET /api/dashboard/:cvId
-4. GET /api/tracker/:cvId
-5. PATCH status update
-6. POST /api/interview/generate
+GET APPLICATION BY ID
 
----
+GET /application/:id
 
-Done.
+Response:
+{
+application: { ... }
+}
+
+──────────────────────────────────────────────
+
+UPDATE APPLICATION STATUS
+
+PATCH /application/:id/status
+
+Body:
+{
+"status": "generated" | "applied" | "interviewing" | "offered" | "rejected" | "withdrawn",
+"notes": "optional string"
+}
+
+Response:
+{
+application: updatedApplication
+}
+
+──────────────────────────────────────────────
+
+DELETE APPLICATION
+
+DELETE /application/:id
+
+Response:
+{
+message: "Application deleted"
+}
+
+──────────────────────────────────────────────
+TRACKER ENDPOINTS (CV-BASED ANALYTICS)
+──────────────────────────────────────────────
+
+GET APPLICATIONS BY CV
+
+GET /tracker/:cvId
+
+Response:
+{
+applications: [...]
+}
+
+──────────────────────────────────────────────
+
+GET SINGLE APPLICATION (TRACKER)
+
+GET /tracker/application/:id
+
+Response:
+{
+application: { ... }
+}
+
+──────────────────────────────────────────────
+
+UPDATE STATUS (TRACKER)
+
+PATCH /tracker/application/:id/status
+
+Body:
+{
+"status": "...",
+"notes": "optional"
+}
+
+Response:
+{
+application: updated
+}
+
+──────────────────────────────────────────────
+DASHBOARD
+──────────────────────────────────────────────
+
+GET /dashboard/:cvId
+
+Response:
+{
+cv_id,
+total,
+average_score,
+highest_score,
+best_match_id,
+status_breakdown,
+confidence_breakdown,
+applications: [...]
+}
+
+──────────────────────────────────────────────
+INTERVIEW PREP
+──────────────────────────────────────────────
+
+GENERATE INTERVIEW PREP
+
+POST /interview/:applicationId
+
+Response:
+{
+prep: {
+questions: [...],
+general_tips: [...]
+}
+}
+
+──────────────────────────────────────────────
+
+GET INTERVIEW PREP
+
+GET /interview/:applicationId
+
+Response:
+{
+prep: { ... }
+}
+
+──────────────────────────────────────────────
+PIPELINE (INTERNAL ONLY)
+──────────────────────────────────────────────
+
+FUNCTION:
+runApplicationPipeline(cvInput, jobInput)
+
+Input:
+
+Buffer OR string for CV
+Buffer OR string for Job
+
+Output:
+{
+cv,
+job,
+match,
+application
+}
+
+NOT EXPOSED AS ROUTE (unless you add it)
+
+──────────────────────────────────────────────
+POSTMAN TESTING SETUP
+──────────────────────────────────────────────
+
+STEP 1: Set environment variable
+BASE_URL = http://localhost:PORT/api
+
+STEP 2: Add Authorization header (if needed)
+Authorization: Bearer YOUR_TOKEN
+
+STEP 3: Test order (IMPORTANT FLOW)
+
+POST /cv
+POST /job
+POST /application
+GET /application
+PATCH /application/:id/status
+GET /dashboard/:cvId
+
+──────────────────────────────────────────────
+COMMON ERRORS
+──────────────────────────────────────────────
+
+401 Unauthorized
+→ missing req.identity
+
+404 Not Found
+→ wrong ID or not owned by user
+
+400 Bad Request
+→ missing cvId/jobId or invalid status
+
+500 Internal Error
+→ LLM failure / parsing / DB issue

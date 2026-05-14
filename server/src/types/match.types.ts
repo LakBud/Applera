@@ -1,4 +1,4 @@
-export type ConfidenceLevel = "high" | "medium" | "low";
+export type ConfidenceLevel = "low" | "medium" | "high";
 
 export type MatchReport = {
   score: number;
@@ -7,6 +7,7 @@ export type MatchReport = {
   seniority_fit: "under" | "over" | "match";
   domain_mismatch: boolean;
   confidence: ConfidenceLevel;
-  recommendation: string;
   text_overlap: number;
+
+  recommendation: string;
 };

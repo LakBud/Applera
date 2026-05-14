@@ -6,6 +6,7 @@ const JobSchema = new mongoose.Schema(
       type: String,
       required: true,
       index: true,
+      trim: true,
     },
 
     ownerType: {
@@ -14,19 +15,46 @@ const JobSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    rawText: String,
 
-    parsed: {
-      title: String,
-      required_skills: [String],
-      responsibilities: [String],
-      seniority: String,
+    rawText: {
+      type: String,
+      maxlength: 100000,
     },
 
-    company: String,
-    location: String,
+    parsed: {
+      title: {
+        type: String,
+        trim: true,
+      },
+
+      required_skills: [{ type: String, trim: true }],
+      responsibilities: [{ type: String, trim: true }],
+
+      seniority: {
+        type: String,
+        enum: ["executive", "intern", "junior", "mid", "senior", "lead", "unknown"],
+        default: "unknown",
+      },
+    },
+
+    company: {
+      type: String,
+      trim: true,
+    },
+
+    location: {
+      type: String,
+      trim: true,
+    },
+
+    deletedAt: Date,
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
 );
+
+JobSchema.index({ ownerId: 1, createdAt: -1 });
 
 export default mongoose.model("Job", JobSchema);

@@ -1,209 +1,269 @@
-import { Request, Response } from "express";
-import { Types, Document } from "mongoose";
+import { Response, Request } from "express";
 
-import CV from "../models/CV.js";
-import Job from "../models/Job.js";
-import Application from "../models/Application.js";
+import Application, { APPLICATION_STATUSES } from "../models/Application.js";
 
-import { runApplicationPipeline } from "../services/pipeline.service.js";
-import { extractJobData } from "../services/extractors.service.js";
-import { matchCVToJob } from "../services/match.service.js";
-import { generateApplication } from "../services/application.service.js";
-import { CVSchema } from "../types/schema.js";
-import { ApplicationLLMOutput } from "../types/application.types.js";
 import { auditLog } from "../middleware/log/audit.logger.js";
 
-// ── Document interfaces ───────────────────────────────────────────
-// Explicit interfaces avoid relying on Mongoose's inferred return
-// types from findById/create, which lose _id and field access.
+import { getParam } from "../utils/req.js";
 
-interface CVParsed {
-  name?: string;
-  email?: string;
-  phone?: string;
-  github?: string;
-  summary?: string;
-  seniority_level?: string;
-  skills: string[];
-  experience: { title?: string; company?: string; highlights: string[] }[];
-  education: { title?: string; school?: string }[];
-}
+import { matchCVToJob } from "../services/match.service.js";
+import { generateApplication } from "../services/application.service.js";
+import CVModel from "../models/CV.js";
+import JobModel from "../models/Job.js";
+import { repairCV } from "../services/repair/cvRepair.service.js";
+import { repairJob } from "../services/repair/jobRepair.service.js";
 
-interface CVDoc extends Document {
-  _id: Types.ObjectId;
-  rawText?: string;
-  parsed?: CVParsed;
-}
+// ─────────────────────────────────────────────
+// GET /api/application
+// ─────────────────────────────────────────────
 
-interface JobDoc extends Document {
-  _id: Types.ObjectId;
-  rawText?: string;
-  parsed?: {
-    title?: string;
-    required_skills: string[];
-    responsibilities: string[];
-    seniority?: string;
-  };
-}
+export const getApplications = async (req: Request, res: Response) => {
+  try {
+    if (!req.identity) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
+    }
 
-// ── Request body type ─────────────────────────────────────────────
+    const { id: ownerId, type: ownerType } = req.identity;
 
-type CreateApplicationBody = {
-  cvText?: string;
-  cvId?: string;
-  jobText: string;
+    const applications = await Application.find({
+      ownerId,
+      ownerType,
+    })
+      .populate("cv", "parsed applicationsCount lastUsedAt")
+      .populate("job", "parsed company location")
+      .sort({ createdAt: -1 });
+
+    return res.json({
+      applications,
+    });
+  } catch (err) {
+    console.error("[getApplications]", err);
+
+    return res.status(500).json({
+      error: "Failed to fetch applications",
+    });
+  }
 };
 
-// ── Shared save helper ────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// GET /api/application/:id
+// ─────────────────────────────────────────────
 
-async function saveApplication(
-  ownerId: string,
-  ownerType: "user" | "guest",
-  typedApp: ApplicationLLMOutput,
-  match: Awaited<ReturnType<typeof matchCVToJob>>,
-  cvId: Types.ObjectId,
-  jobId: Types.ObjectId,
-) {
-  return Application.create({
-    ownerId,
-    ownerType,
-    cv: cvId,
-    job: jobId,
-
-    match: {
-      score: match.score,
-      confidence: match.confidence,
-      strengths: match.strengths,
-      missing_skills: match.missing_skills,
-    },
-
-    tailored_cv_summary: typedApp.cv_summary,
-
-    cover_letter: [
-      typedApp.application_letter?.introduction,
-      typedApp.application_letter?.body,
-      typedApp.application_letter?.closing,
-    ]
-      .filter((v): v is string => typeof v === "string" && v.length > 0)
-      .join("\n\n"),
-
-    application_email: {
-      subject: typedApp.email_template.subject,
-      body: typedApp.email_template.body,
-    },
-  });
-}
-
-export const createApplication = async (req: Request<{}, {}, CreateApplicationBody>, res: Response) => {
+export const getApplicationById = async (req: Request, res: Response) => {
   try {
-    const { cvText, cvId, jobText } = req.body;
+    if (!req.identity) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
+    }
 
-    const identity = req.identity;
+    const { id: ownerId, type: ownerType } = req.identity;
+    const id = getParam(req.params.id);
 
-    if (!identity) {
+    const application = await Application.findOne({
+      _id: id,
+      ownerId,
+      ownerType,
+    })
+      .populate("cv")
+      .populate("job");
+
+    if (!application) {
+      return res.status(404).json({
+        error: "Application not found",
+      });
+    }
+
+    return res.json({
+      application,
+    });
+  } catch (err) {
+    console.error("[getApplicationById]", err);
+
+    return res.status(500).json({
+      error: "Failed to fetch application",
+    });
+  }
+};
+
+// ─────────────────────────────────────────────
+// PATCH /api/application/:id/status
+// ─────────────────────────────────────────────
+
+export const updateApplicationStatus = async (req: Request, res: Response) => {
+  try {
+    if (!req.identity) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
+    }
+
+    const { id: ownerId, type: ownerType } = req.identity;
+    const id = getParam(req.params.id);
+    const { status } = req.body;
+
+    if (!APPLICATION_STATUSES.includes(status as any)) {
+      return res.status(400).json({
+        error: `Invalid status. Must be one of: ${APPLICATION_STATUSES.join(", ")}`,
+      });
+    }
+
+    const updated = await Application.findOneAndUpdate(
+      {
+        _id: id,
+        ownerId,
+        ownerType,
+      },
+      {
+        $set: { status },
+      },
+      {
+        new: true,
+      },
+    );
+
+    if (!updated) {
+      return res.status(404).json({
+        error: "Application not found",
+      });
+    }
+
+    await auditLog({
+      event: "APPLICATION_STATUS_UPDATED",
+      userId: ownerId,
+      userType: ownerType,
+      resourceId: id,
+      requestId: req.requestId,
+      ip: req.ip,
+      metadata: {
+        status,
+      },
+    });
+
+    return res.json({
+      application: updated,
+    });
+  } catch (err) {
+    console.error("[updateApplicationStatus]", err);
+
+    return res.status(500).json({
+      error: "Failed to update status",
+    });
+  }
+};
+
+// ─────────────────────────────────────────────
+// DELETE /api/application/:id
+// ─────────────────────────────────────────────
+
+export const deleteApplication = async (req: Request, res: Response) => {
+  try {
+    if (!req.identity) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
+    }
+
+    const { id: ownerId, type: ownerType } = req.identity;
+    const id = getParam(req.params.id);
+
+    const deleted = await Application.findOneAndDelete({
+      _id: id,
+      ownerId,
+      ownerType,
+    });
+
+    if (!deleted) {
+      return res.status(404).json({
+        error: "Application not found",
+      });
+    }
+
+    await auditLog({
+      event: "APPLICATION_DELETED",
+      userId: ownerId,
+      userType: ownerType,
+      resourceId: id,
+      requestId: req.requestId,
+      ip: req.ip,
+    });
+
+    return res.json({
+      message: "Application deleted",
+    });
+  } catch (err) {
+    console.error("[deleteApplication]", err);
+
+    return res.status(500).json({
+      error: "Failed to delete application",
+    });
+  }
+};
+
+export const createApplication = async (req: Request, res: Response) => {
+  try {
+    if (!req.identity) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const ownerId = identity.id;
-    const ownerType = identity.type;
+    const { id: ownerId, type: ownerType } = req.identity;
+    const { cvId, jobId } = req.body;
 
-    // ── Path A: reuse CV ─────────────────────────────
-    if (cvId) {
-      const existingCV = await CV.findOne({
-        _id: cvId,
-        ownerId,
-        ownerType,
-      }).lean();
-
-      if (!existingCV) {
-        return res.status(404).json({
-          error: "CV not found. Please upload your CV again.",
-        });
-      }
-
-      const cv = CVSchema.parse(existingCV.parsed);
-      const job = await extractJobData(jobText);
-      const match = await matchCVToJob(cv, job);
-      const application = (await generateApplication(cv, job, match)) as ApplicationLLMOutput;
-
-      const savedJob = await Job.create({
-        ownerId,
-        ownerType,
-        rawText: jobText,
-        parsed: job,
-      });
-
-      const savedApplication = await saveApplication(ownerId, ownerType, application, match, existingCV._id, savedJob._id);
-
-      await auditLog({
-        event: "APPLICATION_CREATED",
-        userId: ownerId,
-        userType: ownerType,
-        resourceId: String(savedApplication._id),
-        requestId: res.locals.requestId,
-        ip: req.ip,
-        userAgent: req.headers["user-agent"],
-        metadata: {
-          cvId: String(existingCV._id),
-          jobId: String(savedJob._id),
-          mode: "existing_cv",
-          matchScore: match.score,
-        },
-      });
-
-      return res.status(201).json({
-        application: savedApplication,
-        cv: existingCV,
-        job: savedJob,
+    if (!cvId || !jobId) {
+      return res.status(400).json({
+        error: "cvId and jobId are required",
       });
     }
 
-    // ── Path B: full pipeline ─────────────────────────
-    const { cv, job, match, application } = await runApplicationPipeline(cvText!, jobText);
+    const cv = await CVModel.findOne({ _id: cvId, ownerId, ownerType });
+    const job = await JobModel.findOne({ _id: jobId, ownerId, ownerType });
 
-    const validatedCV = CVSchema.parse(cv);
-    const typedApplication = application as ApplicationLLMOutput;
+    if (!cv?.parsed || !job?.parsed) {
+      return res.status(404).json({
+        error: "CV or Job not found or not parsed",
+      });
+    }
 
-    const savedCV = await CV.create({
+    // normalize inputs
+    const cleanCV = repairCV(cv.parsed);
+    const cleanJob = repairJob(job.parsed); // optionally repairJob later
+
+    // match
+    const match = await matchCVToJob(cleanCV, cleanJob);
+
+    // generate LLM output
+    const applicationOutput = await generateApplication(cleanCV, cleanJob, match);
+
+    const application = await Application.create({
       ownerId,
       ownerType,
-      rawText: cvText,
-      parsed: validatedCV,
-    });
+      cv: cv._id,
+      job: job._id,
+      match,
 
-    const savedJob = await Job.create({
-      ownerId,
-      ownerType,
-      rawText: jobText,
-      parsed: job,
-    });
+      tailored_cv_summary: applicationOutput.cv_summary,
 
-    const savedApplication = await saveApplication(ownerId, ownerType, typedApplication, match, savedCV._id, savedJob._id);
+      cover_letter: applicationOutput.application_letter.body + "\n\n" + applicationOutput.application_letter.closing,
+
+      application_email: applicationOutput.email_template,
+
+      status: "generated",
+    });
 
     await auditLog({
       event: "APPLICATION_CREATED",
       userId: ownerId,
       userType: ownerType,
-      resourceId: String(savedApplication._id),
-      requestId: res.locals.requestId,
+      resourceId: String(application._id),
+      requestId: req.requestId,
       ip: req.ip,
-      userAgent: req.headers["user-agent"],
-      metadata: {
-        cvId: String(savedCV._id),
-        jobId: String(savedJob._id),
-        mode: "full_pipeline",
-        matchScore: match.score,
-      },
     });
 
-    return res.status(201).json({
-      application: savedApplication,
-      cv: savedCV,
-      job: savedJob,
-    });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("[createApplication]", message);
-    return res.status(500).json({ error: message });
+    return res.status(201).json({ application });
+  } catch (err) {
+    console.error("[createApplication]", err);
+    return res.status(500).json({ error: "Failed to create application" });
   }
 };

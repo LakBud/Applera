@@ -38,6 +38,9 @@ importers:
       express-rate-limit:
         specifier: ^8.5.1
         version: 8.5.1(express@5.2.1)
+      express-serve-static-core:
+        specifier: ^0.1.1
+        version: 0.1.1
       helmet:
         specifier: ^8.1.0
         version: 8.1.0
@@ -719,6 +722,9 @@ packages:
     engines: {node: '>= 16'}
     peerDependencies:
       express: '>= 4.11'
+
+  express-serve-static-core@0.1.1:
+    resolution: {integrity: sha512-phQFPo1vVwBLOjDq+EspUY6PpWZIs/s62Lvu6QuReViQ9j9ANBnMqPBRwdxs3zxNmpMJ9KBKrmMqCjMwHnGRyQ==}
 
   express@5.2.1:
     resolution: {integrity: sha512-hIS4idWWai69NezIdRt2xFVofaF4j+6INOpJlVOLDO8zXGpUVEVzIYk12UUi2JzjEzWL3IOAxcTubgz9Po0yXw==}
@@ -1705,6 +1711,8 @@ snapshots:
     dependencies:
       express: 5.2.1
       ip-address: 10.2.0
+
+  express-serve-static-core@0.1.1: {}
 
   express@5.2.1:
     dependencies:

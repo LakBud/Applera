@@ -1,50 +1,67 @@
 import { openai, model } from "./aiClient.js";
 import parseModelJson from "./parseModelJson.js";
-import env, { IS_OLLAMA } from "../config/env.js";
+import env from "../config/env.js";
 import type { ChatCompletion } from "openai/resources/chat/completions";
 import { getCache, setCache } from "../lib/cache.js";
+import { randomUUID } from "crypto";
 
-const MAX_RETRIES: number = 2;
-const RETRY_BASE_MS: number = 500;
+const MAX_RETRIES = 3;
+const BASE_DELAY_MS = 500;
+const TIMEOUT_MS = 30_000;
 
-// ── Env ─────────────────────────────────────────────────────────────
-const IS_PROD: boolean = env.NODE_ENV === "production";
+const IS_PROD = env.NODE_ENV === "production";
 
-// ── Utils ────────────────────────────────────────────────────────────
-function sleep(ms: number): Promise<void> {
-  return new Promise((res) => setTimeout(res, ms));
+// ─────────────────────────────────────────────
+// Error class
+// ─────────────────────────────────────────────
+
+export class LLMError extends Error {
+  constructor(
+    message: string,
+    public type: "timeout" | "api" | "parse" | "unknown",
+  ) {
+    super(message);
+  }
 }
 
-// ── PII-safe logger ──────────────────────────────────────────────────
-function debugLog(label: string, content: unknown): void {
+// ─────────────────────────────────────────────
+// Timeout wrapper
+// ─────────────────────────────────────────────
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  const controller = new AbortController();
+
+  const timeout = setTimeout(() => controller.abort(), ms);
+
+  return Promise.race([
+    promise.finally(() => clearTimeout(timeout)),
+    new Promise<T>((_, reject) => setTimeout(() => reject(new LLMError("Timeout", "timeout")), ms)),
+  ]);
+}
+
+// ─────────────────────────────────────────────
+// Debug logger (safe in dev only)
+// ─────────────────────────────────────────────
+
+function debugLog(label: string, content: unknown, requestId: string): void {
   if (IS_PROD) return;
 
-  const requestId = crypto.randomUUID?.() ?? "dev";
+  const safe = typeof content === "string" ? content : JSON.stringify(content, null, 2);
 
-  let output: string;
-
-  try {
-    if (typeof content === "string") {
-      output = content;
-    } else {
-      output = JSON.stringify(content, null, 2);
-    }
-  } catch {
-    output = String(content);
-  }
-
-  const preview = output.length > 800 ? output.slice(0, 800) + `… [${output.length - 800} chars truncated]` : output;
-
-  console.debug(`\n[llm:${requestId}] ${label}:\n${preview}\n`);
+  console.debug(`\n[llm:${requestId}] ${label}:\n${safe.slice(0, 800)}\n`);
 }
 
-// ── Main LLM call ────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// Main LLM call (RAW JSON)
+// ─────────────────────────────────────────────
+
 type CallLLMParams = {
   systemPrompt: string;
   userContent: string;
   temperature?: number;
   jsonMode?: boolean;
   maxTokens?: number;
+  requestId?: string;
 };
 
 export async function callLLM({
@@ -53,49 +70,69 @@ export async function callLLM({
   temperature = 0.2,
   jsonMode = true,
   maxTokens = 2000,
-}: CallLLMParams) {
+  requestId = randomUUID(),
+}: CallLLMParams): Promise<unknown> {
   let lastError: unknown;
 
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    if (attempt > 0) {
-      const delay = RETRY_BASE_MS * attempt;
-      const message = lastError instanceof Error ? lastError.message : "Unknown error";
+  const totalAttempts = MAX_RETRIES + 1;
 
-      console.warn(`[llm] Retry ${attempt}/${MAX_RETRIES} in ${delay}ms — ${message}`);
-
-      await sleep(delay);
-    }
-
+  for (let attempt = 0; attempt < totalAttempts; attempt++) {
     try {
-      const response: ChatCompletion = await openai.chat.completions.create({
-        model,
-        temperature,
-        max_tokens: maxTokens,
-        ...(jsonMode && !IS_OLLAMA ? { response_format: { type: "json_object" } } : {}),
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userContent },
-        ],
-      });
+      if (attempt > 0) {
+        const delay = BASE_DELAY_MS * 2 ** attempt;
+
+        console.warn(`[llm:${requestId}] retry ${attempt}/${MAX_RETRIES} in ${delay}ms`);
+
+        await new Promise((r) => setTimeout(r, delay));
+      }
+
+      const response: ChatCompletion = await withTimeout(
+        openai.chat.completions.create({
+          model,
+          temperature,
+          max_tokens: maxTokens,
+          ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userContent },
+          ],
+        }),
+        TIMEOUT_MS,
+      );
 
       const content = response.choices?.[0]?.message?.content?.trim();
 
       if (!content) {
-        throw new Error("Model returned an empty response");
+        throw new LLMError("Empty response", "api");
       }
 
-      debugLog("raw output", content);
+      debugLog("raw output", content, requestId);
 
-      return parseModelJson(content);
-    } catch (err: unknown) {
+      const parsed = parseModelJson(content);
+
+      if (!parsed) {
+        throw new LLMError("Parse failed", "parse");
+      }
+
+      return parsed;
+    } catch (err) {
       lastError = err;
+
+      if (err instanceof LLMError && err.type === "parse") {
+        break;
+      }
     }
   }
 
-  const message = lastError instanceof Error ? lastError.message : "Unknown error";
-
-  throw new Error(`[llm] Failed after ${MAX_RETRIES + 1} attempts: ${message}`);
+  throw new LLMError(
+    `LLM failed after ${totalAttempts} attempts: ${lastError instanceof Error ? lastError.message : "unknown"}`,
+    "unknown",
+  );
 }
+
+// ─────────────────────────────────────────────
+// Cached LLM wrapper (ZOD will validate OUTSIDE this)
+// ─────────────────────────────────────────────
 
 export async function cachedLLM<T>({ cacheKey, ttl, fn }: { cacheKey: string; ttl: number; fn: () => Promise<T> }): Promise<T> {
   const cached = await getCache<T>(cacheKey);

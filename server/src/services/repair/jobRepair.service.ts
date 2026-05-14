@@ -1,16 +1,41 @@
-import { JobSchemaData } from "../../types/schema.js";
 import { dedupe, normalizeArray, normalizeString } from "../../utils/repair.utils.js";
+import { JobSchemaData } from "../../types/schema.js";
 
-export function repairJob(job: JobSchemaData): JobSchemaData {
+type Seniority = "executive" | "intern" | "junior" | "mid" | "senior" | "lead" | "unknown";
+
+function normalizeSeniority(input: unknown): Seniority {
+  const v = normalizeString(String(input)).toLowerCase();
+
+  if (v.includes("intern")) return "intern";
+  if (v.includes("junior")) return "junior";
+  if (v.includes("mid")) return "mid";
+  if (v.includes("senior") && !v.includes("lead")) return "senior";
+  if (v.includes("lead")) return "lead";
+  if (v.includes("executive") || v.includes("c-level")) return "executive";
+
+  return "unknown";
+}
+
+function requireString(value: unknown, fallback = ""): string {
+  if (typeof value === "string" && value.trim().length > 0) {
+    return value.trim();
+  }
+  return fallback;
+}
+
+export function repairJob(job: unknown): JobSchemaData {
   if (!job || typeof job !== "object") {
     throw new TypeError("[jobRepair] Job must be a valid object");
   }
 
+  const data = job as any;
+
   return {
-    ...job,
-    title: normalizeString(job.title),
-    seniority: normalizeString(job.seniority),
-    required_skills: dedupe(normalizeArray(job.required_skills)),
-    responsibilities: dedupe(normalizeArray(job.responsibilities)),
+    title: requireString(data.title),
+
+    required_skills: dedupe(normalizeArray(data.required_skills)),
+    responsibilities: dedupe(normalizeArray(data.responsibilities)),
+
+    seniority: normalizeSeniority(data.seniority),
   };
 }

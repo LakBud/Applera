@@ -6,6 +6,7 @@ const CVSchema = new mongoose.Schema(
       type: String,
       required: true,
       index: true,
+      trim: true,
     },
 
     ownerType: {
@@ -14,32 +15,64 @@ const CVSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    rawText: String,
+
+    applicationsCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    lastUsedAt: Date,
+
+    rawText: {
+      type: String,
+      maxlength: 100000,
+    },
 
     parsed: {
-      name: String,
-      email: String,
-      phone: String,
-      github: String,
-      summary: String,
-      seniority_level: String,
-      skills: [String],
+      name: { type: String, trim: true },
+      email: { type: String, trim: true, lowercase: true },
+      phone: { type: String, trim: true },
+      github: { type: String, trim: true },
+
+      summary: {
+        type: String,
+        trim: true,
+        maxlength: 5000,
+      },
+
+      seniority_level: {
+        type: String,
+        enum: ["executive", "junior", "mid", "senior", "lead", "unknown"],
+        default: "unknown",
+      },
+
+      skills: [{ type: String, trim: true }],
+
       experience: [
         {
-          title: String,
-          company: String,
-          highlights: [String],
+          title: { type: String, trim: true },
+          company: { type: String, trim: true },
+          highlights: [{ type: String, trim: true }],
         },
       ],
+
       education: [
         {
-          title: String,
-          school: String,
+          title: { type: String, trim: true },
+          school: { type: String, trim: true },
         },
       ],
     },
+
+    deletedAt: Date,
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
 );
+
+CVSchema.index({ ownerId: 1, createdAt: -1 });
 
 export default mongoose.model("CV", CVSchema);

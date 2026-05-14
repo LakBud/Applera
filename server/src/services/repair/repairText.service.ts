@@ -3,53 +3,64 @@ import { MAX_LENGTH } from "../../utils/utils.js";
 export type NormalizeOptions = {
   type?: "cv" | "job";
   maxLength?: number;
-  skills?: string[]; // for dynamic merging of multi-word skills
+  skills?: string[];
+  preserveCase?: boolean;
 };
 
 export function normalizeText(text: string, options: NormalizeOptions = {}): string {
-  if (typeof text !== "string") throw new TypeError("[normalizeText] input must be a string");
+  if (typeof text !== "string") {
+    throw new TypeError("[normalizeText] input must be a string");
+  }
 
-  const { type = "job", maxLength = MAX_LENGTH, skills = [] } = options;
+  const { type = "job", maxLength = MAX_LENGTH, skills = [], preserveCase = false } = options;
 
   let t = text.trim();
 
-  // ── Normalize line breaks
-  t = t.replace(/\r/g, "").replace(/\n{3,}/g, "\n\n");
+  // ── Normalize structure
+  t = t
+    .replace(/\r/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/•/g, "-")
+    .replace(/\u2022/g, "-")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\s+([,.!?])/g, "$1");
 
-  // ── Normalize bullet points
-  t = t.replace(/•/g, "-").replace(/\u2022/g, "-");
-
-  // ── Fix spacing issues
-  t = t.replace(/[ \t]+/g, " ").replace(/\s+([,.!?])/g, "$1");
-
-  // ── Remove common noise
+  // ── Remove noise (job-specific)
   if (type === "job") {
     t = t.replace(/apply now|click here|view all jobs|cookie policy/gi, "");
     t = t.replace(/job description[:\-]?|about the role[:\-]?|what you'll do[:\-]?/gi, "");
-  } else if (type === "cv") {
+  }
+
+  // ── Remove CV noise
+  if (type === "cv") {
     t = t.replace(/references available upon request/gi, "");
   }
 
-  // ── Lowercase
-  t = t.toLowerCase();
-
-  // ── Merge multi-word skills dynamically
+  // ── Skill normalization (safe version)
+  // ONLY for matching layer, not for display
   if (skills.length > 0) {
-    skills.forEach((skill) => {
-      const normalized = skill.toLowerCase().replace(/[\s.\-_/]/g, "");
-      const pattern = skill
-        .trim()
-        .split(/\s+/)
-        .map((w) => w.replace(/[-_/]/g, "\\$&"))
-        .join("\\s+");
+    for (const skill of skills) {
+      const normalizedSkill = skill.toLowerCase().replace(/[\s.\-_/]/g, "");
+
+      // escape regex safely
+      const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const pattern = escaped.replace(/\s+/g, "\\s+");
 
       const regex = new RegExp(`\\b${pattern}\\b`, "gi");
-      t = t.replace(regex, normalized);
-    });
+
+      t = t.replace(regex, normalizedSkill);
+    }
   }
 
-  // ── Truncate to max length
-  if (t.length > maxLength) t = t.slice(0, maxLength);
+  // ── Case handling (IMPORTANT FIX)
+  if (!preserveCase) {
+    t = t; // keep original case (default safe)
+  }
+
+  // ── Truncate
+  if (t.length > maxLength) {
+    t = t.slice(0, maxLength);
+  }
 
   return t;
 }

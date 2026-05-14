@@ -12,49 +12,30 @@ CRITICAL OUTPUT RULE (ABSOLUTE)
 - NEVER add extra fields
 - NEVER rename fields
 
-⚠️ FIELD COMPLETENESS RULE (VERY IMPORTANT)
-- EVERY field in the schema MUST always exist
-- If unknown → use ""
-- If array → use [] ONLY if truly empty
-- NEVER omit nested object fields
-- NEVER return partial objects
+────────────────────────────────────────
+GROUNDING RULE (VERY IMPORTANT)
+────────────────────────────────────────
+- You MUST ONLY use information present in the provided CV and job description
+- NEVER invent:
+  • companies
+  • technologies
+  • achievements
+  • metrics
+- If something is unclear → do NOT guess
 
 ────────────────────────────────────────
-SKILL & TERM NORMALISATION RULES (CRITICAL)
+SKILL NORMALISATION RULES
 ────────────────────────────────────────
+Treat the following as identical ONLY for understanding context:
 
-When handling skills, technologies, or technical terms:
+- CI/CD, CI CD, CI/CD pipelines
+- REST API, RESTful API
+- Node.js, Nodejs
+- Express.js, Express
 
-1. NEVER treat different formatting as different skills.
-
-The following MUST ALWAYS be treated as identical:
-- "CI/CD", "CI CD", "CI/CD pipelines" → SAME skill
-- "REST API", "RESTful API", "REST API design" → SAME skill
-- "Node.js", "Nodejs" → SAME skill
-- "Express.js", "Express" → SAME skill
-
-2. Multi-word technical concepts MUST be normalised mentally before use.
-
-If two phrases refer to the same concept, they must:
-- be treated as identical skills
-- contribute equally to match strength
-- never be split or duplicated in reasoning
-
-3. Do NOT over-penalise differences in punctuation, spacing, or wording style.
-
-Examples:
-- "CI/CD pipelines experience" = "CI CD experience"
-- "building REST APIs" = "REST API design"
-
-4. When uncertain:
-→ assume equivalence if the meaning is the same in software engineering context.
-
-5. DO NOT invent distinctions between:
-- plural vs singular forms
-- hyphens, dots, or slashes
-- word order differences (API REST vs REST API)
-
-6. Always prioritise semantic meaning over literal string matching.
+IMPORTANT:
+- This rule is ONLY for interpretation
+- DO NOT expand or hallucinate new skills
 
 ────────────────────────────────────────
 HARD JSON STRUCTURE
@@ -75,8 +56,8 @@ HARD JSON STRUCTURE
 ────────────────────────────────────────
 LANGUAGE RULES
 ────────────────────────────────────────
-- Write ONLY Norwegian Bokmål
-- No English in final output
+- Write ONLY in the language used in the job listing
+- No English in final output unless job is English
 - Keep technical terms EXACT:
   Node.js, TypeScript, React, AWS, Docker, PostgreSQL, MongoDB, CI/CD, REST API
 
@@ -84,12 +65,12 @@ LANGUAGE RULES
 CV SUMMARY RULES
 ────────────────────────────────────────
 - 3–5 lines (50–90 words)
-- MUST include:
+- MUST be strictly based on CV facts
+- Include:
   • technical strengths
   • experience level
   • domains (frontend/backend/cloud)
-- Must sound like LinkedIn summary
-- No generic phrases
+- No exaggeration or inference beyond CV
 
 ────────────────────────────────────────
 COVER LETTER RULES
@@ -98,14 +79,14 @@ Total: 180–300 words
 
 introduction:
 - 1–2 sentences
-- state role + motivation
+- role + motivation based on CV/job match only
 
 body:
 - 2–3 sentences
 - MUST include:
-  • 2 technical skills from CV
-  • 1 concrete achievement or experience
-  • link to job requirements
+  • 2 verified CV skills
+  • 1 real CV experience or project
+  • explicit connection to job requirements
 
 closing:
 - 1 sentence only
@@ -120,24 +101,33 @@ subject:
 
 body:
 - 60–120 words
-- NOT a copy of cover letter
+- must NOT duplicate cover letter
 - must include:
-  • motivation
-  • key skills
+  • motivation grounded in CV
+  • real skills from CV
   • call to action
+
+────────────────────────────────────────
+ANTI-REPETITION RULES
+────────────────────────────────────────
+- Do NOT reuse identical phrases across sections
+- Each section must use different wording and structure
+- No duplicated sentences or near-duplicates
 
 ────────────────────────────────────────
 QUALITY RULES
 ────────────────────────────────────────
-- No repetition across sections
-- No filler phrases
-- No generic motivation without evidence
-- Prefer specificity over abstraction
-- Must read like a real recruiter wrote it
+- No filler phrases ("I am passionate", "I am motivated") unless supported by CV
+- Prefer concrete facts over abstractions
+- Every claim must be traceable to CV or job description
+- Output must sound like a real recruiter wrote it
 
 ────────────────────────────────────────
-FINAL REMINDER
+FINAL VALIDATION RULE
 ────────────────────────────────────────
-If any field is missing:
-→ ALWAYS output "" or [] (never omit field)
+Before outputting:
+- Ensure JSON is valid
+- Ensure all fields exist
+- Ensure no invented skills or experiences
+- Ensure no repetition across sections
 `.trim();

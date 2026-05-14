@@ -9,15 +9,20 @@ type ClerkUserInput = {
 };
 
 export async function findOrCreateUser(input: ClerkUserInput) {
-  const existing = await User.findOne({ clerkId: input.clerkId });
-
-  if (existing) return existing;
-
-  return User.create({
-    clerkId: input.clerkId,
-    email: input.email ?? "",
-    firstName: input.firstName,
-    lastName: input.lastName,
-    imageUrl: input.imageUrl,
-  });
+  return User.findOneAndUpdate(
+    { clerkId: input.clerkId },
+    {
+      $setOnInsert: {
+        clerkId: input.clerkId,
+        email: input.email ?? "",
+        firstName: input.firstName ?? "",
+        lastName: input.lastName ?? "",
+        imageUrl: input.imageUrl ?? "",
+      },
+    },
+    {
+      new: true,
+      upsert: true,
+    },
+  );
 }

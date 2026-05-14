@@ -1,87 +1,96 @@
 import { Request, Response } from "express";
-import { Types } from "mongoose";
 
 import Application from "../models/Application.js";
 import InterviewPrep from "../models/InterviewPrep.js";
 import { generateInterviewPrep } from "../services/interviewPrep.service.js";
 
-import type { ApplicationDocument } from "../types/mongoose.types.js";
-import { CVData, JobData } from "../types/types.js";
-import { MatchData } from "../types/application.types.js";
+import type { CVSchema, JobSchema } from "../types/schema.js";
+import type { MatchReport } from "../types/match.types.js";
+
 import { auditLog } from "../middleware/log/audit.logger.js";
+import { getParam } from "../utils/req.js";
+import { z } from "zod";
 
-// ─────────────────────────────────────────────────────────────
-// Type guard
-// ─────────────────────────────────────────────────────────────
+export type CVSchemaData = z.infer<typeof CVSchema>;
+export type JobSchemaData = z.infer<typeof JobSchema>;
 
-function isPopulated<T extends object>(doc: T | Types.ObjectId): doc is T {
-  return doc !== null && typeof doc === "object" && !Array.isArray(doc) && "parsed" in doc;
+// ─────────────────────────────────────────────
+// Type guard (populated doc check)
+// ─────────────────────────────────────────────
+
+function isPopulated(doc: unknown): doc is { parsed: unknown } {
+  return typeof doc === "object" && doc !== null && "parsed" in doc;
 }
-// POST /api/interview/generate
 
+// ─────────────────────────────────────────────
+// POST /api/interview/:applicationId
+// ─────────────────────────────────────────────
 export const generatePrep = async (req: Request, res: Response) => {
   try {
-    const { applicationId } = req.body;
+    const applicationId = getParam(req.params.applicationId);
+
     const identity = req.identity;
 
     if (!identity) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const identityId = identity.id;
-    const ownerType = identity.type;
-
-    if (!applicationId) {
-      return res.status(400).json({ error: "applicationId is required." });
-    }
-
-    const application = (await Application.findOne({
+    const application = await Application.findOne({
       _id: applicationId,
-      ownerId: identityId,
-      ownerType,
+      ownerId: identity.id,
+      ownerType: identity.type,
     })
       .populate("cv")
-      .populate("job")
-      .lean()) as unknown as ApplicationDocument;
+      .populate("job");
 
     if (!application) {
-      return res.status(404).json({ error: "Application not found." });
+      return res.status(404).json({
+        error: "Application not found.",
+      });
     }
 
     if (!isPopulated(application.cv) || !isPopulated(application.job)) {
-      return res.status(400).json({ error: "CV or Job is not populated." });
+      return res.status(400).json({
+        error: "CV or Job is not populated.",
+      });
     }
 
-    const cv: CVData = application.cv.parsed;
-    const job: JobData = application.job.parsed;
-    const match: MatchData | undefined = application.match;
-
-    if (!cv || !job) {
-      return res.status(400).json({ error: "Application is missing CV or job data." });
-    }
+    // ── SAFE CASTS (this is where types are fixed)
+    const cv = application.cv.parsed as CVSchemaData;
+    const job = application.job.parsed as JobSchemaData;
+    const match = application.match as MatchReport | undefined;
 
     if (!match) {
-      return res.status(400).json({ error: "Application is missing match data." });
+      return res.status(400).json({
+        error: "Missing match data.",
+      });
     }
 
     const prep = await generateInterviewPrep(cv, job, match, applicationId);
 
     const saved = await InterviewPrep.findOneAndUpdate(
-      { application: applicationId, ownerId: identityId, ownerType },
       {
         application: applicationId,
-        ownerId: identityId,
-        ownerType,
+        ownerId: identity.id,
+        ownerType: identity.type,
+      },
+      {
+        application: applicationId,
+        ownerId: identity.id,
+        ownerType: identity.type,
         questions: prep.questions,
         general_tips: prep.general_tips,
       },
-      { upsert: true, new: true },
+      {
+        upsert: true,
+        new: true,
+      },
     );
 
     await auditLog({
       event: "INTERVIEW_PREP_GENERATED",
-      userId: identityId,
-      userType: ownerType,
+      userId: identity.id,
+      userType: identity.type,
       requestId: req.requestId,
       ip: req.ip,
       resourceId: applicationId,
@@ -91,32 +100,40 @@ export const generatePrep = async (req: Request, res: Response) => {
       },
     });
 
-    return res.status(201).json({ prep: saved });
+    return res.status(201).json({
+      prep: saved,
+    });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
+
     console.error("[generatePrep]", message);
-    return res.status(500).json({ error: message });
+
+    return res.status(500).json({
+      error: message,
+    });
   }
 };
 
+// ─────────────────────────────────────────────
 // GET /api/interview/:applicationId
+// ─────────────────────────────────────────────
 
 export const getPrep = async (req: Request, res: Response) => {
   try {
-    const { applicationId } = req.params;
+    const applicationId = getParam(req.params.applicationId);
+
     const identity = req.identity;
 
     if (!identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
     }
-
-    const ownerId = identity.id;
-    const ownerType = identity.type;
 
     const prep = await InterviewPrep.findOne({
       application: applicationId,
-      ownerId,
-      ownerType,
+      ownerId: identity.id,
+      ownerType: identity.type,
     });
 
     if (!prep) {
@@ -128,7 +145,11 @@ export const getPrep = async (req: Request, res: Response) => {
     return res.json({ prep });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
+
     console.error("[getPrep]", message);
-    return res.status(500).json({ error: message });
+
+    return res.status(500).json({
+      error: message,
+    });
   }
 };

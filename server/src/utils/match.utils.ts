@@ -12,8 +12,11 @@ import { MatchReport } from "../types/match.types.js";
 export function normalizeSkill(s: string): string {
   return String(s || "")
     .toLowerCase()
-    .replace(/[\s.\-_/]/g, "") // strip spaces, dots, dashes, underscores, slashes
-    .trim();
+    .trim()
+    .replace(/[\s.\-_/]+/g, "") // collapse repeats properly
+    .replace(/js$/, "js") // keeps nodejs/reactjs stable
+    .replace(/typescript/, "ts")
+    .replace(/javascript/, "js");
 }
 
 /**
@@ -29,6 +32,15 @@ export function normalizeSkills(arr: unknown): string[] {
 
 /* ── Skill matching ───────────────────────────────────────────────────────── */
 
+const SKILL_ALIASES: Record<string, string[]> = {
+  react: ["reactjs", "reactnative"],
+  nodejs: ["node", "express"],
+  ts: ["typescript"],
+  js: ["javascript"],
+  aws: ["amazonwebservices"],
+  docker: ["containerization"],
+};
+
 /**
  * Returns true if two skills refer to the same technology.
  * Guards against single-character false positives (e.g. "C" ⊂ "C++").
@@ -40,10 +52,15 @@ export function isSkillMatch(cvSkill: string, jobSkill: string): boolean {
   if (!a || !b) return false;
   if (a === b) return true;
 
-  // Only allow substring matching when both sides are meaningful length
-  // e.g. "react" inside "reactnative" is fine; "c" inside "css" is not
-  const minLength = 4;
-  if (a.length >= minLength && b.length >= minLength) {
+  // alias matching (VERY IMPORTANT FIX)
+  for (const [key, aliases] of Object.entries(SKILL_ALIASES)) {
+    if ((a === key && aliases.includes(b)) || (b === key && aliases.includes(a))) {
+      return true;
+    }
+  }
+
+  // safe substring match (tightened)
+  if (a.length >= 4 && b.length >= 4) {
     return a.includes(b) || b.includes(a);
   }
 
@@ -63,12 +80,13 @@ export function detectDomainMismatch(cvSkills: unknown, jobSkills: unknown): boo
   const cv = new Set(normalizeSkills(cvSkills));
   const job = normalizeSkills(jobSkills);
 
-  if (job.length === 0) return false; // no job skills to compare against
+  if (job.length < 3) return false;
 
   const overlap = job.filter((skill) => [...cv].some((cvSkill) => isSkillMatch(cvSkill, skill))).length;
 
   const similarity = overlap / job.length;
-  return similarity < 0.15;
+
+  return similarity < 0.25;
 }
 
 /* ── Text extraction ──────────────────────────────────────────────────────── */
@@ -108,22 +126,44 @@ export function extractAllText(obj: unknown): string {
  * BUG FIX: original was case-sensitive — "React" and "react" didn't match.
  * Now lowercases and filters out short stop-words before comparing.
  */
+const STOPWORDS = new Set([
+  "the",
+  "and",
+  "for",
+  "with",
+  "you",
+  "are",
+  "this",
+  "that",
+  "we",
+  "our",
+  "your",
+  "will",
+  "have",
+  "from",
+  "work",
+]);
+
 export function calculateTextOverlap(cvText: string, jobText: string): number {
   if (!cvText || !jobText) return 0;
 
-  const tokenise = (text: string): string[] =>
+  const tokenize = (text: string): string[] =>
     text
       .toLowerCase()
       .split(/\W+/)
-      .filter((w) => w.length > 2); // skip "a", "in", "of", etc.
+      .filter((w) => w.length > 2 && !STOPWORDS.has(w));
 
-  const cvWords = new Set(tokenise(cvText));
-  const jobWords = tokenise(jobText);
+  const cvWords = new Set(tokenize(cvText));
+  const jobWords = tokenize(jobText);
 
   if (jobWords.length === 0) return 0;
 
   const matches = jobWords.filter((w) => cvWords.has(w)).length;
-  return Math.round((matches / jobWords.length) * 100);
+
+  // FIX: prevent extreme low scores
+  const raw = matches / jobWords.length;
+
+  return Math.round(Math.min(100, raw * 100 * 1.3)); // small boost for realism
 }
 
 /* ── Confidence level ─────────────────────────────────────────────────────── */
@@ -143,14 +183,16 @@ export function getConfidenceLevel({
 }): "high" | "medium" | "low" {
   let confidence = 100;
 
-  if (jobSkills.length < 3) confidence -= 20;
-  if (cvSkills.length < 3) confidence -= 15;
-  if (textScore < 20) confidence -= 20;
+  if (jobSkills.length < 4) confidence -= 10; // less harsh
+  if (cvSkills.length < 3) confidence -= 10;
+  if (textScore < 15) confidence -= 15;
 
-  confidence = Math.max(0, Math.min(100, confidence)); // clamp 0–100
+  if (jobSkills.length > 10) confidence += 5; // richer job desc helps accuracy
 
-  if (confidence >= 75) return "high";
-  if (confidence >= 45) return "medium";
+  confidence = Math.max(0, Math.min(100, confidence));
+
+  if (confidence >= 70) return "high";
+  if (confidence >= 40) return "medium";
   return "low";
 }
 
@@ -178,29 +220,101 @@ export function getSeniorityFit(cvLevel: string, jobLevel: string): MatchReport[
 }
 
 // ── Score calculation ─────────────────────────────────────────────────────────
-//
+
+export const SKILL_GRAPH: Record<string, string[]> = {
+  react: ["frontend", "ui", "web"],
+  nextjs: ["react", "frontend"],
+  nodejs: ["backend", "api"],
+  express: ["nodejs", "backend"],
+  typescript: ["javascript"],
+  mongodb: ["database", "nosql"],
+  postgresql: ["database", "sql"],
+  aws: ["cloud", "devops"],
+  docker: ["devops", "deployment"],
+};
+
+export function expandSkills(skills: string[]): Set<string> {
+  const expanded = new Set<string>();
+
+  for (const raw of skills) {
+    const skill = normalizeSkill(raw);
+
+    expanded.add(skill);
+
+    const related = SKILL_GRAPH[skill];
+    if (related) {
+      related.forEach((r) => expanded.add(r));
+    }
+  }
+
+  return expanded;
+}
+
+export function calculateSemanticSkillScore(cvSkills: string[], jobSkills: string[]): number {
+  const cv = expandSkills(cvSkills);
+  const job = expandSkills(jobSkills);
+
+  if (job.size === 0) return 0;
+
+  let matches = 0;
+
+  for (const skill of job) {
+    if (cv.has(skill)) matches++;
+  }
+
+  const score = matches / job.size;
+
+  return Math.round(score * 100);
+}
+
+const SKILL_WEIGHTS: Record<string, number> = {
+  backend: 1.2,
+  frontend: 1.2,
+  api: 1.1,
+  database: 1.1,
+  devops: 1.0,
+  cloud: 1.0,
+};
+
+export function weightedSkillScore(cvSkills: string[], jobSkills: string[]): number {
+  const cv = expandSkills(cvSkills);
+  const job = expandSkills(jobSkills);
+
+  let totalWeight = 0;
+  let matchedWeight = 0;
+
+  for (const skill of job) {
+    const weight = SKILL_WEIGHTS[skill] ?? 1;
+
+    totalWeight += weight;
+
+    if (cv.has(skill)) {
+      matchedWeight += weight;
+    }
+  }
+
+  if (totalWeight === 0) return 0;
+
+  return Math.round((matchedWeight / totalWeight) * 100);
+}
+
 // Weighted blend:
 //   60% — skill overlap   (most important signal)
 //   40% — text overlap    (catches experience, domain language, responsibilities)
 
-export function calculateScore(matchingSkills: string[], jobSkills: string[], textScore: number): number {
-  if (jobSkills.length === 0) return textScore;
+export function calculateScore(cvSkills: string[], jobSkills: string[], textScore: number): number {
+  const skillScore = weightedSkillScore(cvSkills, jobSkills);
 
-  // 1. Core requirement coverage (MOST IMPORTANT)
-  const requiredCoverage = matchingSkills.length / jobSkills.length;
+  // text is now only supporting signal (NOT dominant)
+  const textComponent = textScore * 0.15;
 
-  // 2. Hard skill score (dominant signal)
-  const skillScore = requiredCoverage * 100;
+  // smooth blending (prevents extreme low scores like 25)
+  const raw = skillScore * 0.8 + textComponent;
 
-  // 3. Text signal (light weight only)
-  const textComponent = textScore * 0.25;
+  // stabilization curve (prevents harsh drops)
+  const stabilized = Math.sqrt(raw) * 10;
 
-  // 4. Bonus for strong technical match
-  const bonus = requiredCoverage === 1 ? 12 : requiredCoverage >= 0.8 ? 6 : requiredCoverage > 0 ? 2 : 0;
-
-  const final = skillScore * 0.7 + textComponent + bonus;
-
-  return Math.round(Math.max(0, Math.min(100, final)));
+  return Math.round(Math.min(100, Math.max(0, stabilized)));
 }
 
 // ── Runtime guard (safe object check) ─────────────────────────────────────────

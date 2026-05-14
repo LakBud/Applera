@@ -1,30 +1,32 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 
-const textField = (label: string, max: number = 20_000) =>
+const textField = (label: string, max = 20_000, min = 10) =>
   z
     .string()
     .trim()
     .nonempty({ message: `${label} is required.` })
-    .min(50, { message: `${label} is too short to be valid.` })
-    .max(max, { message: `${label} exceeds the ${max} character limit.` });
-
-// ── Schemas ───────────────────────────────────────────────────────
+    .min(min, { message: `${label} is too short.` })
+    .max(max, { message: `${label} exceeds limit.` });
 
 const schemas = {
   createApplication: z
     .object({
-      // Either cvText (first call) or cvId (subsequent calls) must be present
       cvText: textField("cvText").optional(),
-      cvId: z.string().trim().min(1, { message: "cvId must not be empty." }).optional(),
+      cvId: z.string().min(1).optional(),
       jobText: textField("jobText"),
     })
-    .refine((data) => data.cvText || data.cvId, {
-      message: "Either cvText or cvId is required.",
-      path: ["cvText"], // surface the error on cvText field
+    .superRefine((data, ctx) => {
+      if (!data.cvText && !data.cvId) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Either cvText or cvId is required.",
+          path: ["cvText"],
+        });
+      }
     }),
 
-  analyzeJob: z.object({
+  createJob: z.object({
     jobText: textField("jobText").optional(),
   }),
 
@@ -35,25 +37,21 @@ const schemas = {
 
 type SchemaName = keyof typeof schemas;
 
-// ── Middleware factory ────────────────────────────────────────────
-
-export function validate(schemaName: SchemaName) {
+export function validate<T extends SchemaName>(schemaName: T) {
   const schema = schemas[schemaName];
 
-  if (!schema) {
-    throw new Error(`[validate] Unknown schema: "${schemaName}"`);
-  }
-
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
-      const errors = result.error.issues.map((i) => i.message);
-      res.status(400).json({ error: errors[0], details: errors });
-      return;
+      return res.status(400).json({
+        error: "Validation failed",
+        message: result.error.issues[0].message,
+        issues: result.error.issues,
+      });
     }
 
-    req.body = result.data;
+    req.validated = result.data;
     next();
   };
 }

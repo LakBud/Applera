@@ -7,17 +7,36 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
       index: true,
+      trim: true,
     },
+
     email: {
       type: String,
       default: "",
       index: true,
+      trim: true,
+      lowercase: true,
     },
-    firstName: String,
-    lastName: String,
-    imageUrl: String,
+
+    firstName: {
+      type: String,
+      trim: true,
+    },
+
+    lastName: {
+      type: String,
+      trim: true,
+    },
+
+    imageUrl: {
+      type: String,
+      trim: true,
+    },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
 );
 
 export default mongoose.model("User", UserSchema);

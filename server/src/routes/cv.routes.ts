@@ -1,27 +1,49 @@
 import express from "express";
 import { uploadCV, validatePdfMagic, handleUploadError } from "../middleware/upload.js";
-import { parseCvPdf } from "../middleware/parsePdf.js";
+
 import { parseLimiter } from "../middleware/rateLimiter.js";
 import { validate } from "../middleware/validate.js";
 import { aiTimeout } from "../middleware/timeout.js";
-import { uploadCV as uploadCVController } from "../controllers/cv.controller.js";
 import { concurrencyLimit } from "../middleware/concurrency.js";
+
+import { createCV, getCVs, getCVById, deleteCV } from "../controllers/cv.controller.js";
+import { parseCvPdf } from "../middleware/parsePdf.js";
 
 const router = express.Router();
 
-// POST /api/cv/upload
-// Accepts: multipart/form-data "cv" field (PDF), or plain { cvText } in body
+/**
+ * GET /api/cv
+ * List all CVs
+ */
+router.get("/", getCVs);
+
+/**
+ * POST /api/cv
+ * Upload CV (file or text)
+ */
 router.post(
-  "/upload",
-  concurrencyLimit(5), // 0. Concurrency Limit
-  parseLimiter, // 1. rate limit
-  uploadCV, // 2. multer: buffer + MIME check
-  validatePdfMagic, // 3. magic byte check (catches spoofed MIME)
-  validate("uploadCV"), // 4. validate text body if no file provided
-  parseCvPdf, // 5. extract text from PDF buffer
-  handleUploadError, // 6. catch multer errors
-  aiTimeout, // 7. 90s hard deadline
-  uploadCVController, // 8. controller
+  "/",
+  concurrencyLimit(5),
+  parseLimiter,
+  uploadCV,
+  validatePdfMagic,
+  validate("uploadCV"),
+  parseCvPdf,
+  handleUploadError,
+  aiTimeout,
+  createCV,
 );
+
+/**
+ * GET /api/cv/:id
+ * Get single CV
+ */
+router.get("/:id", getCVById);
+
+/**
+ * DELETE /api/cv/:id
+ * Delete CV
+ */
+router.delete("/:id", deleteCV);
 
 export default router;

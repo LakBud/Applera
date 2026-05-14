@@ -2,7 +2,7 @@ import { cachedLLM, callLLM } from "../lib/llm.js";
 import { EXTRACT_CV_PROMPT } from "../prompts/extractCVPrompt.js";
 import { EXTRACT_JOB_PROMPT } from "../prompts/extractJobPrompt.js";
 import { hash } from "../lib/hash.js";
-import { CVSchema, JobSchema, type CVSchemaData, type JobSchemaData } from "../types/schema.js";
+import { CVSchema, CVSchemaData, JobSchema, JobSchemaData } from "../types/schema.js";
 
 import { repairCV } from "./repair/cvRepair.service.js";
 import { repairJob } from "./repair/jobRepair.service.js";
@@ -41,11 +41,12 @@ export async function extractCVData(cvText: string): Promise<CVSchemaData> {
         throw new Error("[CV] Invalid LLM output shape");
       }
 
-      return repairCV(parsed.data);
+      const cleaned = repairCV(parsed.data);
+
+      return cleaned;
     },
   });
 }
-
 // ─────────────────────────────────────────────────────────────
 // Job extractor
 // ─────────────────────────────────────────────────────────────
@@ -79,7 +80,9 @@ export async function extractJobData(jobText: string): Promise<JobSchemaData> {
         throw new Error("[JOB] Invalid LLM output shape");
       }
 
-      return repairJob(parsed.data);
+      const cleaned = repairJob(parsed.data);
+
+      return cleaned;
     },
   });
 }

@@ -1,19 +1,35 @@
-import { hash } from "../lib/hash.js";
-import { ApplicationLLMOutput, MatchData } from "../types/application.types.js";
-import { CVData, JobData } from "../types/types.js";
+import crypto from "crypto";
+
+function sha256(input: string): string {
+  return crypto.createHash("sha256").update(input).digest("hex");
+}
+
+export function stableStringify(value: unknown): string {
+  if (value === null || typeof value !== "object") {
+    return JSON.stringify(value);
+  }
+
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(",")}]`;
+  }
+
+  const obj = value as Record<string, unknown>;
+  const keys = Object.keys(obj).sort();
+
+  return `{${keys.map((k) => `"${k}":${stableStringify(obj[k])}`).join(",")}}`;
+}
+
+export function assertObject(label: string, value: unknown): asserts value is Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError(`[generateApplication] "${label}" must be a plain object`);
+  }
+}
 
 // ── Cache key builder ───────────────────────────────────────────────────
 
-export function buildCacheKey(cv: CVData, job: JobData, match: MatchData): string {
-  return `application:${hash(
-    JSON.stringify({
-      cv,
-      job,
-      match,
-    }),
-  )}`;
+export function buildCacheKey(...inputs: unknown[]): string {
+  return sha256(stableStringify(inputs));
 }
-
 // ── Placeholder scrubber ───────────────────────────────────────────────
 
 export function scrubPlaceholders(value: unknown): unknown {
@@ -37,21 +53,4 @@ export function scrubPlaceholders(value: unknown): unknown {
   }
 
   return value;
-}
-
-// ── Runtime guard ──────────────────────────────────────────────────────
-
-export function isApplicationLLMOutput(value: any): value is ApplicationLLMOutput {
-  return (
-    value &&
-    typeof value === "object" &&
-    typeof value.cv_summary === "string" &&
-    value.application_letter &&
-    typeof value.application_letter.introduction === "string" &&
-    typeof value.application_letter.body === "string" &&
-    typeof value.application_letter.closing === "string" &&
-    value.email_template &&
-    typeof value.email_template.subject === "string" &&
-    typeof value.email_template.body === "string"
-  );
 }

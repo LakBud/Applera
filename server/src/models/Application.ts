@@ -1,13 +1,6 @@
 import mongoose from "mongoose";
 
-export const APPLICATION_STATUSES = [
-  "generated", // just created
-  "applied", // sent to employer
-  "interviewing", // interview scheduled or ongoing
-  "offered", // received an offer
-  "rejected", // rejected
-  "withdrawn", // candidate withdrew
-] as const;
+export const APPLICATION_STATUSES = ["generated", "applied", "interviewing", "offered", "rejected", "withdrawn"] as const;
 
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
@@ -17,6 +10,7 @@ const ApplicationSchema = new mongoose.Schema(
       type: String,
       required: true,
       index: true,
+      trim: true,
     },
 
     ownerType: {
@@ -25,34 +19,87 @@ const ApplicationSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    cv: { type: mongoose.Schema.Types.ObjectId, ref: "CV" },
-    job: { type: mongoose.Schema.Types.ObjectId, ref: "Job" },
+
+    cv: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CV",
+      required: true,
+    },
+
+    job: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Job",
+      required: true,
+    },
+
+    // snapshots (important)
+    cvNameSnapshot: String,
+    jobTitleSnapshot: String,
+    companySnapshot: String,
 
     match: {
-      score: Number,
-      confidence: String,
-      strengths: [String],
-      missing_skills: [String],
+      score: {
+        type: Number,
+        min: 0,
+        max: 100,
+      },
+
+      confidence: {
+        type: String,
+        trim: true,
+      },
+
+      strengths: [{ type: String, trim: true }],
+      missing_skills: [{ type: String, trim: true }],
     },
 
-    tailored_cv_summary: String,
-    cover_letter: String,
+    tailored_cv_summary: {
+      type: String,
+      maxlength: 10000,
+    },
+
+    cover_letter: {
+      type: String,
+      maxlength: 20000,
+    },
 
     application_email: {
-      subject: String,
-      body: String,
+      subject: {
+        type: String,
+        trim: true,
+      },
+      body: {
+        type: String,
+        maxlength: 20000,
+      },
     },
 
-    // ── Tracker field ─────────────────────────────────────────────
     status: {
       type: String,
       enum: APPLICATION_STATUSES,
       default: "generated",
     },
 
-    notes: String, // free-text notes the user can add per application
+    statusUpdatedAt: {
+      type: Date,
+      default: Date.now,
+    },
+
+    notes: {
+      type: String,
+      maxlength: 5000,
+    },
+
+    deletedAt: Date,
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
 );
+
+ApplicationSchema.index({ ownerId: 1, createdAt: -1 });
+ApplicationSchema.index({ cv: 1 });
+ApplicationSchema.index({ job: 1 });
 
 export default mongoose.model("Application", ApplicationSchema);

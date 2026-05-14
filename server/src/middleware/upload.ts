@@ -1,47 +1,42 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import multer from "multer";
-// Configures multer for in-memory PDF uploads.
-// Import the named exports to target specific form fields:
-//
-//   router.post("/cv",  uploadCV,  parseCvPdf,  cvController.uploadCV);
-//   router.post("/job", uploadJob, parseJobPdf, jobController.analyzeJob);
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 const PDF_MIME = "application/pdf";
-const PDF_MAGIC = Buffer.from([0x25, 0x50, 0x44, 0x46]); // % PDF
+const PDF_MAGIC = Buffer.from([0x25, 0x50, 0x44, 0x46]); // %PDF
 
-// ── File filter: reject anything that isn't a PDF ─────────────────────────────
-// Defense in Depth: check both the MIME type AND the file magic bytes.
-// MIME type alone is client-set and trivially spoofed (e.g. rename .exe → .pdf).
+// ── File filter ─────────────────────────────────────────────
 
-export function pdfOnly(req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback): void {
+export function pdfOnly(_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback): void {
   if (file.mimetype !== PDF_MIME) {
-    return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE", file.fieldname));
+    cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE", file.fieldname));
+    return;
   }
 
-  // Magic byte check happens after upload in validatePdfMagic
   cb(null, true);
 }
 
-// Shared multer instance
+// ── Multer instance ─────────────────────────────────────────
+
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_FILE_SIZE },
+  limits: {
+    fileSize: MAX_FILE_SIZE,
+  },
   fileFilter: pdfOnly,
 });
 
-// Named field uploaders
+// ── Named uploaders ─────────────────────────────────────────
+
 export const uploadCV = upload.single("cv");
 export const uploadJob = upload.single("job");
 
-// ── Magic Byte validation ──────────────────────────────────────────────────────
-// Runs after multer has buffered the file. Rejects files whose first 4 bytes
-// don't match the PDF signature even if the MIME type was correct.
+// ── PDF magic validation ─────────────────────────────────────
 
 export function validatePdfMagic(req: Request, res: Response, next: NextFunction): void {
-  if (!req.file) return next();
+  if (!req.file?.buffer) return next();
 
-  const header: Buffer = req.file.buffer.slice(0, 4);
+  const header = req.file.buffer.subarray(0, 4);
 
   if (!header.equals(PDF_MAGIC)) {
     res.status(400).json({
@@ -53,12 +48,9 @@ export function validatePdfMagic(req: Request, res: Response, next: NextFunction
   next();
 }
 
-// ── Multer error handler ──────────────────────────────────────────────────────
-// Drop this after uploadCV / uploadJob in any route that uses them.
-// Express only calls 4-argument middleware when a previous middleware
-// calls next(err), which multer does on file size / type violations.
+// ── Error handler ────────────────────────────────────────────
 
-export function handleUploadError(err: unknown, req: Request, res: Response, next: NextFunction): Response | void {
+export function handleUploadError(err: unknown, _req: Request, res: Response, next: NextFunction): Response | void {
   if (!(err instanceof multer.MulterError)) return next(err);
 
   const messages: Record<string, string> = {
@@ -66,7 +58,7 @@ export function handleUploadError(err: unknown, req: Request, res: Response, nex
     LIMIT_UNEXPECTED_FILE: "Invalid file type. Only PDF files are accepted.",
   };
 
-  const message = messages[err.code] ?? `Upload error: ${err.message}`;
-
-  return res.status(400).json({ error: message });
+  return res.status(400).json({
+    error: messages[err.code] ?? "Upload error",
+  });
 }

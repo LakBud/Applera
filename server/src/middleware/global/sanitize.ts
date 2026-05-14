@@ -1,19 +1,27 @@
 import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
 
-// Two layers of input sanitisation applied globally before any route handler.
-//
-// 1. mongoSanitize — strips keys containing `$` or `.` from req.body/query/params
-//    which prevents NoSQL injection attacks like:
-//    { "cvText": { "$gt": "" } } → stripped to {}
-//
-// 2. hpp — HTTP Parameter Pollution protection.
-//    Prevents ?sort=asc&sort=desc&sort=DROP being passed as an array
-//    when your code expects a string.
+/**
+ * ─────────────────────────────────────────────
+ * SECURITY MIDDLEWARE
+ * ─────────────────────────────────────────────
+ * Applied globally BEFORE all routes.
+ *
+ * Protects against:
+ * - NoSQL injection ($gt, $ne, etc.)
+ * - HTTP parameter pollution (?a=1&a=2)
+ * ─────────────────────────────────────────────
+ */
 
+// ── NoSQL injection protection ─────────────────────────────
 export const sanitizeMongo = mongoSanitize({
   allowDots: false,
-  replaceWith: "_",
+  // intentionally removing replaceWith:
+  // default behavior deletes dangerous keys completely
 });
 
-export const sanitizeHpp = hpp();
+// ── HTTP Parameter Pollution protection ────────────────────
+// whitelist allows multi-value query params when needed
+export const sanitizeHpp = hpp({
+  whitelist: ["tags", "skills", "sort", "filter"],
+});

@@ -5,9 +5,6 @@ export const client = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:5005",
   timeout: 90_000, // 90s — matches the server-side aiTimeout
   withCredentials: true, // For clerk and stuff
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 client.interceptors.response.use(

@@ -1,25 +1,14 @@
-export type MatchData = {
-  score: number;
-
-  confidence: "low" | "medium" | "high";
-
-  strengths: string[];
-
-  missing_skills: string[];
-
-  // optional but useful for debugging / future features
-  matched_keywords?: string[];
-
-  explanation?: string;
-};
+import type { MatchReport } from "./match.types.js";
 
 export type ApplicationLLMOutput = {
   cv_summary: string;
+
   application_letter: {
-    introduction?: string;
-    body?: string;
-    closing?: string;
+    introduction: string;
+    body: string;
+    closing: string;
   };
+
   email_template: {
     subject: string;
     body: string;
@@ -27,15 +16,10 @@ export type ApplicationLLMOutput = {
 };
 
 export type Application = {
-  cv: string;
-  job: string;
+  cv_id: string;
+  job_id: string;
 
-  match: {
-    score: number;
-    confidence: string;
-    strengths: string[];
-    missing_skills: string[];
-  };
+  match: MatchReport;
 
   tailored_cv_summary: string;
   cover_letter: string;
@@ -44,18 +28,6 @@ export type Application = {
     subject: string;
     body: string;
   };
-};
 
-export type ApplicationCreateInput = {
-  cv: any;
-  job: any;
-  match: any;
-
-  tailored_cv_summary: string;
-  cover_letter: string;
-
-  application_email: {
-    subject: string;
-    body: string;
-  };
+  status: "generated" | "applied" | "interviewing" | "offered" | "rejected" | "withdrawn";
 };

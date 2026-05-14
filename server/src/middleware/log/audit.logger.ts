@@ -9,7 +9,14 @@ export type AuditEvent =
   | "INTERVIEW_PREP_GENERATED"
   | "LOGIN_SUCCESS"
   | "LOGIN_FAILED"
-  | "RATE_LIMIT_HIT";
+  | "RATE_LIMIT_HIT"
+  | "GUEST_SESSION_CREATED"
+  | "CV_DELETED"
+  | "CV_CREATED"
+  | "APPLICATION_STATUS_UPDATED"
+  | "APPLICATION_DELETED"
+  | "JOB_DELETED"
+  | "JOB_CREATED";
 
 export interface AuditLog {
   event: AuditEvent;

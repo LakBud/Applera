@@ -1,36 +1,69 @@
 import { Request, Response, NextFunction } from "express";
 import { randomUUID } from "crypto";
-import { auditLog } from "../log/audit.logger.js";
-import { verify, sign } from "../../utils/cookieSig.js";
 
-const COOKIE_NAME = "guest_identity";
+import { auditLog } from "../log/audit.logger.js";
+import { verify, sign, COOKIE_NAME } from "../../utils/cookieSig.js";
+import { Identity } from "../../types/identity.js";
+
+// ─────────────────────────────────────────────
+// Identity factory (fully typed)
+// ─────────────────────────────────────────────
+
+function createIdentity(type: "user" | "guest", id: string): Identity {
+  return {
+    type,
+    id,
+    plan: type === "user" ? "free" : "guest",
+  };
+}
+
+// ─────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────
+
+function getAuthenticatedUserId(req: Request): string | null {
+  const id = req.auth?.userId;
+  return typeof id === "string" && id.length > 0 ? id : null;
+}
+
+function getValidGuestId(req: Request): string | null {
+  const cookie = req.cookies?.[COOKIE_NAME];
+
+  if (!cookie || typeof cookie !== "object") return null;
+
+  const { id, sig } = cookie as { id?: unknown; sig?: unknown };
+
+  if (typeof id !== "string" || typeof sig !== "string") return null;
+
+  if (!verify(id, sig)) return null;
+
+  return id;
+}
+
+// ─────────────────────────────────────────────
+// Middleware
+// ─────────────────────────────────────────────
 
 export function attachIdentity(req: Request, res: Response, next: NextFunction) {
-  const clerkUserId = req.auth?.userId;
+  const userId = getAuthenticatedUserId(req);
 
-  // ── Authenticated user (Clerk) ─────────────────────────────
-  if (clerkUserId) {
-    req.identity = {
-      type: "user",
-      id: clerkUserId,
-    };
+  // ─────────────────────────────
+  // AUTH USER
+  // ─────────────────────────────
+  if (userId) {
+    req.identity = createIdentity("user", userId);
     return next();
   }
 
-  // ── Guest user (cookie-based) ──────────────────────────────
-  const cookie = req.cookies?.[COOKIE_NAME];
-  const isValidGuest = cookie?.id && cookie?.sig && verify(cookie.id, cookie.sig);
+  // ─────────────────────────────
+  // GUEST USER
+  // ─────────────────────────────
+  const existingGuestId = getValidGuestId(req);
 
-  let guestId: string;
-  let isNewGuest: boolean = false;
+  const guestId = existingGuestId ?? randomUUID();
+  const isNewGuest = !existingGuestId;
 
-  if (isValidGuest) {
-    guestId = cookie.id;
-  } else {
-    // New guest — regenerate identity and flag for audit
-    guestId = randomUUID();
-    isNewGuest = true;
-
+  if (isNewGuest) {
     res.cookie(
       COOKIE_NAME,
       { id: guestId, sig: sign(guestId) },
@@ -38,29 +71,25 @@ export function attachIdentity(req: Request, res: Response, next: NextFunction) 
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        maxAge: 1000 * 60 * 60 * 24 * 30,
       },
     );
-  }
 
-  req.identity = {
-    type: "guest",
-    id: guestId,
-  };
-
-  // Log new guest sessions — useful for detecting bot traffic or
-  // users cycling cookies to bypass guest-level rate limits
-  if (isNewGuest) {
-    auditLog({
-      event: "LOGIN_SUCCESS",
+    void auditLog({
+      event: "GUEST_SESSION_CREATED",
       userId: guestId,
       userType: "guest",
       requestId: req.requestId,
       ip: req.ip,
-      userAgent: req.headers["user-agent"] as string,
-      metadata: { reason: "new_guest_session" },
-    }).catch(() => {}); // fire and forget — never block the request
+    }).catch((err) => {
+      console.warn("[auditLog failed]", {
+        err,
+        requestId: req.requestId,
+      });
+    });
   }
+
+  req.identity = createIdentity("guest", guestId);
 
   next();
 }

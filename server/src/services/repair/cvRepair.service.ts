@@ -1,63 +1,67 @@
-/**
- * CV Repair Layer
- *
- * Purpose:
- * Takes raw structured CV data (from LLM extraction)
- * and normalizes it into a consistent, pipeline-safe format.
- *
- * This prevents downstream errors in:
- * - matchCVToJob
- * - generateApplication
- *
- * It does NOT call LLMs.
- * It is pure deterministic cleanup logic.
- */
-
+import { z } from "zod";
 import { CVSchemaData } from "../../types/schema.js";
 import { dedupe, normalizeArray, normalizeString } from "../../utils/repair.utils.js";
 
-// ─────────────────────────────────────────────────────────────
-// Main Repair Function
-// ─────────────────────────────────────────────────────────────
+type CVSeniority = "executive" | "intern" | "junior" | "mid" | "senior" | "lead" | "unknown";
 
-/**
- * Repairs and normalizes CV data.
- *
- * @param cv Raw CV object from extractCVData (LLM output)
- * @returns Cleaned CV object safe for matching & generation
- */
-export function repairCV(cv: CVSchemaData): CVSchemaData {
+// ─────────────────────────────────────────────
+// Seniority normalization (more robust)
+// ─────────────────────────────────────────────
+
+function normalizeSeniority(input: unknown): CVSeniority {
+  const v = normalizeString(String(input)).toLowerCase();
+
+  if (!v) return "unknown";
+
+  if (v.includes("intern")) return "intern";
+  if (v.includes("junior")) return "junior";
+  if (v.includes("lead")) return "lead";
+  if (v.includes("senior")) return "senior";
+  if (v.includes("mid") || v.includes("intermediate")) return "mid";
+  if (v.includes("executive") || v.includes("c-level") || v.includes("cto") || v.includes("ceo")) {
+    return "executive";
+  }
+
+  return "unknown";
+}
+
+// ─────────────────────────────────────────────
+// Main Repair Function
+// ─────────────────────────────────────────────
+
+export function repairCV(cv: unknown): CVSchemaData {
   if (!cv || typeof cv !== "object") {
     throw new TypeError("[cvRepair] CV must be a valid object");
   }
 
-  const skills = dedupe(normalizeArray((cv as any).skills));
+  const data = cv as any;
 
-  const experience = Array.isArray((cv as any).experience)
-    ? (cv as any).experience.map((exp: any) => ({
-        ...exp,
-        title: normalizeString(exp?.title),
-        company: normalizeString(exp?.company),
-        highlights: normalizeArray(exp?.highlights),
-      }))
-    : [];
+  const skills = dedupe(normalizeArray(data.skills));
 
-  const education = Array.isArray((cv as any).education)
-    ? (cv as any).education.map((edu: any) => ({
-        ...edu,
-        title: normalizeString(edu?.title),
-      }))
-    : [];
+  const experience = (Array.isArray(data.experience) ? data.experience : [])
+    .map((exp: any) => ({
+      title: normalizeString(exp?.title),
+      company: normalizeString(exp?.company),
+      highlights: dedupe(normalizeArray(exp?.highlights)),
+    }))
+    .filter((e: any) => e.title || e.company);
+
+  const education = (Array.isArray(data.education) ? data.education : [])
+    .map((edu: any) => ({
+      title: normalizeString(edu?.title),
+      school: normalizeString(edu?.school),
+    }))
+    .filter((e: any) => e.title || e.school);
 
   return {
-    ...cv,
+    name: normalizeString(data.name),
+    email: normalizeString(data.email),
+    phone: normalizeString(data.phone),
+    github: normalizeString(data.github),
+    summary: normalizeString(data.summary),
 
-    // normalized core fields
-    name: normalizeString((cv as any).name),
-    summary: normalizeString((cv as any).summary),
-    seniority_level: normalizeString((cv as any).seniority_level),
+    seniority_level: normalizeSeniority(data.seniority_level),
 
-    // cleaned arrays
     skills,
     experience,
     education,
