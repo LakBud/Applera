@@ -1,4 +1,4 @@
-import { redis } from "../../lib/redis.js";
+import { redis } from "../../integrations/redis.js";
 
 export type AuditEvent =
   | "APPLICATION_CREATED"

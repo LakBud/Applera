@@ -1,23 +1,16 @@
 import { client } from "./client";
-import { InterviewPrepSchema } from "./schemas";
-import type { InterviewPrep } from "./types";
+import { InterviewPrepSchema, type InterviewPrep } from "./schemas";
 
-// ── Generate interview prep ─────────────────────────────────────
-export async function generateInterviewPrep(applicationId: string) {
-  const res = await client.post<{ prep: InterviewPrep }>("/api/interview/generate", { applicationId });
+// POST /api/interview/:applicationId
+export async function generateInterviewPrep(applicationId: string): Promise<InterviewPrep> {
+  const res = await client.post<{ prep: unknown }>(`/api/interview/${applicationId}`);
 
-  return {
-    ...res.data,
-    prep: InterviewPrepSchema.parse(res.data.prep),
-  };
+  return InterviewPrepSchema.parse(res.data.prep);
 }
 
-// ── Get interview prep ──────────────────────────────────────────
-export async function getInterviewPrep(applicationId: string) {
-  const res = await client.get<{ prep: InterviewPrep }>(`/api/interview/${applicationId}`);
+// GET /api/interview/:applicationId
+export async function getInterviewPrep(applicationId: string): Promise<InterviewPrep> {
+  const res = await client.get<{ prep: unknown }>(`/api/interview/${applicationId}`);
 
-  return {
-    ...res.data,
-    prep: InterviewPrepSchema.parse(res.data.prep),
-  };
+  return InterviewPrepSchema.parse(res.data.prep);
 }

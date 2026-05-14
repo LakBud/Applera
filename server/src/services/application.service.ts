@@ -4,10 +4,10 @@ import { buildCacheKey } from "../utils/application.utils.js";
 import { scrubPlaceholders } from "../utils/application.utils.js";
 
 import type { z } from "zod";
-import type { CVSchema, JobSchema } from "../types/schema.js";
+import type { CVSchema, JobSchema } from "../types/schemas/schema.js";
 import type { MatchReport } from "../types/match.types.js";
-import { ApplicationLLMSchema } from "../types/llm.schemas.js";
-import { cachedLLM, callLLM } from "../lib/llm.js";
+import { ApplicationLLMSchema } from "../types/schemas/llm.schemas.js";
+import { cachedLLM, callLLM } from "./llm/llm.service.js";
 
 export type CVSchemaData = z.infer<typeof CVSchema>;
 export type JobSchemaData = z.infer<typeof JobSchema>;

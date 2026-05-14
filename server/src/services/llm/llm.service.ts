@@ -1,8 +1,8 @@
-import { openai, model } from "./aiClient.js";
-import parseModelJson from "./parseModelJson.js";
-import env from "../config/env.js";
+import { openai, model } from "../../integrations/openai.js";
+import parseModelJson from "../../lib/parseModelJson.js";
+import env from "../../config/env.js";
 import type { ChatCompletion } from "openai/resources/chat/completions";
-import { getCache, setCache } from "../lib/cache.js";
+import { getCache, setCache } from "../../lib/cache.js";
 import { randomUUID } from "crypto";
 
 const MAX_RETRIES = 3;

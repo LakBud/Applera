@@ -1,12 +1,9 @@
-import type { z } from "zod";
 import { client } from "./client";
-import { DashboardSchema } from "./schemas";
-
-export type DashboardResponse = z.infer<typeof DashboardSchema>;
+import { DashboardSchema, type DashboardResponse } from "./schemas";
 
 // ── GET dashboard for CV ────────────────────────────────────────
-export async function getDashboard(cvId: string) {
-  const res = await client.get<DashboardResponse>(`/api/dashboard/${cvId}`);
+export async function getDashboard(cvId: string): Promise<DashboardResponse> {
+  const res = await client.get<unknown>(`/api/dashboard/${cvId}`);
 
   return DashboardSchema.parse(res.data);
 }

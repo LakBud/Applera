@@ -1,5 +1,5 @@
-import { redis } from "../src/lib/redis.js";
-import auditevent from "../src/models/AuditEvent.js";
+import { redis } from "../integrations/redis.js";
+import auditevent from "../models/AuditEvent.js";
 
 const STREAM_KEY = "audit:stream";
 const GROUP = "audit-group";

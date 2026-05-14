@@ -1,21 +1,42 @@
-import type { z } from "zod";
 import { client } from "./client";
-import { AnalyzeJobResponseSchema, JobParsedSchema } from "./schemas";
 
-export type JobParsed = z.infer<typeof JobParsedSchema>;
-export type AnalyzeJobResponse = z.infer<typeof AnalyzeJobResponseSchema>;
+import { CreateJobResponseSchema, JobDocumentSchema, type CreateJobResponse, type JobDocument } from "./schemas";
+import { z } from "zod";
 
-export async function analyzeJobFile(file: File): Promise<AnalyzeJobResponse> {
+// GET /api/job
+export async function getJobs(): Promise<JobDocument[]> {
+  const response = await client.get("/api/job");
+
+  return z.array(JobDocumentSchema).parse(response.data);
+}
+
+// GET /api/job/:id
+export async function getJobById(id: string): Promise<JobDocument> {
+  const response = await client.get(`/api/job/${id}`);
+
+  return JobDocumentSchema.parse(response.data);
+}
+
+// POST /api/job
+export async function createJobFile(file: File): Promise<CreateJobResponse> {
   const form = new FormData();
   form.append("job", file);
 
-  const response = await client.post("/api/job/analyze", form);
+  const response = await client.post("/api/job", form);
 
-  return AnalyzeJobResponseSchema.parse(response.data);
+  return CreateJobResponseSchema.parse(response.data);
 }
 
-export async function analyzeJobText(jobText: string): Promise<AnalyzeJobResponse> {
-  const response = await client.post("/api/job/analyze", { jobText });
+// POST /api/job
+export async function createJobText(jobText: string): Promise<CreateJobResponse> {
+  const response = await client.post("/api/job", { jobText });
 
-  return AnalyzeJobResponseSchema.parse(response.data);
+  return CreateJobResponseSchema.parse(response.data);
+}
+
+// DELETE /api/job/:id
+export async function deleteJob(id: string): Promise<{ message: string }> {
+  const response = await client.delete(`/api/job/${id}`);
+
+  return z.object({ message: z.string() }).parse(response.data);
 }

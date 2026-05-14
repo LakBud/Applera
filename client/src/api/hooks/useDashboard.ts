@@ -1,12 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { getDashboard } from "../dashboard.api";
 import { queryKeys } from "../queryKeys";
+import { client } from "../client";
+import { DashboardSchema } from "../schemas";
 
 export function useDashboard(cvId: string) {
   return useQuery({
-    queryKey: queryKeys.dashboard(cvId),
-    queryFn: () => getDashboard(cvId),
+    queryKey: queryKeys.dashboard.byCv(cvId),
+    queryFn: async () => {
+      const res = await client.get(`/api/dashboard/${cvId}`);
+      return DashboardSchema.parse(res.data);
+    },
     enabled: !!cvId,
-    staleTime: 60_000,
   });
 }

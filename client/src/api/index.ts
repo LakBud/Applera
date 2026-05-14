@@ -3,15 +3,14 @@
 // =======================================================
 
 // ── Hooks ───────────────────────────────────────────────
-export { useCreateApplication } from "./hooks/useApplication";
 
-export { useUploadCVFile, useUploadCVText, useCVs } from "./hooks/useCV";
+export { useUploadCVFile, useUploadCVText, useCVs, useCV, useDeleteCV } from "./hooks/useCV";
 
-export { useAnalyzeJobFile, useAnalyzeJobText } from "./hooks/useJob";
+export { useJobs, useJob, useAnalyzeJobFile, useAnalyzeJobText, useDeleteJob } from "./hooks/useJob";
 
-export { useTracker, useUpdateApplicationStatus } from "./hooks/useTracker";
+export { useApplicationsByCv, useApplication, useUpdateApplicationStatus, useCreateApplication } from "./hooks/useApplication";
 
-export { useInterviewPrep } from "./hooks/useInterviewPrep";
+export { useInterviewPrep, useGenerateInterviewPrep } from "./hooks/useInterviewPrep";
 
 export { useDashboard } from "./hooks/useDashboard";
 

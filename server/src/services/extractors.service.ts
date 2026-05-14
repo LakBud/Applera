@@ -1,8 +1,8 @@
-import { cachedLLM, callLLM } from "../lib/llm.js";
+import { cachedLLM, callLLM } from "./llm/llm.service.js";
 import { EXTRACT_CV_PROMPT } from "../prompts/extractCVPrompt.js";
 import { EXTRACT_JOB_PROMPT } from "../prompts/extractJobPrompt.js";
 import { hash } from "../lib/hash.js";
-import { CVSchema, CVSchemaData, JobSchema, JobSchemaData } from "../types/schema.js";
+import { CVSchema, CVSchemaData, JobSchema, JobSchemaData } from "../types/schemas/schema.js";
 
 import { repairCV } from "./repair/cvRepair.service.js";
 import { repairJob } from "./repair/jobRepair.service.js";

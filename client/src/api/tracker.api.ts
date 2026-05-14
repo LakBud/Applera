@@ -1,26 +1,39 @@
+import { z } from "zod";
 import { client } from "./client";
-import type { ApplicationDocument } from "./types";
+import { ApplicationSchema } from "./schemas";
 
-// ── GET all applications for a CV ───────────────────────────────
+// GET /api/tracker/:cvId
 export async function getApplicationsByCv(cvId: string) {
-  const res = await client.get<{ applications: ApplicationDocument[] }>(`/api/tracker/${cvId}`);
+  const res = await client.get(`/api/tracker/${cvId}`);
 
-  return res.data;
+  return z
+    .object({
+      applications: z.array(ApplicationSchema),
+    })
+    .parse(res.data);
 }
 
-// ── GET single application ──────────────────────────────────────
+// GET /tracker/application/:id
 export async function getApplication(id: string) {
-  const res = await client.get<{ application: ApplicationDocument }>(`/api/tracker/application/${id}`);
+  const res = await client.get(`/api/tracker/application/${id}`);
 
-  return res.data;
+  return z
+    .object({
+      application: ApplicationSchema,
+    })
+    .parse(res.data);
 }
 
-// ── UPDATE application status ───────────────────────────────────
+// PATCH /tracker/application/:id/status
 export async function updateApplicationStatus(id: string, status: string, notes?: string) {
-  const res = await client.patch<{ application: ApplicationDocument }>(`/api/tracker/application/${id}/status`, {
+  const res = await client.patch(`/api/tracker/application/${id}/status`, {
     status,
     notes,
   });
 
-  return res.data;
+  return z
+    .object({
+      application: ApplicationSchema,
+    })
+    .parse(res.data);
 }

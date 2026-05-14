@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { redis } from "../lib/redis.js";
+import { redis } from "../integrations/redis.js";
 import { getUserId } from "../lib/getUserId.js";
 import { getUsageLimit } from "../lib/getUsageLimit.js";
 

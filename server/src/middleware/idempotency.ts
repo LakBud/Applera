@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { hashRequest } from "../utils/hashRequest.js";
-import { redis } from "../lib/redis.js";
+import { redis } from "../integrations/redis.js";
 
 const TTL_SECONDS = 60;
 

@@ -1,13 +1,21 @@
-// Single source of truth for all API request/response types.
-// Mirrors backend shape (but tolerant to LLM variability)
+// Single source of truth for all frontend API types
+// Mirrors backend contracts
 
-// ── Shared ────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// Shared
+// ─────────────────────────────────────────────
 
 export interface ApiError {
   error: string;
 }
 
-// ── CV ────────────────────────────────────────────────────────────────────────
+export type Confidence = "high" | "medium" | "low";
+
+export type ApplicationStatus = "generated" | "applied" | "interviewing" | "offered" | "rejected" | "withdrawn";
+
+// ─────────────────────────────────────────────
+// CV
+// ─────────────────────────────────────────────
 
 export interface CVParsed {
   name?: string;
@@ -16,12 +24,15 @@ export interface CVParsed {
   github?: string;
   summary?: string;
   seniority_level?: string;
+
   skills: string[];
+
   experience: {
     title?: string;
     company?: string;
     highlights: string[];
   }[];
+
   education: {
     title?: string;
     school?: string;
@@ -32,11 +43,32 @@ export interface CVDocument {
   _id: string;
   rawText: string;
   parsed: CVParsed;
+
+  ownerId?: string;
+  ownerType?: string;
+
+  applicationsCount?: number;
+  lastUsedAt?: string;
+
   createdAt?: string;
   updatedAt?: string;
 }
 
-// ── Job ───────────────────────────────────────────────────────────────────────
+// POST /api/cv
+export interface CreateCVResponse {
+  message: string;
+  cv: CVDocument;
+}
+
+// GET /api/cv
+export type GetCVsResponse = CVDocument[];
+
+// GET /api/cv/:id
+export type GetCVResponse = CVDocument;
+
+// ─────────────────────────────────────────────
+// Job
+// ─────────────────────────────────────────────
 
 export interface JobParsed {
   title?: string;
@@ -49,28 +81,55 @@ export interface JobDocument {
   _id: string;
   rawText: string;
   parsed: JobParsed;
+
+  ownerId?: string;
+  ownerType?: string;
+
   company?: string;
   location?: string;
+
   createdAt?: string;
   updatedAt?: string;
 }
 
-export interface AnalyzeJobResponse {
+// POST /api/job
+export interface CreateJobResponse {
   message: string;
-  rawText: string;
-  structured: JobParsed;
+  job: JobDocument;
 }
 
-// ── Match ─────────────────────────────────────────────────────────────────────
+// GET /api/job
+export type GetJobsResponse = JobDocument[];
+
+// GET /api/job/:id
+export type GetJobResponse = JobDocument;
+
+// POST /api/job/analyze
+export interface AnalyzeJobResponse {
+  rawText: string;
+  parsed: JobParsed;
+}
+
+// ─────────────────────────────────────────────
+// Match
+// ─────────────────────────────────────────────
 
 export interface MatchResult {
   score: number;
-  confidence: "high" | "medium" | "low";
+  confidence: Confidence;
+
   strengths: string[];
   missing_skills: string[];
 }
 
-// ── Application ───────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// Application
+// ─────────────────────────────────────────────
+
+export interface ApplicationEmail {
+  subject: string;
+  body: string;
+}
 
 export interface ApplicationDocument {
   _id: string;
@@ -83,29 +142,44 @@ export interface ApplicationDocument {
   tailored_cv_summary: string;
   cover_letter: string;
 
-  application_email: {
-    subject: string;
-    body: string;
-  };
+  application_email: ApplicationEmail;
 
-  status?: string;
+  status: ApplicationStatus;
+  notes?: string;
 
   createdAt?: string;
   updatedAt?: string;
 }
 
+// POST /api/application
 export interface CreateApplicationRequest {
-  cvText: string;
-  jobText: string;
+  cvId: string;
+  jobId: string;
 }
 
 export interface CreateApplicationResponse {
   application: ApplicationDocument;
-  cv: CVDocument;
-  job: JobDocument;
 }
 
-// ── InterviewPrep ───────────────────────────────────────────────────────
+// GET /api/application
+export interface GetApplicationsResponse {
+  applications: ApplicationDocument[];
+}
+
+// GET /api/application/:id
+export interface GetApplicationResponse {
+  application: ApplicationDocument;
+}
+
+// PATCH /api/application/:id/status
+export interface UpdateApplicationStatusRequest {
+  status: ApplicationStatus;
+  notes?: string;
+}
+
+// ─────────────────────────────────────────────
+// Interview Prep
+// ─────────────────────────────────────────────
 
 export interface InterviewQuestion {
   category: string;
@@ -116,8 +190,44 @@ export interface InterviewQuestion {
 export interface InterviewPrep {
   _id: string;
   application: string;
+
   questions: InterviewQuestion[];
   general_tips: string[];
+
   createdAt: string;
   updatedAt: string;
+}
+
+export interface GenerateInterviewPrepResponse {
+  prep: InterviewPrep;
+}
+
+// ─────────────────────────────────────────────
+// Dashboard
+// ─────────────────────────────────────────────
+
+export interface DashboardApplicationSummary {
+  _id: string;
+  job_title: string;
+
+  score: number;
+  confidence: Confidence;
+
+  status: ApplicationStatus;
+  createdAt: string;
+}
+
+export interface DashboardResponse {
+  cv_id: string;
+
+  total: number;
+  average_score: number;
+  highest_score: number;
+
+  best_match_id: string | null;
+
+  status_breakdown: Record<string, number>;
+  confidence_breakdown: Record<string, number>;
+
+  applications: DashboardApplicationSummary[];
 }

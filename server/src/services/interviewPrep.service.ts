@@ -1,4 +1,4 @@
-import { callLLM, cachedLLM } from "../lib/llm.js";
+import { callLLM, cachedLLM } from "./llm/llm.service.js";
 import { INTERVIEW_PREP_PROMPT } from "../prompts/interviewPrepPrompt.js";
 
 const INTERVIEW_TTL = 60 * 60 * 24; // 24 hours — questions don't change unless regenerated

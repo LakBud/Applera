@@ -1,5 +1,4 @@
-import { z } from "zod";
-import { CVSchemaData } from "../../types/schema.js";
+import { CVSchemaData } from "../../types/schemas/schema.js";
 import { dedupe, normalizeArray, normalizeString } from "../../utils/repair.utils.js";
 
 type CVSeniority = "executive" | "intern" | "junior" | "mid" | "senior" | "lead" | "unknown";

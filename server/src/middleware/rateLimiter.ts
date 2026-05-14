@@ -1,6 +1,6 @@
 import rateLimit, { RateLimitRequestHandler } from "express-rate-limit";
 import { auditLog } from "./log/audit.logger.js";
-import { redis } from "../lib/redis.js";
+import { redis } from "../integrations/redis.js";
 // Tiered rate limits — stricter on expensive AI routes, looser on cheap ones.
 // Each failed LLM call still costs tokens, so we limit at the HTTP layer first.
 

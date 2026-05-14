@@ -12,7 +12,7 @@ import {
   getSeniorityFit,
 } from "../utils/match.utils.js";
 import { MatchReport } from "../types/match.types.js";
-import { CVSchemaData, JobSchemaData } from "../types/schema.js";
+import { CVSchemaData, JobSchemaData } from "../types/schemas/schema.js";
 
 // ── Public API ────────────────────────────────────────────────────────────────
 

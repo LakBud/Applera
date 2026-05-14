@@ -4,7 +4,7 @@ import Application from "../models/Application.js";
 import InterviewPrep from "../models/InterviewPrep.js";
 import { generateInterviewPrep } from "../services/interviewPrep.service.js";
 
-import type { CVSchema, JobSchema } from "../types/schema.js";
+import type { CVSchema, JobSchema } from "../types/schemas/schema.js";
 import type { MatchReport } from "../types/match.types.js";
 
 import { auditLog } from "../middleware/log/audit.logger.js";

@@ -1,39 +1,32 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getInterviewPrep, generateInterviewPrep } from "../interviewPrep.api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { client } from "../client";
+import { InterviewPrepSchema } from "../schemas";
 import { queryKeys } from "../queryKeys";
-
-/* ─────────────────────────────────────────────
-   1. QUERY (cached interview prep)
-   ───────────────────────────────────────────── */
 
 export function useInterviewPrep(applicationId: string) {
   return useQuery({
-    queryKey: queryKeys.interviewPrep(applicationId),
-    queryFn: () => getInterviewPrep(applicationId),
+    queryKey: queryKeys.interviewPrep.byApplication(applicationId),
+    queryFn: async () => {
+      const res = await client.get(`/api/interview/${applicationId}`);
+      return InterviewPrepSchema.parse(res.data.prep);
+    },
     enabled: !!applicationId,
-    staleTime: Infinity,
   });
 }
 
-/* ─────────────────────────────────────────────
-   2. MUTATION (AI generation)
-   ───────────────────────────────────────────── */
-
 export function useGenerateInterviewPrep() {
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (applicationId: string) => generateInterviewPrep(applicationId),
+    mutationFn: async (applicationId: string) => {
+      const res = await client.post(`/api/interview/${applicationId}`);
 
-    onSuccess: (data, applicationId) => {
-      // write into cache (SOURCE OF TRUTH)
-      queryClient.setQueryData(queryKeys.interviewPrep(applicationId), data);
+      return InterviewPrepSchema.parse(res.data.prep);
     },
 
-    onSettled: (_data, _error, applicationId) => {
-      // ensure server consistency
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.interviewPrep(applicationId),
+    onSuccess: (_, applicationId) => {
+      qc.invalidateQueries({
+        queryKey: queryKeys.interviewPrep.byApplication(applicationId),
       });
     },
   });

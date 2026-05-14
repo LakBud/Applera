@@ -1,5 +1,5 @@
 import { dedupe, normalizeArray, normalizeString } from "../../utils/repair.utils.js";
-import { JobSchemaData } from "../../types/schema.js";
+import { JobSchemaData } from "../../types/schemas/schema.js";
 
 type Seniority = "executive" | "intern" | "junior" | "mid" | "senior" | "lead" | "unknown";
 

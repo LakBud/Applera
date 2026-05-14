@@ -1,35 +1,46 @@
 import { z } from "zod";
 
-// ── Shared ─────────────────────────────
+// ─────────────────────────────────────────────
+// Shared
+// ─────────────────────────────────────────────
+
+export const ConfidenceSchema = z.enum(["high", "medium", "low"]);
+
+export const ApplicationStatusSchema = z.enum(["generated", "applied", "interviewing", "offered", "rejected", "withdrawn"]);
 
 export const MatchSchema = z.object({
   score: z.number(),
-  confidence: z.enum(["high", "medium", "low"]),
+  confidence: ConfidenceSchema,
   strengths: z.array(z.string()),
   missing_skills: z.array(z.string()),
 });
 
-// ── CV ─────────────────────────────────
+// ─────────────────────────────────────────────
+// CV
+// ─────────────────────────────────────────────
 
 export const CVParsedSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-  phone: z.string(),
-  github: z.string(),
-  summary: z.string(),
-  seniority_level: z.string(),
+  name: z.string().optional(),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  github: z.string().optional(),
+  summary: z.string().optional(),
+  seniority_level: z.string().optional(),
+
   skills: z.array(z.string()),
+
   experience: z.array(
     z.object({
-      title: z.string(),
-      company: z.string(),
+      title: z.string().optional(),
+      company: z.string().optional(),
       highlights: z.array(z.string()),
     }),
   ),
+
   education: z.array(
     z.object({
-      title: z.string(),
-      school: z.string(),
+      title: z.string().optional(),
+      school: z.string().optional(),
     }),
   ),
 });
@@ -38,60 +49,107 @@ export const CVDocumentSchema = z.object({
   _id: z.string(),
   rawText: z.string(),
   parsed: CVParsedSchema,
-  createdAt: z.string(),
-  updatedAt: z.string(),
+
+  applicationsCount: z.number().optional(),
+  lastUsedAt: z.string().optional(),
+
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
 export const UploadCVResponseSchema = z.object({
   message: z.string(),
-  rawText: z.string(),
-  structured: CVParsedSchema,
+  cv: CVDocumentSchema,
 });
 
-// ── Job ────────────────────────────────
+// ─────────────────────────────────────────────
+// Job
+// ─────────────────────────────────────────────
 
 export const JobParsedSchema = z.object({
-  title: z.string(),
+  title: z.string().optional(),
   required_skills: z.array(z.string()),
   responsibilities: z.array(z.string()),
-  seniority: z.string(),
+  seniority: z.string().optional(),
 });
 
 export const JobDocumentSchema = z.object({
   _id: z.string(),
   rawText: z.string(),
   parsed: JobParsedSchema,
-  createdAt: z.string(),
-  updatedAt: z.string(),
+
+  company: z.string().optional(),
+  location: z.string().optional(),
+
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
+});
+
+export const CreateJobResponseSchema = z.object({
+  message: z.string(),
+  job: JobDocumentSchema,
 });
 
 export const AnalyzeJobResponseSchema = z.object({
-  message: z.string(),
   rawText: z.string(),
-  structured: JobParsedSchema,
+  parsed: JobParsedSchema,
 });
 
-// ── Application ───────────────────────
+// ─────────────────────────────────────────────
+// Application
+// ─────────────────────────────────────────────
 
 export const ApplicationSchema = z.object({
   _id: z.string(),
+
   cv: z.union([z.string(), CVDocumentSchema]),
   job: z.union([z.string(), JobDocumentSchema]),
+
   match: MatchSchema,
+
   tailored_cv_summary: z.string(),
   cover_letter: z.string(),
+
   application_email: z.object({
     subject: z.string(),
     body: z.string(),
   }),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+
+  status: ApplicationStatusSchema,
+  notes: z.string().optional(),
+
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
-// ── InterviewPrep ───────────────────────
+export const CreateApplicationRequestSchema = z.object({
+  cvId: z.string(),
+  jobId: z.string(),
+});
+
+export const CreateApplicationResponseSchema = z.object({
+  application: ApplicationSchema,
+});
+
+export const GetApplicationsResponseSchema = z.object({
+  applications: z.array(ApplicationSchema),
+});
+
+export const GetApplicationResponseSchema = z.object({
+  application: ApplicationSchema,
+});
+
+export const UpdateApplicationStatusSchema = z.object({
+  status: ApplicationStatusSchema,
+  notes: z.string().optional(),
+});
+
+// ─────────────────────────────────────────────
+// Interview Prep
+// ─────────────────────────────────────────────
 
 export const InterviewPrepSchema = z.object({
-  _id: z.string().optional(),
+  _id: z.string(),
 
   application: z.string(),
 
@@ -109,19 +167,24 @@ export const InterviewPrepSchema = z.object({
   updatedAt: z.string().optional(),
 });
 
-// ── Dashboard ───────────────────────
+export const GenerateInterviewPrepResponseSchema = z.object({
+  prep: InterviewPrepSchema,
+});
+
+// ─────────────────────────────────────────────
+// Dashboard
+// ─────────────────────────────────────────────
 
 export const DashboardSchema = z.object({
+  cv_id: z.string(),
+
   total: z.number(),
-
   average_score: z.number(),
-
-  highest_score: z.number().nullable(),
+  highest_score: z.number(),
 
   best_match_id: z.string().nullable(),
 
   status_breakdown: z.record(z.string(), z.number()),
-
   confidence_breakdown: z.record(z.string(), z.number()),
 
   applications: z.array(
@@ -129,9 +192,26 @@ export const DashboardSchema = z.object({
       _id: z.string(),
       job_title: z.string(),
       score: z.number(),
-      confidence: z.enum(["high", "medium", "low"]),
-      status: z.string(),
+      confidence: ConfidenceSchema,
+      status: ApplicationStatusSchema,
       createdAt: z.string(),
     }),
   ),
 });
+
+// inferred TS types
+export type UploadCVResponse = z.infer<typeof UploadCVResponseSchema>;
+export type CVDocument = z.infer<typeof CVDocumentSchema>;
+
+export type JobDocument = z.infer<typeof JobDocumentSchema>;
+export type CreateJobResponse = z.infer<typeof CreateJobResponseSchema>;
+
+export type Application = z.infer<typeof ApplicationSchema>;
+export type CreateApplicationRequest = z.infer<typeof CreateApplicationRequestSchema>;
+
+export type UpdateApplicationStatusRequest = z.infer<typeof UpdateApplicationStatusSchema>;
+
+export type Dashboard = z.infer<typeof DashboardSchema>;
+export type DashboardResponse = z.infer<typeof DashboardSchema>;
+
+export type InterviewPrep = z.infer<typeof InterviewPrepSchema>;
