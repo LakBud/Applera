@@ -4,12 +4,14 @@ import { applicationLimiter } from "../middleware/rateLimiter.js";
 import { validate } from "../middleware/validate.js";
 import { aiTimeout } from "../middleware/timeout.js";
 import { guestUsageLimiter } from "../middleware/usageLimiter.js";
+import { idempotency } from "../middleware/idempotency.js";
 
 const router = express.Router();
 
 // POST /api/application/create
 router.post(
   "/create",
+  idempotency, // -1. idempotency
   guestUsageLimiter, // 0. guest usage limit
   applicationLimiter, // 1. rate limit (strictest — 3 LLM calls)
   validate("createApplication"), // 2. reject malformed / type-coerced bodies

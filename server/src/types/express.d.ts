@@ -3,13 +3,15 @@ import "@clerk/express";
 declare global {
   namespace Express {
     interface Request {
-      auth: {
+      requestId?: string;
+
+      auth?: {
         userId: string | null;
         sessionId: string | null;
         getToken: () => Promise<string | null>;
       };
 
-      identity: {
+      identity?: {
         type: "user" | "guest";
         id: string;
       };

@@ -37,10 +37,12 @@ export default env;
 
 export const GUEST_SECRET = requireEnv("GUEST_SECRET");
 
+export const COOKIE_SECRET = requireEnv("COOKIE_SECRET");
+
 // ── Auth (Clerk) ─────────────────────────────────────────────────────────────
 
 export const CLERK_SECRET_KEY = requireEnv("CLERK_SECRET_KEY");
-export const CLERK_PUBLISHABLE_KEY = optionalEnv("CLERK_PUBLISHABLE_KEY", "");
+export const CLERK_PUBLISHABLE_KEY = requireEnv("CLERK_PUBLISHABLE_KEY");
 
 // ── Server ────────────────────────────────────────────────────────────────────
 
@@ -50,3 +52,7 @@ export const CLIENT_URL = optionalEnv("CLIENT_URL", "http://localhost:5173");
 // ── Database ──────────────────────────────────────────────────────────────────
 
 export const MONGO_URI = requireEnv("MONGO_URI");
+
+// ── Redis (Upstash) ───────────────────────────────────────────────────────────
+export const UPSTASH_REDIS_REST_URL = requireEnv("UPSTASH_REDIS_REST_URL");
+export const UPSTASH_REDIS_REST_TOKEN = requireEnv("UPSTASH_REDIS_REST_TOKEN");

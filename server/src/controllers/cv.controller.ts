@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import { extractTextFromPdf } from "../lib/pdfParser.js";
 import { extractCVData } from "../services/extractors.service.js";
+import { auditLog } from "../middleware/log/audit.logger.js";
 
 // ── Request body type ─────────────────────────────────────────────
 type UploadCVBody = {
@@ -13,10 +14,11 @@ type UploadedFile = Express.Multer.File;
 
 export const uploadCV = async (req: Request<{}, {}, UploadCVBody>, res: Response) => {
   try {
-    // Support two input paths:
-    //   1. PDF upload  → req.file.buffer set by multer (memoryStorage)
-    //   2. Plain text  → req.body.cvText for clients that paste text directly
     let rawText: string;
+
+    if (!req.identity) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
     const file = req.file as UploadedFile | undefined;
 
@@ -32,6 +34,15 @@ export const uploadCV = async (req: Request<{}, {}, UploadCVBody>, res: Response
 
     const structured = await extractCVData(rawText);
 
+    await auditLog({
+      event: "CV_UPLOADED",
+      userId: req.identity.id,
+      userType: req.identity.type, // from identity, not hardcoded
+      requestId: req.requestId, // no cast needed now
+      ip: req.ip,
+      metadata: { seniority: structured.seniority_level },
+    });
+
     return res.status(200).json({
       message: "CV parsed successfully.",
       rawText,
@@ -39,11 +50,9 @@ export const uploadCV = async (req: Request<{}, {}, UploadCVBody>, res: Response
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
-
     const status = err instanceof TypeError ? 400 : 500;
 
     console.error("[uploadCV]", message);
-
     return res.status(status).json({ error: message });
   }
 };

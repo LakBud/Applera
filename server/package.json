@@ -30,6 +30,7 @@
     "openai": "^6.37.0",
     "pdf-parse": "^2.4.5",
     "pdfjs-dist": "^5.7.284",
+    "redis": "^5.12.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {

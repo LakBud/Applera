@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Application, { APPLICATION_STATUSES } from "../models/Application.js";
+import { auditLog } from "../middleware/log/audit.logger.js";
 
 // GET /api/tracker/:cvId
 export const getApplicationsByCv = async (req: Request, res: Response) => {
@@ -104,6 +105,20 @@ export const updateStatus = async (req: Request, res: Response) => {
     if (!application) {
       return res.status(404).json({ error: "Application not found." });
     }
+
+    await auditLog({
+      event: "APPLICATION_STATUS_CHANGED",
+      userId: identityId,
+      userType: ownerType,
+      resourceId: Array.isArray(req.params.id) ? req.params.id[0] : req.params.id,
+      requestId: res.locals.requestId,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+      metadata: {
+        newStatus: status,
+        notes: notes ?? null,
+      },
+    });
 
     return res.json({ application });
   } catch (err: unknown) {

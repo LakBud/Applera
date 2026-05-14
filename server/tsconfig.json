@@ -14,7 +14,7 @@
     "sourceMap": true,
     "resolveJsonModule": true,
 
-    "types": ["node"],
+    "types": ["node", "express"],
     "include": ["src", "types"]
   }
 }

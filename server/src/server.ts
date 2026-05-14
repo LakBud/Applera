@@ -13,7 +13,7 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 
 import { globalLimiter } from "./middleware/rateLimiter.js";
 import { sanitizeHpp } from "./middleware/global/sanitize.js";
-import { requestLogger } from "./middleware/global/requestLogger.js";
+import { requestLogger } from "./middleware/log/request.logger.js";
 import { stripObject } from "./utils/utils.js";
 
 import { clerkMiddleware } from "@clerk/express";
@@ -33,8 +33,16 @@ const IS_PROD: boolean = process.env.NODE_ENV === "production";
 if (IS_PROD) app.set("trust proxy", 1);
 
 app.use(helmet());
-app.use(requestLogger);
 
+// 1. Request ID FIRST
+app.use((req, res, next) => {
+  const id = crypto.randomUUID();
+  req.requestId = id;
+  res.locals.requestId = id;
+  next();
+});
+
+// 2. CORS
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
@@ -44,6 +52,7 @@ app.use(
   }),
 );
 
+// 3. Body parsing
 app.use(express.json({ limit: "50kb" }));
 app.use(express.urlencoded({ extended: true, limit: "50kb" }));
 app.use(cookieParser());
@@ -80,6 +89,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 
 app.use(sanitizeHpp);
 app.use(globalLimiter);
+app.use(requestLogger);
 
 // ─────────────────────────────────────────────
 // Routes

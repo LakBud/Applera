@@ -11,6 +11,7 @@ import { matchCVToJob } from "../services/match.service.js";
 import { generateApplication } from "../services/application.service.js";
 import { CVSchema } from "../types/schema.js";
 import { ApplicationLLMOutput } from "../types/application.types.js";
+import { auditLog } from "../middleware/log/audit.logger.js";
 
 // ── Document interfaces ───────────────────────────────────────────
 // Explicit interfaces avoid relying on Mongoose's inferred return
@@ -134,6 +135,22 @@ export const createApplication = async (req: Request<{}, {}, CreateApplicationBo
 
       const savedApplication = await saveApplication(ownerId, ownerType, application, match, existingCV._id, savedJob._id);
 
+      await auditLog({
+        event: "APPLICATION_CREATED",
+        userId: ownerId,
+        userType: ownerType,
+        resourceId: String(savedApplication._id),
+        requestId: res.locals.requestId,
+        ip: req.ip,
+        userAgent: req.headers["user-agent"],
+        metadata: {
+          cvId: String(existingCV._id),
+          jobId: String(savedJob._id),
+          mode: "existing_cv",
+          matchScore: match.score,
+        },
+      });
+
       return res.status(201).json({
         application: savedApplication,
         cv: existingCV,
@@ -162,6 +179,22 @@ export const createApplication = async (req: Request<{}, {}, CreateApplicationBo
     });
 
     const savedApplication = await saveApplication(ownerId, ownerType, typedApplication, match, savedCV._id, savedJob._id);
+
+    await auditLog({
+      event: "APPLICATION_CREATED",
+      userId: ownerId,
+      userType: ownerType,
+      resourceId: String(savedApplication._id),
+      requestId: res.locals.requestId,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+      metadata: {
+        cvId: String(savedCV._id),
+        jobId: String(savedJob._id),
+        mode: "full_pipeline",
+        matchScore: match.score,
+      },
+    });
 
     return res.status(201).json({
       application: savedApplication,
