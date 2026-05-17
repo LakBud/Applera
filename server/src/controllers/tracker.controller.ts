@@ -7,23 +7,6 @@ import { auditLog } from "../middleware/log/audit.logger.js";
 import { getParam } from "../utils/req.js";
 
 // ─────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────
-
-type CvParams = {
-  cvId: string;
-};
-
-type IdParams = {
-  id: string;
-};
-
-type UpdateStatusBody = {
-  status: ApplicationStatus;
-  notes?: string;
-};
-
-// ─────────────────────────────────────────────
 // GET /api/tracker/:cvId
 // ─────────────────────────────────────────────
 

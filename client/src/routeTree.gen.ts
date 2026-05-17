@@ -8,198 +8,187 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as SignUpRouteImport } from "./routes/sign-up";
-import { Route as SignInRouteImport } from "./routes/sign-in";
-import { Route as ProtectedRouteImport } from "./routes/_protected";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as ProtectedDashboardRouteImport } from "./routes/_protected/dashboard";
-import { Route as ProtectedCvsRouteImport } from "./routes/_protected/cvs";
-import { Route as ProtectedApplicationsRouteImport } from "./routes/_protected/applications";
-import { Route as ProtectedApplicationsApplicationsIdRouteImport } from "./routes/_protected/application.$applicationsId";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as _protectedRouteRouteImport } from './routes/__protected/route'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
+import { Route as AuthSignOutRouteImport } from './routes/auth/sign-out'
+import { Route as _protectedDashboardRouteImport } from './routes/__protected/dashboard'
+import { Route as _protectedCvsRouteImport } from './routes/__protected/cvs'
+import { Route as _protectedApplicationsRouteImport } from './routes/__protected/applications'
 
-const SignUpRoute = SignUpRouteImport.update({
-  id: "/sign-up",
-  path: "/sign-up",
+const _protectedRouteRoute = _protectedRouteRouteImport.update({
+  id: '/__protected',
   getParentRoute: () => rootRouteImport,
-} as any);
-const SignInRoute = SignInRouteImport.update({
-  id: "/sign-in",
-  path: "/sign-in",
-  getParentRoute: () => rootRouteImport,
-} as any);
-const ProtectedRoute = ProtectedRouteImport.update({
-  id: "/_protected",
-  getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
-const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
-  id: "/dashboard",
-  path: "/dashboard",
-  getParentRoute: () => ProtectedRoute,
-} as any);
-const ProtectedCvsRoute = ProtectedCvsRouteImport.update({
-  id: "/cvs",
-  path: "/cvs",
-  getParentRoute: () => ProtectedRoute,
-} as any);
-const ProtectedApplicationsRoute = ProtectedApplicationsRouteImport.update({
-  id: "/applications",
-  path: "/applications",
-  getParentRoute: () => ProtectedRoute,
-} as any);
-const ProtectedApplicationsApplicationsIdRoute = ProtectedApplicationsApplicationsIdRouteImport.update({
-  id: "/$applicationsId",
-  path: "/$applicationsId",
-  getParentRoute: () => ProtectedApplicationsRoute,
-} as any);
+} as any)
+const AuthSignUpRoute = AuthSignUpRouteImport.update({
+  id: '/auth/sign-up',
+  path: '/auth/sign-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignOutRoute = AuthSignOutRouteImport.update({
+  id: '/auth/sign-out',
+  path: '/auth/sign-out',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const _protectedDashboardRoute = _protectedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => _protectedRouteRoute,
+} as any)
+const _protectedCvsRoute = _protectedCvsRouteImport.update({
+  id: '/cvs',
+  path: '/cvs',
+  getParentRoute: () => _protectedRouteRoute,
+} as any)
+const _protectedApplicationsRoute = _protectedApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => _protectedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/sign-in": typeof SignInRoute;
-  "/sign-up": typeof SignUpRoute;
-  "/applications": typeof ProtectedApplicationsRouteWithChildren;
-  "/cvs": typeof ProtectedCvsRoute;
-  "/dashboard": typeof ProtectedDashboardRoute;
-  "/applications/$applicationsId": typeof ProtectedApplicationsApplicationsIdRoute;
+  '/': typeof IndexRoute
+  '/applications': typeof _protectedApplicationsRoute
+  '/cvs': typeof _protectedCvsRoute
+  '/dashboard': typeof _protectedDashboardRoute
+  '/auth/sign-out': typeof AuthSignOutRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/sign-in": typeof SignInRoute;
-  "/sign-up": typeof SignUpRoute;
-  "/applications": typeof ProtectedApplicationsRouteWithChildren;
-  "/cvs": typeof ProtectedCvsRoute;
-  "/dashboard": typeof ProtectedDashboardRoute;
-  "/applications/$applicationsId": typeof ProtectedApplicationsApplicationsIdRoute;
+  '/': typeof IndexRoute
+  '/applications': typeof _protectedApplicationsRoute
+  '/cvs': typeof _protectedCvsRoute
+  '/dashboard': typeof _protectedDashboardRoute
+  '/auth/sign-out': typeof AuthSignOutRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/_protected": typeof ProtectedRouteWithChildren;
-  "/sign-in": typeof SignInRoute;
-  "/sign-up": typeof SignUpRoute;
-  "/_protected/applications": typeof ProtectedApplicationsRouteWithChildren;
-  "/_protected/cvs": typeof ProtectedCvsRoute;
-  "/_protected/dashboard": typeof ProtectedDashboardRoute;
-  "/_protected/applications/$applicationsId": typeof ProtectedApplicationsApplicationsIdRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/__protected': typeof _protectedRouteRouteWithChildren
+  '/__protected/applications': typeof _protectedApplicationsRoute
+  '/__protected/cvs': typeof _protectedCvsRoute
+  '/__protected/dashboard': typeof _protectedDashboardRoute
+  '/auth/sign-out': typeof AuthSignOutRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/sign-in" | "/sign-up" | "/applications" | "/cvs" | "/dashboard" | "/applications/$applicationsId";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/sign-in" | "/sign-up" | "/applications" | "/cvs" | "/dashboard" | "/applications/$applicationsId";
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/applications'
+    | '/cvs'
+    | '/dashboard'
+    | '/auth/sign-out'
+    | '/auth/sign-up'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/applications'
+    | '/cvs'
+    | '/dashboard'
+    | '/auth/sign-out'
+    | '/auth/sign-up'
   id:
-    | "__root__"
-    | "/"
-    | "/_protected"
-    | "/sign-in"
-    | "/sign-up"
-    | "/_protected/applications"
-    | "/_protected/cvs"
-    | "/_protected/dashboard"
-    | "/_protected/applications/$applicationsId";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/__protected'
+    | '/__protected/applications'
+    | '/__protected/cvs'
+    | '/__protected/dashboard'
+    | '/auth/sign-out'
+    | '/auth/sign-up'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  ProtectedRoute: typeof ProtectedRouteWithChildren;
-  SignInRoute: typeof SignInRoute;
-  SignUpRoute: typeof SignUpRoute;
+  IndexRoute: typeof IndexRoute
+  _protectedRouteRoute: typeof _protectedRouteRouteWithChildren
+  AuthSignOutRoute: typeof AuthSignOutRoute
+  AuthSignUpRoute: typeof AuthSignUpRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/sign-up": {
-      id: "/sign-up";
-      path: "/sign-up";
-      fullPath: "/sign-up";
-      preLoaderRoute: typeof SignUpRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/sign-in": {
-      id: "/sign-in";
-      path: "/sign-in";
-      fullPath: "/sign-in";
-      preLoaderRoute: typeof SignInRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/_protected": {
-      id: "/_protected";
-      path: "";
-      fullPath: "/";
-      preLoaderRoute: typeof ProtectedRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/_protected/dashboard": {
-      id: "/_protected/dashboard";
-      path: "/dashboard";
-      fullPath: "/dashboard";
-      preLoaderRoute: typeof ProtectedDashboardRouteImport;
-      parentRoute: typeof ProtectedRoute;
-    };
-    "/_protected/cvs": {
-      id: "/_protected/cvs";
-      path: "/cvs";
-      fullPath: "/cvs";
-      preLoaderRoute: typeof ProtectedCvsRouteImport;
-      parentRoute: typeof ProtectedRoute;
-    };
-    "/_protected/applications": {
-      id: "/_protected/applications";
-      path: "/applications";
-      fullPath: "/applications";
-      preLoaderRoute: typeof ProtectedApplicationsRouteImport;
-      parentRoute: typeof ProtectedRoute;
-    };
-    "/_protected/applications/$applicationsId": {
-      id: "/_protected/applications/$applicationsId";
-      path: "/$applicationsId";
-      fullPath: "/applications/$applicationsId";
-      preLoaderRoute: typeof ProtectedApplicationsApplicationsIdRouteImport;
-      parentRoute: typeof ProtectedApplicationsRoute;
-    };
+    '/__protected': {
+      id: '/__protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof _protectedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/sign-up': {
+      id: '/auth/sign-up'
+      path: '/auth/sign-up'
+      fullPath: '/auth/sign-up'
+      preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/sign-out': {
+      id: '/auth/sign-out'
+      path: '/auth/sign-out'
+      fullPath: '/auth/sign-out'
+      preLoaderRoute: typeof AuthSignOutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/__protected/dashboard': {
+      id: '/__protected/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof _protectedDashboardRouteImport
+      parentRoute: typeof _protectedRouteRoute
+    }
+    '/__protected/cvs': {
+      id: '/__protected/cvs'
+      path: '/cvs'
+      fullPath: '/cvs'
+      preLoaderRoute: typeof _protectedCvsRouteImport
+      parentRoute: typeof _protectedRouteRoute
+    }
+    '/__protected/applications': {
+      id: '/__protected/applications'
+      path: '/applications'
+      fullPath: '/applications'
+      preLoaderRoute: typeof _protectedApplicationsRouteImport
+      parentRoute: typeof _protectedRouteRoute
+    }
   }
 }
 
-interface ProtectedApplicationsRouteChildren {
-  ProtectedApplicationsApplicationsIdRoute: typeof ProtectedApplicationsApplicationsIdRoute;
+interface _protectedRouteRouteChildren {
+  _protectedApplicationsRoute: typeof _protectedApplicationsRoute
+  _protectedCvsRoute: typeof _protectedCvsRoute
+  _protectedDashboardRoute: typeof _protectedDashboardRoute
 }
 
-const ProtectedApplicationsRouteChildren: ProtectedApplicationsRouteChildren = {
-  ProtectedApplicationsApplicationsIdRoute: ProtectedApplicationsApplicationsIdRoute,
-};
-
-const ProtectedApplicationsRouteWithChildren = ProtectedApplicationsRoute._addFileChildren(ProtectedApplicationsRouteChildren);
-
-interface ProtectedRouteChildren {
-  ProtectedApplicationsRoute: typeof ProtectedApplicationsRouteWithChildren;
-  ProtectedCvsRoute: typeof ProtectedCvsRoute;
-  ProtectedDashboardRoute: typeof ProtectedDashboardRoute;
+const _protectedRouteRouteChildren: _protectedRouteRouteChildren = {
+  _protectedApplicationsRoute: _protectedApplicationsRoute,
+  _protectedCvsRoute: _protectedCvsRoute,
+  _protectedDashboardRoute: _protectedDashboardRoute,
 }
 
-const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedApplicationsRoute: ProtectedApplicationsRouteWithChildren,
-  ProtectedCvsRoute: ProtectedCvsRoute,
-  ProtectedDashboardRoute: ProtectedDashboardRoute,
-};
-
-const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(ProtectedRouteChildren);
+const _protectedRouteRouteWithChildren = _protectedRouteRoute._addFileChildren(
+  _protectedRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ProtectedRoute: ProtectedRouteWithChildren,
-  SignInRoute: SignInRoute,
-  SignUpRoute: SignUpRoute,
-};
-export const routeTree = rootRouteImport._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
+  _protectedRouteRoute: _protectedRouteRouteWithChildren,
+  AuthSignOutRoute: AuthSignOutRoute,
+  AuthSignUpRoute: AuthSignUpRoute,
+}
+export const routeTree = rootRouteImport
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()

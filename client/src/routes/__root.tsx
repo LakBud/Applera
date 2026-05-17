@@ -10,45 +10,78 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
 });
 
+function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="
+        text-sm text-secondary hover:text-h2 transition-colors
+        [&.active]:text-h1
+      "
+    >
+      {children}
+    </Link>
+  );
+}
+
 function RootLayout() {
   const { isSignedIn } = useAuth();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#e8e4dc] font-body">
+    <div className="min-h-screen bg-bg text-text font-body">
       {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-surface/80 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link to="/" className="font-display text-lg tracking-tight text-[#e8e4dc] hover:text-[#c9a96e] transition-colors">
-            søknad<span className="text-[#c9a96e]">.</span>ai
+          {/* Brand */}
+          <Link to="/" className="font-display text-lg text-h1 hover:text-h3 transition-colors">
+            Applera
           </Link>
 
-          <div className="flex items-center gap-6">
+          {/* Main navigation */}
+          <div className="flex items-center gap-5">
             {isSignedIn && (
               <>
-                <Link
-                  to="/dashboard"
-                  className="text-sm text-[#888] hover:text-[#e8e4dc] transition-colors [&.active]:text-[#c9a96e]"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/applications"
-                  className="text-sm text-[#888] hover:text-[#e8e4dc] transition-colors [&.active]:text-[#c9a96e]"
-                >
-                  Applications
-                </Link>
-                <Link to="/cvs" className="text-sm text-[#888] hover:text-[#e8e4dc] transition-colors [&.active]:text-[#c9a96e]">
-                  My CVs
-                </Link>
+                {/* Core workflow */}
+                <NavLink to="/dashboard">Dashboard</NavLink>
+
+                <NavLink to="/applications">Applications</NavLink>
+
+                <NavLink to="/jobs">Jobs</NavLink>
+
+                <NavLink to="/cvs">CVs</NavLink>
+
+                {/* Optional advanced feature */}
+                <NavLink to="/interview">Interview Prep</NavLink>
               </>
             )}
 
+            {/* Auth / actions */}
             {isSignedIn ? (
-              <UserButton />
+              <div className="ml-2 flex items-center gap-3">
+                <Link
+                  to="/create"
+                  className="
+                    text-xs px-3 py-1.5 rounded-lg
+                    bg-primary text-white
+                    hover:bg-primary-hover
+                    transition shadow-green
+                  "
+                >
+                  New application
+                </Link>
+
+                <UserButton />
+              </div>
             ) : (
               <Link
-                to="/sign-in"
-                className="text-sm px-4 py-1.5 border border-[#c9a96e]/40 text-[#c9a96e] hover:bg-[#c9a96e]/10 rounded transition-colors"
+                to="/auth/sign-up"
+                className="
+                  text-sm px-4 py-1.5 rounded-lg
+                  border border-border
+                  text-h2
+                  hover:bg-surface-muted
+                  transition
+                "
               >
                 Sign in
               </Link>

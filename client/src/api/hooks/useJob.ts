@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export function useJobs() {
   return useQuery({
-    queryKey: queryKeys.job?.list?.() ?? ["job"],
+    queryKey: queryKeys.job.list(),
     queryFn: async () => {
       const res = await client.get("/api/job");
       return z.array(JobDocumentSchema).parse(res.data);
@@ -16,7 +16,7 @@ export function useJobs() {
 
 export function useJob(jobId: string) {
   return useQuery({
-    queryKey: queryKeys.job?.detail?.(jobId) ?? ["job", jobId],
+    queryKey: queryKeys.job.detail(jobId),
     queryFn: async () => {
       const res = await client.get(`/api/job/${jobId}`);
       return JobDocumentSchema.parse(res.data);
@@ -35,7 +35,9 @@ export function useDeleteJob() {
     },
 
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["job"] });
+      qc.invalidateQueries({
+        queryKey: queryKeys.job.all,
+      });
     },
   });
 }

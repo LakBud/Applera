@@ -6,7 +6,7 @@ import { validate } from "../middleware/validate.js";
 import { aiTimeout } from "../middleware/timeout.js";
 import { concurrencyLimit } from "../middleware/concurrency.js";
 
-import { createJob, getJobs, getJobById, deleteJob, parseJob } from "../controllers/job.controller.js";
+import { createJob, getJobs, getJobById, deleteJob } from "../controllers/job.controller.js";
 
 import { parseJobPdf } from "../middleware/parsePdf.js";
 

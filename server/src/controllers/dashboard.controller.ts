@@ -8,10 +8,6 @@ import { Request, Response } from "express";
 // Route params
 // ─────────────────────────────────────────────
 
-type DashboardParams = {
-  cvId: string;
-};
-
 // GET /api/dashboard/:cvId
 // Returns aggregated stats for all applications made with a given CV
 export const getDashboard = async (req: Request, res: Response) => {

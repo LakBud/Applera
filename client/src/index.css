@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -7,164 +7,487 @@
 @custom-variant dark (&:is(.dark *));
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --gold: #c9a96e;
-    --gold-light: #d4b97e;
-    --bg: #0a0a0a;
-    --surface: #111111;
-    --border: rgba(255, 255, 255, 0.05);
-    --text: #e8e4dc;
-    --muted: #666666;
+/* =============================================================================
+   TYPOGRAPHIC COLOR SYSTEM
+   ─────────────────────────────────────────────────────────────────────────────
+   Three distinct color "voices" create hierarchy without flattening everything
+   to black:
+
+     GREEN  →  h1, labels, active states, links         (energy & brand)
+     DARK   →  h2, body text                            (authority & readability)
+     FOREST →  h3, h4, supporting structure             (depth & cohesion)
+
+   Light mode color map:
+     h1          #1fa028   primary green
+     h2          #0d1f0f   near-black with a forest undertone (not flat #000)
+     h3          #166534   dark forest green — bridges green ↔ dark
+     h4–h6       #2d4535   deep green-charcoal
+     body        #1e2d22   rich green-tinted dark, never pure black
+     secondary   #3d5a45   desaturated dark green — descriptions, subtext
+     muted       #6b8c74   muted sage — placeholders, helper text
+     caption     #94b09c   light sage — timestamps, metadata
+   ============================================================================= */
+
+@layer utilities {
+  .btn-primary {
+    background-color: #1fa028;
+    color: white;
   }
 
-  * {
-    box-sizing: border-box;
+  .btn-primary:hover {
+    background-color: #166534;
+  }
+}
+
+@layer base {
+  :root {
+    /* ── Radius ─────────────────────────────────────────────── */
+    --radius: 0.5rem;
+
+    /* ─────────────────────────────────────────────────────────
+       VOICE 1 — GREEN  (h1, labels, links, active states)
+       ───────────────────────────────────────────────────────── */
+    --text-h1: #1fa028;
+    --text-label: #1a8c22; /* slightly richer for small-caps labels  */
+    --text-link: #1fa028;
+    --text-link-hover: #166534;
+
+    /* ─────────────────────────────────────────────────────────
+       VOICE 2 — DARK  (h2, body — authoritative but not flat)
+       ───────────────────────────────────────────────────────── */
+    --text-h2: #0d1f0f; /* near-black, unmistakably green-tinted  */
+    --text-body: #1e2d22; /* rich green-charcoal — readable & warm  */
+
+    /* ─────────────────────────────────────────────────────────
+       VOICE 3 — FOREST  (h3 bridges green ↔ dark)
+       ───────────────────────────────────────────────────────── */
+    --text-h3: #166534;
+
+    /* ─────────────────────────────────────────────────────────
+       VOICE 4 — CHARCOAL  (h4–h6, structural, quieter)
+       ───────────────────────────────────────────────────────── */
+    --text-h4: #2d4535;
+    --text-h5: #2d4535;
+    --text-h6: #2d4535;
+
+    /* ─────────────────────────────────────────────────────────
+       VOICE 5 — SUPPORT  (secondary, muted, captions)
+       ───────────────────────────────────────────────────────── */
+    --text-secondary: #3d5a45; /* descriptions, subtext                  */
+    --text-muted: #6b8c74; /* placeholders, helper text              */
+    --text-caption: #94b09c; /* timestamps, metadata                   */
+
+    /* ─────────────────────────────────────────────────────────
+       SHADCN HSL BRIDGE
+       shadcn reads: hsl(var(--foreground)), hsl(var(--primary)) …
+       Values are raw HSL tuples — no hsl() wrapper here.
+       ───────────────────────────────────────────────────────── */
+
+    --background: 108 100% 98%; /* #f7fff5  page canvas              */
+    --foreground: 135 20% 14%; /* #1e2d22  body text                */
+
+    --card: 0 0% 100%;
+    --card-foreground: 135 20% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 135 20% 14%;
+
+    --primary: 123 67% 37%; /* #1fa028                           */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 142 76% 93%; /* #dcfce7  mint wash chip           */
+    --secondary-foreground: 142 72% 29%; /* #166534                           */
+
+    --muted: 120 20% 94%; /* soft green-white surface          */
+    --muted-foreground: 140 14% 49%; /* #6b8c74 muted sage                */
+
+    --accent: 142 76% 93%;
+    --accent-foreground: 142 72% 29%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 135 20% 86%; /* green-tinted, not cold slate      */
+    --input: 135 20% 86%;
+    --ring: 123 67% 37%;
+
+    --sidebar: 0 0% 100%;
+    --sidebar-foreground: 135 20% 14%;
+    --sidebar-primary: 123 67% 37%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 142 76% 93%;
+    --sidebar-accent-foreground: 142 72% 29%;
+    --sidebar-border: 135 20% 86%;
+    --sidebar-ring: 123 67% 37%;
+
+    --chart-1: 123 67% 37%; /* primary green                     */
+    --chart-2: 142 71% 45%; /* success green                     */
+    --chart-3: 217 91% 60%; /* info blue                         */
+    --chart-4: 38 92% 50%; /* warning amber                     */
+    --chart-5: 0 84% 60%; /* error red                         */
+
+    /* ─────────────────────────────────────────────────────────
+       SEMANTIC TOKENS  (use directly with var())
+       ───────────────────────────────────────────────────────── */
+
+    --bg: #f7fff5;
+    --surface: #ffffff;
+    --surface-muted: #f0faf2;
+    --border-color: #c8dece;
+
+    --clr-primary: 31 160 40;
+    --clr-primary-hover: 22 101 52;
+    --clr-primary-soft: 220 252 231;
+    --clr-primary-dim: 187 247 208;
+
+    --clr-success: #22c55e;
+    --clr-warning: #f59e0b;
+    --clr-error: #ef4444;
+    --clr-info: #3b82f6;
+
+    --font-sans: "Roboto", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "DM Serif Display", Georgia, serif;
+    --font-mono: "DM Mono", ui-monospace, monospace;
+
+    --shadow-sm: 0 1px 3px 0 rgb(30 45 34 / 0.07), 0 1px 2px -1px rgb(30 45 34 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(30 45 34 / 0.09), 0 2px 4px -2px rgb(30 45 34 / 0.06);
+    --shadow-lg: 0 10px 15px -3px rgb(30 45 34 / 0.09), 0 4px 6px -4px rgb(30 45 34 / 0.06);
+    --shadow-green: 0 4px 14px 0 rgb(31 160 40 / 0.28);
+
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ===========================================================================
+     DARK MODE — same three-voice logic, inverted to light-on-dark
+     =========================================================================== */
+  .dark {
+    /* Voice 1 — GREEN */
+    --text-h1: #4ade80; /* bright mint — pops on dark canvas      */
+    --text-label: #4ade80;
+    --text-link: #4ade80;
+    --text-link-hover: #86efac;
+
+    /* Voice 2 — DARK (inverted = near-white) */
+    --text-h2: #f0fdf4; /* near-white — authoritative on dark     */
+    --text-body: #d1fae5; /* soft mint-white — easier on eyes       */
+
+    /* Voice 3 — FOREST */
+    --text-h3: #86efac; /* light forest green                     */
+
+    /* Voice 4 — CHARCOAL (inverted = light) */
+    --text-h4: #a7f3d0;
+    --text-h5: #a7f3d0;
+    --text-h6: #a7f3d0;
+
+    /* Voice 5 — SUPPORT */
+    --text-secondary: #6ee7b7;
+    --text-muted: #4b7a5e;
+    --text-caption: #2d5040;
+
+    /* shadcn HSL */
+    --background: 132 15% 7%;
+    --foreground: 140 40% 88%;
+
+    --card: 132 12% 10%;
+    --card-foreground: 140 40% 88%;
+    --popover: 132 12% 10%;
+    --popover-foreground: 140 40% 88%;
+
+    --primary: 142 60% 52%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 142 28% 17%;
+    --secondary-foreground: 142 55% 75%;
+
+    --muted: 132 12% 14%;
+    --muted-foreground: 140 20% 52%;
+
+    --accent: 142 28% 17%;
+    --accent-foreground: 142 55% 75%;
+
+    --destructive: 0 63% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 132 15% 18%;
+    --input: 132 15% 18%;
+    --ring: 142 60% 52%;
+
+    --sidebar: 132 15% 8%;
+    --sidebar-foreground: 140 40% 88%;
+    --sidebar-primary: 142 60% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 142 28% 17%;
+    --sidebar-accent-foreground: 142 55% 75%;
+    --sidebar-border: 132 15% 18%;
+    --sidebar-ring: 142 60% 52%;
+
+    --chart-1: 142 60% 52%;
+    --chart-2: 142 45% 65%;
+    --chart-3: 217 80% 65%;
+    --chart-4: 38 80% 55%;
+    --chart-5: 0 70% 60%;
+
+    /* Semantic tokens */
+    --bg: #0c1410;
+    --surface: #111a13;
+    --surface-muted: #172019;
+    --border-color: #1e3226;
+
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.35);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.45);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.55);
+    --shadow-green: 0 4px 14px 0 rgb(74 222 128 / 0.2);
+  }
+}
+
+/* =============================================================================
+   BASE TYPOGRAPHY
+   Apply the three-voice hierarchy to actual HTML elements globally.
+   ============================================================================= */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    scroll-behavior: smooth;
   }
 
   body {
     background-color: var(--bg);
-    color: var(--text);
+    color: var(--text-body);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ── Headings ──────────────────────────────────────────── */
+  h1 {
+    color: var(--text-h1); /* GREEN — brand energy                 */
+    font-family: var(--font-display);
+    font-weight: 400; /* DM Serif Display is best at 400      */
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  h2 {
+    color: var(--text-h2); /* DARK — near-black forest authority   */
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+  }
+
+  h3 {
+    color: var(--text-h3); /* FOREST — section anchors             */
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  h4,
+  h5,
+  h6 {
+    color: var(--text-h4); /* CHARCOAL — structural, quieter       */
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  /* ── Body ──────────────────────────────────────────────── */
+  p,
+  li,
+  td,
+  th {
+    color: var(--text-body);
+    line-height: 1.7;
+  }
+
+  small,
+  figcaption {
+    color: var(--text-caption);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  /* ── Links ─────────────────────────────────────────────── */
+  a {
+    color: var(--text-link);
+    text-decoration-color: rgb(31 160 40 / 0.3);
+    text-underline-offset: 3px;
+    transition:
+      color 120ms var(--ease-smooth),
+      text-decoration-color 120ms var(--ease-smooth);
+  }
+  a:hover {
+    color: var(--text-link-hover);
+    text-decoration-color: var(--text-link-hover);
+  }
+
+  /* ── Labels ────────────────────────────────────────────── */
+  label {
+    color: var(--text-label); /* GREEN — intentional form labelling   */
+    font-weight: 500;
+    font-size: 0.875rem;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── Code / kbd ────────────────────────────────────────── */
+  code,
+  kbd {
+    font-family: var(--font-mono);
+    background: var(--clr-primary-soft);
+    color: var(--clr-primary-hover);
+    padding: 0.1em 0.35em;
+    border-radius: calc(var(--radius) - 2px);
+    font-size: 0.875em;
+  }
+
+  /* ── Misc ──────────────────────────────────────────────── */
+  * {
+    box-sizing: border-box;
+    border-color: hsl(var(--border));
   }
 
   ::selection {
-    background: rgba(201, 169, 110, 0.2);
-    color: #e8e4dc;
+    background: var(--clr-primary-dim);
+    color: var(--text-h2);
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
   }
 
   ::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #222;
-    border-radius: 2px;
+    background: hsl(var(--primary) / 0.3);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.6);
+  }
+
+  hr {
+    border-color: var(--border-color);
+    opacity: 0.6;
   }
 }
 
-@theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: "Geist Variable", sans-serif;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
-
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+/* =============================================================================
+   TYPOGRAPHY UTILITIES
+   Apply voices explicitly anywhere via class names.
+   ============================================================================= */
+@layer utilities {
+  .text-h1 {
+    color: var(--text-h1);
   }
-  body {
-    @apply bg-background text-foreground;
+  .text-h2 {
+    color: var(--text-h2);
   }
-  html {
-    @apply font-sans;
+  .text-h3 {
+    color: var(--text-h3);
+  }
+  .text-h4 {
+    color: var(--text-h4);
+  }
+  .text-body {
+    color: var(--text-body);
+  }
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+  .text-muted {
+    color: var(--text-muted);
+  }
+  .text-caption {
+    color: var(--text-caption);
+  }
+  .text-label {
+    color: var(--text-label);
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+
+  /* Green gradient text — hero spans, pull quotes */
+  .text-gradient-green {
+    background: linear-gradient(135deg, #1fa028 0%, #22c55e 60%, #4ade80 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Overline / eyebrow text above headings */
+  .text-overline {
+    color: var(--text-label);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+}
+
+/* =============================================================================
+   COMPONENT UTILITIES
+   ============================================================================= */
+@layer utilities {
+  .btn-glow:hover {
+    box-shadow: var(--shadow-green);
+  }
+
+  .badge-green {
+    background: var(--clr-primary-soft);
+    color: var(--clr-primary-hover);
+    border: 1px solid var(--clr-primary-dim);
+  }
+
+  .card-accent {
+    border-left: 3px solid var(--clr-primary);
+  }
+
+  .card-lift {
+    transition:
+      transform 150ms var(--ease-smooth),
+      box-shadow 150ms var(--ease-smooth);
+  }
+  .card-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--clr-success);
+    box-shadow:
+      0 0 0 2px hsl(var(--background)),
+      0 0 0 4px hsl(var(--primary) / 0.2);
+  }
+
+  .skeleton-green {
+    background: linear-gradient(90deg, hsl(var(--muted)) 25%, var(--clr-primary-soft) 50%, hsl(var(--muted)) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
   }
 }
