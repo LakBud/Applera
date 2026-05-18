@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../queryKeys";
 import { client } from "../client";
-import { AnalyzeJobResponseSchema, JobDocumentSchema } from "../schemas";
+import { CreateJobResponseSchema, JobDocumentSchema } from "../schemas";
 import { z } from "zod";
 
 export function useJobs() {
@@ -52,7 +52,7 @@ export function useAnalyzeJobFile() {
 
       const res = await client.post("/api/job", form);
 
-      return AnalyzeJobResponseSchema.parse(res.data);
+      return CreateJobResponseSchema.parse(res.data);
     },
 
     onSuccess: () => {
@@ -70,7 +70,7 @@ export function useAnalyzeJobText() {
         jobText,
       });
 
-      return AnalyzeJobResponseSchema.parse(res.data);
+      return CreateJobResponseSchema.parse(res.data);
     },
 
     onSuccess: () => {

@@ -1,7 +1,3 @@
-// All environment variables are validated and exported from here.
-// Every other file imports from this — no scattered process.env calls.
-// Throws at startup if a required variable is missing (Fail Fast).
-
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -17,16 +13,24 @@ function optionalEnv(key: string, fallback: string): string {
 
 // ── Provider ──────────────────────────────────────────────────────────────────
 
-export const IS_OLLAMA = optionalEnv("AI_PROVIDER", "openai").toLowerCase() === "ollama";
+export const AI_PROVIDER = optionalEnv("AI_PROVIDER", "groq").toLowerCase();
+export const IS_OLLAMA = AI_PROVIDER === "ollama";
+export const IS_GROQ = AI_PROVIDER === "groq";
 export const IS_PROD = optionalEnv("NODE_ENV", "development") === "production";
 
 // ── AI ────────────────────────────────────────────────────────────────────────
 
-export const OPENAI_API_KEY = IS_OLLAMA ? "ollama" : requireEnv("OPENAI_API_KEY");
+export const OPENAI_API_KEY = IS_OLLAMA ? "ollama" : IS_GROQ ? "" : requireEnv("OPENAI_API_KEY");
 export const OPENAI_MODEL = optionalEnv("OPENAI_MODEL", "gpt-4o-mini");
+
 export const OLLAMA_BASE_URL = optionalEnv("OLLAMA_BASE_URL", "http://127.0.0.1:11434/v1");
-export const OLLAMA_MODEL = optionalEnv("OLLAMA_MODEL", "llama3.2:3b");
-export const AI_MODEL = IS_OLLAMA ? OLLAMA_MODEL : OPENAI_MODEL;
+export const OLLAMA_MODEL = optionalEnv("OLLAMA_MODEL", "qwen2.5:7b");
+
+export const GROQ_API_KEY = IS_GROQ ? requireEnv("GROQ_API_KEY") : "";
+export const GROQ_BASE_URL = "https://api.groq.com/openai/v1";
+export const GROQ_MODEL = optionalEnv("GROQ_MODEL", "llama-3.3-70b-versatile");
+
+export const AI_MODEL = IS_OLLAMA ? OLLAMA_MODEL : IS_GROQ ? GROQ_MODEL : OPENAI_MODEL;
 
 const env = {
   NODE_ENV: process.env.NODE_ENV,
@@ -35,12 +39,10 @@ const env = {
 
 export default env;
 
+// ── Auth (Clerk) ──────────────────────────────────────────────────────────────
+
 export const GUEST_SECRET = requireEnv("GUEST_SECRET");
-
 export const COOKIE_SECRET = requireEnv("COOKIE_SECRET");
-
-// ── Auth (Clerk) ─────────────────────────────────────────────────────────────
-
 export const CLERK_SECRET_KEY = requireEnv("CLERK_SECRET_KEY");
 export const CLERK_PUBLISHABLE_KEY = requireEnv("CLERK_PUBLISHABLE_KEY");
 
@@ -54,5 +56,6 @@ export const CLIENT_URL = optionalEnv("CLIENT_URL", "http://localhost:5173");
 export const MONGO_URI = requireEnv("MONGO_URI");
 
 // ── Redis (Upstash) ───────────────────────────────────────────────────────────
+
 export const UPSTASH_REDIS_REST_URL = requireEnv("UPSTASH_REDIS_REST_URL");
 export const UPSTASH_REDIS_REST_TOKEN = requireEnv("UPSTASH_REDIS_REST_TOKEN");

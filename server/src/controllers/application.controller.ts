@@ -245,7 +245,11 @@ export const createApplication = async (req: Request, res: Response) => {
 
       tailored_cv_summary: applicationOutput.cv_summary,
 
-      cover_letter: applicationOutput.application_letter.body + "\n\n" + applicationOutput.application_letter.closing,
+      cover_letter: [
+        applicationOutput.application_letter.introduction,
+        applicationOutput.application_letter.body,
+        applicationOutput.application_letter.closing,
+      ].join("\n\n"),
 
       application_email: applicationOutput.email_template,
 

@@ -13,9 +13,12 @@ client.interceptors.response.use(
     const data: ApiError | undefined = error.response?.data;
 
     if (error.code === "ECONNABORTED") {
-      return Promise.reject(new Error("Reques timed out. Please try again."));
+      return Promise.reject(new Error("Request timed out. Please try again."));
     }
 
+    if (error.response?.status === 429) {
+      return Promise.reject(new Error("Too many requests. Please wait a moment and try again."));
+    }
     return Promise.reject(new Error(data?.error ?? error.message ?? "Something went wrong"));
   },
 );

@@ -1,14 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useCreateApplication } from "../api";
+import { useAnalyzeJobFile, useAnalyzeJobText, useCreateApplication, useUploadCVFile, useUploadCVText } from "../api";
 import ApplicationResult from "../components/index/ApplicationResult";
 import type { z } from "zod";
 import { CreateApplicationResponseSchema } from "../api/schemas";
 import { Button } from "../components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
-import { Textarea } from "../components/ui/textarea";
-import { Label } from "../components/ui/label";
-import CvUploader from "../components/index/CvUploader";
+import Uploader from "../components/index/Uploader";
 
 type CreateApplicationResponse = z.infer<typeof CreateApplicationResponseSchema>;
 
@@ -114,11 +112,11 @@ const FAQ = [
   },
   {
     q: "How does the match score work?",
-    a: "It compares your CV against the job description using skills, keywords, and context. It’s meant to highlight strengths and gaps — not to decide your eligibility.",
+    a: "It compares your CV against the job description using skills, keywords, and context. It's meant to highlight strengths and gaps — not to decide your eligibility.",
   },
   {
     q: "Can I use the generated cover letter directly?",
-    a: "Yes, but it’s recommended to review and adjust it so it reflects your own voice. The AI gives you a strong draft, not a final submission.",
+    a: "Yes, but it's recommended to review and adjust it so it reflects your own voice. The AI gives you a strong draft, not a final submission.",
   },
   {
     q: "Do I need to upload my CV every time?",
@@ -131,43 +129,43 @@ const FAQ = [
 ───────────────────────────────────────────── */
 
 export default function HomePage() {
-  const [cvText, setCvText] = useState("");
-  const [jobText, setJobText] = useState("");
+  const [cvId, setCvId] = useState<string | null>(null);
+  const [jobId, setJobId] = useState<string | null>(null);
   const [result, setResult] = useState<CreateApplicationResponse | null>(null);
+
+  // ── Hooks must be at the top level ──────────
+  const uploadCVFile = useUploadCVFile();
+  const uploadCVText = useUploadCVText();
+  const uploadJobFile = useAnalyzeJobFile();
+  const uploadJobText = useAnalyzeJobText();
 
   const { mutate, isPending, error } = useCreateApplication();
 
   function handleGenerate() {
-    const cv = cvText.trim();
-    const job = jobText.trim();
-    if (!cv || !job) return;
-    mutate({ cvText: cv, jobText: job }, { onSuccess: (data: any) => setResult(data) });
+    if (!cvId || !jobId) return;
+    mutate({ cvId, jobId }, { onSuccess: (data) => setResult(data) });
   }
 
   function handleReset() {
     setResult(null);
-    setCvText("");
-    setJobText("");
+    setCvId(null);
+    setJobId(null);
   }
 
-  const canGenerate = !isPending && !!cvText.trim() && !!jobText.trim();
+  const canGenerate = !isPending && !!cvId && !!jobId;
 
   return (
     <div className="min-h-screen bg-bg text-body">
       {/* ══════════════════════════════════════════════════════
           SECTION 1 — GENERATOR
-          Header is intentionally compact — one orienting line,
-          no subtext, so textareas are above the fold immediately.
       ══════════════════════════════════════════════════════ */}
       <section id="generator" className="relative px-6 pt-10 pb-20 max-w-6xl mx-auto">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-150 h-48 bg-primary/8 blur-3xl rounded-full pointer-events-none" />
 
-        {/* Header (UNCHANGED) */}
         <div className="relative text-center mb-8 space-y-2">
           <h1 className="font-display text-4xl md:text-5xl leading-tight">
             <span className="text-h1">Tailor your application</span> <span className="text-h2">in seconds.</span>
           </h1>
-
           <p className="text-sm text-secondary max-w-xl mx-auto">
             Paste your CV and a job listing — get a cover letter, match score, and email draft.
           </p>
@@ -177,29 +175,38 @@ export default function HomePage() {
         {!result && (
           <div className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
-              {/* ── CV (Asset) ── */}
-              <div className="space-y-3">
-                <Label className="text-overline">Your CV</Label>
-
-                <CvUploader />
+              {/* CV */}
+              <div className="space-y-2">
+                <Uploader
+                  label="CV"
+                  placeholder="Paste your CV here..."
+                  uploadFile={uploadCVFile}
+                  uploadText={uploadCVText}
+                  onSuccess={(id) => setCvId(id ?? null)}
+                  getId={(res) => res.cv?._id}
+                />
+                {cvId && (
+                  <p className="text-xs text-primary flex items-center gap-1.5">
+                    <span>✓</span> CV uploaded successfully
+                  </p>
+                )}
               </div>
 
-              {/* ── Job (Context) ── */}
-              <div className="space-y-3">
-                <Label className="text-overline">Job listing</Label>
-
-                <Textarea
-                  value={jobText}
-                  onChange={(e) => setJobText(e.target.value)}
-                  placeholder="Paste the job description here…"
-                  rows={12}
-                  className="
-              w-full bg-surface border border-border rounded-xl px-4 py-3
-              text-sm resize-none
-              focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10
-              transition shadow-sm
-            "
+              {/* Job */}
+              <div className="space-y-2">
+                <Uploader
+                  label="Job listing"
+                  placeholder="Paste the job listing here..."
+                  uploadFile={uploadJobFile}
+                  uploadText={uploadJobText}
+                  onSuccess={(id) => setJobId(id ?? null)}
+                  getId={(res) => res.job?._id}
                 />
+                {jobId && (
+                  <p className="text-xs text-primary flex items-center gap-1.5">
+                    <span>✓</span> Job listing uploaded successfully
+                  </p>
+                )}
               </div>
             </div>
 
@@ -207,14 +214,10 @@ export default function HomePage() {
 
             <div className="flex justify-center pt-2">
               <Button
+                type="button"
                 onClick={handleGenerate}
                 disabled={!canGenerate}
-                className="
-            px-10 py-6 text-sm font-semibold
-            border-border btn-primary text-white
-            hover:bg-primary-hover transition-all
-            disabled:opacity-40 disabled:cursor-not-allowed
-          "
+                className="px-10 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {isPending ? (
                   <span className="flex items-center gap-2">
@@ -233,12 +236,10 @@ export default function HomePage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-2xl">Your application</h2>
-
-              <Button onClick={handleReset} variant="outline" className="text-xs px-3 py-1.5">
+              <Button type="button" onClick={handleReset} variant="outline" className="text-xs px-3 py-1.5">
                 ← New application
               </Button>
             </div>
-
             <ApplicationResult data={result} />
           </div>
         )}
@@ -283,7 +284,7 @@ export default function HomePage() {
           <div className="grid sm:grid-cols-3 gap-4">
             <OutputCard
               icon={
-                <svg className="w-5 h-5 " fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -360,7 +361,6 @@ export default function HomePage() {
             <span className="text-overline">Questions</span>
             <h2 className="font-display text-3xl md:text-4xl text-h2">FAQ</h2>
           </div>
-
           <div className="bg-surface border border-border rounded-2xl px-6">
             <Accordion type="single" collapsible className="w-full">
               {FAQ.map((item) => (

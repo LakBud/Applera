@@ -110,7 +110,7 @@ function Section({
       <div className="flex items-center justify-between">
         <span className="text-overline">{title}</span>
 
-        <Button onClick={onCopy} className="text-xs text-secondary hover:text-h1 transition">
+        <Button type="button" onClick={onCopy} className="text-xs text-secondary hover:text-h1 transition">
           {copied ? "Copied ✓" : "Copy"}
         </Button>
       </div>

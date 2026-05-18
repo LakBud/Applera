@@ -76,7 +76,7 @@ export async function extractJobData(jobText: string): Promise<JobSchemaData> {
       const parsed = JobSchema.safeParse(result);
 
       if (!parsed.success) {
-        console.error("[JOB VALIDATION ERROR]", parsed.error.issues);
+        console.error("[JOB VALIDATION ERROR]", parsed.error.format());
         throw new Error("[JOB] Invalid LLM output shape");
       }
 

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../queryKeys";
 import { client } from "../client";
-import { ApplicationSchema } from "../schemas";
+import { ApplicationSchema, CreateApplicationResponseSchema } from "../schemas";
 import { z } from "zod";
 
 export function useApplicationsByCv(cvId: string) {
@@ -30,9 +30,9 @@ export function useCreateApplication() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { cvText: string; jobText: string }) => {
+    mutationFn: async (data: { cvId: string; jobId: string }) => {
       const res = await client.post("/api/application", data);
-      return ApplicationSchema.parse(res.data.application);
+      return CreateApplicationResponseSchema.parse(res.data); // ← full response
     },
 
     onSuccess: () => {

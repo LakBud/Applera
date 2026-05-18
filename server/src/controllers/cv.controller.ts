@@ -9,34 +9,30 @@ import { normalizeParsedCV } from "../utils/cv.normalize.utils.js";
 
 import { getParam } from "../utils/req.js";
 
-type UploadedFile = Express.Multer.File;
-
 // ─────────────────────────────────────────────
 // POST /api/cv
 // ─────────────────────────────────────────────
 
 export const createCV = async (req: Request, res: Response) => {
   try {
-    if (!req.identity) {
-      return res.status(401).json({
-        error: "Unauthorized",
-      });
-    }
+    if (!req.identity) return res.status(401).json({ error: "Unauthorized" });
 
     let rawText: string;
-    const file = req.file as UploadedFile | undefined;
+    const file = req.file as Express.Multer.File | undefined;
 
     if (file?.buffer) {
+      console.time("[createCV] extractTextFromPdf");
       rawText = await extractTextFromPdf(file.buffer);
+      console.timeEnd("[createCV] extractTextFromPdf");
     } else if (req.body?.cvText?.trim()) {
       rawText = req.body.cvText.trim();
     } else {
-      return res.status(400).json({
-        error: "Provide a CV as PDF or text",
-      });
+      return res.status(400).json({ error: "Provide a CV as PDF or text" });
     }
 
+    console.time("[createCV] extractCVData");
     const parsedRaw = await extractCVData(rawText);
+    console.timeEnd("[createCV] extractCVData");
     const parsed = normalizeParsedCV(parsedRaw);
 
     const createdCV = await CVModel.create({

@@ -10,28 +10,17 @@ const textField = (label: string, max = 20_000, min = 10) =>
     .max(max, { message: `${label} exceeds limit.` });
 
 const schemas = {
-  createApplication: z
-    .object({
-      cvText: textField("cvText").optional(),
-      cvId: z.string().min(1).optional(),
-      jobText: textField("jobText"),
-    })
-    .superRefine((data, ctx) => {
-      if (!data.cvText && !data.cvId) {
-        ctx.addIssue({
-          code: "custom",
-          message: "Either cvText or cvId is required.",
-          path: ["cvText"],
-        });
-      }
-    }),
+  createApplication: z.object({
+    cvId: z.string().min(1, { message: "cvId is required" }),
+    jobId: z.string().min(1, { message: "jobId is required" }),
+  }),
 
   createJob: z.object({
-    jobText: textField("jobText").optional(),
+    jobText: textField("jobText"),
   }),
 
   uploadCV: z.object({
-    cvText: textField("cvText").optional(),
+    cvText: textField("cvText"),
   }),
 } as const;
 
@@ -41,7 +30,7 @@ export function validate<T extends SchemaName>(schemaName: T) {
   const schema = schemas[schemaName];
 
   return (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body);
+    const result = schema.safeParse(req.body ?? {});
 
     if (!result.success) {
       return res.status(400).json({

@@ -16,19 +16,18 @@ export type ApplicationLLMOutput = z.infer<typeof ApplicationLLMSchema>;
 function buildPrompt(cv: CVSchemaData, job: JobSchemaData, match: MatchReport): string {
   return `
 CV:
-${JSON.stringify(cv, null, 2)}
+${JSON.stringify({ name: cv.name, summary: cv.summary, skills: cv.skills, experience: cv.experience, seniority_level: cv.seniority_level }, null, 2)}
 
 JOB:
-${JSON.stringify(job, null, 2)}
+${JSON.stringify({ title: job.title, required_skills: job.required_skills, responsibilities: job.responsibilities, seniority: job.seniority }, null, 2)}
 
 MATCH (DO NOT RECOMPUTE):
-${JSON.stringify(match, null, 2)}
+${JSON.stringify({ score: match.score, strengths: match.strengths, missing_skills: match.missing_skills }, null, 2)}
 
 TASK:
 Generate a structured job application JSON strictly following the schema.
 `.trim();
 }
-
 export async function generateApplication(
   cv: CVSchemaData,
   job: JobSchemaData,
@@ -45,7 +44,7 @@ export async function generateApplication(
         userContent: buildPrompt(cv, job, match),
         temperature: 0.3,
         jsonMode: true,
-        maxTokens: 4000,
+        maxTokens: 1500,
       });
     },
   });

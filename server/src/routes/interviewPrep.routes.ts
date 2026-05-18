@@ -7,7 +7,7 @@ import { idempotency } from "../middleware/idempotency.js";
 const router = express.Router();
 
 // POST /api/interview/:applicationId  — 1 LLM call, rate-limited
-router.post("/:applicationId", idempotency, applicationLimiter, aiTimeout, generatePrep);
+router.post("/:applicationId", idempotency, applicationLimiter, aiTimeout(60_000), generatePrep);
 
 // GET /api/interview/:applicationId
 router.get("/:applicationId", getPrep);

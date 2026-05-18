@@ -30,7 +30,7 @@ router.post(
   validate("uploadCV"),
   parseCvPdf,
   handleUploadError,
-  aiTimeout,
+  aiTimeout(60_000),
   createCV,
 );
 

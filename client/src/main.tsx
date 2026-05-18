@@ -4,7 +4,7 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { routeTree } from "./routeTree.gen";
-import "./index.css";
+import "./globals.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {

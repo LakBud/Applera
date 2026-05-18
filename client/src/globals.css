@@ -37,6 +37,15 @@
   .btn-primary:hover {
     background-color: #166534;
   }
+
+  .btn-secondary {
+    background-color: #3d5a45;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #2d4535;
+  }
 }
 
 @layer base {

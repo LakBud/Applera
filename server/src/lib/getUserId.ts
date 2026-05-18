@@ -6,10 +6,13 @@ export function getUserId(req: Request): string {
     return `user:${req.identity.id}`;
   }
 
-  // 2. Safe header handling (IMPORTANT FIX)
+  console.log("IDENTITY:", req.identity);
+  console.log("HEADERS:", req.headers.authorization);
+
+  // 2. Safe header handling
   const header = req.headers["x-anonymous-id"];
 
-  const anonId = Array.isArray(header) ? header[0] : header?.toString() || req.ip || "anonymous";
+  const anonId = Array.isArray(header) ? header[0] : header?.toString() || req.identity?.id;
 
   return `guest:${anonId}`;
 }

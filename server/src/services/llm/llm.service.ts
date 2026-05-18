@@ -5,9 +5,7 @@ import type { ChatCompletion } from "openai/resources/chat/completions";
 import { getCache, setCache } from "../../lib/cache.js";
 import { randomUUID } from "crypto";
 
-const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 500;
-const TIMEOUT_MS = 30_000;
 
 const IS_PROD = env.NODE_ENV === "production";
 
@@ -28,15 +26,13 @@ export class LLMError extends Error {
 // Timeout wrapper
 // ─────────────────────────────────────────────
 
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+const MAX_RETRIES = 1; // 2 attempts max
+const TIMEOUT_MS = 25_000; // 25s per attempt → ~52s worst case, well under 90s
+
+function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: number): Promise<T> {
   const controller = new AbortController();
-
   const timeout = setTimeout(() => controller.abort(), ms);
-
-  return Promise.race([
-    promise.finally(() => clearTimeout(timeout)),
-    new Promise<T>((_, reject) => setTimeout(() => reject(new LLMError("Timeout", "timeout")), ms)),
-  ]);
+  return fn(controller.signal).finally(() => clearTimeout(timeout));
 }
 
 // ─────────────────────────────────────────────
@@ -69,7 +65,7 @@ export async function callLLM({
   userContent,
   temperature = 0.2,
   jsonMode = true,
-  maxTokens = 2000,
+  maxTokens = 1000,
   requestId = randomUUID(),
 }: CallLLMParams): Promise<unknown> {
   let lastError: unknown;
@@ -86,17 +82,21 @@ export async function callLLM({
         await new Promise((r) => setTimeout(r, delay));
       }
 
-      const response: ChatCompletion = await withTimeout(
-        openai.chat.completions.create({
-          model,
-          temperature,
-          max_tokens: maxTokens,
-          ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userContent },
-          ],
-        }),
+      const response = await withTimeout(
+        (signal) =>
+          openai.chat.completions.create(
+            {
+              model,
+              temperature,
+              max_tokens: maxTokens,
+              ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userContent },
+              ],
+            },
+            { signal },
+          ),
         TIMEOUT_MS,
       );
 

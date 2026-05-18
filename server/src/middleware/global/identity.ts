@@ -1,21 +1,23 @@
 import { Request, Response, NextFunction } from "express";
 import { randomUUID } from "crypto";
 
+import User from "../../models/User.js";
 import { auditLog } from "../log/audit.logger.js";
 import { verify, sign, COOKIE_NAME } from "../../utils/cookieSig.js";
-import { Identity } from "../../types/identity.js";
+
+import { z } from "zod";
 
 // ─────────────────────────────────────────────
-// Identity factory (fully typed)
+// Identity Schema (single source of truth)
 // ─────────────────────────────────────────────
 
-function createIdentity(type: "user" | "guest", id: string): Identity {
-  return {
-    type,
-    id,
-    plan: type === "user" ? "free" : "guest",
-  };
-}
+export const IdentitySchema = z.object({
+  type: z.enum(["user", "guest"]),
+  id: z.string(),
+  plan: z.enum(["guest", "free", "pro", "enterprise"]),
+});
+
+export type Identity = z.infer<typeof IdentitySchema>;
 
 // ─────────────────────────────────────────────
 // Helpers
@@ -44,52 +46,67 @@ function getValidGuestId(req: Request): string | null {
 // Middleware
 // ─────────────────────────────────────────────
 
-export function attachIdentity(req: Request, res: Response, next: NextFunction) {
-  const userId = getAuthenticatedUserId(req);
+export async function attachIdentity(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userId = getAuthenticatedUserId(req);
 
-  // ─────────────────────────────
-  // AUTH USER
-  // ─────────────────────────────
-  if (userId) {
-    req.identity = createIdentity("user", userId);
-    return next();
-  }
+    // ─────────────────────────────
+    // AUTH USER
+    // ─────────────────────────────
+    if (userId) {
+      const user = await User.findById(userId).select("plan");
 
-  // ─────────────────────────────
-  // GUEST USER
-  // ─────────────────────────────
-  const existingGuestId = getValidGuestId(req);
-
-  const guestId = existingGuestId ?? randomUUID();
-  const isNewGuest = !existingGuestId;
-
-  if (isNewGuest) {
-    res.cookie(
-      COOKIE_NAME,
-      { id: guestId, sig: sign(guestId) },
-      {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 1000 * 60 * 60 * 24 * 30,
-      },
-    );
-
-    void auditLog({
-      event: "GUEST_SESSION_CREATED",
-      userId: guestId,
-      userType: "guest",
-      requestId: req.requestId,
-      ip: req.ip,
-    }).catch((err) => {
-      console.warn("[auditLog failed]", {
-        err,
-        requestId: req.requestId,
+      const identity = IdentitySchema.parse({
+        type: "user",
+        id: userId,
+        plan: user?.plan ?? "free",
       });
+
+      req.identity = identity;
+      return next();
+    }
+
+    // ─────────────────────────────
+    // GUEST USER
+    // ─────────────────────────────
+    const existingGuestId = getValidGuestId(req);
+
+    const guestId = existingGuestId ?? randomUUID();
+
+    if (!existingGuestId) {
+      res.cookie(
+        COOKIE_NAME,
+        { id: guestId, sig: sign(guestId) },
+        {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 1000 * 60 * 60 * 24 * 30,
+        },
+      );
+
+      void auditLog({
+        event: "GUEST_SESSION_CREATED",
+        userId: guestId,
+        userType: "guest",
+        requestId: req.requestId,
+        ip: req.ip,
+      }).catch((err) => {
+        console.warn("[auditLog failed]", { err, requestId: req.requestId });
+      });
+    }
+
+    const identity = IdentitySchema.parse({
+      type: "guest",
+      id: guestId,
+      plan: "guest",
     });
+
+    req.identity = identity;
+
+    return next();
+  } catch (err) {
+    console.error("[attachIdentity] failed", err);
+    return res.status(500).json({ error: "Identity resolution failed" });
   }
-
-  req.identity = createIdentity("guest", guestId);
-
-  next();
 }

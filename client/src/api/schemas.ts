@@ -90,11 +90,6 @@ export const CreateJobResponseSchema = z.object({
   job: JobDocumentSchema,
 });
 
-export const AnalyzeJobResponseSchema = z.object({
-  rawText: z.string(),
-  parsed: JobParsedSchema,
-});
-
 // ─────────────────────────────────────────────
 // Application
 // ─────────────────────────────────────────────

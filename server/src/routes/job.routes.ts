@@ -31,7 +31,7 @@ router.post(
 
   validate("createJob"), // 6. validate FINAL merged input (IMPORTANT FIX)
 
-  aiTimeout, // 7. LLM timeout protection
+  aiTimeout(60_000), // 7. LLM timeout protection
 
   createJob, // 8. controller
 );

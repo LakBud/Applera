@@ -20,7 +20,15 @@ const router = express.Router();
 // POST /api/application
 // Create application (LLM pipeline)
 // ─────────────────────────────────────────────
-router.post("/", validate("createApplication"), idempotency, usageLimiter, applicationLimiter, aiTimeout, createApplication);
+router.post(
+  "/",
+  validate("createApplication"),
+  idempotency,
+  usageLimiter,
+  applicationLimiter,
+  aiTimeout(60_000),
+  createApplication,
+);
 
 // ─────────────────────────────────────────────
 // GET /api/application
