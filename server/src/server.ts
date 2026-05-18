@@ -73,7 +73,7 @@ app.use(publicRouter);
 // Clerk middleware (ATTACHES req.auth)
 // ─────────────────────────────────────────────
 
-app.use(clerkMiddleware({ publishableKey: CLERK_PUBLISHABLE_KEY, secretKey: CLERK_SECRET_KEY }));
+app.use(clerkMiddleware());
 
 app.use(attachIdentity);
 

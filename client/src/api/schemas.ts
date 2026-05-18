@@ -210,3 +210,5 @@ export type Dashboard = z.infer<typeof DashboardSchema>;
 export type DashboardResponse = z.infer<typeof DashboardSchema>;
 
 export type InterviewPrep = z.infer<typeof InterviewPrepSchema>;
+
+export type CreateApplicationResponse = z.infer<typeof CreateApplicationResponseSchema>;

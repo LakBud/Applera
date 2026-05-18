@@ -6,6 +6,7 @@ import { auditLog } from "../log/audit.logger.js";
 import { verify, sign, COOKIE_NAME } from "../../utils/cookieSig.js";
 
 import { z } from "zod";
+import { getAuth } from "@clerk/express";
 
 // ─────────────────────────────────────────────
 // Identity Schema (single source of truth)
@@ -24,8 +25,8 @@ export type Identity = z.infer<typeof IdentitySchema>;
 // ─────────────────────────────────────────────
 
 function getAuthenticatedUserId(req: Request): string | null {
-  const id = req.auth?.userId;
-  return typeof id === "string" && id.length > 0 ? id : null;
+  const { userId } = getAuth(req);
+  return userId ?? null;
 }
 
 function getValidGuestId(req: Request): string | null {
@@ -54,7 +55,7 @@ export async function attachIdentity(req: Request, res: Response, next: NextFunc
     // AUTH USER
     // ─────────────────────────────
     if (userId) {
-      const user = await User.findById(userId).select("plan");
+      const user = await User.findOne({ clerkId: userId }).select("plan");
 
       const identity = IdentitySchema.parse({
         type: "user",

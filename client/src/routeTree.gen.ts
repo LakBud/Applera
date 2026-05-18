@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as _protectedRouteRouteImport } from './routes/__protected/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
-import { Route as AuthSignOutRouteImport } from './routes/auth/sign-out'
 import { Route as _protectedDashboardRouteImport } from './routes/__protected/dashboard'
 import { Route as _protectedCvsRouteImport } from './routes/__protected/cvs'
 import { Route as _protectedApplicationsRouteImport } from './routes/__protected/applications'
@@ -29,11 +28,6 @@ const IndexRoute = IndexRouteImport.update({
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: '/auth/sign-up',
   path: '/auth/sign-up',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthSignOutRoute = AuthSignOutRouteImport.update({
-  id: '/auth/sign-out',
-  path: '/auth/sign-out',
   getParentRoute: () => rootRouteImport,
 } as any)
 const _protectedDashboardRoute = _protectedDashboardRouteImport.update({
@@ -57,7 +51,6 @@ export interface FileRoutesByFullPath {
   '/applications': typeof _protectedApplicationsRoute
   '/cvs': typeof _protectedCvsRoute
   '/dashboard': typeof _protectedDashboardRoute
-  '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
 export interface FileRoutesByTo {
@@ -65,7 +58,6 @@ export interface FileRoutesByTo {
   '/applications': typeof _protectedApplicationsRoute
   '/cvs': typeof _protectedCvsRoute
   '/dashboard': typeof _protectedDashboardRoute
-  '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
 export interface FileRoutesById {
@@ -75,26 +67,13 @@ export interface FileRoutesById {
   '/__protected/applications': typeof _protectedApplicationsRoute
   '/__protected/cvs': typeof _protectedCvsRoute
   '/__protected/dashboard': typeof _protectedDashboardRoute
-  '/auth/sign-out': typeof AuthSignOutRoute
   '/auth/sign-up': typeof AuthSignUpRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/applications'
-    | '/cvs'
-    | '/dashboard'
-    | '/auth/sign-out'
-    | '/auth/sign-up'
+  fullPaths: '/' | '/applications' | '/cvs' | '/dashboard' | '/auth/sign-up'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/applications'
-    | '/cvs'
-    | '/dashboard'
-    | '/auth/sign-out'
-    | '/auth/sign-up'
+  to: '/' | '/applications' | '/cvs' | '/dashboard' | '/auth/sign-up'
   id:
     | '__root__'
     | '/'
@@ -102,14 +81,12 @@ export interface FileRouteTypes {
     | '/__protected/applications'
     | '/__protected/cvs'
     | '/__protected/dashboard'
-    | '/auth/sign-out'
     | '/auth/sign-up'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   _protectedRouteRoute: typeof _protectedRouteRouteWithChildren
-  AuthSignOutRoute: typeof AuthSignOutRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
 }
 
@@ -134,13 +111,6 @@ declare module '@tanstack/react-router' {
       path: '/auth/sign-up'
       fullPath: '/auth/sign-up'
       preLoaderRoute: typeof AuthSignUpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/sign-out': {
-      id: '/auth/sign-out'
-      path: '/auth/sign-out'
-      fullPath: '/auth/sign-out'
-      preLoaderRoute: typeof AuthSignOutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/__protected/dashboard': {
@@ -186,7 +156,6 @@ const _protectedRouteRouteWithChildren = _protectedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   _protectedRouteRoute: _protectedRouteRouteWithChildren,
-  AuthSignOutRoute: AuthSignOutRoute,
   AuthSignUpRoute: AuthSignUpRoute,
 }
 export const routeTree = rootRouteImport

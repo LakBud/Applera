@@ -11,16 +11,16 @@ const textField = (label: string, max = 20_000, min = 10) =>
 
 const schemas = {
   createApplication: z.object({
-    cvId: z.string().min(1, { message: "cvId is required" }),
-    jobId: z.string().min(1, { message: "jobId is required" }),
+    cvId: z.string().min(1),
+    jobId: z.string().min(1),
   }),
 
   createJob: z.object({
-    jobText: textField("jobText"),
+    jobText: textField("jobText").optional(), // optional because file upload has no body
   }),
 
   uploadCV: z.object({
-    cvText: textField("cvText"),
+    cvText: textField("cvText").optional(), // optional because file upload has no body
   }),
 } as const;
 
