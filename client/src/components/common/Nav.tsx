@@ -4,64 +4,55 @@ import { Briefcase } from "lucide-react";
 
 function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   const location = useLocation();
-  const isActive = location.pathname === to;
+  console.log(location.pathname); // ← add this
+  const isActive = location.pathname.startsWith(to);
 
   return (
     <Link
       to={to}
-      className={["text-sm transition-colors relative", isActive ? "text-h2" : "text-secondary hover:text-h2"].join(" ")}
+      className={[
+        "text-sm font-medium transition-all duration-200 pb-0.75",
+        isActive ? "text-[#1fa028] border-b border-[#1fa028]" : "text-[#3d5a45] hover:text-[#1fa028] border-b border-transparent",
+      ].join(" ")}
     >
       {children}
-
-      {/* active indicator */}
-      {isActive && <span className="absolute -bottom-2 left-0 right-0 h-0.5 bg-primary rounded-full" />}
     </Link>
   );
 }
 
 export default function Nav({ isSignedIn }: { isSignedIn: boolean }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-1000 bg-white border-b border-border ">
-      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-        {/* Brand */}
-        <Link to="/" className="flex items-center gap-2.5 group shrink-0 text-primary">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary/10 transition-colors duration-200">
-            <Briefcase className="w-4 h-4" />
-          </div>
-
-          <span className="font-display text-xl text-h2 group-hover:text-h1 transition-colors text-primary duration-200 tracking-tight">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-[#1fa028]/15 bg-[#f7fff5] backdrop-blur-md">
+      <div className="max-w-6xl mx-auto px-6 h-14 grid grid-cols-3 items-center">
+        {/* LEFT: Brand */}
+        <Link to="/" className="flex items-center gap-2 justify-self-start group shrink-0">
+          <Briefcase className="w-6 h-6 text-[#1fa028] group-hover:text-[#166534] transition-colors" />
+          <span className="font-display text-2xl font-semibold text-[#1fa028] group-hover:text-[#166534] transition-colors">
             Applera
           </span>
         </Link>
-        {/* Center nav */}
-        <div className="hidden md:flex items-center gap-9">
+
+        {/* CENTER: Nav */}
+        <div className="hidden md:flex justify-center items-center gap-8">
           {isSignedIn && (
             <>
               <NavLink to="/dashboard">Dashboard</NavLink>
               <NavLink to="/applications">Applications</NavLink>
-              <NavLink to="/jobs">Jobs</NavLink>
               <NavLink to="/cvs">CVs</NavLink>
-              <NavLink to="/interview">Interview Prep</NavLink>
             </>
           )}
         </div>
 
-        {/* Right actions */}
-        <div className="flex items-center gap-3">
+        {/* RIGHT: Account */}
+        <div className="flex items-center justify-self-end">
           {isSignedIn ? (
-            <>
+            <div className="flex items-center h-10">
               <UserButton />
-            </>
+            </div>
           ) : (
             <Link
               to="/auth/sign-up"
-              className="
-                text-sm px-4 py-1.5 rounded-lg
-                border border-border
-                text-h2
-                hover:bg-surface-muted
-                transition
-              "
+              className="text-sm font-semibold px-5 py-2 rounded-full bg-[#1fa028] text-white hover:bg-[#166534] shadow-[0_4px_14px_0_rgb(31_160_40/0.28)] hover:shadow-[0_4px_18px_0_rgb(31_160_40/0.38)] transition-all duration-200 whitespace-nowrap"
             >
               Sign in
             </Link>

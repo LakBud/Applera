@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ClerkProvider } from "@clerk/clerk-react";
+import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { routeTree } from "./routeTree.gen";
 import "@fontsource-variable/geist";
 import "./globals.css";
@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
 
 const router = createRouter({
   routeTree,
-  context: { queryClient },
+  context: { queryClient, auth: undefined! },
 });
 
 declare module "@tanstack/react-router" {
@@ -27,11 +27,16 @@ declare module "@tanstack/react-router" {
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
+function InnerApp() {
+  const auth = useAuth();
+  return <RouterProvider router={router} context={{ queryClient, auth }} />;
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <InnerApp />
       </QueryClientProvider>
     </ClerkProvider>
   </StrictMode>,

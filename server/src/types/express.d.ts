@@ -9,7 +9,7 @@ declare global {
       requestId?: string;
       auth?: {
         userId?: string;
-        plan?: "free" | "pro" | "unlimited";
+        plan?: "free" | "pro" | "enterprise" | "admin";
       };
 
       validated?: unknown;

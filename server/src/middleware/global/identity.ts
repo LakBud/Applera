@@ -15,7 +15,7 @@ import { getAuth } from "@clerk/express";
 export const IdentitySchema = z.object({
   type: z.enum(["user", "guest"]),
   id: z.string(),
-  plan: z.enum(["guest", "free", "pro", "enterprise"]),
+  plan: z.enum(["guest", "free", "pro", "enterprise", "admin"]),
 });
 
 export type Identity = z.infer<typeof IdentitySchema>;

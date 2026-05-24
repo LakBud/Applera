@@ -20,5 +20,7 @@ export function getUsageLimit(req: Request): number {
   if (identity.plan === "pro") return 100;
   if (identity.plan === "enterprise") return 1000;
 
+  if (identity.plan === "admin") return Infinity;
+
   return 20;
 }

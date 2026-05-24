@@ -22,8 +22,6 @@ function StepCard({ n, title, desc }: { n: string; title: string; desc: string }
       <CardContent className="p-6 flex flex-col gap-3">
         <span className="font-display text-5xl text-primary/10 leading-none select-none absolute top-4 right-5">{n}</span>
 
-        <span className="text-xs font-semibold tracking-widest uppercase text-label">{n}</span>
-
         <h3 className="text-base font-semibold text-h3">{title}</h3>
 
         <p className="text-sm text-secondary leading-relaxed ">{desc}</p>

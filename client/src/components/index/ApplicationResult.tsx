@@ -35,7 +35,7 @@ export default function ApplicationResult({ data }: Props) {
   }[activeTab];
 
   return (
-    <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-lg">
+    <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-lg bg-white/70">
       {/* ── Window chrome bar ── */}
       <div className="flex items-center gap-2 px-5 py-3.5 border-b border-border bg-surface-muted">
         <div className="w-2.5 h-2.5 rounded-full bg-error/60" />
