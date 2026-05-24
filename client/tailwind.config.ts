@@ -1,6 +1,7 @@
-/** @type {import('tailwindcss').Config} */
+import type { Config } from "tailwindcss";
+
 export default {
-  darkMode: ["class"],
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx,mdx}", "./components/**/*.{js,ts,jsx,tsx}"],
 
   theme: {
@@ -10,33 +11,37 @@ export default {
          ================================================================ */
       colors: {
         /* ── Typographic voice tokens ──────────────────────────────────
-           Use as: text-h1, text-h2, text-body, text-secondary …        */
-        h1: "var(--text-h1)",
-        h2: "var(--text-h2)",
-        h3: "var(--text-h3)",
-        h4: "var(--text-h4)",
-        body: "var(--text-body)",
-        secondary: "var(--text-secondary)",
-        caption: "var(--text-caption)",
-        label: "var(--text-label)",
+           Prefixed with "tx-" to avoid collision with shadcn's own
+           "secondary", "muted", "body" etc. tokens.
+           Use as: text-tx-h1, text-tx-body, text-tx-secondary …        */
+        "tx-h1": "var(--text-h1)",
+        "tx-h2": "var(--text-h2)",
+        "tx-h3": "var(--text-h3)",
+        "tx-h4": "var(--text-h4)",
+        "tx-body": "var(--text-body)",
+        "tx-secondary": "var(--text-secondary)",
+        "tx-caption": "var(--text-caption)",
+        "tx-label": "var(--text-label)",
+        "tx-muted": "var(--text-muted)",
 
         /* ── App semantic surfaces ─────────────────────────────────── */
         bg: "var(--bg)",
         surface: "var(--surface)",
+        "surface-muted": "var(--surface-muted)",
 
         /* ── Green action system ───────────────────────────────────── */
         primary: {
-          DEFAULT: "var(--clr-primary)",
-          hover: "var(--clr-primary-hover)",
-          soft: "var(--clr-primary-soft)",
-          dim: "var(--clr-primary-dim)",
+          DEFAULT: "#1fa028",
+          hover: "#166534",
+          soft: "#dcfce7",
+          dim: "#bbf7d0",
         },
 
         /* ── Status ────────────────────────────────────────────────── */
-        success: "var(--clr-success)",
-        warning: "var(--clr-warning)",
-        error: "var(--clr-error)",
-        info: "var(--clr-info)",
+        success: "#22c55e",
+        warning: "#f59e0b",
+        error: "#ef4444",
+        info: "#3b82f6",
 
         /* ── shadcn HSL bridge (required by shadcn components) ─────── */
         border: "hsl(var(--border))",
@@ -53,15 +58,9 @@ export default {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
-        shadcn: {
-          primary: {
-            DEFAULT: "hsl(var(--primary))",
-            foreground: "hsl(var(--primary-foreground))",
-          },
-          secondary: {
-            DEFAULT: "hsl(var(--secondary))",
-            foreground: "hsl(var(--secondary-foreground))",
-          },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -74,6 +73,12 @@ export default {
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
+        },
+        shadcn: {
+          primary: {
+            DEFAULT: "hsl(var(--primary))",
+            foreground: "hsl(var(--primary-foreground))",
+          },
         },
 
         sidebar: {
@@ -111,9 +116,10 @@ export default {
          TYPOGRAPHY
          ================================================================ */
       fontFamily: {
-        sans: ["DM Sans", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: ["DM Serif Display", "Georgia", "serif"],
+        sans: ["Geist Variable", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Outfit", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["DM Mono", "ui-monospace", "monospace"],
+        monda: ["Monda", "ui-sans-serif", "system-ui", "sans-serif"],
       },
 
       /* ================================================================
@@ -182,4 +188,4 @@ export default {
     require("tailwindcss-animate"),
     // require("@tailwindcss/typography"),
   ],
-};
+} satisfies Config;

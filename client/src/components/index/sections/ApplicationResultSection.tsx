@@ -1,5 +1,4 @@
 import ApplicationResult from "../ApplicationResult";
-import { Button } from "../../ui/button";
 import type { HomeState } from "./GeneratorSection";
 
 type Props = {
@@ -7,7 +6,7 @@ type Props = {
 };
 
 export default function ApplicationResultSection({ state }: Props) {
-  const { result, isPending, handleReset } = state;
+  const { result, isPending } = state;
 
   return (
     <section className="border-t border-border">
@@ -15,22 +14,16 @@ export default function ApplicationResultSection({ state }: Props) {
         {/* Section header */}
         <div className="flex items-end justify-between">
           <div className="space-y-1">
-            <span className="text-overline">Output</span>
+            <span className="text-overline text-h1">Output</span>
             <h2 className="font-display text-3xl text-h2">Your application</h2>
           </div>
-
-          {result && (
-            <Button type="button" onClick={handleReset} variant="outline" className="text-xs px-3 py-1.5 mb-1">
-              ← New application
-            </Button>
-          )}
         </div>
 
         {/* Result / empty / loading state */}
         {result ? (
           <ApplicationResult data={result} />
         ) : (
-          <div className="rounded-2xl border border-border bg-surface overflow-hidden shadow-sm">
+          <div className="rounded-2xl border border-border bg-white/70 overflow-hidden shadow-sm">
             {/* Window chrome */}
             <div className="flex items-center gap-2 px-5 py-3.5 border-b border-border bg-surface-muted">
               <div className="w-2.5 h-2.5 rounded-full bg-error/30" />

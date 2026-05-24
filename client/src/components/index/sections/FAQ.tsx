@@ -25,14 +25,14 @@ const FAQ = [
 
 export default function FAQSection() {
   return (
-    <section id="faq" className="px-6 py-20 border-t border-border">
+    <section id="faq" className="px-2 py-20 border-t border-border ">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-12 space-y-2">
-          <span className="text-overline">Questions</span>
+          <span className="text-overline text-h1">Questions</span>
           <h2 className="font-display text-3xl md:text-4xl text-h2">FAQ</h2>
         </div>
 
-        <div className="bg-surface border border-border rounded-2xl px-6">
+        <div className="bg-surface border border-border rounded-2xl px-6 bg-white/70">
           <Accordion type="single" collapsible className="w-full">
             {FAQ.map((item) => (
               <AccordionItem key={item.q} value={item.q}>

@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 
 type UploadFileMutation = UseMutationResult<any, Error, File>;
 type UploadTextMutation = UseMutationResult<any, Error, string>;
@@ -44,31 +45,37 @@ export default function Uploader({ label, placeholder = "Paste text here...", up
   }
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 space-y-5 h-120">
+    <div className="bg-surface border border-border rounded-2xl p-6 space-y-5 h-120 bg-white/70">
       {/* Mode toggle */}
       <div className="flex items-center justify-between">
-        <span className="text-overline">{label}</span>
+        <span className="text-overline text-green-800">{label}</span>
 
         <div className="flex gap-2 text-xs">
-          <Button
-            type="button"
-            onClick={() => setMode("file")}
-            className={`px-3 py-1 rounded-lg border transition ${
-              mode === "file" ? "bg-primary text-white border-primary" : "border-border text-secondary hover:text-h2"
-            }`}
+          <ToggleGroup
+            type="single"
+            value={mode}
+            onValueChange={(v) => v && setMode(v as "file" | "text")}
+            className="bg-[#1fa028]/20 rounded-full p-0.75 gap-0.5"
           >
-            Upload
-          </Button>
-
-          <Button
-            type="button"
-            onClick={() => setMode("text")}
-            className={`px-3 py-1 rounded-lg border transition ${
-              mode === "text" ? "bg-primary text-white border-primary" : "border-border text-secondary hover:text-h2"
-            }`}
-          >
-            Paste
-          </Button>
+            <ToggleGroupItem
+              value="file"
+              className="text-xs px-4 py-1.5 rounded-full text-[#166534]
+               hover:text-body hover:bg-transparent
+               data-[state=on]:bg-white data-[state=on]:text-[#1fa028]
+               data-[state=on]:shadow-sm"
+            >
+              Upload
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="text"
+              className="text-xs px-4 py-1.5 rounded-full text-[#166534]
+               hover:text-body hover:bg-transparent
+               data-[state=on]:bg-white data-[state=on]:text-[#1fa028]
+               data-[state=on]:shadow-sm"
+            >
+              Paste
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
       </div>
 

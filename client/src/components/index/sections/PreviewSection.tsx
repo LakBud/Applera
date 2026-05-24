@@ -5,7 +5,7 @@ export default function PreviewSection() {
     <section className="px-6 py-20 w-full border-t border-border bg-surface-muted">
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
         <div className="space-y-5">
-          <span className="text-overline">Preview</span>
+          <span className="text-overline text-h1">Preview</span>
 
           <h2 className="font-display text-3xl md:text-4xl text-h2 leading-tight">
             See what you get

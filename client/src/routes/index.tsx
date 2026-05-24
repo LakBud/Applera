@@ -16,12 +16,11 @@ export const Route = createFileRoute("/")({
 
 export default function HomePage() {
   const homeState = useHomeState();
-  const { result } = homeState;
 
   return (
     <div className="min-h-screen bg-bg text-body">
       {/* ══════════════════════════════════════════════════════
-          SECTION 1 — GENERATOR
+        GENERATOR
       ══════════════════════════════════════════════════════ */}
       <section id="generator" className="relative px-6 pt-10 pb-20 max-w-6xl mx-auto">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-150 h-48 bg-primary/8 blur-3xl rounded-full pointer-events-none" />
@@ -36,7 +35,7 @@ export default function HomePage() {
         </div>
 
         {/* ───────────── INPUT STATE ───────────── */}
-        {!result && <GeneratorSection state={homeState} />}
+        <GeneratorSection state={homeState} />
       </section>
 
       {/* ══════════════════════════════════════════════════════

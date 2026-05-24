@@ -1,7 +1,7 @@
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { useAuth } from "@clerk/clerk-react";
 import type { QueryClient } from "@tanstack/react-query";
-import Nav from "../components/common/nav";
+import Nav from "../components/common/Nav";
 
 interface RouterContext {
   queryClient: QueryClient;

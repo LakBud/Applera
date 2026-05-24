@@ -34,11 +34,12 @@ export default function GeneratorSection({ state }: Props) {
     canGenerate,
   } = state;
 
-  if (result) return null;
+  const isLocked = !!result;
 
   return (
     <div className="space-y-6">
-      <div className="grid md:grid-cols-2 gap-6">
+      {/* INPUTS (locked when result exists) */}
+      <div className={`grid md:grid-cols-2 gap-6 transition-all ${isLocked ? "grayscale opacity-50 pointer-events-none" : ""}`}>
         {/* CV */}
         <div className="space-y-2">
           <Uploader
@@ -78,21 +79,33 @@ export default function GeneratorSection({ state }: Props) {
 
       {error && <p className="text-center text-sm text-error">{error.message}</p>}
 
+      {/* BUTTON */}
       <div className="flex justify-center pt-2">
-        <Button
-          type="button"
-          onClick={handleGenerate}
-          disabled={!canGenerate}
-          className="px-10 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          {isPending ? (
-            <span className="flex items-center gap-2">
-              <SpinnerIcon /> Generating…
-            </span>
-          ) : (
-            "Generate application"
-          )}
-        </Button>
+        {!isLocked ? (
+          <Button
+            type="button"
+            onClick={handleGenerate}
+            disabled={!canGenerate}
+            className="px-10 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {isPending ? (
+              <span className="flex items-center gap-2">
+                <SpinnerIcon /> Generating…
+              </span>
+            ) : (
+              "Generate application"
+            )}
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            onClick={state.handleReset}
+            variant="outline"
+            className="px-10 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            New application
+          </Button>
+        )}
       </div>
     </div>
   );

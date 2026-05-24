@@ -21,19 +21,20 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
 
 export default function Nav({ isSignedIn }: { isSignedIn: boolean }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-surface/80 backdrop-blur-md">
+    <nav className="fixed top-0 left-0 right-0 z-1000 bg-white border-b border-border ">
       <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-2 group shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary/15 transition">
+        <Link to="/" className="flex items-center gap-2.5 group shrink-0 text-primary">
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-primary bg-primary/5 group-hover:bg-primary/10 transition-colors duration-200">
             <Briefcase className="w-4 h-4" />
           </div>
 
-          <span className="font-display text-lg text-h1 group-hover:text-h3 transition-colors">Applera</span>
+          <span className="font-display text-xl text-h2 group-hover:text-h1 transition-colors text-primary duration-200 tracking-tight">
+            Applera
+          </span>
         </Link>
-
         {/* Center nav */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-9">
           {isSignedIn && (
             <>
               <NavLink to="/dashboard">Dashboard</NavLink>
@@ -49,20 +50,6 @@ export default function Nav({ isSignedIn }: { isSignedIn: boolean }) {
         <div className="flex items-center gap-3">
           {isSignedIn ? (
             <>
-              <Link
-                to="/create"
-                className="
-                  text-xs px-3 py-1.5 rounded-lg
-                  bg-primary text-white
-                  hover:bg-primary-hover
-                  active:scale-[0.98]
-                  transition
-                  shadow-sm
-                "
-              >
-                New application
-              </Link>
-
               <UserButton />
             </>
           ) : (

@@ -17,7 +17,6 @@ import { requestLogger } from "./middleware/log/request.logger.js";
 import { stripObject } from "./utils/utils.js";
 
 import { clerkMiddleware } from "@clerk/express";
-import { CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY } from "./config/env.js";
 import { attachIdentity } from "./middleware/global/identity.js";
 import cookieParser from "cookie-parser";
 

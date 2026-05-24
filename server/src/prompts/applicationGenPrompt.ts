@@ -11,6 +11,7 @@ CRITICAL OUTPUT RULE (ABSOLUTE)
 - NEVER omit any field
 - NEVER add extra fields
 - NEVER rename fields
+- If there are different languages in the CV and the job listing, only use the job listings language.
 
 ────────────────────────────────────────
 GROUNDING RULE (VERY IMPORTANT)

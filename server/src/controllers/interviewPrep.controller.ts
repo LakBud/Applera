@@ -55,7 +55,7 @@ export const generatePrep = async (req: Request, res: Response) => {
       });
     }
 
-    // ── SAFE CASTS (this is where types are fixed)
+    // ── SAFE CASTS
     const cv = application.cv.parsed as CVSchemaData;
     const job = application.job.parsed as JobSchemaData;
     const match = application.match as MatchReport | undefined;
