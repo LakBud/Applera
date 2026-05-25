@@ -22,8 +22,8 @@ export default function PreviewMock() {
         {/* LEFT */}
         <div className="border-b md:border-b-0 md:border-r border-border p-4 sm:p-5 md:p-6 space-y-6">
           <div className="flex flex-col items-center gap-3 py-4">
-            <div className="relative flex items-center justify-center w-28 h-28 rounded-full border-4 border-primary/20 bg-primary/5">
-              <span className="text-4xl font-bold font-mono text-success">87</span>
+            <div className="relative flex items-center justify-center w-28 h-28 rounded-full border-4 border-primary/20 bg-tx-h1">
+              <span className="text-4xl font-bold font-mono text-tx-h1">87</span>
               <span className="absolute bottom-4 text-[10px] uppercase tracking-widest text-label">match</span>
 
               <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
@@ -61,7 +61,7 @@ export default function PreviewMock() {
             <p className="text-xs font-semibold uppercase tracking-widest text-label">Gaps</p>
             <div className="flex flex-wrap gap-1.5">
               {["Testing", "System design"].map((s) => (
-                <span key={s} className="text-xs px-2 py-1 rounded-lg bg-error/10 text-error border border-error/20">
+                <span key={s} className="text-xs px-2 py-1 rounded-lg text-green-900 border border-error/20">
                   {s}
                 </span>
               ))}
@@ -95,7 +95,7 @@ export default function PreviewMock() {
           </div>
 
           <div className="p-4 sm:p-5 md:p-6 max-h-120 overflow-auto">
-            <pre className="whitespace-pre-wrap text-sm text-body leading-relaxed">
+            <pre className="whitespace-pre-wrap text-sm text-tx-body leading-relaxed">
               {`Dear Hiring Manager,
 
 I am excited to apply for this position.

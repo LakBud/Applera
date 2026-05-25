@@ -28,6 +28,30 @@
   .btn-secondary:hover {
     background-color: var(--text-h4);
   }
+
+  .text-success {
+    color: var(--clr-success);
+  }
+  .text-warning {
+    color: var(--clr-warning);
+  }
+  .text-error {
+    color: var(--clr-error);
+  }
+
+  .bg-success {
+    background-color: var(--clr-success);
+  }
+  .bg-warning {
+    background-color: var(--clr-warning);
+  }
+  .bg-error {
+    background-color: var(--clr-error);
+  }
+
+  .border-primary {
+    border-color: (var(--primary));
+  }
 }
 
 @layer base {
@@ -208,7 +232,7 @@
   }
 }
 
-/* UTILITIES (UNCHANGED, JUST SAFE FIX) */
+/* UTILITIES  */
 @layer utilities {
   /* ── tx- prefixed: use these in components to avoid shadcn conflicts ── */
   .text-tx-h1 {

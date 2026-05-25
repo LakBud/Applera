@@ -52,7 +52,7 @@ export default function Nav({ isSignedIn }: { isSignedIn: boolean }) {
           ) : (
             <Link
               to="/auth/sign-up"
-              className="text-sm font-semibold px-5 py-2 rounded-full bg-[#1fa028] text-white hover:bg-[#166534] shadow-[0_4px_14px_0_rgb(31_160_40/0.28)] hover:shadow-[0_4px_18px_0_rgb(31_160_40/0.38)] transition-all duration-200 whitespace-nowrap"
+              className="text-sm font-semibold px-5 py-2 rounded-lg bg-[#1fa028] text-white hover:bg-[#177b3d] transition-all duration-200 whitespace-nowrap"
             >
               Sign in
             </Link>

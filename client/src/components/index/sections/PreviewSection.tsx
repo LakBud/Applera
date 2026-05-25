@@ -7,7 +7,7 @@ export default function PreviewSection() {
         <div className="space-y-5">
           <span className="text-overline text-h1">Preview</span>
 
-          <h2 className="font-display text-3xl md:text-4xl text-h2 leading-tight">
+          <h2 className="font-display text-3xl md:text-4xl text-tx-h2 leading-tight">
             See what you get
             <br />
             <span className="text-h1">before you try it</span>

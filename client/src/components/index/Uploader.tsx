@@ -60,7 +60,7 @@ export default function Uploader({ label, placeholder = "Paste text here...", up
             <ToggleGroupItem
               value="file"
               className="text-xs px-4 py-1.5 rounded-full text-[#166534]
-               hover:text-body hover:bg-transparent
+               hover:text-tx-body hover:bg-transparent
                data-[state=on]:bg-white data-[state=on]:text-[#1fa028]
                data-[state=on]:shadow-sm"
             >
@@ -69,7 +69,7 @@ export default function Uploader({ label, placeholder = "Paste text here...", up
             <ToggleGroupItem
               value="text"
               className="text-xs px-4 py-1.5 rounded-full text-[#166534]
-               hover:text-body hover:bg-transparent
+               hover:text-tx-body hover:bg-transparent
                data-[state=on]:bg-white data-[state=on]:text-[#1fa028]
                data-[state=on]:shadow-sm"
             >

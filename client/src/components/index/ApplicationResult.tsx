@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { CreateApplicationResponse } from "../../api/schemas";
 import { Button } from "../ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
 
 type Props = {
   data: CreateApplicationResponse;
@@ -9,7 +10,7 @@ type Props = {
 export default function ApplicationResult({ data }: Props) {
   const { application } = data;
   const [copied, setCopied] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"summary" | "letter" | "email">("letter");
+  const [activeTab, setActiveTab] = useState<"letter" | "summary" | "email">("letter");
 
   function copy(text: string, key: string) {
     navigator.clipboard.writeText(text);
@@ -18,15 +19,16 @@ export default function ApplicationResult({ data }: Props) {
   }
 
   const score = application.match?.score ?? 0;
-  const scoreColor = score >= 80 ? "text-success" : score >= 60 ? "text-warning" : "text-error";
-  const barColor = score >= 80 ? "bg-success" : score >= 60 ? "bg-warning" : "bg-error";
-  const scoreLabel = score >= 80 ? "Strong match" : score >= 60 ? "Decent match" : "Weak match";
+  const scoreColor =
+    score >= 80
+      ? "text-tx-h1" // #1fa028 — bright green (high)
+      : score >= 60
+        ? "text-tx-h3" // #166534 — mid green
+        : "text-tx-secondary"; // #3d5a45 — dark muted green (low)
 
-  const tabs = [
-    { key: "letter", label: "Cover letter" },
-    { key: "summary", label: "CV summary" },
-    { key: "email", label: "Email draft" },
-  ] as const;
+  const barColor = score >= 80 ? "bg-[#1fa028]" : score >= 60 ? "bg-[#166534]" : "bg-[#3d5a45]";
+
+  const scoreLabel = score >= 80 ? "Strong match" : score >= 60 ? "Decent match" : "Weak match";
 
   const activeContent = {
     summary: application.tailored_cv_summary,
@@ -51,13 +53,9 @@ export default function ApplicationResult({ data }: Props) {
         <div className="border-b md:border-b-0 md:border-r border-border p-6 space-y-6">
           {/* Score ring */}
           <div className="flex flex-col items-center gap-3 py-4">
-            <div
-              className={`relative flex flex-col items-center justify-center w-28 h-28 rounded-full border-4 border-primary/20 bg-primary/5`}
-            >
+            <div className="relative flex flex-col items-center justify-center w-28 h-28 rounded-full border-4 border-primary/20 bg-primary/5">
               <span className={`text-4xl font-bold font-mono leading-none ${scoreColor}`}>{score}</span>
               <span className="text-[10px] uppercase tracking-widest text-label mt-1">match</span>
-
-              {/* Circular progress via conic-gradient */}
               <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="4" className="text-border" />
                 <circle
@@ -100,7 +98,7 @@ export default function ApplicationResult({ data }: Props) {
             <div className="flex flex-wrap gap-1.5">
               {application.match?.missing_skills?.length ? (
                 application.match.missing_skills.map((s) => (
-                  <span key={s} className="text-xs px-2 py-1 rounded-lg bg-error/10 text-error border border-error/20">
+                  <span key={s} className="text-xs px-2 py-1 rounded-lg text-green-900 border border-error/20">
                     {s}
                   </span>
                 ))
@@ -123,25 +121,33 @@ export default function ApplicationResult({ data }: Props) {
         </div>
 
         {/* ══════════════════════════════════
-            RIGHT PANEL — content tabs
+            RIGHT PANEL — TABS
         ══════════════════════════════════ */}
-        <div className="flex flex-col">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="flex flex-col">
           {/* Tab bar */}
-          <div className="flex border-b border-border">
-            {tabs.map((tab) => (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setActiveTab(tab.key)}
-                className={`px-5 py-3.5 text-xs font-semibold tracking-wide transition border-b-2 -mb-px ${
-                  activeTab === tab.key ? "border-primary text-primary" : "border-transparent text-secondary hover:text-h2"
-                }`}
+          <div className="flex items-center border-b border-border px-0">
+            <TabsList className="h-auto bg-transparent gap-0 p-0">
+              <TabsTrigger
+                value="letter"
+                className="px-5 py-3.5 text-xs font-semibold tracking-wide rounded-none border-b-2 border-transparent data-[state=active]:border-b-green-800 data-[state=active]:text-green-800 data-[state=active]:shadow-none data-[state=active]:bg-transparent text-secondary hover:text-tx-h2 transition"
               >
-                {tab.label}
-              </button>
-            ))}
+                Cover letter
+              </TabsTrigger>
+              <TabsTrigger
+                value="summary"
+                className="px-5 py-3.5 text-xs font-semibold tracking-wide rounded-none border-b-2 border-transparent  data-[state=active]:border-b-green-800 data-[state=active]:text-green-800 data-[state=active]:shadow-none data-[state=active]:bg-transparent text-secondary hover:text-tx-h2 transition"
+              >
+                CV summary
+              </TabsTrigger>
+              <TabsTrigger
+                value="email"
+                className="px-5 py-3.5 text-xs font-semibold tracking-wide rounded-none border-b-2 border-transparent  data-[state=active]:border-b-green-800 data-[state=active]:text-green-800  data-[state=active]:shadow-none data-[state=active]:bg-transparent text-secondary hover:text-tx-h2 transition"
+              >
+                Email draft
+              </TabsTrigger>
+            </TabsList>
 
-            {/* Copy button pushed to right */}
+            {/* Copy button */}
             <div className="ml-auto flex items-center px-4">
               <Button
                 type="button"
@@ -153,23 +159,27 @@ export default function ApplicationResult({ data }: Props) {
             </div>
           </div>
 
-          {/* Content area */}
-          <div className="flex-1 p-6 overflow-auto max-h-120">
-            {activeTab === "email" ? (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 pb-3 border-b border-border">
-                  <span className="text-xs text-caption w-14">Subject</span>
-                  <span className="text-sm text-body font-medium">{application.application_email?.subject}</span>
-                </div>
-                <pre className="whitespace-pre-wrap text-sm text-body leading-relaxed">{application.application_email?.body}</pre>
+          {/* Content */}
+          <TabsContent value="letter" className="flex-1 p-6 overflow-auto max-h-120 mt-0">
+            <pre className="whitespace-pre-wrap text-sm text-tx-body leading-relaxed">{application.cover_letter}</pre>
+          </TabsContent>
+
+          <TabsContent value="summary" className="flex-1 p-6 overflow-auto max-h-120 mt-0">
+            <pre className="whitespace-pre-wrap text-sm text-tx-body leading-relaxed">{application.tailored_cv_summary}</pre>
+          </TabsContent>
+
+          <TabsContent value="email" className="flex-1 p-6 overflow-auto max-h-120 mt-0">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 pb-3 border-b border-border">
+                <span className="text-xs text-caption w-14">Subject</span>
+                <span className="text-sm text-tx-body font-medium">{application.application_email?.subject}</span>
               </div>
-            ) : (
-              <pre className="whitespace-pre-wrap text-sm text-body leading-relaxed">
-                {activeTab === "summary" ? application.tailored_cv_summary : application.cover_letter}
+              <pre className="whitespace-pre-wrap text-sm text-tx-body leading-relaxed">
+                {application.application_email?.body}
               </pre>
-            )}
-          </div>
-        </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
