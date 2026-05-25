@@ -47,14 +47,17 @@ export const CVParsedSchema = z.object({
 
 export const CVDocumentSchema = z.object({
   _id: z.string(),
-  rawText: z.string(),
+  rawText: z.string().optional(),
   parsed: CVParsedSchema,
 
   applicationsCount: z.number().optional(),
   lastUsedAt: z.string().optional(),
 
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+
+  pdfUrl: z.string().optional(),
+  previewImageUrl: z.string().optional(),
 });
 
 export const UploadCVResponseSchema = z.object({

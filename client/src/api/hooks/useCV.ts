@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { queryKeys } from "../queryKeys";
 import { client } from "../client";
-import { CVDocumentSchema, UploadCVResponseSchema } from "../schemas";
+import { CVDocumentSchema, DashboardSchema, UploadCVResponseSchema } from "../schemas";
 
 export function useCVs() {
   return useQuery({
@@ -74,5 +74,16 @@ export function useUploadCVText() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.cv.all });
     },
+  });
+}
+
+export function useCVDashboard(cvId: string) {
+  return useQuery({
+    queryKey: queryKeys.dashboard.byCv(cvId),
+    queryFn: async () => {
+      const res = await client.get(`/api/dashboard/${cvId}`);
+      return DashboardSchema.parse(res.data);
+    },
+    enabled: !!cvId,
   });
 }

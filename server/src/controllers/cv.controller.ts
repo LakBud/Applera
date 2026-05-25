@@ -8,6 +8,13 @@ import { auditLog } from "../middleware/log/audit.logger.js";
 import { normalizeParsedCV } from "../utils/cv.normalize.utils.js";
 
 import { getParam } from "../utils/req.js";
+import { deleteCache, getCache, setCache } from "../lib/cache.js";
+import { hash } from "../lib/hash.js";
+import { uploadPDF } from "../lib/cloudinary.upload.js";
+import { getPdfThumbnail } from "../utils/getPdfThumbnail.utils.js";
+
+const cvHashKey = (userId: string, hash: string) => `cv:hash:${userId}:${hash}`;
+const cvListKey = (userId: string, type: string) => `cvs:${userId}:${type}`;
 
 // ─────────────────────────────────────────────
 // POST /api/cv
@@ -15,32 +22,138 @@ import { getParam } from "../utils/req.js";
 
 export const createCV = async (req: Request, res: Response) => {
   try {
-    if (!req.identity) return res.status(401).json({ error: "Unauthorized" });
-
-    let rawText: string;
-    const file = req.file as Express.Multer.File | undefined;
-
-    if (file?.buffer) {
-      console.time("[createCV] extractTextFromPdf");
-      rawText = await extractTextFromPdf(file.buffer);
-      console.timeEnd("[createCV] extractTextFromPdf");
-    } else if (req.body?.cvText?.trim()) {
-      rawText = req.body.cvText.trim();
-    } else {
-      return res.status(400).json({ error: "Provide a CV as PDF or text" });
+    if (!req.identity) {
+      return res.status(401).json({ error: "Unauthorized" });
     }
 
-    console.time("[createCV] extractCVData");
+    const file = req.file as Express.Multer.File | undefined;
+
+    let rawText: string;
+    let pdfUrl: string | undefined;
+    let previewImageUrl: string | undefined;
+    let contentHash: string;
+
+    // ─────────────────────────────
+    // INPUT FLOW
+    // ─────────────────────────────
+
+    if (file?.buffer) {
+      rawText = await extractTextFromPdf(file.buffer);
+      contentHash = hash(file.buffer.toString("base64"));
+
+      const cacheKey = cvHashKey(req.identity.id, contentHash);
+      const cached = await getCache(cacheKey);
+
+      if (cached) {
+        return res.status(200).json({
+          message: "CV already exists",
+          cv: cached,
+        });
+      }
+
+      const existing = await CVModel.findOne({
+        ownerId: req.identity.id,
+        contentHash,
+      });
+
+      if (existing) {
+        await setCache(cacheKey, existing, 60 * 10);
+
+        return res.status(200).json({
+          message: "CV already exists",
+          cv: existing,
+        });
+      }
+
+      const upload = await uploadPDF(file.buffer, req.identity.id);
+
+      pdfUrl = upload.secure_url;
+      previewImageUrl = getPdfThumbnail(upload.public_id);
+    } else if (req.body?.cvText?.trim()) {
+      rawText = req.body.cvText.trim();
+      contentHash = hash(rawText);
+
+      const cacheKey = cvHashKey(req.identity.id, contentHash);
+      const cached = await getCache(cacheKey);
+
+      if (cached) {
+        return res.status(200).json({
+          message: "CV already exists",
+          cv: cached,
+        });
+      }
+
+      const existing = await CVModel.findOne({
+        ownerId: req.identity.id,
+        contentHash,
+      });
+
+      if (existing) {
+        await setCache(cacheKey, existing, 60 * 10);
+
+        return res.status(200).json({
+          message: "CV already exists",
+          cv: existing,
+        });
+      }
+    } else {
+      return res.status(400).json({
+        error: "Provide a CV as PDF or text",
+      });
+    }
+
+    // ─────────────────────────────
+    // AI PROCESSING
+    // ─────────────────────────────
+
     const parsedRaw = await extractCVData(rawText);
-    console.timeEnd("[createCV] extractCVData");
     const parsed = normalizeParsedCV(parsedRaw);
 
-    const createdCV = await CVModel.create({
-      ownerId: req.identity.id,
-      ownerType: req.identity.type,
-      rawText,
-      parsed,
-    });
+    // ─────────────────────────────
+    // CREATE CV (race-safe with DB index)
+    // ─────────────────────────────
+
+    let createdCV;
+
+    try {
+      createdCV = await CVModel.create({
+        ownerId: req.identity.id,
+        ownerType: req.identity.type,
+        rawText,
+        parsed,
+        pdfUrl,
+        previewImageUrl,
+        contentHash,
+      });
+    } catch (err: any) {
+      // duplicate race condition fallback
+      if (err.code === 11000) {
+        const existing = await CVModel.findOne({
+          ownerId: req.identity.id,
+          contentHash,
+        });
+
+        return res.status(200).json({
+          message: "CV already exists",
+          cv: existing,
+        });
+      }
+
+      throw err;
+    }
+
+    // ─────────────────────────────
+    // CACHE + INVALIDATION
+    // ─────────────────────────────
+
+    const cacheKey = cvHashKey(req.identity.id, contentHash);
+
+    await setCache(cacheKey, createdCV, 60 * 10);
+    await deleteCache(cvListKey(req.identity.id, req.identity.type));
+
+    // ─────────────────────────────
+    // AUDIT
+    // ─────────────────────────────
 
     await auditLog({
       event: "CV_CREATED",
@@ -58,7 +171,7 @@ export const createCV = async (req: Request, res: Response) => {
       message: "CV created successfully",
       cv: createdCV,
     });
-  } catch (err: unknown) {
+  } catch (err) {
     console.error("[createCV]", err);
 
     return res.status(500).json({
@@ -74,10 +187,13 @@ export const createCV = async (req: Request, res: Response) => {
 export const getCVs = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
-      return res.status(401).json({
-        error: "Unauthorized",
-      });
+      return res.status(401).json({ error: "Unauthorized" });
     }
+
+    const key = cvListKey(req.identity.id, req.identity.type);
+
+    const cached = await getCache(key);
+    if (cached) return res.json(cached);
 
     const cvs = await CVModel.find({
       ownerId: req.identity.id,
@@ -85,6 +201,8 @@ export const getCVs = async (req: Request, res: Response) => {
     })
       .sort({ createdAt: -1 })
       .select("-rawText");
+
+    await setCache(key, cvs, 60 * 10);
 
     return res.json(cvs);
   } catch (err) {
@@ -103,26 +221,22 @@ export const getCVs = async (req: Request, res: Response) => {
 export const getCVById = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
-      return res.status(401).json({
-        error: "Unauthorized",
-      });
+      return res.status(401).json({ error: "Unauthorized" });
     }
 
     const id = getParam(req.params.id);
 
-    const cvDoc = await CVModel.findOne({
+    const cv = await CVModel.findOne({
       _id: id,
       ownerId: req.identity.id,
       ownerType: req.identity.type,
     });
 
-    if (!cvDoc) {
-      return res.status(404).json({
-        error: "CV not found",
-      });
+    if (!cv) {
+      return res.status(404).json({ error: "CV not found" });
     }
 
-    return res.json(cvDoc);
+    return res.json(cv);
   } catch (err) {
     console.error("[getCVById]", err);
 
@@ -139,9 +253,7 @@ export const getCVById = async (req: Request, res: Response) => {
 export const deleteCV = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
-      return res.status(401).json({
-        error: "Unauthorized",
-      });
+      return res.status(401).json({ error: "Unauthorized" });
     }
 
     const id = getParam(req.params.id);
@@ -153,11 +265,14 @@ export const deleteCV = async (req: Request, res: Response) => {
     });
 
     if (!deleted) {
-      return res.status(404).json({
-        error: "CV not found",
-      });
+      return res.status(404).json({ error: "CV not found" });
     }
 
+    // cache invalidation
+    await deleteCache(cvListKey(req.identity.id, req.identity.type));
+    await deleteCache(cvHashKey(req.identity.id, deleted.contentHash));
+
+    // audit
     await auditLog({
       event: "CV_DELETED",
       userId: req.identity.id,
@@ -165,9 +280,7 @@ export const deleteCV = async (req: Request, res: Response) => {
       requestId: req.requestId,
       ip: req.ip,
       resourceId: id,
-      metadata: {
-        cvId: id,
-      },
+      metadata: { cvId: id },
     });
 
     return res.json({

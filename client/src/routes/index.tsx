@@ -32,7 +32,8 @@ export default function HomePage() {
           </h1>
 
           <p className="text-sm text-secondary max-w-xl mx-auto leading-relaxed">
-            Paste your CV and a job listing — get a tailored cover letter, match score, and email draft. No fluff, just results.
+            Paste your CV and a job listing — get a tailored cover letter, match score, and email draft. Nothing unnecessary, just
+            results.
           </p>
 
           <div className="flex items-center justify-center gap-6 pt-2 text-xs text-caption">

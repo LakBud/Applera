@@ -50,6 +50,9 @@ export interface CVDocument {
   applicationsCount?: number;
   lastUsedAt?: string;
 
+  pdfUrl?: string;
+  previewImageUrl?: string;
+
   createdAt?: string;
   updatedAt?: string;
 }

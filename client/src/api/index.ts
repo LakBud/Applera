@@ -4,15 +4,13 @@
 
 // ── Hooks ───────────────────────────────────────────────
 
-export { useUploadCVFile, useUploadCVText, useCVs, useCV, useDeleteCV } from "./hooks/useCV";
+export { useUploadCVFile, useUploadCVText, useCVs, useCV, useDeleteCV, useCVDashboard } from "./hooks/useCV";
 
 export { useJobs, useJob, useAnalyzeJobFile, useAnalyzeJobText, useDeleteJob } from "./hooks/useJob";
 
 export { useApplicationsByCv, useApplication, useUpdateApplicationStatus, useCreateApplication } from "./hooks/useApplication";
 
 export { useInterviewPrep, useGenerateInterviewPrep } from "./hooks/useInterviewPrep";
-
-export { useDashboard } from "./hooks/useDashboard";
 
 // ── Domain APIs (optional but clean) ────────────────────
 export * as applicationApi from "./application.api";

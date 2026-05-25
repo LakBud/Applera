@@ -4,7 +4,6 @@ import { Briefcase } from "lucide-react";
 
 function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   const location = useLocation();
-  console.log(location.pathname); // ← add this
   const isActive = location.pathname.startsWith(to);
 
   return (

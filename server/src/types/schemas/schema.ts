@@ -15,6 +15,7 @@ export const CVSchema = z.object({
   summary: z.string(),
   seniority_level: z.string(),
   skills: z.array(z.string()),
+
   experience: z.array(
     z.object({
       title: z.string(),
@@ -22,12 +23,16 @@ export const CVSchema = z.object({
       highlights: z.array(z.string()),
     }),
   ),
+
   education: z.array(
     z.object({
       title: z.string(),
       school: z.string(),
     }),
   ),
+
+  pdfUrl: z.string().optional(),
+  previewImageUrl: z.string().optional(),
 });
 
 export type CVSchemaData = z.infer<typeof CVSchema>;

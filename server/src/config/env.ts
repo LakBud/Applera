@@ -59,3 +59,9 @@ export const MONGO_URI = requireEnv("MONGO_URI");
 
 export const UPSTASH_REDIS_REST_URL = requireEnv("UPSTASH_REDIS_REST_URL");
 export const UPSTASH_REDIS_REST_TOKEN = requireEnv("UPSTASH_REDIS_REST_TOKEN");
+
+// ── Cloudinary ───────────────────────────────────────────────────────────────
+
+export const CLOUDINARY_CLOUD_NAME = requireEnv("CLOUDINARY_CLOUD_NAME");
+export const CLOUDINARY_API_KEY = requireEnv("CLOUDINARY_API_KEY");
+export const CLOUDINARY_API_SECRET = requireEnv("CLOUDINARY_API_SECRET");

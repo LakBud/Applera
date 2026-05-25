@@ -65,6 +65,21 @@ const CVSchema = new mongoose.Schema(
       ],
     },
 
+    pdfUrl: {
+      type: String,
+    },
+
+    previewImageUrl: {
+      type: String,
+    },
+
+    contentHash: {
+      type: String,
+      index: true,
+      required: true,
+      unique: false,
+    },
+
     deletedAt: Date,
   },
   {

@@ -13,8 +13,9 @@ import { Route as _protectedRouteRouteImport } from './routes/__protected/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
 import { Route as _protectedDashboardRouteImport } from './routes/__protected/dashboard'
-import { Route as _protectedCvsRouteImport } from './routes/__protected/cvs'
 import { Route as _protectedApplicationsRouteImport } from './routes/__protected/applications'
+import { Route as _protectedCvsIndexRouteImport } from './routes/__protected/cvs/index'
+import { Route as _protectedCvsCvIdRouteImport } from './routes/__protected/cvs/$cvId'
 
 const _protectedRouteRoute = _protectedRouteRouteImport.update({
   id: '/__protected',
@@ -35,53 +36,74 @@ const _protectedDashboardRoute = _protectedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => _protectedRouteRoute,
 } as any)
-const _protectedCvsRoute = _protectedCvsRouteImport.update({
-  id: '/cvs',
-  path: '/cvs',
-  getParentRoute: () => _protectedRouteRoute,
-} as any)
 const _protectedApplicationsRoute = _protectedApplicationsRouteImport.update({
   id: '/applications',
   path: '/applications',
+  getParentRoute: () => _protectedRouteRoute,
+} as any)
+const _protectedCvsIndexRoute = _protectedCvsIndexRouteImport.update({
+  id: '/cvs/',
+  path: '/cvs/',
+  getParentRoute: () => _protectedRouteRoute,
+} as any)
+const _protectedCvsCvIdRoute = _protectedCvsCvIdRouteImport.update({
+  id: '/cvs/$cvId',
+  path: '/cvs/$cvId',
   getParentRoute: () => _protectedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/applications': typeof _protectedApplicationsRoute
-  '/cvs': typeof _protectedCvsRoute
   '/dashboard': typeof _protectedDashboardRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/cvs/$cvId': typeof _protectedCvsCvIdRoute
+  '/cvs/': typeof _protectedCvsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/applications': typeof _protectedApplicationsRoute
-  '/cvs': typeof _protectedCvsRoute
   '/dashboard': typeof _protectedDashboardRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/cvs/$cvId': typeof _protectedCvsCvIdRoute
+  '/cvs': typeof _protectedCvsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/__protected': typeof _protectedRouteRouteWithChildren
   '/__protected/applications': typeof _protectedApplicationsRoute
-  '/__protected/cvs': typeof _protectedCvsRoute
   '/__protected/dashboard': typeof _protectedDashboardRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/__protected/cvs/$cvId': typeof _protectedCvsCvIdRoute
+  '/__protected/cvs/': typeof _protectedCvsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/applications' | '/cvs' | '/dashboard' | '/auth/sign-up'
+  fullPaths:
+    | '/'
+    | '/applications'
+    | '/dashboard'
+    | '/auth/sign-up'
+    | '/cvs/$cvId'
+    | '/cvs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/applications' | '/cvs' | '/dashboard' | '/auth/sign-up'
+  to:
+    | '/'
+    | '/applications'
+    | '/dashboard'
+    | '/auth/sign-up'
+    | '/cvs/$cvId'
+    | '/cvs'
   id:
     | '__root__'
     | '/'
     | '/__protected'
     | '/__protected/applications'
-    | '/__protected/cvs'
     | '/__protected/dashboard'
     | '/auth/sign-up'
+    | '/__protected/cvs/$cvId'
+    | '/__protected/cvs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -120,13 +142,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _protectedDashboardRouteImport
       parentRoute: typeof _protectedRouteRoute
     }
-    '/__protected/cvs': {
-      id: '/__protected/cvs'
-      path: '/cvs'
-      fullPath: '/cvs'
-      preLoaderRoute: typeof _protectedCvsRouteImport
-      parentRoute: typeof _protectedRouteRoute
-    }
     '/__protected/applications': {
       id: '/__protected/applications'
       path: '/applications'
@@ -134,19 +149,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _protectedApplicationsRouteImport
       parentRoute: typeof _protectedRouteRoute
     }
+    '/__protected/cvs/': {
+      id: '/__protected/cvs/'
+      path: '/cvs'
+      fullPath: '/cvs/'
+      preLoaderRoute: typeof _protectedCvsIndexRouteImport
+      parentRoute: typeof _protectedRouteRoute
+    }
+    '/__protected/cvs/$cvId': {
+      id: '/__protected/cvs/$cvId'
+      path: '/cvs/$cvId'
+      fullPath: '/cvs/$cvId'
+      preLoaderRoute: typeof _protectedCvsCvIdRouteImport
+      parentRoute: typeof _protectedRouteRoute
+    }
   }
 }
 
 interface _protectedRouteRouteChildren {
   _protectedApplicationsRoute: typeof _protectedApplicationsRoute
-  _protectedCvsRoute: typeof _protectedCvsRoute
   _protectedDashboardRoute: typeof _protectedDashboardRoute
+  _protectedCvsCvIdRoute: typeof _protectedCvsCvIdRoute
+  _protectedCvsIndexRoute: typeof _protectedCvsIndexRoute
 }
 
 const _protectedRouteRouteChildren: _protectedRouteRouteChildren = {
   _protectedApplicationsRoute: _protectedApplicationsRoute,
-  _protectedCvsRoute: _protectedCvsRoute,
   _protectedDashboardRoute: _protectedDashboardRoute,
+  _protectedCvsCvIdRoute: _protectedCvsCvIdRoute,
+  _protectedCvsIndexRoute: _protectedCvsIndexRoute,
 }
 
 const _protectedRouteRouteWithChildren = _protectedRouteRoute._addFileChildren(
