@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as _protectedRouteRouteImport } from './routes/__protected/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
-import { Route as _protectedDashboardRouteImport } from './routes/__protected/dashboard'
 import { Route as _protectedApplicationsRouteImport } from './routes/__protected/applications'
 import { Route as _protectedCvsIndexRouteImport } from './routes/__protected/cvs/index'
 import { Route as _protectedCvsCvIdRouteImport } from './routes/__protected/cvs/$cvId'
@@ -30,11 +29,6 @@ const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: '/auth/sign-up',
   path: '/auth/sign-up',
   getParentRoute: () => rootRouteImport,
-} as any)
-const _protectedDashboardRoute = _protectedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => _protectedRouteRoute,
 } as any)
 const _protectedApplicationsRoute = _protectedApplicationsRouteImport.update({
   id: '/applications',
@@ -55,7 +49,6 @@ const _protectedCvsCvIdRoute = _protectedCvsCvIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/applications': typeof _protectedApplicationsRoute
-  '/dashboard': typeof _protectedDashboardRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/cvs/$cvId': typeof _protectedCvsCvIdRoute
   '/cvs/': typeof _protectedCvsIndexRoute
@@ -63,7 +56,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/applications': typeof _protectedApplicationsRoute
-  '/dashboard': typeof _protectedDashboardRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/cvs/$cvId': typeof _protectedCvsCvIdRoute
   '/cvs': typeof _protectedCvsIndexRoute
@@ -73,34 +65,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/__protected': typeof _protectedRouteRouteWithChildren
   '/__protected/applications': typeof _protectedApplicationsRoute
-  '/__protected/dashboard': typeof _protectedDashboardRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/__protected/cvs/$cvId': typeof _protectedCvsCvIdRoute
   '/__protected/cvs/': typeof _protectedCvsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/applications'
-    | '/dashboard'
-    | '/auth/sign-up'
-    | '/cvs/$cvId'
-    | '/cvs/'
+  fullPaths: '/' | '/applications' | '/auth/sign-up' | '/cvs/$cvId' | '/cvs/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/applications'
-    | '/dashboard'
-    | '/auth/sign-up'
-    | '/cvs/$cvId'
-    | '/cvs'
+  to: '/' | '/applications' | '/auth/sign-up' | '/cvs/$cvId' | '/cvs'
   id:
     | '__root__'
     | '/'
     | '/__protected'
     | '/__protected/applications'
-    | '/__protected/dashboard'
     | '/auth/sign-up'
     | '/__protected/cvs/$cvId'
     | '/__protected/cvs/'
@@ -135,13 +113,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignUpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/__protected/dashboard': {
-      id: '/__protected/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof _protectedDashboardRouteImport
-      parentRoute: typeof _protectedRouteRoute
-    }
     '/__protected/applications': {
       id: '/__protected/applications'
       path: '/applications'
@@ -168,14 +139,12 @@ declare module '@tanstack/react-router' {
 
 interface _protectedRouteRouteChildren {
   _protectedApplicationsRoute: typeof _protectedApplicationsRoute
-  _protectedDashboardRoute: typeof _protectedDashboardRoute
   _protectedCvsCvIdRoute: typeof _protectedCvsCvIdRoute
   _protectedCvsIndexRoute: typeof _protectedCvsIndexRoute
 }
 
 const _protectedRouteRouteChildren: _protectedRouteRouteChildren = {
   _protectedApplicationsRoute: _protectedApplicationsRoute,
-  _protectedDashboardRoute: _protectedDashboardRoute,
   _protectedCvsCvIdRoute: _protectedCvsCvIdRoute,
   _protectedCvsIndexRoute: _protectedCvsIndexRoute,
 }

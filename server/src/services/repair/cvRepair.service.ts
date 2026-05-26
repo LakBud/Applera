@@ -64,5 +64,16 @@ export function repairCV(cv: unknown): CVSchemaData {
     skills,
     experience,
     education,
+
+    projects: Array.isArray(data.projects)
+      ? data.projects
+          .map((p: any) => ({
+            name: normalizeString(p?.name),
+            description: normalizeString(p?.description),
+            url: normalizeString(p?.url),
+            tech: dedupe(normalizeArray(p?.tech)),
+          }))
+          .filter((p: any) => p.name || p.description)
+      : [],
   };
 }

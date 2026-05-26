@@ -12,6 +12,7 @@ import { deleteCache, getCache, setCache } from "../lib/cache.js";
 import { hash } from "../lib/hash.js";
 import { uploadPDF } from "../lib/cloudinary.upload.js";
 import { getPdfThumbnail } from "../utils/getPdfThumbnail.utils.js";
+import Application from "../models/Application.js";
 
 const cvHashKey = (userId: string, hash: string) => `cv:hash:${userId}:${hash}`;
 const cvListKey = (userId: string, type: string) => `cvs:${userId}:${type}`;
@@ -106,8 +107,12 @@ export const createCV = async (req: Request, res: Response) => {
     // AI PROCESSING
     // ─────────────────────────────
 
+    // AI PROCESSING
     const parsedRaw = await extractCVData(rawText);
+    console.log("[CV] LLM projects:", parsedRaw.projects?.length);
+
     const parsed = normalizeParsedCV(parsedRaw);
+    console.log("[CV] NORMALIZED projects:", parsed.projects?.length);
 
     // ─────────────────────────────
     // CREATE CV (race-safe with DB index)
@@ -200,11 +205,37 @@ export const getCVs = async (req: Request, res: Response) => {
       ownerType: req.identity.type,
     })
       .sort({ createdAt: -1 })
-      .select("-rawText");
+      .select("-rawText")
+      .lean();
 
-    await setCache(key, cvs, 60 * 10);
+    const cvIds = cvs.map((cv) => cv._id);
 
-    return res.json(cvs);
+    const counts = await Application.aggregate([
+      {
+        $match: {
+          ownerId: req.identity.id,
+          ownerType: req.identity.type,
+          cv: { $in: cvIds },
+        },
+      },
+      {
+        $group: {
+          _id: "$cv",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]));
+
+    const enriched = cvs.map((cv) => ({
+      ...cv,
+      applicationsCount: countMap.get(cv._id.toString()) ?? 0,
+    }));
+
+    await setCache(key, enriched, 60 * 10);
+
+    return res.json(enriched);
   } catch (err) {
     console.error("[getCVs]", err);
 
@@ -230,13 +261,22 @@ export const getCVById = async (req: Request, res: Response) => {
       _id: id,
       ownerId: req.identity.id,
       ownerType: req.identity.type,
-    });
+    }).lean();
 
     if (!cv) {
       return res.status(404).json({ error: "CV not found" });
     }
 
-    return res.json(cv);
+    const applicationsCount = await Application.countDocuments({
+      cv: cv._id,
+      ownerId: req.identity.id,
+      ownerType: req.identity.type,
+    });
+
+    return res.json({
+      ...cv,
+      applicationsCount,
+    });
   } catch (err) {
     console.error("[getCVById]", err);
 

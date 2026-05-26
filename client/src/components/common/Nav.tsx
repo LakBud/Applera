@@ -35,7 +35,6 @@ export default function Nav({ isSignedIn }: { isSignedIn: boolean }) {
         <div className="hidden md:flex justify-center items-center gap-8">
           {isSignedIn && (
             <>
-              <NavLink to="/dashboard">Dashboard</NavLink>
               <NavLink to="/applications">Applications</NavLink>
               <NavLink to="/cvs">CVs</NavLink>
             </>

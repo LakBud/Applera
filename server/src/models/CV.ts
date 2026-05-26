@@ -16,12 +16,6 @@ const CVSchema = new mongoose.Schema(
       index: true,
     },
 
-    applicationsCount: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-
     lastUsedAt: Date,
 
     rawText: {
@@ -63,15 +57,19 @@ const CVSchema = new mongoose.Schema(
           school: { type: String, trim: true },
         },
       ],
+
+      projects: [
+        {
+          name: { type: String, trim: true },
+          description: { type: String, trim: true },
+          url: { type: String, trim: true },
+          tech: [{ type: String, trim: true }],
+        },
+      ],
     },
 
-    pdfUrl: {
-      type: String,
-    },
-
-    previewImageUrl: {
-      type: String,
-    },
+    pdfUrl: { type: String },
+    previewImageUrl: { type: String },
 
     contentHash: {
       type: String,

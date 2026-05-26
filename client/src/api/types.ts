@@ -37,11 +37,18 @@ export interface CVParsed {
     title?: string;
     school?: string;
   }[];
+
+  projects: {
+    name?: string;
+    description?: string;
+    url?: string;
+    tech: string[];
+  }[];
 }
 
 export interface CVDocument {
   _id: string;
-  rawText: string;
+  rawText?: string;
   parsed: CVParsed;
 
   ownerId?: string;
@@ -57,16 +64,12 @@ export interface CVDocument {
   updatedAt?: string;
 }
 
-// POST /api/cv
 export interface CreateCVResponse {
   message: string;
   cv: CVDocument;
 }
 
-// GET /api/cv
 export type GetCVsResponse = CVDocument[];
-
-// GET /api/cv/:id
 export type GetCVResponse = CVDocument;
 
 // ─────────────────────────────────────────────

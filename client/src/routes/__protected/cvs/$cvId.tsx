@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/__protected/cvs/$cvId")({
-  component: CVDetail,
-});
+import { CVDetailPage } from "../../../pages/cvDetail";
 
-function CVDetail() {
-  const { cvId } = Route.useParams();
-  return <div>{cvId}</div>;
-}
+export const Route = createFileRoute("/__protected/cvs/$cvId")({
+  component: CVDetailPage,
+});

@@ -43,6 +43,17 @@ export const CVParsedSchema = z.object({
       school: z.string().optional(),
     }),
   ),
+
+  projects: z
+    .array(
+      z.object({
+        name: z.string().optional(),
+        description: z.string().optional(),
+        url: z.string().optional(),
+        tech: z.array(z.string()).default([]),
+      }),
+    )
+    .default([]),
 });
 
 export const CVDocumentSchema = z.object({
@@ -53,18 +64,17 @@ export const CVDocumentSchema = z.object({
   applicationsCount: z.number().optional(),
   lastUsedAt: z.string().optional(),
 
-  createdAt: z.string(),
-  updatedAt: z.string(),
-
   pdfUrl: z.string().optional(),
   previewImageUrl: z.string().optional(),
+
+  createdAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });
 
 export const UploadCVResponseSchema = z.object({
   message: z.string(),
   cv: CVDocumentSchema,
 });
-
 // ─────────────────────────────────────────────
 // Job
 // ─────────────────────────────────────────────
@@ -197,6 +207,8 @@ export const DashboardSchema = z.object({
   ),
 });
 
+export const SuccessStatusSchema = z.enum(["applied", "interviewing", "offered"]);
+
 // inferred TS types
 export type UploadCVResponse = z.infer<typeof UploadCVResponseSchema>;
 export type CVDocument = z.infer<typeof CVDocumentSchema>;
@@ -215,3 +227,5 @@ export type DashboardResponse = z.infer<typeof DashboardSchema>;
 export type InterviewPrep = z.infer<typeof InterviewPrepSchema>;
 
 export type CreateApplicationResponse = z.infer<typeof CreateApplicationResponseSchema>;
+
+export type SuccessStatus = z.infer<typeof SuccessStatusSchema>;
