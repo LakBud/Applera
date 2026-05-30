@@ -6,28 +6,25 @@ type Props = {
 };
 
 export function CVStats({ successRate, totalApplications, avgScore, bestScore }: Props) {
-  return (
-    <div className="flex flex-col justify-center gap-3 h-full w-full">
-      {/* Anchor */}
-      <div className="leading-none">
-        <div className="text-5xl font-bold font-display text-tx-h1">{successRate}%</div>
+  const stats = [
+    { label: "Applications", value: totalApplications },
+    { label: "Avg Score", value: `${avgScore}%` },
+    { label: "Best Score", value: `${bestScore}%` },
+  ];
 
+  return (
+    <div className="flex flex-col gap-4 h-full">
+      <div>
+        <div className="text-5xl font-bold font-display text-tx-h1 tracking-tight">{successRate}%</div>
         <div className="text-xs uppercase tracking-widest text-tx-muted mt-1">Success Rate</div>
       </div>
-
-      {/* Drift */}
-      <div className="flex flex-wrap gap-5 text-sm text-tx-muted">
-        <div>
-          <span className="text-tx-h1 font-semibold">{totalApplications}</span> apps
-        </div>
-
-        <div>
-          <span className="text-tx-h1 font-semibold">{avgScore}%</span> avg
-        </div>
-
-        <div>
-          <span className="text-tx-h1 font-semibold">{bestScore}%</span> best
-        </div>
+      <div className="grid grid-cols-3 gap-3 pt-1">
+        {stats.map(({ label, value }) => (
+          <div key={label} className="bg-surface-muted rounded-xl px-3 py-2.5 space-y-0.5">
+            <div className="text-sm font-semibold text-tx-h1">{value}</div>
+            <div className="text-[10px] uppercase tracking-wider text-tx-muted">{label}</div>
+          </div>
+        ))}
       </div>
     </div>
   );

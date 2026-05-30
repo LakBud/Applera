@@ -5,24 +5,21 @@ type Props = {
 
 export function CVCompletenessBar({ completeness, missing }: Props) {
   return (
-    <div className="flex flex-col justify-center gap-3 h-full w-full">
-      {/* Header */}
-      <div className="flex items-center justify-between text-xs uppercase tracking-widest text-tx-muted">
-        <span>CV Completeness</span>
-        <span className="text-tx-h1 font-semibold">{completeness}%</span>
+    <div className="flex flex-col gap-4 h-full">
+      <div>
+        <div className="text-5xl font-bold font-display text-tx-h1 tracking-tight">{completeness}%</div>
+        <div className="text-xs uppercase tracking-widest text-tx-muted mt-1">CV Completeness</div>
       </div>
-
-      {/* Bar */}
-      <div className="h-2 bg-surface-muted rounded-full overflow-hidden">
-        <div className="h-full bg-primary transition-all duration-700" style={{ width: `${completeness}%` }} />
-      </div>
-
-      {/* Micro insight */}
-      {missing.length > 0 && (
-        <div className="text-xs text-tx-muted leading-snug">
-          Missing <span className="text-tx-h1 font-medium">{missing.join(", ")}</span>
+      <div className="space-y-2 pt-1">
+        <div className="h-2 bg-surface-muted rounded-full overflow-hidden">
+          <div className="h-full bg-primary rounded-full transition-all duration-700" style={{ width: `${completeness}%` }} />
         </div>
-      )}
+        {missing.length > 0 && (
+          <p className="text-xs text-tx-muted">
+            Missing: <span className="text-tx-body font-medium">{missing.join(", ")}</span>
+          </p>
+        )}
+      </div>
     </div>
   );
 }
