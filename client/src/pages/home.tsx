@@ -4,11 +4,14 @@ import FeatureSection from "../components/home/sections/FeatureSection";
 import GeneratorSection from "../components/home/sections/GeneratorSection";
 import PreviewSection from "../components/home/sections/PreviewSection";
 import { useHomeState } from "../hooks/useHomeState";
+import { useAuth } from "@clerk/clerk-react";
+import { Link } from "@tanstack/react-router";
 
 import { Briefcase } from "lucide-react";
 
 export default function HomePage() {
   const homeState = useHomeState();
+  const { isSignedIn, isLoaded } = useAuth();
 
   return (
     <div className="min-h-screen bg-bg text-body">
@@ -24,9 +27,17 @@ export default function HomePage() {
           </h1>
 
           <p className="text-sm text-secondary max-w-xl mx-auto leading-relaxed">
-            Paste your CV and a job listing — get a tailored cover letter, match score, and email draft. Nothing unnecessary, just
-            results.
+            Paste your CV and a job listing — get a tailored cover letter, match score, and email draft.
           </p>
+
+          {!isSignedIn && isLoaded && (
+            <p className="text-xs text-muted-foreground">
+              <Link to="/auth/sign-up" className="text-primary underline underline-offset-2 font-medium">
+                Create a free account
+              </Link>{" "}
+              to save applications, track progress, and reuse more of your CVs.
+            </p>
+          )}
 
           <div className="flex items-center justify-center gap-6 pt-2 text-xs text-caption">
             <span className="flex items-center gap-1.5">

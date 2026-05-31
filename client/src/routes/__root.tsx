@@ -5,6 +5,7 @@ import Nav from "../components/common/Nav";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Loader2 } from "lucide-react";
+import { Toaster } from "../components/ui/sonner";
 
 function GlobalPending() {
   return (
@@ -33,6 +34,20 @@ function RootLayout() {
       <main className="pt-14">
         <Outlet />
       </main>
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          unstyled: true,
+          classNames: {
+            toast:
+              "flex items-center gap-3 bg-white border border-green-100 text-green-900 text-sm font-sans px-4 py-3 rounded-xl shadow-md w-full",
+            success: "border-green-200 [&>[data-icon]]:text-green-600",
+            error: "border-red-200 text-red-800 [&>[data-icon]]:text-red-500",
+            title: "font-medium",
+            description: "text-xs opacity-70",
+          },
+        }}
+      />
       <TanStackRouterDevtools />
       <ReactQueryDevtools initialIsOpen={false} />
     </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { CreateApplicationResponse } from "../api/schemas";
 import { useAnalyzeJobFile, useAnalyzeJobText, useCreateApplication, useUploadCVFile, useUploadCVText } from "../api";
+import { toast } from "sonner";
 
 export function useHomeState() {
   const [cvId, setCvId] = useState<string | null>(null);
@@ -13,16 +14,29 @@ export function useHomeState() {
   const uploadJobText = useAnalyzeJobText();
 
   const { mutate, isPending, error } = useCreateApplication();
+  const [resetKey, setResetKey] = useState(0);
 
   function handleGenerate() {
     if (!cvId || !jobId) return;
-    mutate({ cvId, jobId }, { onSuccess: (data) => setResult(data) });
+    mutate(
+      { cvId, jobId },
+      {
+        onSuccess: (data) => {
+          setResult(data);
+          toast.success("Application generated successfully");
+        },
+        onError: (err) => {
+          toast.error(err.message ?? "Failed to generate application");
+        },
+      },
+    );
   }
 
   function handleReset() {
     setResult(null);
     setCvId(null);
     setJobId(null);
+    setResetKey((k) => k + 1);
   }
 
   function clearCvId() {
@@ -52,5 +66,6 @@ export function useHomeState() {
     handleGenerate,
     handleReset,
     canGenerate,
+    resetKey,
   };
 }

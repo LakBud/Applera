@@ -5,6 +5,8 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { CvList } from "./CVList";
+import { toast } from "sonner";
+import { Check } from "lucide-react";
 
 type UploadFileMutation = UseMutationResult<any, Error, File>;
 type UploadTextMutation = UseMutationResult<any, Error, string>;
@@ -50,30 +52,34 @@ export default function Uploader({
 
   async function handleFile(file: File) {
     try {
+      onDeselectCv?.(); // clear any list selection
       const res = await uploadFile.mutateAsync(file);
       const id = getId(res);
       setUploadedId(id ?? null);
       onSuccess?.(id);
+      toast.success(`${label} uploaded successfully`);
     } catch (err) {
-      console.error(err);
+      toast.error(`Failed to upload ${label.toLowerCase()}`);
     }
   }
 
   async function handleText() {
     if (!text.trim()) return;
     try {
+      onDeselectCv?.(); // clear any list selection
       const res = await uploadText.mutateAsync(text);
       const id = getId(res);
       setUploadedId(id ?? null);
       onSuccess?.(id);
       setText("");
+      toast.success(`${label} saved successfully`);
     } catch (err) {
-      console.error(err);
+      toast.error(`Failed to save ${label.toLowerCase()}`);
     }
   }
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 space-y-5 h-120 bg-white/70">
+    <div className="bg-surface border border-border rounded-2xl p-6 space-y-5 h-122 bg-white/70">
       {/* Mode toggle */}
       <div className="flex items-center justify-between">
         <span className="text-overline text-green-800">{label}</span>
@@ -106,7 +112,7 @@ export default function Uploader({
           <div
             onClick={() => !isUploading && !isSelected && fileRef.current?.click()}
             className={`
-              border h-48 border-dashed rounded-xl p-10 text-center transition
+              border h-64 border-dashed rounded-xl p-10 text-center transition
               ${isUploading ? "opacity-60 cursor-not-allowed" : ""}
               ${isSelected ? "border-green-600 bg-green-50 cursor-default" : "border-border cursor-pointer hover:bg-surface-muted"}
             `}
@@ -123,19 +129,22 @@ export default function Uploader({
               }}
             />
             {isSelected ? (
-              <>
-                <p className="text-sm text-green-700 font-medium">{label} saved ✓</p>
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center border-2 border-green-600">
+                  <Check className="w-5 h-5 text-green-600" />
+                </div>
+                <p className="text-sm text-green-800 font-medium">{label} saved</p>
                 <Button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleClear();
                   }}
-                  className="text-xs text-muted-foreground underline mt-1 hover:text-foreground"
+                  className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
                 >
                   Remove
                 </Button>
-              </>
+              </div>
             ) : (
               <>
                 <p className="text-body">
@@ -146,7 +155,16 @@ export default function Uploader({
             )}
           </div>
 
-          {showCvList && <CvList onSelectCv={onSelectCv} onDeselectCv={onDeselectCv} selectedCvId={selectedCvId} />}
+          {showCvList && (
+            <CvList
+              onSelectCv={(id) => {
+                setUploadedId(null);
+                onSelectCv?.(id);
+              }}
+              onDeselectCv={onDeselectCv}
+              selectedCvId={selectedCvId}
+            />
+          )}
         </div>
       )}
 
@@ -155,7 +173,10 @@ export default function Uploader({
         <div className="space-y-3">
           {isSelected ? (
             <div className="border border-green-600 bg-green-50 rounded-xl p-6 text-center h-80 flex flex-col items-center justify-center">
-              <p className="text-sm text-green-700 font-medium">{label} saved ✓</p>
+              <div className="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center border-2 border-green-600 mb-3">
+                <Check className="w-5 h-5 text-green-600" />
+              </div>
+              <p className="text-sm text-green-800 font-medium">{label} saved</p>
               <Button
                 type="button"
                 onClick={handleClear}

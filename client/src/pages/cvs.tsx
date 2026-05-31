@@ -1,5 +1,6 @@
 import { useCVs } from "../api";
 import { usePinCV } from "../api/hooks/useCV";
+import { Loader } from "../components/common/Loader";
 import { CVCard } from "../components/cvs/CVCard";
 
 export function CVsPage() {
@@ -16,8 +17,7 @@ export function CVsPage() {
       </div>
 
       <section className="space-y-4">
-        {isLoading && <p>Loading...</p>}
-
+        {isLoading && <Loader />}
         {!isLoading && cvs?.length === 0 && <p className="text-muted-foreground">No CVs uploaded yet.</p>}
 
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">

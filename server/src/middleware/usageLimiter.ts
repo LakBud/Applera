@@ -9,10 +9,6 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
 
   const key = `usage:${userId}`;
 
-  console.log("USER ID:", userId);
-  console.log("LIMIT:", limit);
-  console.log("KEY:", key);
-
   try {
     const count = await redis.incr(key);
 
