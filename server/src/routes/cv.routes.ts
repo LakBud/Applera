@@ -6,7 +6,7 @@ import { validate } from "../middleware/validate.js";
 import { aiTimeout } from "../middleware/timeout.js";
 import { concurrencyLimit } from "../middleware/concurrency.js";
 
-import { createCV, getCVs, getCVById, deleteCV } from "../controllers/cv.controller.js";
+import { createCV, getCVs, getCVById, deleteCV, pinCV } from "../controllers/cv.controller.js";
 import { parseCvPdf } from "../middleware/parsePdf.js";
 
 const router = express.Router();
@@ -45,5 +45,7 @@ router.get("/:id", getCVById);
  * Delete CV
  */
 router.delete("/:id", deleteCV);
+
+router.patch("/:id/pin", pinCV);
 
 export default router;

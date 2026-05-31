@@ -1,77 +1,124 @@
-import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useDeleteCV } from "../../api";
 import type { CVDocument } from "../../api/schemas";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, CardAction } from "../ui/card";
 import { Button } from "../ui/button";
+import { FileText, Pin } from "lucide-react";
 
-export function CVCard({ cv }: { cv: CVDocument }) {
+type CVCardProps = {
+  cv: CVDocument;
+  onPin?: () => void;
+  isPinning?: boolean;
+  canPin?: boolean; // true when limit reached and this cv is not pinned
+};
+
+export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
   const del = useDeleteCV();
+  const navigate = useNavigate();
 
   const latestExp = cv.parsed.experience?.[0];
-  const topSkills = cv.parsed.skills?.slice(0, 5) || [];
+  const topSkills =
+    cv.parsed.skills?.reduce<string[]>((acc, skill) => {
+      const total = acc.join("").length + skill.length;
+      return total < 60 ? [...acc, skill] : acc;
+    }, []) ?? [];
 
   const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : "");
 
   const showSeniority = cv.parsed.seniority_level && cv.parsed.seniority_level !== "unknown";
 
   return (
-    <Link to="/cvs/$cvId" params={{ cvId: cv._id }}>
-      <Card className="hover:shadow-md transition cursor-pointer group bg-white/40">
-        {/* IMAGE */}
-        {cv.previewImageUrl && <img src={cv.previewImageUrl} alt="CV preview" className="w-full h-56 object-cover border-b" />}
+    <Card
+      style={{ "--tw-ring-color": "#1fa028" } as React.CSSProperties}
+      onClick={() => navigate({ to: "/cvs/$cvId", params: { cvId: cv._id } })}
+      className="w-full h-full hover:shadow-md transition cursor-pointer group bg-white/40 overflow-hidden flex flex-col ring-1"
+    >
+      {/* IMAGE */}
+      <div className="w-full h-56 border-b overflow-hidden bg-muted flex items-center justify-center">
+        {cv.previewImageUrl ? (
+          <img src={cv.previewImageUrl} alt="CV preview" className="w-full h-full object-cover" />
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+            <FileText className="w-10 h-10 opacity-30" />
+            <span className="text-xs opacity-50">{cv.parsed?.name || "No preview"}</span>
+          </div>
+        )}
+      </div>
 
-        {/* HEADER */}
-        <CardHeader>
-          <div className="flex items-start justify-between gap-2">
-            <div>
-              <CardTitle className="text-tx-h1 text-xl">{cv.parsed.name || "Untitled CV"}</CardTitle>
+      {/* HEADER */}
+      <CardHeader>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <CardTitle style={{ color: "#1fa028" }}>{cv.parsed.name || "Untitled CV"}</CardTitle>
 
-              <CardDescription className="text-sm text-tx-secondary">Updated {formatDate(cv.updatedAt)}</CardDescription>
-            </div>
-
+            <CardDescription style={{ color: "#1fa028", opacity: 0.7 }}>Updated {formatDate(cv.updatedAt)}</CardDescription>
+          </div>
+          <div className="flex items-center gap-1">
             {showSeniority && (
               <span className="text-xs px-2 py-1 rounded-full bg-muted whitespace-nowrap">{cv.parsed.seniority_level}</span>
             )}
-          </div>
-        </CardHeader>
-
-        {/* CONTENT */}
-        <CardContent className="space-y-4">
-          {/* Skills */}
-          {topSkills.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {topSkills.map((skill, i) => (
-                <span key={i} className="text-xs px-2 py-1 rounded-md bg-muted text-tx-secondary border border-rounded-2xl">
-                  {skill}
-                </span>
-              ))}
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPin?.();
+                }}
+                disabled={isPinning || canPin}
+                title={canPin ? "Unpin a CV first" : cv.pinned ? "Unpin" : "Pin"}
+                className={`p-1.5 rounded-md transition
+                ${cv.pinned ? "text-green-600 bg-green-50" : "text-muted-foreground hover:text-foreground"}
+                ${canPin ? "opacity-30 cursor-not-allowed" : ""}
+              `}
+              >
+                <Pin className="w-3.5 h-3.5" />
+              </Button>
             </div>
+          </div>
+        </div>
+      </CardHeader>
+
+      {/* CONTENT */}
+      <CardContent className="space-y-4 flex-1 overflow-hidden">
+        {/* Skills */}
+        {topSkills.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {topSkills.map((skill, i) => (
+              <span key={i} className="text-xs px-2 py-1 rounded-md bg-muted text-tx-secondary border border-rounded-2xl">
+                {skill}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Stats */}
+        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+          {cv.applicationsCount !== undefined && <p className="text-green-900">Used in {cv.applicationsCount} applications</p>}
+
+          {latestExp && cv.parsed.experience.length > 1 && (
+            <p className="text-green-900">{cv.parsed.experience.length} experiences</p>
           )}
+        </div>
+      </CardContent>
 
-          {/* Stats */}
-          <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-            {cv.applicationsCount !== undefined && <p className="text-green-900">Used in {cv.applicationsCount} applications</p>}
+      {/* FOOTER */}
+      <CardFooter className="flex justify-between">
+        {/* IMPORTANT: prevent navigation on delete */}
+        <div onClick={(e) => e.stopPropagation()}>
+          <Button variant="outline" className="text-green-900" onClick={() => del.mutate(cv._id)}>
+            Delete
+          </Button>
+        </div>
 
-            {latestExp && cv.parsed.experience.length > 1 && (
-              <p className="text-green-900">{cv.parsed.experience.length} experiences</p>
-            )}
-          </div>
-        </CardContent>
-
-        {/* FOOTER */}
-        <CardFooter className="flex justify-between">
-          {/* IMPORTANT: prevent navigation on delete */}
-          <div onClick={(e) => e.stopPropagation()}>
-            <Button variant="outline" className="text-green-900" onClick={() => del.mutate(cv._id)}>
-              Delete
-            </Button>
-          </div>
-
-          <CardAction className="pt-1">
-            <span className="text-xs text-muted-foreground">Click to view →</span>
-          </CardAction>
-        </CardFooter>
-      </Card>
-    </Link>
+        <CardAction className="pt-1">
+          <span style={{ color: "#1fa028", opacity: 1 }} className="text-xs">
+            Click to view →
+          </span>
+        </CardAction>
+      </CardFooter>
+    </Card>
   );
 }

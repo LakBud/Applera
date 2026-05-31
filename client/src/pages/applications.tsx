@@ -101,13 +101,6 @@ export function ApplicationsPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-semibold">Applications</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Track every application in one place</p>
-        </div>
-      </div>
-
       {isLoading && (
         <div className="border border-border divide-y divide-border">
           {Array.from({ length: 5 }).map((_, i) => (

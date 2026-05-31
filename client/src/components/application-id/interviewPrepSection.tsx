@@ -1,17 +1,8 @@
 import { Lightbulb, Loader2, MessageSquare } from "lucide-react";
 import { useGenerateInterviewPrep, useInterviewPrep } from "../../api";
 import { Button } from "../ui/button";
+import { Section } from "../common/Section";
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="border border-border">
-      <div className="px-4 py-2.5 border-b border-border bg-muted/30">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</p>
-      </div>
-      <div className="px-4 py-4">{children}</div>
-    </div>
-  );
-}
 export function InterviewPrepSection({ applicationId }: { applicationId: string }) {
   const { data: prep, isLoading, isError } = useInterviewPrep(applicationId);
   const { mutate: generate, isPending } = useGenerateInterviewPrep();

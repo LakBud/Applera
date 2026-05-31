@@ -25,6 +25,14 @@ export function useHomeState() {
     setJobId(null);
   }
 
+  function clearCvId() {
+    setCvId(null);
+  }
+
+  function clearJobId() {
+    setJobId(null);
+  }
+
   const canGenerate = !isPending && !!cvId && !!jobId;
 
   return {
@@ -39,6 +47,8 @@ export function useHomeState() {
     uploadJobText,
     setCvId,
     setJobId,
+    clearCvId,
+    clearJobId,
     handleGenerate,
     handleReset,
     canGenerate,

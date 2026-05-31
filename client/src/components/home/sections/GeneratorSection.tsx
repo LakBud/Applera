@@ -32,6 +32,7 @@ export default function GeneratorSection({ state }: Props) {
     setJobId,
     handleGenerate,
     canGenerate,
+    clearCvId,
   } = state;
 
   const isLocked = !!result;
@@ -49,6 +50,10 @@ export default function GeneratorSection({ state }: Props) {
             uploadText={uploadCVText}
             onSuccess={(id) => setCvId(id ?? null)}
             getId={(res) => res.cv?._id}
+            showCvList
+            selectedCvId={cvId}
+            onSelectCv={(id) => setCvId(id)}
+            onDeselectCv={() => clearCvId()}
           />
 
           {cvId && (

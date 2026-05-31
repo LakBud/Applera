@@ -204,7 +204,7 @@ export const getCVs = async (req: Request, res: Response) => {
       ownerId: req.identity.id,
       ownerType: req.identity.type,
     })
-      .sort({ createdAt: -1 })
+      .sort({ pinned: -1, createdAt: -1 })
       .select("-rawText")
       .lean();
 
@@ -332,5 +332,62 @@ export const deleteCV = async (req: Request, res: Response) => {
     return res.status(500).json({
       error: "Failed to delete CV",
     });
+  }
+};
+
+// ─────────────────────────────────────────────
+// PATCH /api/cv/:id/pin
+// ─────────────────────────────────────────────
+
+export const pinCV = async (req: Request, res: Response) => {
+  try {
+    if (!req.identity) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { id: ownerId, type: ownerType } = req.identity;
+    const id = getParam(req.params.id);
+
+    const cv = await CVModel.findOne({ _id: id, ownerId, ownerType });
+
+    if (!cv) {
+      return res.status(404).json({ error: "CV not found" });
+    }
+
+    // if already pinned, unpin it
+    if (cv.pinned) {
+      cv.pinned = false;
+      await deleteCache(cvListKey(ownerId, ownerType));
+      await cv.save();
+      return res.json({ cv, pinned: false });
+    }
+
+    // enforce max 5 pinned
+    const pinnedCount = await CVModel.countDocuments({ ownerId, ownerType, pinned: true });
+
+    if (pinnedCount >= 5) {
+      return res.status(400).json({
+        error: "You can only pin up to 5 CVs. Unpin one first.",
+      });
+    }
+
+    await deleteCache(cvListKey(ownerId, ownerType));
+
+    cv.pinned = true;
+    await cv.save();
+
+    await auditLog({
+      event: "CV_PINNED",
+      userId: ownerId,
+      userType: ownerType,
+      resourceId: id,
+      requestId: req.requestId,
+      ip: req.ip,
+    });
+
+    return res.json({ cv, pinned: true });
+  } catch (err) {
+    console.error("[pinCV]", err);
+    return res.status(500).json({ error: "Failed to pin CV" });
   }
 };

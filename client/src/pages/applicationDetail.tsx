@@ -1,4 +1,4 @@
-import { ArrowLeft, Briefcase, FileText, MapPin, TrendingUp, AlertCircle, CheckCircle, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, FileText, MapPin, Trash2, ArrowRight } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { Route } from "../routes/__protected/applications/$applicationId";
 import { useApplication, useUpdateApplicationStatus } from "../api";
@@ -6,31 +6,12 @@ import { Button } from "../components/ui/button";
 import { useDeleteApplication } from "../api/hooks/useApplication";
 import { STATUS_STYLES } from "../utils/statusStyles";
 import { InterviewPrepSection } from "../components/application-id/interviewPrepSection";
+import ApplicationResult from "../components/home/ApplicationResult";
+import { Loader } from "../components/common/Loader";
+import { Section } from "../components/common/Section";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="border border-border">
-      <div className="px-4 py-2.5 border-b border-border bg-muted/30">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</p>
-      </div>
-      <div className="px-4 py-4">{children}</div>
-    </div>
-  );
-}
-
-function RowSkeleton() {
-  return (
-    <div className="px-4 py-3.5 flex items-center gap-4">
-      <div className="flex-1 space-y-1.5">
-        <div className="h-3.5 w-48 bg-muted animate-pulse rounded" />
-        <div className="h-3 w-32 bg-muted animate-pulse rounded" />
-      </div>
-      <div className="h-5 w-20 bg-muted animate-pulse rounded" />
-    </div>
-  );
-}
-
-export function ApplicationIdPage() {
+export function ApplicationDetailPage() {
   const { applicationId } = Route.useParams();
   const navigate = useNavigate();
   const { data: application, isLoading, isError } = useApplication(applicationId);
@@ -48,13 +29,7 @@ export function ApplicationIdPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="max-w-3xl mx-auto px-4 py-8 space-y-3">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <RowSkeleton key={i} />
-        ))}
-      </div>
-    );
+    return <Loader fullScreen />;
   }
 
   if (isError || !application) {
@@ -69,33 +44,36 @@ export function ApplicationIdPage() {
 
   const cv = typeof application.cv === "object" ? application.cv : null;
   const job = typeof application.job === "object" ? application.job : null;
-  const { match } = application;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 space-y-4">
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <button
+        <Button
           onClick={() => navigate({ to: "/applications" })}
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Applications
-        </button>
+        </Button>
 
         <div className="flex items-center gap-2">
-          <select
-            value={application.status}
-            disabled={isUpdatingStatus}
-            onChange={(e) => handleStatusChange(e.target.value)}
-            className="text-xs border border-border bg-background px-2 py-1.5 rounded-sm focus:outline-none disabled:opacity-50"
-          >
-            {["generated", "applied", "interviewing", "offered", "rejected", "withdrawn"].map((s) => (
-              <option key={s} value={s}>
-                {STATUS_STYLES[s]?.label ?? s}
-              </option>
-            ))}
-          </select>
+          <Select value={application.status} disabled={isUpdatingStatus} onValueChange={handleStatusChange}>
+            <SelectTrigger className="text-xs h-8 w-36 bg-white border-green-200 text-green-800 focus:ring-green-500 transition-all duration-200">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-white border-green-100 animate-in fade-in-0 zoom-in-95 duration-100">
+              {["generated", "applied", "interviewing", "offered", "rejected", "withdrawn"].map((s) => (
+                <SelectItem
+                  key={s}
+                  value={s}
+                  className="text-xs text-green-800 focus:bg-green-50 focus:text-green-900 cursor-pointer transition-colors duration-100"
+                >
+                  {STATUS_STYLES[s]?.label ?? s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           <Button
             size="sm"
@@ -104,29 +82,45 @@ export function ApplicationIdPage() {
             onClick={handleDelete}
             className="text-red-600 border-red-200 hover:bg-red-50"
           >
-            {isDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+            {isDeleting ? <Loader size="sm" /> : <Trash2 className="w-3.5 h-3.5" />}
           </Button>
         </div>
       </div>
 
-      {/* Job */}
-      <Section title="Job listing">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Briefcase className="w-4 h-4 text-muted-foreground shrink-0" />
-            <p className="text-sm font-medium">{job?.parsed?.title ?? "Untitled Role"}</p>
-          </div>
-          {(job?.company || job?.parsed?.title) && <p className="text-xs text-muted-foreground pl-6">{job?.company}</p>}
+      <ApplicationResult data={{ application }} />
+
+      {/* Job details */}
+      <Section
+        title="Job listing"
+        action={
+          cv?._id ? (
+            <span
+              onClick={() => navigate({ to: "/cvs/$cvId", params: { cvId: cv._id } })}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+            >
+              <FileText className="w-3 h-3" />
+              {cv?.parsed?.name ?? "View CV"}
+              <ArrowRight className="w-3 h-3" />
+            </span>
+          ) : null
+        }
+      >
+        <div className="space-y-1 mb-4">
+          <p className="text-sm font-medium">{job?.parsed?.title ?? "Untitled Role"}</p>
+          {job?.company && <p className="text-xs text-muted-foreground">{job.company}</p>}
           {job?.location && (
-            <div className="flex items-center gap-2 pl-6">
+            <div className="flex items-center gap-1.5">
               <MapPin className="w-3 h-3 text-muted-foreground" />
               <p className="text-xs text-muted-foreground">{job.location}</p>
             </div>
           )}
+          {job?.parsed?.seniority && (
+            <span className="inline-block text-xs px-2 py-0.5 bg-muted rounded-sm">{job.parsed.seniority}</span>
+          )}
         </div>
 
         {job?.parsed?.required_skills && job.parsed.required_skills.length > 0 && (
-          <div className="mt-4">
+          <div className="mb-4">
             <p className="text-xs text-muted-foreground mb-2">Required skills</p>
             <div className="flex flex-wrap gap-1.5">
               {job.parsed.required_skills.map((skill) => (
@@ -139,106 +133,18 @@ export function ApplicationIdPage() {
         )}
 
         {job?.parsed?.responsibilities && job.parsed.responsibilities.length > 0 && (
-          <div className="mt-4">
+          <div>
             <p className="text-xs text-muted-foreground mb-2">Responsibilities</p>
             <ul className="space-y-1">
               {job.parsed.responsibilities.map((r, i) => (
                 <li key={i} className="text-xs text-muted-foreground flex gap-2">
-                  <span className="mt-1 shrink-0">·</span>
+                  <span className="mt-0.5 shrink-0">·</span>
                   {r}
                 </li>
               ))}
             </ul>
           </div>
         )}
-      </Section>
-
-      {/* CV */}
-      <Section title="CV">
-        <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
-          <p className="text-sm font-medium">{cv?.parsed?.name ?? "CV"}</p>
-        </div>
-        {cv?.parsed?.email && <p className="text-xs text-muted-foreground pl-6 mt-0.5">{cv.parsed.email}</p>}
-
-        {cv?.parsed?.skills && cv.parsed.skills.length > 0 && (
-          <div className="mt-4">
-            <p className="text-xs text-muted-foreground mb-2">Skills</p>
-            <div className="flex flex-wrap gap-1.5">
-              {cv.parsed.skills.map((skill) => (
-                <span key={skill} className="text-xs px-2 py-0.5 border border-border rounded-sm bg-muted/40">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-      </Section>
-
-      {/* Match */}
-      <Section title="Match">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm font-medium">{match.score}% match</span>
-          </div>
-          <span className="text-xs text-muted-foreground capitalize">{match.confidence} confidence</span>
-        </div>
-
-        {/* Score bar */}
-        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden mb-4">
-          <div
-            className="h-full bg-foreground rounded-full transition-all"
-            style={{ width: `${Math.round(match.score * 100)}%` }}
-          />
-        </div>
-
-        {match.strengths.length > 0 && (
-          <div className="mb-4">
-            <div className="flex items-center gap-1.5 mb-2">
-              <CheckCircle className="w-3.5 h-3.5 text-green-600" />
-              <p className="text-xs font-medium text-green-700">Strengths</p>
-            </div>
-            <ul className="space-y-1">
-              {match.strengths.map((s, i) => (
-                <li key={i} className="text-xs text-muted-foreground flex gap-2">
-                  <span className="mt-1 shrink-0">·</span>
-                  {s}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {match.missing_skills.length > 0 && (
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
-              <p className="text-xs font-medium text-amber-700">Missing skills</p>
-            </div>
-            <ul className="space-y-1">
-              {match.missing_skills.map((s, i) => (
-                <li key={i} className="text-xs text-muted-foreground flex gap-2">
-                  <span className="mt-1 shrink-0">·</span>
-                  {s}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </Section>
-
-      {/* Cover letter */}
-      <Section title="Cover letter">
-        <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{application.cover_letter}</p>
-      </Section>
-
-      {/* Email */}
-      <Section title="Application email">
-        <p className="text-xs text-muted-foreground mb-1">Subject</p>
-        <p className="text-sm font-medium mb-4">{application.application_email.subject}</p>
-        <p className="text-xs text-muted-foreground mb-1">Body</p>
-        <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{application.application_email.body}</p>
       </Section>
 
       <InterviewPrepSection applicationId={applicationId} />

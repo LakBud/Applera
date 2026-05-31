@@ -2,7 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { queryKeys } from "../queryKeys";
 import { client } from "../client";
-import { CVDocumentSchema, DashboardSchema, UploadCVResponseSchema } from "../schemas";
+import { CVDocumentSchema, DashboardSchema, UploadCVResponseSchema, type CVDocument } from "../schemas";
+import { pinCV } from "../cv.api";
 
 export function useCVs() {
   return useQuery({
@@ -85,5 +86,19 @@ export function useCVDashboard(cvId: string) {
       return DashboardSchema.parse(res.data);
     },
     enabled: !!cvId,
+  });
+}
+
+export function usePinCV() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => pinCV(id),
+    onSuccess: (_, id) => {
+      qc.setQueryData(queryKeys.cv.list(), (old: CVDocument[] | undefined) => {
+        if (!old) return old;
+        return old.map((cv) => (cv._id === id ? { ...cv, pinned: !cv.pinned } : cv));
+      });
+    },
   });
 }

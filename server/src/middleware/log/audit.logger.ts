@@ -16,7 +16,8 @@ export type AuditEvent =
   | "APPLICATION_STATUS_UPDATED"
   | "APPLICATION_DELETED"
   | "JOB_DELETED"
-  | "JOB_CREATED";
+  | "JOB_CREATED"
+  | "CV_PINNED";
 
 export interface AuditLog {
   event: AuditEvent;

@@ -19,7 +19,7 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   );
 }
 
-export default function Nav({ isSignedIn }: { isSignedIn: boolean }) {
+export default function Nav({ isSignedIn, isLoaded }: { isSignedIn: boolean; isLoaded: boolean }) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-[#1fa028]/15 bg-[#f7fff5] backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-6 h-14 grid grid-cols-3 items-center">
@@ -33,7 +33,7 @@ export default function Nav({ isSignedIn }: { isSignedIn: boolean }) {
 
         {/* CENTER: Nav */}
         <div className="hidden md:flex justify-center items-center gap-8">
-          {isSignedIn && (
+          {isLoaded && isSignedIn && (
             <>
               <NavLink to="/applications">Applications</NavLink>
               <NavLink to="/cvs">CVs</NavLink>
@@ -42,11 +42,11 @@ export default function Nav({ isSignedIn }: { isSignedIn: boolean }) {
         </div>
 
         {/* RIGHT: Account */}
-        <div className="flex items-center justify-self-end">
-          {isSignedIn ? (
-            <div className="flex items-center h-10">
-              <UserButton />
-            </div>
+        <div className="flex items-center justify-self-end h-10">
+          {!isLoaded ? (
+            <div className="w-8 h-8 rounded-full bg-muted animate-pulse" />
+          ) : isSignedIn ? (
+            <UserButton />
           ) : (
             <Link
               to="/auth/sign-up"

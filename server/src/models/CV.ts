@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { boolean } from "zod";
 
 const CVSchema = new mongoose.Schema(
   {
@@ -70,6 +71,7 @@ const CVSchema = new mongoose.Schema(
 
     pdfUrl: { type: String },
     previewImageUrl: { type: String },
+    pinned: { type: Boolean, default: false },
 
     contentHash: {
       type: String,
@@ -87,5 +89,6 @@ const CVSchema = new mongoose.Schema(
 );
 
 CVSchema.index({ ownerId: 1, createdAt: -1 });
+CVSchema.index({ ownerId: 1, pinned: -1, lastUsedAt: -1 });
 
 export default mongoose.model("CV", CVSchema);

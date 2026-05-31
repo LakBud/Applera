@@ -1,8 +1,12 @@
 import { useCVs } from "../api";
+import { usePinCV } from "../api/hooks/useCV";
 import { CVCard } from "../components/cvs/CVCard";
 
 export function CVsPage() {
   const { data: cvs, isLoading } = useCVs();
+  const { mutate: pinCv, isPending: isPinning } = usePinCV();
+
+  const pinnedCount = cvs?.filter((cv: any) => cv.pinned).length ?? 0;
 
   return (
     <div className="mx-auto max-w-6xl p-8 space-y-8">
@@ -12,15 +16,19 @@ export function CVsPage() {
       </div>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold">Saved CVs</h2>
-
         {isLoading && <p>Loading...</p>}
 
         {!isLoading && cvs?.length === 0 && <p className="text-muted-foreground">No CVs uploaded yet.</p>}
 
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
           {cvs?.map((cv: any) => (
-            <CVCard key={cv._id} cv={cv} />
+            <CVCard
+              key={cv._id}
+              cv={cv}
+              onPin={() => pinCv(cv._id)}
+              isPinning={isPinning}
+              canPin={!cv.pinned && pinnedCount >= 5}
+            />
           ))}
         </div>
       </section>

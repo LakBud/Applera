@@ -63,6 +63,7 @@ export const CVDocumentSchema = z.object({
 
   applicationsCount: z.number().optional(),
   lastUsedAt: z.string().optional(),
+  pinned: z.boolean().default(false),
 
   pdfUrl: z.string().optional(),
   previewImageUrl: z.string().optional(),

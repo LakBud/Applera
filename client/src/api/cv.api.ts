@@ -33,8 +33,14 @@ export async function uploadCVText(cvText: string): Promise<UploadCVResponse> {
   return UploadCVResponseSchema.parse(response.data);
 }
 
-// DELETE /api/cv
+// DELETE /api/cv/id
 export async function deleteCV(id: string): Promise<{ message: string }> {
   const response = await client.delete(`/api/cv/${id}`);
+  return response.data;
+}
+
+// PATCH /api/cv/id/pin
+export async function pinCV(id: string): Promise<{ message: string }> {
+  const response = await client.patch(`/api/cv/${id}/pin`);
   return response.data;
 }

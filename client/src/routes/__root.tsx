@@ -4,6 +4,15 @@ import type { QueryClient } from "@tanstack/react-query";
 import Nav from "../components/common/Nav";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Loader2 } from "lucide-react";
+
+function GlobalPending() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader2 className="w-6 h-6 animate-spin text-primary" />
+    </div>
+  );
+}
 
 interface RouterContext {
   queryClient: QueryClient;
@@ -11,15 +20,16 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  pendingComponent: GlobalPending,
   component: RootLayout,
 });
 
 function RootLayout() {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, isLoaded } = useAuth();
 
   return (
     <div className="min-h-screen bg-bg text-text font-body">
-      <Nav isSignedIn={!!isSignedIn} />
+      <Nav isSignedIn={!!isSignedIn} isLoaded={isLoaded} />
       <main className="pt-14">
         <Outlet />
       </main>
