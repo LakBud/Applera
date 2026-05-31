@@ -1,5 +1,5 @@
 import { useCVs } from "../api";
-import { CVCard } from "../components/cv/CVCard";
+import { CVCard } from "../components/cvs/CVCard";
 
 export function CVsPage() {
   const { data: cvs, isLoading } = useCVs();

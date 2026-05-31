@@ -12,9 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as _protectedRouteRouteImport } from './routes/__protected/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
-import { Route as _protectedApplicationsRouteImport } from './routes/__protected/applications'
 import { Route as _protectedCvsIndexRouteImport } from './routes/__protected/cvs/index'
+import { Route as _protectedApplicationsIndexRouteImport } from './routes/__protected/applications/index'
 import { Route as _protectedCvsCvIdRouteImport } from './routes/__protected/cvs/$cvId'
+import { Route as _protectedApplicationsApplicationIdRouteImport } from './routes/__protected/applications/$applicationId'
 
 const _protectedRouteRoute = _protectedRouteRouteImport.update({
   id: '/__protected',
@@ -30,57 +31,80 @@ const AuthSignUpRoute = AuthSignUpRouteImport.update({
   path: '/auth/sign-up',
   getParentRoute: () => rootRouteImport,
 } as any)
-const _protectedApplicationsRoute = _protectedApplicationsRouteImport.update({
-  id: '/applications',
-  path: '/applications',
-  getParentRoute: () => _protectedRouteRoute,
-} as any)
 const _protectedCvsIndexRoute = _protectedCvsIndexRouteImport.update({
   id: '/cvs/',
   path: '/cvs/',
   getParentRoute: () => _protectedRouteRoute,
 } as any)
+const _protectedApplicationsIndexRoute =
+  _protectedApplicationsIndexRouteImport.update({
+    id: '/applications/',
+    path: '/applications/',
+    getParentRoute: () => _protectedRouteRoute,
+  } as any)
 const _protectedCvsCvIdRoute = _protectedCvsCvIdRouteImport.update({
   id: '/cvs/$cvId',
   path: '/cvs/$cvId',
   getParentRoute: () => _protectedRouteRoute,
 } as any)
+const _protectedApplicationsApplicationIdRoute =
+  _protectedApplicationsApplicationIdRouteImport.update({
+    id: '/applications/$applicationId',
+    path: '/applications/$applicationId',
+    getParentRoute: () => _protectedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/applications': typeof _protectedApplicationsRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute
   '/cvs/$cvId': typeof _protectedCvsCvIdRoute
+  '/applications/': typeof _protectedApplicationsIndexRoute
   '/cvs/': typeof _protectedCvsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/applications': typeof _protectedApplicationsRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute
   '/cvs/$cvId': typeof _protectedCvsCvIdRoute
+  '/applications': typeof _protectedApplicationsIndexRoute
   '/cvs': typeof _protectedCvsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/__protected': typeof _protectedRouteRouteWithChildren
-  '/__protected/applications': typeof _protectedApplicationsRoute
   '/auth/sign-up': typeof AuthSignUpRoute
+  '/__protected/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute
   '/__protected/cvs/$cvId': typeof _protectedCvsCvIdRoute
+  '/__protected/applications/': typeof _protectedApplicationsIndexRoute
   '/__protected/cvs/': typeof _protectedCvsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/applications' | '/auth/sign-up' | '/cvs/$cvId' | '/cvs/'
+  fullPaths:
+    | '/'
+    | '/auth/sign-up'
+    | '/applications/$applicationId'
+    | '/cvs/$cvId'
+    | '/applications/'
+    | '/cvs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/applications' | '/auth/sign-up' | '/cvs/$cvId' | '/cvs'
+  to:
+    | '/'
+    | '/auth/sign-up'
+    | '/applications/$applicationId'
+    | '/cvs/$cvId'
+    | '/applications'
+    | '/cvs'
   id:
     | '__root__'
     | '/'
     | '/__protected'
-    | '/__protected/applications'
     | '/auth/sign-up'
+    | '/__protected/applications/$applicationId'
     | '/__protected/cvs/$cvId'
+    | '/__protected/applications/'
     | '/__protected/cvs/'
   fileRoutesById: FileRoutesById
 }
@@ -113,18 +137,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignUpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/__protected/applications': {
-      id: '/__protected/applications'
-      path: '/applications'
-      fullPath: '/applications'
-      preLoaderRoute: typeof _protectedApplicationsRouteImport
-      parentRoute: typeof _protectedRouteRoute
-    }
     '/__protected/cvs/': {
       id: '/__protected/cvs/'
       path: '/cvs'
       fullPath: '/cvs/'
       preLoaderRoute: typeof _protectedCvsIndexRouteImport
+      parentRoute: typeof _protectedRouteRoute
+    }
+    '/__protected/applications/': {
+      id: '/__protected/applications/'
+      path: '/applications'
+      fullPath: '/applications/'
+      preLoaderRoute: typeof _protectedApplicationsIndexRouteImport
       parentRoute: typeof _protectedRouteRoute
     }
     '/__protected/cvs/$cvId': {
@@ -134,18 +158,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _protectedCvsCvIdRouteImport
       parentRoute: typeof _protectedRouteRoute
     }
+    '/__protected/applications/$applicationId': {
+      id: '/__protected/applications/$applicationId'
+      path: '/applications/$applicationId'
+      fullPath: '/applications/$applicationId'
+      preLoaderRoute: typeof _protectedApplicationsApplicationIdRouteImport
+      parentRoute: typeof _protectedRouteRoute
+    }
   }
 }
 
 interface _protectedRouteRouteChildren {
-  _protectedApplicationsRoute: typeof _protectedApplicationsRoute
+  _protectedApplicationsApplicationIdRoute: typeof _protectedApplicationsApplicationIdRoute
   _protectedCvsCvIdRoute: typeof _protectedCvsCvIdRoute
+  _protectedApplicationsIndexRoute: typeof _protectedApplicationsIndexRoute
   _protectedCvsIndexRoute: typeof _protectedCvsIndexRoute
 }
 
 const _protectedRouteRouteChildren: _protectedRouteRouteChildren = {
-  _protectedApplicationsRoute: _protectedApplicationsRoute,
+  _protectedApplicationsApplicationIdRoute:
+    _protectedApplicationsApplicationIdRoute,
   _protectedCvsCvIdRoute: _protectedCvsCvIdRoute,
+  _protectedApplicationsIndexRoute: _protectedApplicationsIndexRoute,
   _protectedCvsIndexRoute: _protectedCvsIndexRoute,
 }
 

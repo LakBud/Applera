@@ -26,6 +26,16 @@ export function useApplication(id: string) {
   });
 }
 
+export function useApplications() {
+  return useQuery({
+    queryKey: queryKeys.application.all,
+    queryFn: async () => {
+      const res = await client.get("/api/application");
+      return z.array(ApplicationSchema).parse(res.data.applications);
+    },
+  });
+}
+
 export function useCreateApplication() {
   const qc = useQueryClient();
 
@@ -37,6 +47,20 @@ export function useCreateApplication() {
 
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.application.all });
+    },
+  });
+}
+
+export function useDeleteApplication() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await client.delete(`/api/application/${id}`);
+    },
+    onSuccess: (_, id) => {
+      qc.invalidateQueries({ queryKey: queryKeys.application.all });
+      qc.removeQueries({ queryKey: queryKeys.application.detail(id) });
     },
   });
 }

@@ -88,7 +88,7 @@ export const JobParsedSchema = z.object({
 
 export const JobDocumentSchema = z.object({
   _id: z.string(),
-  rawText: z.string(),
+  rawText: z.string().optional(),
   parsed: JobParsedSchema,
 
   company: z.string().optional(),
@@ -110,8 +110,8 @@ export const CreateJobResponseSchema = z.object({
 export const ApplicationSchema = z.object({
   _id: z.string(),
 
-  cv: z.union([z.string(), CVDocumentSchema]),
-  job: z.union([z.string(), JobDocumentSchema]),
+  cv: z.union([z.string(), CVDocumentSchema]).nullable(),
+  job: z.union([z.string(), JobDocumentSchema]).nullable(),
 
   match: MatchSchema,
 
