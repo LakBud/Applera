@@ -14,32 +14,68 @@ export function isValidSeniority(value?: string) {
   return value !== "unknown";
 }
 
-export function CVHero({ name, seniority, updatedAtLabel, showPdf, onOpenPdf }: Props) {
+export function CVHeroSection({ name, seniority, updatedAtLabel, showPdf, onOpenPdf }: Props) {
+  const hasSeniority = isValidSeniority(seniority);
+
   return (
-    <div className="space-y-6">
-      {/* Breadcrumb */}
+    <div className="space-y-5">
+      {/* ───────────── Breadcrumb (refined) ───────────── */}
       <div className="flex items-center gap-2 text-xs text-tx-muted">
-        <Link to="/cvs" className="hover:text-tx-secondary transition">
+        <Link to="/cvs" className="hover:text-primary transition-colors">
           CVs
         </Link>
-        <span>/</span>
-        <span className="text-tx-body">{name || "Untitled"}</span>
+
+        <span className="text-tx-muted/50">›</span>
+
+        <span className="text-tx-body font-medium truncate max-w-50">{name || "Untitled CV"}</span>
       </div>
 
-      {/* Header + CTA */}
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="font-display text-4xl text-tx-h1 leading-tight">{name || "Untitled CV"}</h1>
+      {/* ───────────── HERO HEADER ───────────── */}
+      <div className="flex items-start justify-between gap-6">
+        {/* LEFT */}
+        <div className="space-y-2">
+          {/* Title */}
+          <h1 className="font-display text-3xl md:text-4xl font-semibold text-tx-h1 leading-tight">{name || "Untitled CV"}</h1>
 
-          <p className="text-sm text-tx-muted">
-            {isValidSeniority(seniority) && <span className="mr-2 capitalize">{seniority}</span>}
-            {updatedAtLabel}
-          </p>
+          {/* Meta row */}
+          <div className="flex items-center gap-2 flex-wrap text-xs text-tx-muted">
+            {hasSeniority && (
+              <span
+                className="
+                  px-2.5 py-1
+                  rounded-full
+                  bg-primary/10
+                  text-primary
+                  border
+                  border-primary/20
+                  font-medium
+                  capitalize
+                "
+              >
+                {seniority}
+              </span>
+            )}
+
+            <span>{updatedAtLabel}</span>
+          </div>
         </div>
 
+        {/* RIGHT CTA */}
         <div className="flex items-center gap-2 shrink-0">
           {showPdf && (
-            <Button variant="outline" size="sm" onClick={onOpenPdf} className="text-xs">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onOpenPdf}
+              className="
+                text-xs
+                border-primary/20
+                text-primary
+                hover:bg-primary/10
+                hover:border-primary/30
+                transition
+              "
+            >
               View PDF
             </Button>
           )}

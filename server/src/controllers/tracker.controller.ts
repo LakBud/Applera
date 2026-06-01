@@ -25,13 +25,21 @@ export const getApplicationsByCv = async (req: Request, res: Response) => {
       ownerType: req.identity.type,
       cv: cvId,
     })
-      .populate("cv", "-rawText")
-      .populate("job", "-rawText")
+      .select(
+        `
+        _id
+        jobTitleSnapshot
+        companySnapshot
+        cvNameSnapshot
+        match
+        status
+        createdAt
+      `,
+      )
+      .lean()
       .sort({ createdAt: -1 });
 
-    return res.json({
-      applications,
-    });
+    return res.json({ applications });
   } catch (err) {
     console.error("[getApplicationsByCv]", err);
 

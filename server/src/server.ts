@@ -1,7 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import helmet from "helmet";
-
 import { connectDB } from "./db/db.js";
 
 import cvRoutes from "./routes/cv.routes.js";
@@ -31,13 +30,33 @@ const IS_PROD: boolean = process.env.NODE_ENV === "production";
 
 if (IS_PROD) app.set("trust proxy", 1);
 
-app.use(helmet());
+// Strict CSP via Helmet
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"], // tighten if you control styles
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+        upgradeInsecureRequests: IS_PROD ? [] : null,
+      },
+    },
+    crossOriginEmbedderPolicy: false, // only enable if you need COEP isolation
+  }),
+);
 
 // 1. Request ID FIRST
-app.use((req, res, next) => {
+// Also writes X-Request-ID to the response
+app.use((req: Request, res: Response, next: NextFunction) => {
   const id = crypto.randomUUID();
   req.requestId = id;
   res.locals.requestId = id;
+  res.setHeader("X-Request-ID", id);
   next();
 });
 
@@ -47,7 +66,7 @@ app.use(
     origin: process.env.CLIENT_URL || "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
   }),
 );
 
@@ -73,8 +92,41 @@ app.use(publicRouter);
 // ─────────────────────────────────────────────
 
 app.use(clerkMiddleware());
-
 app.use(attachIdentity);
+
+// ─────────────────────────────────────────────
+// CSRF protection (double-submit cookie pattern)
+// Clerk sends auth as a Bearer token in the Authorization header,
+// so pure JWT API routes are CSRF-safe by default. This guard
+// covers any route that may fall back to cookie-based sessions.
+// ─────────────────────────────────────────────
+
+const CSRF_SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (CSRF_SAFE_METHODS.has(req.method)) return next();
+
+  const tokenFromCookie = req.cookies["csrf-token"];
+  const tokenFromHeader = req.headers["x-csrf-token"];
+
+  if (!tokenFromCookie || tokenFromCookie !== tokenFromHeader) {
+    res.status(403).json({ error: "Invalid CSRF token" });
+    return;
+  }
+
+  next();
+});
+
+// Endpoint the client can call to get a fresh CSRF token
+publicRouter.get("/api/csrf-token", (req: Request, res: Response) => {
+  const token = crypto.randomUUID();
+  res.cookie("csrf-token", token, {
+    httpOnly: false, // client JS needs to read this
+    sameSite: "strict",
+    secure: IS_PROD,
+  });
+  res.json({ csrfToken: token });
+});
 
 // ─────────────────────────────────────────────
 // Input sanitisation
@@ -100,6 +152,14 @@ app.use("/api/application", applicationRoutes);
 app.use("/api/interview", interviewRoutes);
 app.use("/api/tracker", trackerRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+
+// ─────────────────────────────────────────────
+// 404 catch-all (must come after all routes)
+// ─────────────────────────────────────────────
+
+app.use((_req: Request, res: Response) => {
+  res.status(404).json({ error: "Not found" });
+});
 
 // ─────────────────────────────────────────────
 // Global error handler

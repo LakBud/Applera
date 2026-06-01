@@ -1,0 +1,24 @@
+export function StatusSummary({ applications }: { applications: any[] }) {
+  const counts = applications.reduce<Record<string, number>>((acc, app) => {
+    acc[app.status] = (acc[app.status] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const stats = [
+    { label: "Total", value: applications.length },
+    { label: "Applied", value: counts.applied ?? 0 },
+    { label: "Interviewing", value: counts.interviewing ?? 0 },
+    { label: "Offered", value: counts.offered ?? 0 },
+  ];
+
+  return (
+    <div className="grid grid-cols-4 divide-x divide-border border border-border mb-6">
+      {stats.map((s) => (
+        <div key={s.label} className="px-4 py-3 text-center">
+          <p className="text-xl font-semibold">{s.value}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
+        </div>
+      ))}
+    </div>
+  );
+}

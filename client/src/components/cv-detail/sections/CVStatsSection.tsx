@@ -1,5 +1,5 @@
-import { CVCompletenessBar } from "../CVCompleteBar";
-import { CVStats } from "../CVStats";
+import { CVCompletenessBar } from "../stats/CVCompleteBar";
+import { CVStats } from "../stats/CVStats";
 
 type Props = {
   successRate: number;
@@ -12,19 +12,10 @@ type Props = {
 
 export function CVStatsSection({ successRate, totalApplications, avgScore, bestScore, completeness, missing }: Props) {
   return (
-    <section className="flex flex-col md:flex-row items-stretch gap-8">
-      {/* Performance */}
-      <div className="flex-1 min-w-0">
-        <CVStats successRate={successRate} totalApplications={totalApplications} avgScore={avgScore} bestScore={bestScore} />
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+      <CVStats successRate={successRate} totalApplications={totalApplications} avgScore={avgScore} bestScore={bestScore} />
 
-      {/* Divider */}
-      <div className="hidden md:block w-px bg-border/50" />
-
-      {/* Completeness */}
-      <div className="flex-1 min-w-0">
-        <CVCompletenessBar completeness={completeness} missing={missing} />
-      </div>
-    </section>
+      <CVCompletenessBar completeness={completeness} missing={missing} />
+    </div>
   );
 }

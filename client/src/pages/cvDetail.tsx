@@ -3,11 +3,11 @@ import { useCV, useCVDashboard } from "../api";
 import { Route } from "../routes/__protected/cvs/$cvId";
 import { useCVSuccessRate } from "../hooks/cv-id/useCVSuccessRate";
 import { useCVCompleteness } from "../hooks/cv-id/useCVCompleteness";
-import { CVHero } from "../components/cv-detail/sections/CVHero";
+import { CVHeroSection } from "../components/cv-detail/sections/CVHero";
 import { CVStatsSection } from "../components/cv-detail/sections/CVStatsSection";
 import { CVPdfDrawer } from "../components/cv-detail/CVPdfDrawer";
-import CVContent from "../components/cv-detail/CVContent";
-import { Separator } from "../components/ui/separator";
+import { Loader } from "../components/common/Loader";
+import CVTabsSection from "../components/cv-detail/sections/CVTabsSection";
 
 export function CVDetailPage() {
   const { cvId } = Route.useParams();
@@ -25,8 +25,8 @@ export function CVDetailPage() {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center">
         <div className="space-y-3 text-center animate-fade-in">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm text-tx-muted">Loading CV...</p>
+          <Loader />
+          <p className="text-sm text-tx-muted">Loading cv...</p>
         </div>
       </div>
     );
@@ -46,7 +46,7 @@ export function CVDetailPage() {
     <div className="min-h-screen bg-bg animate-fade-in">
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
         <div className="border-b pb-10">
-          <CVHero
+          <CVHeroSection
             name={cv.parsed.name}
             seniority={cv.parsed.seniority_level}
             updatedAtLabel={`Updated ${formatDate(cv.updatedAt ?? "")}`}
@@ -54,8 +54,6 @@ export function CVDetailPage() {
             onOpenPdf={() => setPdfOpen(true)}
           />
         </div>
-
-        <Separator />
 
         <CVStatsSection
           successRate={successRate}
@@ -67,7 +65,7 @@ export function CVDetailPage() {
         />
 
         {/* Main tabs */}
-        <CVContent cv={cv} dashboard={dashboard} />
+        <CVTabsSection cv={cv} dashboard={dashboard} />
       </div>
 
       {/* PDF drawer */}

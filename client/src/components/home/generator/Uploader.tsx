@@ -1,9 +1,9 @@
 import type { UseMutationResult } from "@tanstack/react-query";
 import { useRef, useState } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { Textarea } from "../../ui/textarea";
+import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
 import { CvList } from "./CVList";
 import { toast } from "sonner";
 import { Check } from "lucide-react";

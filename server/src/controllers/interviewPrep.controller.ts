@@ -10,6 +10,8 @@ import type { MatchReport } from "../types/match.types.js";
 import { auditLog } from "../middleware/log/audit.logger.js";
 import { getParam } from "../utils/req.js";
 import { z } from "zod";
+import CV from "../models/CV.js";
+import Job from "../models/Job.js";
 
 export type CVSchemaData = z.infer<typeof CVSchema>;
 export type JobSchemaData = z.infer<typeof JobSchema>;
@@ -40,8 +42,8 @@ export const generatePrep = async (req: Request, res: Response) => {
       ownerId: identity.id,
       ownerType: identity.type,
     })
-      .populate("cv")
-      .populate("job");
+      .select("cv job match ownerId ownerType")
+      .lean();
 
     if (!application) {
       return res.status(404).json({
@@ -49,16 +51,19 @@ export const generatePrep = async (req: Request, res: Response) => {
       });
     }
 
-    if (!isPopulated(application.cv) || !isPopulated(application.job)) {
+    // IMPORTANT: parsed must already exist on stored refs OR be fetched separately
+    const cvDoc = await CV.findById(application.cv).select("parsed").lean();
+    const jobDoc = await Job.findById(application.job).select("parsed").lean();
+
+    const cv = cvDoc?.parsed;
+    const job = jobDoc?.parsed;
+    const match = application.match as MatchReport | undefined;
+
+    if (!cv || !job) {
       return res.status(400).json({
-        error: "CV or Job is not populated.",
+        error: "Missing CV or Job parsed data.",
       });
     }
-
-    // ── SAFE CASTS
-    const cv = application.cv.parsed as CVSchemaData;
-    const job = application.job.parsed as JobSchemaData;
-    const match = application.match as MatchReport | undefined;
 
     if (!match) {
       return res.status(400).json({
@@ -66,7 +71,7 @@ export const generatePrep = async (req: Request, res: Response) => {
       });
     }
 
-    const prep = await generateInterviewPrep(cv, job, match, applicationId);
+    const prep = await generateInterviewPrep(cv as CVSchemaData, job as JobSchemaData, match, applicationId);
 
     const saved = await InterviewPrep.findOneAndUpdate(
       {

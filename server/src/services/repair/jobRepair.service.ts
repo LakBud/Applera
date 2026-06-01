@@ -1,5 +1,5 @@
-import { dedupe, normalizeArray, normalizeString } from "../../utils/repair.utils.js";
 import { JobSchemaData } from "../../types/schemas/schema.js";
+import { dedupe, normalizeArray, normalizeString } from "../../utils/repair.utils.js";
 
 type Seniority = "executive" | "intern" | "junior" | "mid" | "senior" | "lead" | "unknown";
 
@@ -32,6 +32,8 @@ export function repairJob(job: unknown): JobSchemaData {
 
   return {
     title: requireString(data.title),
+
+    company: requireString(data.company),
 
     required_skills: dedupe(normalizeArray(data.required_skills)),
     responsibilities: dedupe(normalizeArray(data.responsibilities)),

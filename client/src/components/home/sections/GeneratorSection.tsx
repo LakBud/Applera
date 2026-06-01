@@ -1,7 +1,7 @@
 import { useHomeState } from "../../../hooks/useHomeState";
 import { Loader } from "../../common/Loader";
 import { Button } from "../../ui/button";
-import Uploader from "../Uploader";
+import Uploader from "../generator/Uploader";
 
 export type HomeState = ReturnType<typeof useHomeState>;
 

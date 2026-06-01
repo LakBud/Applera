@@ -1,0 +1,37 @@
+import { Link } from "@tanstack/react-router";
+import { Button } from "../../ui/button";
+import { StatusSummary } from "../../applications/StatusSummary";
+import { CVApplicationRow } from "./CVApplicationRow";
+
+interface CVApplicationsProps {
+  applications: any[];
+}
+
+export function CVApplications({ applications }: CVApplicationsProps) {
+  if (!applications.length) {
+    return (
+      <div className="text-center py-16 space-y-4">
+        <p className="text-tx-muted text-sm">No applications yet with this CV.</p>
+        <Link to="/">
+          <Button size="sm" className="text-xs font-semibold btn-glow">
+            Create your first application →
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* 1. summary strip */}
+      <StatusSummary applications={applications} />
+
+      {/* 2. list */}
+      <div>
+        {applications.map((app) => (
+          <CVApplicationRow key={app._id} application={app} />
+        ))}
+      </div>
+    </div>
+  );
+}

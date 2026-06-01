@@ -32,7 +32,7 @@ const ApplicationSchema = new mongoose.Schema(
       required: true,
     },
 
-    // snapshots (important)
+    // snapshots
     cvNameSnapshot: String,
     jobTitleSnapshot: String,
     companySnapshot: String,

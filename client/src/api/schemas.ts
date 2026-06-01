@@ -200,6 +200,7 @@ export const DashboardSchema = z.object({
     z.object({
       _id: z.string(),
       job_title: z.string(),
+      company: z.string().optional(),
       score: z.number(),
       confidence: ConfidenceSchema,
       status: ApplicationStatusSchema,

@@ -44,8 +44,8 @@ export const getDashboard = async (req: Request, res: Response) => {
       ownerType,
       cv: cvDoc._id,
     })
-      .select("match status createdAt job")
-      .populate<{ job: { parsed?: { title?: string } } }>("job", "parsed.title")
+      .select("match status createdAt jobTitleSnapshot companySnapshot")
+      .sort({ createdAt: -1 })
       .lean();
 
     if (applications.length === 0) {
@@ -86,7 +86,8 @@ export const getDashboard = async (req: Request, res: Response) => {
     // ── Lightweight summaries ──────────────────────────
     const summaries = applications.map((a) => ({
       _id: a._id,
-      job_title: a.job?.parsed?.title ?? "Unknown",
+      job_title: a.jobTitleSnapshot || "Unknown Role",
+      company: a.companySnapshot || "Unknown Company",
       score: a.match?.score ?? 0,
       confidence: a.match?.confidence ?? "low",
       status: a.status ?? "generated",

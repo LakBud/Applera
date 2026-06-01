@@ -12,6 +12,7 @@ CRITICAL RULES:
 OUTPUT FORMAT (MUST MATCH EXACTLY):
 {
   "title": "",
+  "company": "",
   "required_skills": [],
   "responsibilities": [],
   "seniority": ""
@@ -22,6 +23,11 @@ FIELD RULES:
 title:
 - Extract the job title exactly as written in the text
 - If not explicitly stated, infer from context (e.g. "looking for a Senior Backend Developer" → "Senior Backend Developer")
+
+company:
+- Extract the employer/company name from the job posting
+- Usually appears at the top (e.g. "OpenAI is hiring...", "About Google", etc.)
+- If not clearly stated, return ""
 
 required_skills:
 - Extract ALL technical skills, tools, frameworks, and technologies mentioned

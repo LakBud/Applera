@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const JobSchema = z.object({
   title: z.string(),
+  company: z.string().optional(),
   required_skills: z.array(z.string()),
   responsibilities: z.array(z.string()),
   seniority: z.enum(["executive", "intern", "junior", "mid", "senior", "lead", "unknown"]),

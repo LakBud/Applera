@@ -12,30 +12,34 @@ export function useCVCompleteness(cv?: CVDocument): Result {
     if (!cv?.parsed) {
       return {
         completeness: 0,
-        missing: ["Summary", "Skills", "Experience", "Education", "Projects"],
+        missing: ["Summary", "Skills", "Experience", "Education"],
       };
     }
 
     const parsed = cv.parsed;
 
-    const checks = CV_COMPLETENESS_RULES.map((rule) => {
-      const done =
-        rule.key === "summary"
-          ? Boolean(parsed.summary?.trim())
-          : rule.key === "skills"
-            ? parsed.skills.length > 0
-            : rule.key === "experience"
-              ? parsed.experience.length > 0
-              : rule.key === "education"
-                ? parsed.education.length > 0
-                : (parsed.projects?.length ?? 0) > 0;
-
-      return {
-        label: rule.label,
-        weight: rule.weight,
-        done,
-      };
-    });
+    const checks = [
+      {
+        label: "Summary",
+        weight: CV_COMPLETENESS_RULES.find((r) => r.key === "summary")!.weight,
+        done: Boolean(parsed.summary?.trim()),
+      },
+      {
+        label: "Skills",
+        weight: CV_COMPLETENESS_RULES.find((r) => r.key === "skills")!.weight,
+        done: parsed.skills.length > 0,
+      },
+      {
+        label: "Experience",
+        weight: CV_COMPLETENESS_RULES.find((r) => r.key === "experience")!.weight,
+        done: parsed.experience.length > 0,
+      },
+      {
+        label: "Education",
+        weight: CV_COMPLETENESS_RULES.find((r) => r.key === "education")!.weight,
+        done: parsed.education.length > 0,
+      },
+    ];
 
     const completeness = checks.reduce((acc, item) => acc + (item.done ? item.weight : 0), 0);
 

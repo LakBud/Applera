@@ -67,8 +67,22 @@ export const getApplicationById = async (req: Request, res: Response) => {
       ownerId,
       ownerType,
     })
-      .populate("cv")
-      .populate("job");
+      .select(
+        `
+    _id
+    jobTitleSnapshot
+    companySnapshot
+    cvNameSnapshot
+    match
+    status
+    createdAt
+    notes
+    tailored_cv_summary
+    cover_letter
+    application_email
+  `,
+      )
+      .lean();
 
     if (!application) {
       return res.status(404).json({
@@ -220,15 +234,21 @@ export const createApplication = async (req: Request, res: Response) => {
     const cv = await CVModel.findOne({ _id: cvId, ownerId, ownerType });
     const job = await JobModel.findOne({ _id: jobId, ownerId, ownerType });
 
-    if (!cv?.parsed || !job?.parsed) {
+    if (!cv || !job) {
       return res.status(404).json({
-        error: "CV or Job not found or not parsed",
+        error: "CV or Job not found",
+      });
+    }
+
+    if (!cv.parsed) {
+      return res.status(404).json({
+        error: "CV not parsed",
       });
     }
 
     // normalize inputs
     const cleanCV = repairCV(cv.parsed);
-    const cleanJob = repairJob(job.parsed); // optionally repairJob later
+    const cleanJob = repairJob(job.parsed);
 
     // match
     const match = await matchCVToJob(cleanCV, cleanJob);
@@ -241,6 +261,12 @@ export const createApplication = async (req: Request, res: Response) => {
       ownerType,
       cv: cv._id,
       job: job._id,
+
+      cvNameSnapshot: cv.parsed?.name?.trim() || "CV",
+
+      jobTitleSnapshot: job.parsed?.title?.trim() || "Untitled Role",
+      companySnapshot: job.company?.trim() || "Unknown Company",
+
       match,
 
       tailored_cv_summary: applicationOutput.cv_summary,

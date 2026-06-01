@@ -1,6 +1,6 @@
-import type { CVDocument } from "../../api/schemas";
-import { useCVs } from "../../api";
-import { Loader } from "../common/Loader";
+import type { CVDocument } from "../../../api/schemas";
+import { useCVs } from "../../../api";
+import { Loader } from "../../common/Loader";
 
 function CvListItem({ cv, selected, onSelect }: { cv: CVDocument; selected: boolean; onSelect: () => void }) {
   return (

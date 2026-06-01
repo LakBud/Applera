@@ -5,7 +5,7 @@ import { useApplication, useUpdateApplicationStatus } from "../api";
 import { Button } from "../components/ui/button";
 import { useDeleteApplication } from "../api/hooks/useApplication";
 import { STATUS_STYLES } from "../utils/statusStyles";
-import { InterviewPrepSection } from "../components/application-id/interviewPrepSection";
+import { InterviewPrepSection } from "../components/application-detail/interviewPrepSection";
 import ApplicationResult from "../components/home/ApplicationResult";
 import { Loader } from "../components/common/Loader";
 import { Section } from "../components/common/Section";

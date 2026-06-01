@@ -15,6 +15,28 @@ function Card({ className, size = "default", ...props }: React.ComponentProps<"d
   );
 }
 
+export function Card2({ className = "", children }: { className?: string; children: React.ReactNode }) {
+  return (
+    <div
+      className={`
+        rounded-2xl
+        border
+        border-border
+        bg-white/40
+        backdrop-blur
+        p-4
+        shadow-sm
+        hover:shadow-md
+        hover:border-primary/40
+        transition
+        ${className}
+      `}
+    >
+      {children}
+    </div>
+  );
+}
+
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
