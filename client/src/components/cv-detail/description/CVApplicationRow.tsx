@@ -1,11 +1,14 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Badge } from "../../ui/badge";
 import { STATUS_STYLES } from "../../../utils/statusStyles";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, MapPin } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { RowBase } from "../../common/RowBase";
+import type { Dashboard } from "../../../api/schemas";
 
-export function CVApplicationRow({ application }: { application: any }) {
+type DashboardApplication = Dashboard["applications"][number];
+
+export function CVApplicationRow({ application }: { application: DashboardApplication }) {
   const navigate = useNavigate();
 
   const status = STATUS_STYLES[application.status] ?? {
@@ -15,7 +18,7 @@ export function CVApplicationRow({ application }: { application: any }) {
 
   const jobTitle = application.job_title;
   const company = application.company;
-
+  const jobLocation = application.location;
   const score = application.score;
 
   return (
@@ -30,6 +33,12 @@ export function CVApplicationRow({ application }: { application: any }) {
         <>
           <p className="text-sm font-medium truncate">{jobTitle}</p>
           <p className="text-xs text-muted-foreground truncate">{company}</p>
+          {jobLocation && (
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <MapPin className="w-3 h-3" />
+              {jobLocation}
+            </span>
+          )}
         </>
       }
       middle={

@@ -36,6 +36,7 @@ const ApplicationSchema = new mongoose.Schema(
     cvNameSnapshot: String,
     jobTitleSnapshot: String,
     companySnapshot: String,
+    locationSnapshot: String,
 
     match: {
       score: {

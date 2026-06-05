@@ -263,9 +263,9 @@ export const createApplication = async (req: Request, res: Response) => {
       job: job._id,
 
       cvNameSnapshot: cv.parsed?.name?.trim() || "CV",
-
       jobTitleSnapshot: job.parsed?.title?.trim() || "Untitled Role",
       companySnapshot: job.company?.trim() || "Unknown Company",
+      locationSnapshot: job.location?.trim() || "",
 
       match,
 

@@ -1,11 +1,12 @@
 import { z } from "zod";
 
 export const JobSchema = z.object({
-  title: z.string(),
-  company: z.string().optional(),
-  required_skills: z.array(z.string()),
-  responsibilities: z.array(z.string()),
-  seniority: z.enum(["executive", "intern", "junior", "mid", "senior", "lead", "unknown"]),
+  title: z.string().default(""),
+  company: z.string().default(""),
+  location: z.string().default(""),
+  required_skills: z.array(z.string()).default([]),
+  responsibilities: z.array(z.string()).default([]),
+  seniority: z.enum(["executive", "intern", "junior", "mid", "senior", "lead", "unknown"]).default("unknown"),
 });
 
 export const CVSchema = z.object({

@@ -1,11 +1,12 @@
 import { useNavigate } from "@tanstack/react-router";
-import { FileText, TrendingUp } from "lucide-react";
+import { FileText, TrendingUp, MapPin } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Badge } from "../ui/badge";
 import { STATUS_STYLES } from "../../utils/statusStyles";
 import { RowBase } from "../common/RowBase";
+import type { Application } from "../../api/schemas";
 
-export function ApplicationRow({ application }: { application: any }) {
+export function ApplicationRow({ application }: { application: Application }) {
   const navigate = useNavigate();
 
   const status = STATUS_STYLES[application.status] ?? {
@@ -13,13 +14,14 @@ export function ApplicationRow({ application }: { application: any }) {
     className: "bg-gray-100 text-gray-600",
   };
 
-  const jobTitle = application.jobTitleSnapshot ?? application.job?.parsed?.title ?? "Untitled Role";
+  const jobDoc = typeof application.job === "object" ? application.job : null;
+  const cvDoc = typeof application.cv === "object" ? application.cv : null;
 
-  const company = application.companySnapshot ?? application.job?.company ?? "Unknown Company";
-
-  const cvName = application.cvNameSnapshot ?? application.cv?.parsed?.name ?? "CV";
-
+  const jobTitle = application.jobTitleSnapshot ?? jobDoc?.parsed?.title ?? "Untitled Role";
+  const company = application.companySnapshot ?? jobDoc?.company ?? "Unknown Company";
+  const cvName = application.cvNameSnapshot ?? cvDoc?.parsed?.name ?? "CV";
   const score = application.match?.score;
+  const jobLocation = application.locationSnapshot;
 
   return (
     <RowBase
@@ -33,6 +35,12 @@ export function ApplicationRow({ application }: { application: any }) {
         <>
           <p className="text-sm font-medium truncate">{jobTitle}</p>
           <p className="text-xs text-muted-foreground truncate">{company}</p>
+          {location && (
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <MapPin className="w-3 h-3" />
+              {jobLocation}
+            </span>
+          )}
         </>
       }
       middle={
@@ -53,7 +61,7 @@ export function ApplicationRow({ application }: { application: any }) {
       right={
         <>
           <span className="hidden sm:block text-xs text-muted-foreground">
-            {formatDistanceToNow(new Date(application.createdAt), {
+            {formatDistanceToNow(new Date(application.createdAt!), {
               addSuffix: true,
             })}
           </span>

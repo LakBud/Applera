@@ -17,14 +17,6 @@ export type CVSchemaData = z.infer<typeof CVSchema>;
 export type JobSchemaData = z.infer<typeof JobSchema>;
 
 // ─────────────────────────────────────────────
-// Type guard (populated doc check)
-// ─────────────────────────────────────────────
-
-function isPopulated(doc: unknown): doc is { parsed: unknown } {
-  return typeof doc === "object" && doc !== null && "parsed" in doc;
-}
-
-// ─────────────────────────────────────────────
 // POST /api/interview/:applicationId
 // ─────────────────────────────────────────────
 export const generatePrep = async (req: Request, res: Response) => {

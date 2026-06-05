@@ -42,6 +42,7 @@ export const createJob = async (req: Request, res: Response) => {
       rawText,
       parsed,
       company: parsed.company?.trim() || "",
+      location: parsed.location?.trim() || "",
     });
 
     await auditLog({

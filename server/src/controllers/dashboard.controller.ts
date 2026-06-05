@@ -44,7 +44,7 @@ export const getDashboard = async (req: Request, res: Response) => {
       ownerType,
       cv: cvDoc._id,
     })
-      .select("match status createdAt jobTitleSnapshot companySnapshot")
+      .select("match status createdAt jobTitleSnapshot companySnapshot locationSnapshot")
       .sort({ createdAt: -1 })
       .lean();
 
@@ -88,6 +88,7 @@ export const getDashboard = async (req: Request, res: Response) => {
       _id: a._id,
       job_title: a.jobTitleSnapshot || "Unknown Role",
       company: a.companySnapshot || "Unknown Company",
+      location: a.locationSnapshot || "",
       score: a.match?.score ?? 0,
       confidence: a.match?.confidence ?? "low",
       status: a.status ?? "generated",

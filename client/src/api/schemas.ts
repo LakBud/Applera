@@ -26,6 +26,7 @@ export const CVParsedSchema = z.object({
   github: z.string().optional(),
   summary: z.string().optional(),
   seniority_level: z.string().optional(),
+  location: z.string().optional(),
 
   skills: z.array(z.string()),
 
@@ -85,6 +86,7 @@ export const JobParsedSchema = z.object({
   required_skills: z.array(z.string()),
   responsibilities: z.array(z.string()),
   seniority: z.string().optional(),
+  location: z.string().optional(),
 });
 
 export const JobDocumentSchema = z.object({
@@ -118,6 +120,12 @@ export const ApplicationSchema = z.object({
 
   tailored_cv_summary: z.string(),
   cover_letter: z.string(),
+
+  // Snapshots
+  jobTitleSnapshot: z.string().optional(),
+  companySnapshot: z.string().optional(),
+  locationSnapshot: z.string().optional(),
+  cvNameSnapshot: z.string().optional(),
 
   application_email: z.object({
     subject: z.string(),
@@ -201,6 +209,7 @@ export const DashboardSchema = z.object({
       _id: z.string(),
       job_title: z.string(),
       company: z.string().optional(),
+      location: z.string().optional(),
       score: z.number(),
       confidence: ConfidenceSchema,
       status: ApplicationStatusSchema,

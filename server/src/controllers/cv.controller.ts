@@ -18,6 +18,25 @@ const cvHashKey = (userId: string, hash: string) => `cv:hash:${userId}:${hash}`;
 const cvListKey = (userId: string, type: string) => `cvs:${userId}:${type}`;
 
 // ─────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────
+
+async function findExistingCV(ownerId: string, contentHash: string) {
+  const cacheKey = cvHashKey(ownerId, contentHash);
+
+  const cached = await getCache(cacheKey);
+  if (cached) return cached;
+
+  const existing = await CVModel.findOne({ ownerId, contentHash });
+  if (existing) {
+    await setCache(cacheKey, existing, 60 * 10);
+    return existing;
+  }
+
+  return null;
+}
+
+// ─────────────────────────────────────────────
 // POST /api/cv
 // ─────────────────────────────────────────────
 
@@ -42,72 +61,30 @@ export const createCV = async (req: Request, res: Response) => {
       rawText = await extractTextFromPdf(file.buffer);
       contentHash = hash(file.buffer.toString("base64"));
 
-      const cacheKey = cvHashKey(req.identity.id, contentHash);
-      const cached = await getCache(cacheKey);
-
-      if (cached) {
-        return res.status(200).json({
-          message: "CV already exists",
-          cv: cached,
-        });
-      }
-
-      const existing = await CVModel.findOne({
-        ownerId: req.identity.id,
-        contentHash,
-      });
-
+      const existing = await findExistingCV(req.identity.id, contentHash);
       if (existing) {
-        await setCache(cacheKey, existing, 60 * 10);
-
-        return res.status(200).json({
-          message: "CV already exists",
-          cv: existing,
-        });
+        return res.status(200).json({ message: "CV already exists", cv: existing });
       }
 
       const upload = await uploadPDF(file.buffer, req.identity.id);
-
       pdfUrl = upload.secure_url;
       previewImageUrl = getPdfThumbnail(upload.public_id);
     } else if (req.body?.cvText?.trim()) {
       rawText = req.body.cvText.trim();
       contentHash = hash(rawText);
 
-      const cacheKey = cvHashKey(req.identity.id, contentHash);
-      const cached = await getCache(cacheKey);
-
-      if (cached) {
-        return res.status(200).json({
-          message: "CV already exists",
-          cv: cached,
-        });
-      }
-
-      const existing = await CVModel.findOne({
-        ownerId: req.identity.id,
-        contentHash,
-      });
-
+      const existing = await findExistingCV(req.identity.id, contentHash);
       if (existing) {
-        await setCache(cacheKey, existing, 60 * 10);
-
-        return res.status(200).json({
-          message: "CV already exists",
-          cv: existing,
-        });
+        return res.status(200).json({ message: "CV already exists", cv: existing });
       }
     } else {
-      return res.status(400).json({
-        error: "Provide a CV as PDF or text",
-      });
+      return res.status(400).json({ error: "Provide a CV as PDF or text" });
     }
 
     // ─────────────────────────────
     // AI PROCESSING
     // ─────────────────────────────
 
-    // AI PROCESSING
     const parsedRaw = await extractCVData(rawText);
     console.log("[CV] LLM projects:", parsedRaw.projects?.length);
 
@@ -131,19 +108,13 @@ export const createCV = async (req: Request, res: Response) => {
         contentHash,
       });
     } catch (err: any) {
-      // duplicate race condition fallback
       if (err.code === 11000) {
         const existing = await CVModel.findOne({
           ownerId: req.identity.id,
           contentHash,
         });
-
-        return res.status(200).json({
-          message: "CV already exists",
-          cv: existing,
-        });
+        return res.status(200).json({ message: "CV already exists", cv: existing });
       }
-
       throw err;
     }
 
@@ -152,7 +123,6 @@ export const createCV = async (req: Request, res: Response) => {
     // ─────────────────────────────
 
     const cacheKey = cvHashKey(req.identity.id, contentHash);
-
     await setCache(cacheKey, createdCV, 60 * 10);
     await deleteCache(cvListKey(req.identity.id, req.identity.type));
 
@@ -167,21 +137,13 @@ export const createCV = async (req: Request, res: Response) => {
       requestId: req.requestId,
       ip: req.ip,
       resourceId: String(createdCV._id),
-      metadata: {
-        cvId: String(createdCV._id),
-      },
+      metadata: { cvId: String(createdCV._id) },
     });
 
-    return res.status(201).json({
-      message: "CV created successfully",
-      cv: createdCV,
-    });
+    return res.status(201).json({ message: "CV created successfully", cv: createdCV });
   } catch (err) {
     console.error("[createCV]", err);
-
-    return res.status(500).json({
-      error: "Failed to create CV",
-    });
+    return res.status(500).json({ error: "Failed to create CV" });
   }
 };
 
@@ -238,10 +200,7 @@ export const getCVs = async (req: Request, res: Response) => {
     return res.json(enriched);
   } catch (err) {
     console.error("[getCVs]", err);
-
-    return res.status(500).json({
-      error: "Failed to fetch CVs",
-    });
+    return res.status(500).json({ error: "Failed to fetch CVs" });
   }
 };
 
@@ -273,16 +232,10 @@ export const getCVById = async (req: Request, res: Response) => {
       ownerType: req.identity.type,
     });
 
-    return res.json({
-      ...cv,
-      applicationsCount,
-    });
+    return res.json({ ...cv, applicationsCount });
   } catch (err) {
     console.error("[getCVById]", err);
-
-    return res.status(500).json({
-      error: "Failed to fetch CV",
-    });
+    return res.status(500).json({ error: "Failed to fetch CV" });
   }
 };
 
@@ -308,11 +261,9 @@ export const deleteCV = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "CV not found" });
     }
 
-    // cache invalidation
     await deleteCache(cvListKey(req.identity.id, req.identity.type));
     await deleteCache(cvHashKey(req.identity.id, deleted.contentHash));
 
-    // audit
     await auditLog({
       event: "CV_DELETED",
       userId: req.identity.id,
@@ -323,15 +274,10 @@ export const deleteCV = async (req: Request, res: Response) => {
       metadata: { cvId: id },
     });
 
-    return res.json({
-      message: "CV deleted successfully",
-    });
+    return res.json({ message: "CV deleted successfully" });
   } catch (err) {
     console.error("[deleteCV]", err);
-
-    return res.status(500).json({
-      error: "Failed to delete CV",
-    });
+    return res.status(500).json({ error: "Failed to delete CV" });
   }
 };
 
@@ -354,27 +300,25 @@ export const pinCV = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "CV not found" });
     }
 
-    // if already pinned, unpin it
+    // Unpin
     if (cv.pinned) {
       cv.pinned = false;
-      await deleteCache(cvListKey(ownerId, ownerType));
       await cv.save();
+      await deleteCache(cvListKey(ownerId, ownerType));
       return res.json({ cv, pinned: false });
     }
 
-    // enforce max 5 pinned
+    // Enforce max 5 pinned
     const pinnedCount = await CVModel.countDocuments({ ownerId, ownerType, pinned: true });
-
     if (pinnedCount >= 5) {
       return res.status(400).json({
         error: "You can only pin up to 5 CVs. Unpin one first.",
       });
     }
 
-    await deleteCache(cvListKey(ownerId, ownerType));
-
     cv.pinned = true;
     await cv.save();
+    await deleteCache(cvListKey(ownerId, ownerType));
 
     await auditLog({
       event: "CV_PINNED",

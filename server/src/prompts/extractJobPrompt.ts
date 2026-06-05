@@ -13,6 +13,7 @@ OUTPUT FORMAT (MUST MATCH EXACTLY):
 {
   "title": "",
   "company": "",
+  "location": "",
   "required_skills": [],
   "responsibilities": [],
   "seniority": ""
@@ -28,6 +29,11 @@ company:
 - Extract the employer/company name from the job posting
 - Usually appears at the top (e.g. "OpenAI is hiring...", "About Google", etc.)
 - If not clearly stated, return ""
+
+location:
+- Extract the job location (city, country, remote, hybrid, etc.)
+- Examples: "Remote", "London, UK", "New York, NY (Hybrid)"
+- If not stated, return ""
 
 required_skills:
 - Extract ALL technical skills, tools, frameworks, and technologies mentioned

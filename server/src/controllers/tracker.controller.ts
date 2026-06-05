@@ -27,14 +27,15 @@ export const getApplicationsByCv = async (req: Request, res: Response) => {
     })
       .select(
         `
-        _id
-        jobTitleSnapshot
-        companySnapshot
-        cvNameSnapshot
-        match
-        status
-        createdAt
-      `,
+  _id
+  jobTitleSnapshot
+  companySnapshot
+  locationSnapshot
+  cvNameSnapshot
+  match
+  status
+  createdAt
+`,
       )
       .lean()
       .sort({ createdAt: -1 });
