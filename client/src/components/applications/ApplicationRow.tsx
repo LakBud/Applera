@@ -35,7 +35,7 @@ export function ApplicationRow({ application }: { application: Application }) {
         <>
           <p className="text-sm font-medium truncate">{jobTitle}</p>
           <p className="text-xs text-muted-foreground truncate">{company}</p>
-          {location && (
+          {jobLocation && (
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
               <MapPin className="w-3 h-3" />
               {jobLocation}

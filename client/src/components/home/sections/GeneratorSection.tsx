@@ -72,13 +72,7 @@ export default function GeneratorSection({ state }: Props) {
             disabled={!canGenerate}
             className="px-10 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {isPending ? (
-              <span className="flex items-center gap-2">
-                <Loader /> Generating…
-              </span>
-            ) : (
-              "Generate application"
-            )}
+            {isPending ? <Loader size="sm" text="Generating…" /> : "Generate application"}
           </Button>
         ) : (
           <Button

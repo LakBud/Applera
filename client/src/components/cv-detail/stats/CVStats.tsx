@@ -28,7 +28,7 @@ export function CVStats({ successRate, totalApplications, avgScore, bestScore }:
             className="
               flex items-baseline gap-2
               px-3 py-1.5
-              rounded-full
+              rounded-xl
               bg-white/30
               border
               border-border

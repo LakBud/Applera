@@ -1,13 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { Button } from "../../ui/button";
-import { StatusSummary } from "../../applications/StatusSummary";
+import { Button } from "../../../ui/button";
+import { StatusSummary } from "../../../applications/StatusSummary";
 import { CVApplicationRow } from "./CVApplicationRow";
+import { CVApplicationRowSkeleton } from "./CVApplicationRowSkeleton";
 
 interface CVApplicationsProps {
   applications: any[];
+  isLoading: Boolean;
 }
 
-export function CVApplications({ applications }: CVApplicationsProps) {
+export function CVApplications({ applications, isLoading }: CVApplicationsProps) {
   if (!applications.length) {
     return (
       <div className="text-center py-16 space-y-4">
@@ -28,9 +30,9 @@ export function CVApplications({ applications }: CVApplicationsProps) {
 
       {/* 2. list */}
       <div>
-        {applications.map((app) => (
-          <CVApplicationRow key={app._id} application={app} />
-        ))}
+        {isLoading
+          ? Array.from({ length: 5 }).map((_, i) => <CVApplicationRowSkeleton key={i} />)
+          : applications.map((app) => <CVApplicationRow key={app._id} application={app} />)}
       </div>
     </div>
   );

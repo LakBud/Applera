@@ -12,7 +12,7 @@ export function StatusSummary({ applications }: { applications: any[] }) {
   ];
 
   return (
-    <div className="grid grid-cols-4 divide-x divide-border border border-border mb-6">
+    <div className="grid grid-cols-4 rounded-sm divide-x divide-border border border-border mb-6 bg-white/40">
       {stats.map((s) => (
         <div key={s.label} className="px-4 py-3 text-center">
           <p className="text-xl font-semibold">{s.value}</p>

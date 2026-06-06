@@ -2,16 +2,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import type { Dashboard } from "../../../api/schemas";
 import type { CVParsed } from "../../../api";
 import { CVDescription } from "../description/CVDescription";
-import { CVApplications } from "../description/CVApplications";
+import { CVApplications } from "../description/applications/CVApplications";
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 
 interface CVTabsSectionProps {
   cv: { parsed: CVParsed };
   dashboard: Dashboard;
+  isLoading: Boolean;
 }
 
-export default function CVTabsSection({ cv, dashboard }: CVTabsSectionProps) {
+export default function CVTabsSection({ cv, dashboard, isLoading }: CVTabsSectionProps) {
   const tabBase = "relative rounded-lg text-xs font-medium px-4 py-2 transition-all duration-200 text-black hover:text-tx-body";
 
   return (
@@ -22,12 +23,12 @@ export default function CVTabsSection({ cv, dashboard }: CVTabsSectionProps) {
         w-full
         justify-start
         gap-1
-        p-1
         bg-white/40
         border
         border-border
         backdrop-blur
         shadow-sm
+        rounded-md
       "
       >
         {/* CONTENT */}
@@ -38,6 +39,7 @@ export default function CVTabsSection({ cv, dashboard }: CVTabsSectionProps) {
           data-[state=active]:bg-[#1fa028]
           data-[state=active]:text-white
           data-[state=active]:shadow-sm
+          rounded-md
         `}
         >
           CV Content
@@ -63,7 +65,7 @@ export default function CVTabsSection({ cv, dashboard }: CVTabsSectionProps) {
       </TabsContent>
 
       <TabsContent value="applications" className="mt-6 animate-fade-in">
-        <CVApplications applications={dashboard.applications} />
+        <CVApplications applications={dashboard.applications} isLoading={isLoading} />
       </TabsContent>
     </Tabs>
   );

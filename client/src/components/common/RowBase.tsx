@@ -11,7 +11,7 @@ export function RowBase({ left, middle, right, onClick }: Props) {
   return (
     <div
       onClick={onClick}
-      className="flex items-center justify-between gap-4 px-4 py-3.5 border border-border hover:bg-muted/40 cursor-pointer transition-colors"
+      className="flex items-center bg-white/40 justify-between gap-4 px-4 py-3.5 border border-border hover:bg-muted/40 cursor-pointer transition-colors"
     >
       {/* LEFT */}
       <div className="min-w-0 flex-1">{left}</div>

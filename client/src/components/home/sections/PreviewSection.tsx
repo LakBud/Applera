@@ -3,7 +3,7 @@ import PreviewMock from "../PreviewMock";
 export default function PreviewSection() {
   return (
     <section className="px-6 py-20 w-full border-t border-border bg-surface-muted">
-      <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+      <div className="max-w-6xl mx-auto grid md:grid-cols-[1fr_1.5fr] gap-12 items-center">
         <div className="space-y-5">
           <span className="text-overline text-h1">Preview</span>
 

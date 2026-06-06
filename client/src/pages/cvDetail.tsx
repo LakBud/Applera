@@ -22,14 +22,7 @@ export function CVDetailPage() {
   const loading = cvLoading || dashLoading;
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-bg flex items-center justify-center">
-        <div className="space-y-3 text-center animate-fade-in">
-          <Loader />
-          <p className="text-sm text-tx-muted">Loading cv...</p>
-        </div>
-      </div>
-    );
+    return <Loader size="md" fullScreen text="Loading CV…" />;
   }
 
   if (!cv || !dashboard || cvError || dashError) {
@@ -65,7 +58,7 @@ export function CVDetailPage() {
         />
 
         {/* Main tabs */}
-        <CVTabsSection cv={cv} dashboard={dashboard} />
+        <CVTabsSection cv={cv} dashboard={dashboard} isLoading={loading} />
       </div>
 
       {/* PDF drawer */}

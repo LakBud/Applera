@@ -1,7 +1,7 @@
 import { useCVs } from "../api";
 import { usePinCV } from "../api/hooks/useCV";
-import { Loader } from "../components/common/Loader";
 import { CVCard } from "../components/cvs/CVCard";
+import { CVCardSkeleton } from "../components/cvs/CVCardSkeleton";
 
 export function CVsPage() {
   const { data: cvs, isLoading } = useCVs();
@@ -17,19 +17,20 @@ export function CVsPage() {
       </div>
 
       <section className="space-y-4">
-        {isLoading && <Loader />}
         {!isLoading && cvs?.length === 0 && <p className="text-muted-foreground">No CVs uploaded yet.</p>}
 
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {cvs?.map((cv: any) => (
-            <CVCard
-              key={cv._id}
-              cv={cv}
-              onPin={() => pinCv(cv._id)}
-              isPinning={isPinning}
-              canPin={!cv.pinned && pinnedCount >= 5}
-            />
-          ))}
+          {isLoading
+            ? Array.from({ length: 6 }).map((_, i) => <CVCardSkeleton key={i} />)
+            : cvs?.map((cv: any) => (
+                <CVCard
+                  key={cv._id}
+                  cv={cv}
+                  onPin={() => pinCv(cv._id)}
+                  isPinning={isPinning}
+                  canPin={!cv.pinned && pinnedCount >= 5}
+                />
+              ))}
         </div>
       </section>
     </div>

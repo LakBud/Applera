@@ -19,7 +19,7 @@ export function Card2({ className = "", children }: { className?: string; childr
   return (
     <div
       className={`
-        rounded-2xl
+        rounded-md
         border
         border-border
         bg-white/40

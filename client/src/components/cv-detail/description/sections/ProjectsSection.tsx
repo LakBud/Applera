@@ -26,7 +26,7 @@ export function ProjectsSection({ projects }: { projects: any[] }) {
           <div
             key={i}
             className="
-              rounded-xl
+              rounded-md
               border
               border-border
               bg-white/30

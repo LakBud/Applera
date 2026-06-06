@@ -1,26 +1,6 @@
-import type { CVDocument } from "../../../api/schemas";
-import { useCVs } from "../../../api";
-import { Loader } from "../../common/Loader";
-
-function CvListItem({ cv, selected, onSelect }: { cv: CVDocument; selected: boolean; onSelect: () => void }) {
-  return (
-    <div
-      onClick={onSelect}
-      className={`relative w-16 h-20 border rounded-lg cursor-pointer transition overflow-hidden shrink-0
-  ${selected ? "border-2 border-green-600" : "border-border hover:bg-muted/40"}`}
-    >
-      {cv.previewImageUrl ? (
-        <img src={cv.previewImageUrl} alt="CV preview" className="w-full h-full object-cover" />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center bg-muted p-2">
-          <span className="text-xs text-muted-foreground text-center warp-break-words leading-tight">
-            {cv.parsed?.name || "Untitled CV"}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
+import type { CVDocument } from "../../../../api/schemas";
+import { useCVs } from "../../../../api";
+import { CvListItem } from "./CVListItem";
 
 export function CvList({
   onSelectCv,
@@ -36,10 +16,16 @@ export function CvList({
 
   if (isLoading)
     return (
-      <p className="text-xs text-muted-foreground">
-        <Loader />
-      </p>
+      <div className="space-y-2 pt-2 border-t border-border">
+        <div className="h-3 w-32 bg-border/60 rounded animate-pulse" />
+        <div className="flex gap-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="w-16 h-20 rounded-lg bg-border/60 animate-pulse shrink-0" />
+          ))}
+        </div>
+      </div>
     );
+
   if (!pinnedCvs.length)
     return (
       <div className="pt-2 border-t border-border">

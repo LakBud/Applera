@@ -7,8 +7,7 @@ export const client = axios.create({
   withCredentials: true,
 });
 
-// ── CSRF ──────────────────────────────────────────────────────────────────────
-
+// CSRF
 let csrfToken: string | null = null;
 
 async function getCsrfToken(): Promise<string> {
@@ -27,8 +26,7 @@ client.interceptors.request.use(async (config) => {
   return config;
 });
 
-// ── Response errors ───────────────────────────────────────────────────────────
-
+// Response errors
 client.interceptors.response.use(
   (res) => res,
   async (error) => {

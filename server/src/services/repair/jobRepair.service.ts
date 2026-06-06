@@ -32,12 +32,10 @@ export function repairJob(job: unknown): JobSchemaData {
 
   return {
     title: requireString(data.title),
-
     company: requireString(data.company),
-
+    location: requireString(data.location),
     required_skills: dedupe(normalizeArray(data.required_skills)),
     responsibilities: dedupe(normalizeArray(data.responsibilities)),
-
     seniority: normalizeSeniority(data.seniority),
   };
 }

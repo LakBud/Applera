@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { UserButton } from "@clerk/clerk-react";
-import { Briefcase } from "lucide-react";
+import { Logo } from "./Logo";
 
 function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   const location = useLocation();
@@ -23,12 +23,9 @@ export default function Nav({ isSignedIn, isLoaded }: { isSignedIn: boolean; isL
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-[#1fa028]/15 bg-[#f7fff5] backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-6 h-14 grid grid-cols-3 items-center">
-        {/* LEFT: Brand */}
-        <Link to="/" className="flex items-center gap-2 justify-self-start group shrink-0">
-          <Briefcase className="w-6 h-6 text-[#1fa028] group-hover:text-[#166534] transition-colors" />
-          <span className="font-display text-2xl font-semibold text-[#1fa028] group-hover:text-[#166534] transition-colors">
-            Applera
-          </span>
+        {/* LEFT: Logo */}
+        <Link to="/">
+          <Logo />
         </Link>
 
         {/* CENTER: Nav */}

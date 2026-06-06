@@ -18,7 +18,7 @@ function ProtectedLayout() {
     }
   }, [isLoaded, isSignedIn]);
 
-  if (!isLoaded) return <Loader fullScreen />;
+  if (!isLoaded) return <Loader size="lg" fullScreen text="Loading…" />;
   if (!isSignedIn) return null;
 
   return <Outlet />;

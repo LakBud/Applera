@@ -40,7 +40,7 @@ function RootLayout() {
           unstyled: true,
           classNames: {
             toast:
-              "flex items-center gap-3 bg-white border border-green-100 text-green-900 text-sm font-sans px-4 py-3 rounded-xl shadow-md w-full",
+              "flex items-center gap-3 bg-white border border-green-100 text-green-900 text-sm font-sans px-4 py-3 rounded-md shadow-md w-full",
             success: "border-green-200 [&>[data-icon]]:text-green-600",
             error: "border-red-200 text-red-800 [&>[data-icon]]:text-red-500",
             title: "font-medium",

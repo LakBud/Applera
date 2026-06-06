@@ -4,14 +4,14 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
-import { CvList } from "./CVList";
+import { CvList } from "./cv/CVList";
 import { toast } from "sonner";
-import { Check } from "lucide-react";
+import { UploadSuccess } from "./UploadSuccess";
 
 type UploadFileMutation = UseMutationResult<any, Error, File>;
 type UploadTextMutation = UseMutationResult<any, Error, string>;
 
-type Props = {
+type UploaderProps = {
   label: string;
   placeholder?: string;
   uploadFile: UploadFileMutation;
@@ -35,7 +35,7 @@ export default function Uploader({
   onSelectCv,
   onDeselectCv,
   selectedCvId,
-}: Props) {
+}: UploaderProps) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [text, setText] = useState("");
   const [mode, setMode] = useState<"file" | "text">("file");
@@ -129,22 +129,14 @@ export default function Uploader({
               }}
             />
             {isSelected ? (
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center border-2 border-green-600">
-                  <Check className="w-5 h-5 text-green-600" />
-                </div>
-                <p className="text-sm text-green-800 font-medium">{label} saved</p>
-                <Button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleClear();
-                  }}
-                  className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
-                >
-                  Remove
-                </Button>
-              </div>
+              <UploadSuccess
+                label={label}
+                onClear={handleClear}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClear();
+                }}
+              />
             ) : (
               <>
                 <p className="text-body">
@@ -173,17 +165,7 @@ export default function Uploader({
         <div className="space-y-3">
           {isSelected ? (
             <div className="border border-green-600 bg-green-50 rounded-xl p-6 text-center h-80 flex flex-col items-center justify-center">
-              <div className="w-10 h-10 rounded-full bg-green-200 flex items-center justify-center border-2 border-green-600 mb-3">
-                <Check className="w-5 h-5 text-green-600" />
-              </div>
-              <p className="text-sm text-green-800 font-medium">{label} saved</p>
-              <Button
-                type="button"
-                onClick={handleClear}
-                className="text-xs text-muted-foreground underline mt-1 hover:text-foreground"
-              >
-                Remove
-              </Button>
+              <UploadSuccess label={label} onClear={handleClear} />
             </div>
           ) : (
             <>
