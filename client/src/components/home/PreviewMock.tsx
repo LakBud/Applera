@@ -14,7 +14,7 @@ interface PreviewMockProps {
   content?: string;
 }
 
-// ─── Subcomponents ───────────────────────────────────────────────────────────
+// Subcomponents
 
 function SkeletonBlock({ className }: { className?: string }) {
   return <div className={cn("bg-border/60 rounded animate-pulse", className)} />;
@@ -73,7 +73,7 @@ function TagList({ items, variant, skeleton }: { items: string[]; variant: "stre
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// Main Component
 
 const TABS: Tab[] = ["Cover letter", "CV summary", "Email draft"];
 

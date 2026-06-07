@@ -1,4 +1,4 @@
-import ApplicationResult from "../ApplicationResult";
+import ApplicationResult from "../application/ApplicationResult";
 import PreviewMock from "../PreviewMock";
 import type { HomeState } from "./Generator";
 

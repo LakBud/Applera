@@ -18,16 +18,27 @@ export function ApplicationAccordion({ title, children, defaultOpen = false }: P
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden bg-white/40">
+    <div className="w-full border border-border rounded-lg overflow-hidden bg-white/40">
       <Button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-green-800 hover:bg-surface-muted transition-colors"
+        className="
+          w-full max-w-full
+          flex items-center justify-between
+          gap-3
+          px-4 py-3 sm:px-5 sm:py-4
+          text-sm font-medium text-green-800
+          hover:bg-surface-muted transition-colors
+          min-h-11
+        "
       >
-        {title}
-        {open ? <ChevronUp className="w-3.5 h-3.5 text-tx-caption" /> : <ChevronDown className="w-3.5 h-3.5 text-tx-caption" />}
+        <span className="flex-1 text-left leading-snug wrap-break-words min-w-0">{title}</span>
+
+        <span className="shrink-0">
+          {open ? <ChevronUp className="w-4 h-4 text-tx-caption" /> : <ChevronDown className="w-4 h-4 text-tx-caption" />}
+        </span>
       </Button>
 
-      {open && <div className="border-t border-border">{children}</div>}
+      {open && <div className="border-t border-border px-4 py-3 sm:px-5 sm:py-4 w-full">{children}</div>}
     </div>
   );
 }

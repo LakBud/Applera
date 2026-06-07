@@ -45,6 +45,7 @@ export const GUEST_SECRET = requireEnv("GUEST_SECRET");
 export const COOKIE_SECRET = requireEnv("COOKIE_SECRET");
 export const CLERK_SECRET_KEY = requireEnv("CLERK_SECRET_KEY");
 export const CLERK_PUBLISHABLE_KEY = requireEnv("CLERK_PUBLISHABLE_KEY");
+export const CLERK_WEBHOOK_SECRET = requireEnv("CLERK_WEBHOOK_SECRET");
 
 // ── Server ────────────────────────────────────────────────────────────────────
 

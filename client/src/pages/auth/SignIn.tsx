@@ -10,7 +10,11 @@ export function SignInPage() {
 
   return (
     <AuthLayout subtitle="Welcome back — sign in to continue">
-      <SignIn appearance={clerkAuthAppearance} routing="path" path="/auth/sign-in" signUpUrl="/auth/sign-up" />
+      <div className="w-full flex justify-center sm:block">
+        <div className="w-full max-w-md">
+          <SignIn appearance={clerkAuthAppearance} routing="path" path="/auth/sign-in" signUpUrl="/auth/sign-up" />
+        </div>
+      </div>
     </AuthLayout>
   );
 }

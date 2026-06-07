@@ -72,7 +72,7 @@ export default function Uploader({
   }
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-6 space-y-5 h-122 bg-white/70">
+    <div className="bg-surface border border-border rounded-2xl p-4 md:p-6 flex flex-col gap-4 md:gap-5 min-h-[50vh] md:h-122 bg-white/70">
       {/* Mode toggle */}
       <div className="flex items-center justify-between">
         <span className="text-overline text-green-800">{label}</span>
@@ -81,17 +81,17 @@ export default function Uploader({
             type="single"
             value={mode}
             onValueChange={(v) => v && setMode(v as "file" | "text")}
-            className="bg-[#1fa028]/20 rounded-full p-0.75 gap-0.5"
+            className="bg-[#1fa028]/20 rounded-full p-1 flex gap-1 w-full md:w-auto"
           >
             <ToggleGroupItem
               value="file"
-              className="text-xs px-4 py-1.5 rounded-full text-[#166534] hover:text-tx-body hover:bg-transparent data-[state=on]:bg-white data-[state=on]:text-[#1fa028] data-[state=on]:shadow-sm"
+              className=" text-[#166534] hover:text-tx-body hover:bg-transparent data-[state=on]:bg-white data-[state=on]:text-[#1fa028] data-[state=on]:shadow-sm text-xs px-3 md:px-4 py-2 rounded-full flex-1 md:flex-none"
             >
               Upload
             </ToggleGroupItem>
             <ToggleGroupItem
               value="text"
-              className="text-xs px-4 py-1.5 rounded-full text-[#166534] hover:text-tx-body hover:bg-transparent data-[state=on]:bg-white data-[state=on]:text-[#1fa028] data-[state=on]:shadow-sm"
+              className=" text-[#166534] hover:text-tx-body hover:bg-transparent data-[state=on]:bg-white data-[state=on]:text-[#1fa028] data-[state=on]:shadow-sm text-xs px-3 md:px-4 py-2 rounded-full flex-1 md:flex-none"
             >
               Paste
             </ToggleGroupItem>
@@ -105,7 +105,7 @@ export default function Uploader({
           <div
             onClick={() => !isUploading && !isSelected && fileRef.current?.click()}
             className={`
-              border h-64 border-dashed rounded-xl p-10 text-center transition
+              border min-h-44 md:h-64 p-6 md:p-10 border-dashed rounded-xl text-center transition
               ${isUploading ? "opacity-60 cursor-not-allowed" : ""}
               ${isSelected ? "border-green-600 bg-green-50 cursor-default" : "border-border cursor-pointer hover:bg-surface-muted"}
             `}
@@ -140,16 +140,18 @@ export default function Uploader({
             )}
           </div>
 
-          {showCvList && (
-            <CvList
-              onSelectCv={(id) => {
-                setUploadedId(null);
-                onSelectCv?.(id);
-              }}
-              onDeselectCv={onDeselectCv}
-              selectedCvId={selectedCvId}
-            />
-          )}
+          <div className="mt-4 md:mt-0">
+            {showCvList && (
+              <CvList
+                onSelectCv={(id) => {
+                  setUploadedId(null);
+                  onSelectCv?.(id);
+                }}
+                onDeselectCv={onDeselectCv}
+                selectedCvId={selectedCvId}
+              />
+            )}
+          </div>
         </div>
       )}
 
@@ -157,7 +159,7 @@ export default function Uploader({
       {mode === "text" && (
         <div className="space-y-3">
           {isSelected ? (
-            <div className="border border-green-600 bg-green-50 rounded-xl p-6 text-center h-80 flex flex-col items-center justify-center">
+            <div className="border border-green-600 bg-green-50 rounded-xl p-6 text-center min-h-44 md:h-80 flex flex-col items-center justify-center">
               <UploadSuccess label={label} onClear={handleClear} />
             </div>
           ) : (
@@ -166,9 +168,9 @@ export default function Uploader({
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder={placeholder}
-                rows={10}
+                rows={6}
                 disabled={isUploading}
-                className="w-full h-80 bg-bg border border-border rounded-xl p-4 text-sm text-body focus:outline-none focus:border-primary/40 disabled:opacity-60 transition"
+                className="w-full min-h-40 md:min-h-80 h-80 resize-none bg-bg border border-border rounded-xl p-4 text-sm text-body focus:outline-none focus:ring-green-800/40  disabled:opacity-60 transition"
               />
               <Button
                 type="button"

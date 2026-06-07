@@ -7,17 +7,21 @@ type Props = {
 
 export function AuthLayout({ subtitle, children }: Props) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg text-tx-body px-6 font-sans">
-      <div className="w-full max-w-md flex flex-col items-center space-y-8">
-        {/* Header */}
-        <div className="flex flex-col items-center text-center space-y-3 w-full mr-15">
-          <Logo />
+    <div className="min-h-dvh w-full bg-bg text-tx-body font-sans overflow-x-hidden">
+      {/* OUTER CENTERING LAYER */}
+      <div className="flex min-h-dvh justify-center items-center py-10">
+        {/* INNER COLUMN */}
+        <div className="w-full max-w-md px-4 sm:px-6 py-10 flex flex-col items-center space-y-6 sm:space-y-8">
+          {/* HEADER */}
+          <div className="w-full flex flex-col items-center text-center space-y-3 mr-2">
+            <Logo />
 
-          {subtitle && <p className="text-tx-muted text-sm max-w-sm leading-relaxed">{subtitle}</p>}
+            {subtitle && <div className="text-tx-muted text-sm max-w-sm mx-auto leading-relaxed">{subtitle}</div>}
+          </div>
+
+          {/* CONTENT */}
+          <div className="w-full">{children}</div>
         </div>
-
-        {/* Content (Clerk) */}
-        <div className="w-full">{children}</div>
       </div>
     </div>
   );

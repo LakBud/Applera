@@ -20,7 +20,7 @@ export default function HomePage() {
         GENERATOR
       ══════════════════════════════════════════════════════ */}
       <section id="generator" className="relative px-6 pt-10 pb-20 max-w-6xl mx-auto">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-150 h-48 bg-primary/8 blur-3xl rounded-full pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-37.5 md:w-150 h-48 bg-primary/8 blur-3xl rounded-full pointer-events-none" />
 
         <div className="relative text-center mb-8 space-y-4">
           <h1 className="font-display text-4xl md:text-5xl leading-tight">

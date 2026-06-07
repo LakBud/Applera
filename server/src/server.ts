@@ -13,6 +13,7 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import { globalLimiter } from "./middleware/rateLimiter.js";
 import { sanitizeHpp } from "./middleware/global/sanitize.js";
 import { requestLogger } from "./middleware/log/request.logger.js";
+import webhookRoutes from "./routes/webhook.routes.js";
 import { stripObject } from "./utils/utils.js";
 
 import { clerkMiddleware } from "@clerk/express";
@@ -90,6 +91,8 @@ app.use(publicRouter);
 // ─────────────────────────────────────────────
 // Clerk middleware (ATTACHES req.auth)
 // ─────────────────────────────────────────────
+
+app.use("/api/webhooks", webhookRoutes);
 
 app.use(clerkMiddleware());
 app.use(attachIdentity);

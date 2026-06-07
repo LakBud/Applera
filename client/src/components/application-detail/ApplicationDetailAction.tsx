@@ -21,24 +21,29 @@ export function ApplicationActionSection({ jobTitle, status, isUpdatingStatus, i
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2 text-xs text-tx-muted">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-xs text-tx-muted flex-wrap">
         <Link to="/applications" className="hover:text-primary transition-colors">
           Applications
         </Link>
+
         <span className="text-tx-muted/50">›</span>
-        <span className="text-tx-body font-medium truncate max-w-50">{jobTitle ?? "Untitled Role"}</span>
+
+        <span className="text-tx-body font-medium truncate max-w-50 sm:max-w-50">{jobTitle ?? "Untitled Role"}</span>
       </div>
 
-      <div className="flex items-center gap-2">
+      {/* Actions */}
+      <div className="flex items-center gap-2 sm:justify-end w-full sm:w-auto">
         <Select value={status} disabled={isUpdatingStatus} onValueChange={onStatusChange}>
-          <SelectTrigger className="text-xs h-8 w-36 ring-[#c8dece]">
+          <SelectTrigger className="text-xs h-8 w-full sm:w-36 ring-[#c8dece]">
             <SelectValue>
               <span className={cn("font-medium", STATUS_STYLES[status]?.selectClass)}>
                 {STATUS_STYLES[status]?.label ?? status}
               </span>
             </SelectValue>
           </SelectTrigger>
+
           <SelectContent position="popper" align="start" className="bg-[#f7fff5] ring-[#c8dece] w-36">
             {Object.entries(STATUS_STYLES).map(([s, { label, selectClass }]) => (
               <SelectItem key={s} value={s} className={cn("text-xs font-medium cursor-pointer", selectClass)}>
@@ -53,7 +58,7 @@ export function ApplicationActionSection({ jobTitle, status, isUpdatingStatus, i
           variant="outline"
           disabled={isDeleting}
           onClick={() => setShowDeleteModal(true)}
-          className="text-black border-border hover:bg-black/10"
+          className="text-black border-border hover:bg-black/10 shrink-0"
         >
           {isDeleting ? <Loader size="sm" /> : <Trash2 className="w-3.5 h-3.5" />}
         </Button>

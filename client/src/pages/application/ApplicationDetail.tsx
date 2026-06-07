@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Route } from "../../routes/__protected/applications/$applicationId";
 import { useApplication, useUpdateApplicationStatus } from "../../api";
 import { useDeleteApplication } from "../../api/hooks/useApplication";
-import ApplicationResult from "../../components/home/ApplicationResult";
+import ApplicationResult from "../../components/home/application/ApplicationResult";
 import { Loader } from "../../components/common/Loader";
 import { ApplicationActionSection } from "../../components/application-detail/ApplicationDetailAction";
 
