@@ -16,9 +16,9 @@ export default function HomePage() {
 
   return (
     <div id="top" className="min-h-screen bg-bg text-body">
-      {/* ══════════════════════════════════════════════════════
+      {/* 
         GENERATOR
-      ══════════════════════════════════════════════════════ */}
+       */}
       <section id="generator" className="relative px-6 pt-10 pb-20 max-w-6xl mx-auto">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-37.5 md:w-150 h-48 bg-primary/8 blur-3xl rounded-full pointer-events-none" />
 
@@ -55,14 +55,14 @@ export default function HomePage() {
         <GeneratorSection state={homeState} />
       </section>
 
-      {/* ══════════════════════════════════════════════════════
+      {/* 
           APPLICATION SECTION
-      ══════════════════════════════════════════════════════ */}
+       */}
       <ApplicationResultSection state={homeState} />
 
-      {/* ══════════════════════════════════════════════════════
+      {/* 
           HOW IT WORKS
-      ══════════════════════════════════════════════════════ */}
+     */}
       <FeatureSection
         id="how"
         variant="steps"
@@ -72,9 +72,7 @@ export default function HomePage() {
         items={HOW_IT_WORKS}
       />
 
-      {/* ══════════════════════════════════════════════════════
-          WHAT YOU GET
-      ══════════════════════════════════════════════════════ */}
+      {/* WHAT YOU GET*/}
       <FeatureSection
         id="outputs"
         variant="cards"
@@ -84,14 +82,14 @@ export default function HomePage() {
         items={WHAT_YOU_GET}
       />
 
-      {/* ══════════════════════════════════════════════════════
+      {/* 
           SECTION 4 — PREVIEW
-      ══════════════════════════════════════════════════════ */}
+     */}
       <PreviewSection />
 
-      {/* ══════════════════════════════════════════════════════
+      {/* 
           SECTION 5 — FAQ
-      ══════════════════════════════════════════════════════ */}
+       */}
       <FAQSection />
 
       {/* ── Footer ── */}
