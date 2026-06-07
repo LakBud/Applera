@@ -27,8 +27,8 @@ export function CVStats({ successRate, totalApplications, avgScore, bestScore }:
             key={label}
             className="
               flex items-baseline gap-2
-              px-3 py-1.5
-              rounded-xl
+              px-2 py-1 p-1
+              rounded-lg
               bg-white/30
               border
               border-border

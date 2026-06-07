@@ -76,7 +76,7 @@ export const parseLimiter = limiter({
 // Global fallback applied to all routes
 export const globalLimiter = limiter({
   windowMinutes: 15,
-  max: 100,
+  max: 250,
   message: "Too many requests from this IP. Please try again later.",
   keyPrefix: "global",
 });

@@ -1,6 +1,6 @@
 import ApplicationResult from "../ApplicationResult";
 import PreviewMock from "../PreviewMock";
-import type { HomeState } from "./GeneratorSection";
+import type { HomeState } from "./Generator";
 
 type Props = {
   state: HomeState;

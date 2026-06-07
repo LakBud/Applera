@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { CreateApplicationResponse } from "../api/schemas";
 import { useAnalyzeJobFile, useAnalyzeJobText, useCreateApplication, useUploadCVFile, useUploadCVText } from "../api";
-import { toast } from "sonner";
 
 export function useHomeState() {
   const [cvId, setCvId] = useState<string | null>(null);
@@ -23,10 +22,6 @@ export function useHomeState() {
       {
         onSuccess: (data) => {
           setResult(data);
-          toast.success("Application generated successfully");
-        },
-        onError: (err) => {
-          toast.error(err.message ?? "Failed to generate application");
         },
       },
     );

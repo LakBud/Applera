@@ -14,13 +14,13 @@ export function isValidSeniority(value?: string) {
   return value !== "unknown";
 }
 
-export function CVHeroSection({ name, seniority, updatedAtLabel, showPdf, onOpenPdf }: Props) {
+export function CVHeaderSection({ name, seniority, updatedAtLabel, showPdf, onOpenPdf }: Props) {
   const hasSeniority = isValidSeniority(seniority);
 
   return (
     <div className="space-y-5">
-      {/* ───────────── Breadcrumb (refined) ───────────── */}
-      <div className="flex items-center gap-2 text-xs text-tx-muted">
+      {/*  Breadcrumb  */}
+      <div className="flex items-center gap-2 text-xs text-tx-muted w-full">
         <Link to="/cvs" className="hover:text-primary transition-colors">
           CVs
         </Link>
@@ -28,9 +28,28 @@ export function CVHeroSection({ name, seniority, updatedAtLabel, showPdf, onOpen
         <span className="text-tx-muted/50">›</span>
 
         <span className="text-tx-body font-medium truncate max-w-50">{name || "Untitled CV"}</span>
+
+        {showPdf && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onOpenPdf}
+            className="
+        ml-auto
+        text-xs
+        border-primary/20
+        text-primary
+        hover:bg-primary/10
+        hover:border-primary/30
+        transition
+      "
+          >
+            View PDF
+          </Button>
+        )}
       </div>
 
-      {/* ───────────── HERO HEADER ───────────── */}
+      {/*  HERO HEADER  */}
       <div className="flex items-start justify-between gap-6">
         {/* LEFT */}
         <div className="space-y-2">
@@ -43,7 +62,7 @@ export function CVHeroSection({ name, seniority, updatedAtLabel, showPdf, onOpen
               <span
                 className="
                   px-2.5 py-1
-                  rounded-full
+                  rounded-md
                   bg-primary/10
                   text-primary
                   border
@@ -58,27 +77,6 @@ export function CVHeroSection({ name, seniority, updatedAtLabel, showPdf, onOpen
 
             <span>{updatedAtLabel}</span>
           </div>
-        </div>
-
-        {/* RIGHT CTA */}
-        <div className="flex items-center gap-2 shrink-0">
-          {showPdf && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onOpenPdf}
-              className="
-                text-xs
-                border-primary/20
-                text-primary
-                hover:bg-primary/10
-                hover:border-primary/30
-                transition
-              "
-            >
-              View PDF
-            </Button>
-          )}
         </div>
       </div>
     </div>

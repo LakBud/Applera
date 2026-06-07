@@ -5,7 +5,6 @@ import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
 import { CvList } from "./cv/CVList";
-import { toast } from "sonner";
 import { UploadSuccess } from "./UploadSuccess";
 
 type UploadFileMutation = UseMutationResult<any, Error, File>;
@@ -52,30 +51,24 @@ export default function Uploader({
 
   async function handleFile(file: File) {
     try {
-      onDeselectCv?.(); // clear any list selection
+      onDeselectCv?.();
       const res = await uploadFile.mutateAsync(file);
       const id = getId(res);
       setUploadedId(id ?? null);
       onSuccess?.(id);
-      toast.success(`${label} uploaded successfully`);
-    } catch (err) {
-      toast.error(`Failed to upload ${label.toLowerCase()}`);
-    }
+    } catch {}
   }
 
   async function handleText() {
     if (!text.trim()) return;
     try {
-      onDeselectCv?.(); // clear any list selection
+      onDeselectCv?.();
       const res = await uploadText.mutateAsync(text);
       const id = getId(res);
       setUploadedId(id ?? null);
       onSuccess?.(id);
       setText("");
-      toast.success(`${label} saved successfully`);
-    } catch (err) {
-      toast.error(`Failed to save ${label.toLowerCase()}`);
-    }
+    } catch {}
   }
 
   return (

@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Loader } from "../common/Loader";
 import { useState } from "react";
@@ -18,7 +18,7 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewImageUrl }: CVPdfDra
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-green-50/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-6 animate-fade-in"
+      className="fixed inset-0 z-50 bg-green-50/20 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-6 animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -31,15 +31,17 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewImageUrl }: CVPdfDra
         </div>
 
         {/* header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
-          <div className="space-y-0.5">
+        <div className="flex items-center justify-between px-5 py-4 border-b-2 border-border shrink-0">
+          <div className="flex flex-1 items-center text-center gap-2">
             <p className="text-sm font-semibold text-tx-h1">CV Preview</p>
+
+            <ArrowRight size={15} className="text-tx-muted " />
+
             <a
               href={pdfUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-tx-muted hover:text-tx-body underline
-              underline-offset-2 transition"
+              className="text-xs text-tx-muted hover:text-tx-body underline underline-offset-2 transition"
             >
               Open PDF
             </a>
@@ -48,7 +50,7 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewImageUrl }: CVPdfDra
             variant="ghost"
             size="icon"
             onClick={onClose}
-            className="w-8 h-8 rounded-lg text-tx-muted hover:text-tx-body hover:bg-surface-muted transition"
+            className="w-8 h-8 rounded-lg text-black hover:text-tx-body hover:bg-surface-muted transition"
           >
             <X size={16} />
           </Button>

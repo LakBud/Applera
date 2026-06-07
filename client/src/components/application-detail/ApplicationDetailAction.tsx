@@ -1,0 +1,71 @@
+import { Link } from "@tanstack/react-router";
+import { Trash2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { STATUS_STYLES } from "../../utils/statusStyles";
+import { Loader } from "../common/Loader";
+import { Button } from "../ui/button";
+import { cn } from "../../lib/utils";
+import { useState } from "react";
+import { DeleteModal } from "../common/DeleteModal";
+
+type Props = {
+  jobTitle?: string;
+  status: string;
+  isUpdatingStatus: boolean;
+  isDeleting: boolean;
+  onStatusChange: (status: string) => void;
+  onDelete: () => void;
+};
+
+export function ApplicationActionSection({ jobTitle, status, isUpdatingStatus, isDeleting, onStatusChange, onDelete }: Props) {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2 text-xs text-tx-muted">
+        <Link to="/applications" className="hover:text-primary transition-colors">
+          Applications
+        </Link>
+        <span className="text-tx-muted/50">›</span>
+        <span className="text-tx-body font-medium truncate max-w-50">{jobTitle ?? "Untitled Role"}</span>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Select value={status} disabled={isUpdatingStatus} onValueChange={onStatusChange}>
+          <SelectTrigger className="text-xs h-8 w-36 ring-[#c8dece]">
+            <SelectValue>
+              <span className={cn("font-medium", STATUS_STYLES[status]?.selectClass)}>
+                {STATUS_STYLES[status]?.label ?? status}
+              </span>
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent position="popper" align="start" className="bg-[#f7fff5] ring-[#c8dece] w-36">
+            {Object.entries(STATUS_STYLES).map(([s, { label, selectClass }]) => (
+              <SelectItem key={s} value={s} className={cn("text-xs font-medium cursor-pointer", selectClass)}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={isDeleting}
+          onClick={() => setShowDeleteModal(true)}
+          className="text-black border-border hover:bg-black/10"
+        >
+          {isDeleting ? <Loader size="sm" /> : <Trash2 className="w-3.5 h-3.5" />}
+        </Button>
+
+        <DeleteModal
+          open={showDeleteModal}
+          onOpenChange={setShowDeleteModal}
+          type="application"
+          name={jobTitle}
+          onConfirm={onDelete}
+        />
+      </div>
+    </div>
+  );
+}

@@ -19,9 +19,9 @@ export function Loader({ size = "md", fullScreen = false, className, text }: Pro
 
   if (fullScreen) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 min-h-screen text-green-900">
+      <div className="flex flex-col items-center justify-center gap-3 min-h-screen text-green-700">
         {spinner}
-        {text && <p className="text-sm text-green-900">{text}</p>}
+        {text && <p className="text-sm text-green-700">{text}</p>}
       </div>
     );
   }

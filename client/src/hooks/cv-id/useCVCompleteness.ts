@@ -20,11 +20,6 @@ export function useCVCompleteness(cv?: CVDocument): Result {
 
     const checks = [
       {
-        label: "Summary",
-        weight: CV_COMPLETENESS_RULES.find((r) => r.key === "summary")!.weight,
-        done: Boolean(parsed.summary?.trim()),
-      },
-      {
         label: "Skills",
         weight: CV_COMPLETENESS_RULES.find((r) => r.key === "skills")!.weight,
         done: parsed.skills.length > 0,

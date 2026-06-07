@@ -1,6 +1,7 @@
 import type { CVDocument } from "../../../../api/schemas";
 import { useCVs } from "../../../../api";
 import { CvListItem } from "./CVListItem";
+import { useAuth } from "@clerk/clerk-react";
 
 export function CvList({
   onSelectCv,
@@ -11,8 +12,11 @@ export function CvList({
   onDeselectCv?: () => void;
   selectedCvId?: string | null;
 }) {
+  const { isSignedIn } = useAuth();
   const { data: cvs, isLoading } = useCVs();
   const pinnedCvs = cvs?.filter((cv: CVDocument) => cv.pinned) ?? [];
+
+  if (!isSignedIn) return null;
 
   if (isLoading)
     return (

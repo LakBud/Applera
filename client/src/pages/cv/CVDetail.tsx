@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { useCV, useCVDashboard } from "../api";
-import { Route } from "../routes/__protected/cvs/$cvId";
-import { useCVSuccessRate } from "../hooks/cv-id/useCVSuccessRate";
-import { useCVCompleteness } from "../hooks/cv-id/useCVCompleteness";
-import { CVHeroSection } from "../components/cv-detail/sections/CVHero";
-import { CVStatsSection } from "../components/cv-detail/sections/CVStatsSection";
-import { CVPdfDrawer } from "../components/cv-detail/CVPdfDrawer";
-import { Loader } from "../components/common/Loader";
-import CVTabsSection from "../components/cv-detail/sections/CVTabsSection";
+import { useCV, useCVDashboard } from "../../api";
+import { Route } from "../../routes/__protected/cvs/$cvId";
+import { useCVSuccessRate } from "../../hooks/cv-id/useCVSuccessRate";
+import { useCVCompleteness } from "../../hooks/cv-id/useCVCompleteness";
+import { CVStatsSection } from "../../components/cv-detail/sections/CVStats";
+import { CVPdfDrawer } from "../../components/cv-detail/CVPdfDrawer";
+import { Loader } from "../../components/common/Loader";
+import CVTabsSection from "../../components/cv-detail/sections/CVTabs";
+import { CVHeaderSection } from "../../components/cv-detail/sections/CVHeader";
+import { getCVPdfUrl, getCVPreviewUrl } from "../../utils/cv-id/url";
 
 export function CVDetailPage() {
   const { cvId } = Route.useParams();
@@ -39,11 +40,11 @@ export function CVDetailPage() {
     <div className="min-h-screen bg-bg animate-fade-in">
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
         <div className="border-b pb-10">
-          <CVHeroSection
+          <CVHeaderSection
             name={cv.parsed.name}
             seniority={cv.parsed.seniority_level}
             updatedAtLabel={`Updated ${formatDate(cv.updatedAt ?? "")}`}
-            showPdf={!!cv.pdfUrl}
+            showPdf={!!getCVPdfUrl(cv._id)}
             onOpenPdf={() => setPdfOpen(true)}
           />
         </div>
@@ -62,7 +63,12 @@ export function CVDetailPage() {
       </div>
 
       {/* PDF drawer */}
-      <CVPdfDrawer open={pdfOpen} onClose={() => setPdfOpen(false)} pdfUrl={cv.pdfUrl} previewImageUrl={cv.previewImageUrl} />
+      <CVPdfDrawer
+        open={pdfOpen}
+        onClose={() => setPdfOpen(false)}
+        pdfUrl={getCVPdfUrl(cv._id)}
+        previewImageUrl={getCVPreviewUrl(cv._id)}
+      />
     </div>
   );
 }

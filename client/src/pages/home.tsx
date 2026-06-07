@@ -1,22 +1,21 @@
 import ApplicationResultSection from "../components/home/sections/ApplicationResultSection";
 import FAQSection from "../components/home/sections/FAQ";
-import FeatureSection from "../components/home/sections/FeatureSection";
-import GeneratorSection from "../components/home/sections/GeneratorSection";
-import PreviewSection from "../components/home/sections/PreviewSection";
+import FeatureSection from "../components/home/sections/Feature";
+import GeneratorSection from "../components/home/sections/Generator";
+import PreviewSection from "../components/home/sections/Preview";
 import { useHomeState } from "../hooks/useHomeState";
 import { useAuth } from "@clerk/clerk-react";
 import { Link } from "@tanstack/react-router";
-
 import { Check } from "lucide-react";
 import { FEATURES, HOW_IT_WORKS, WHAT_YOU_GET } from "../utils/home/features";
-import { Logo } from "../components/common/Logo";
+import { Footer } from "../components/common/Footer";
 
 export default function HomePage() {
   const homeState = useHomeState();
   const { isSignedIn, isLoaded } = useAuth();
 
   return (
-    <div className="min-h-screen bg-bg text-body">
+    <div id="top" className="min-h-screen bg-bg text-body">
       {/* ══════════════════════════════════════════════════════
         GENERATOR
       ══════════════════════════════════════════════════════ */}
@@ -34,9 +33,9 @@ export default function HomePage() {
 
           {!isSignedIn && isLoaded && (
             <p className="text-xs text-muted-foreground">
-              <Link to="/auth/sign-up" className="text-primary underline underline-offset-2 font-medium">
+              <Link to="/auth/sign-up/$" className="text-primary underline underline-offset-2 font-medium">
                 Create a free account
-              </Link>
+              </Link>{" "}
               to save applications, track progress, and reuse more of your CVs.
             </p>
           )}
@@ -96,13 +95,7 @@ export default function HomePage() {
       <FAQSection />
 
       {/* ── Footer ── */}
-      <footer className="border-t border-border/50 px-6 py-8">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <Logo />
-
-          <p className="text-caption text-xs">© {new Date().getFullYear()} — Your data is saved to your account.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

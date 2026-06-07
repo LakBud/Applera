@@ -68,6 +68,7 @@ export const CVDocumentSchema = z.object({
 
   pdfUrl: z.string().optional(),
   previewImageUrl: z.string().optional(),
+  cloudinaryPublicId: z.string().optional(),
 
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),

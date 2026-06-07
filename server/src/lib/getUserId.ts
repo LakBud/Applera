@@ -6,9 +6,6 @@ export function getUserId(req: Request): string {
     return `user:${req.identity.id}`;
   }
 
-  console.log("IDENTITY:", req.identity);
-  console.log("HEADERS:", req.headers.authorization);
-
   // 2. Safe header handling
   const header = req.headers["x-anonymous-id"];
 

@@ -3,6 +3,7 @@ import { queryKeys } from "../queryKeys";
 import { client } from "../client";
 import { ApplicationSchema, CreateApplicationResponseSchema } from "../schemas";
 import { z } from "zod";
+import { toast } from "sonner";
 
 export function useApplicationsByCv(cvId: string) {
   return useQuery({
@@ -42,11 +43,14 @@ export function useCreateApplication() {
   return useMutation({
     mutationFn: async (data: { cvId: string; jobId: string }) => {
       const res = await client.post("/api/application", data);
-      return CreateApplicationResponseSchema.parse(res.data); // ← full response
+      return CreateApplicationResponseSchema.parse(res.data);
     },
-
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.application.all });
+      toast.success("Application created");
+    },
+    onError: () => {
+      toast.error("Failed to create application. Please try again.");
     },
   });
 }
@@ -61,6 +65,10 @@ export function useDeleteApplication() {
     onSuccess: (_, id) => {
       qc.invalidateQueries({ queryKey: queryKeys.application.all });
       qc.removeQueries({ queryKey: queryKeys.application.detail(id) });
+      toast.success("Application deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete application. Please try again.");
     },
   });
 }
@@ -71,18 +79,15 @@ export function useUpdateApplicationStatus() {
   return useMutation({
     mutationFn: async ({ id, status, notes }: { id: string; status: string; notes?: string }) => {
       const res = await client.patch(`/api/tracker/application/${id}/status`, { status, notes });
-
       return ApplicationSchema.parse(res.data.application);
     },
-
     onSuccess: (_, vars) => {
-      qc.invalidateQueries({
-        queryKey: queryKeys.application.detail(vars.id),
-      });
-
-      qc.invalidateQueries({
-        queryKey: queryKeys.application.all,
-      });
+      qc.invalidateQueries({ queryKey: queryKeys.application.detail(vars.id) });
+      qc.invalidateQueries({ queryKey: queryKeys.application.all });
+      toast.success("Status updated");
+    },
+    onError: () => {
+      toast.error("Failed to update status. Please try again.");
     },
   });
 }

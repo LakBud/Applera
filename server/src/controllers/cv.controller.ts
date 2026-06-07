@@ -13,6 +13,8 @@ import { hash } from "../lib/hash.js";
 import { uploadPDF } from "../lib/cloudinary.upload.js";
 import { getPdfThumbnail } from "../utils/getPdfThumbnail.utils.js";
 import Application from "../models/Application.js";
+import { cloudinary } from "../config/cloudinary.js";
+import axios from "axios";
 
 const cvHashKey = (userId: string, hash: string) => `cv:hash:${userId}:${hash}`;
 const cvListKey = (userId: string, type: string) => `cvs:${userId}:${type}`;
@@ -52,6 +54,7 @@ export const createCV = async (req: Request, res: Response) => {
     let pdfUrl: string | undefined;
     let previewImageUrl: string | undefined;
     let contentHash: string;
+    let cloudinaryPublicId: string | undefined;
 
     // ─────────────────────────────
     // INPUT FLOW
@@ -69,6 +72,7 @@ export const createCV = async (req: Request, res: Response) => {
       const upload = await uploadPDF(file.buffer, req.identity.id);
       pdfUrl = upload.secure_url;
       previewImageUrl = getPdfThumbnail(upload.public_id);
+      cloudinaryPublicId = upload.public_id;
     } else if (req.body?.cvText?.trim()) {
       rawText = req.body.cvText.trim();
       contentHash = hash(rawText);
@@ -86,10 +90,8 @@ export const createCV = async (req: Request, res: Response) => {
     // ─────────────────────────────
 
     const parsedRaw = await extractCVData(rawText);
-    console.log("[CV] LLM projects:", parsedRaw.projects?.length);
 
     const parsed = normalizeParsedCV(parsedRaw);
-    console.log("[CV] NORMALIZED projects:", parsed.projects?.length);
 
     // ─────────────────────────────
     // CREATE CV (race-safe with DB index)
@@ -105,6 +107,7 @@ export const createCV = async (req: Request, res: Response) => {
         parsed,
         pdfUrl,
         previewImageUrl,
+        cloudinaryPublicId,
         contentHash,
       });
     } catch (err: any) {
@@ -333,5 +336,64 @@ export const pinCV = async (req: Request, res: Response) => {
   } catch (err) {
     console.error("[pinCV]", err);
     return res.status(500).json({ error: "Failed to pin CV" });
+  }
+};
+
+// GET /api/cv/:id/pdf
+export const getCVPdf = async (req: Request, res: Response) => {
+  try {
+    if (!req.identity) return res.status(401).json({ error: "Unauthorized" });
+
+    const cv = await CVModel.findOne({
+      _id: req.params.id,
+      ownerId: req.identity.id,
+      ownerType: req.identity.type,
+    });
+
+    if (!cv || !cv.cloudinaryPublicId) return res.status(404).json({ error: "Not found" });
+
+    const url = cloudinary.url(cv.cloudinaryPublicId, {
+      resource_type: "image",
+      secure: true,
+    });
+
+    const response = await axios.get(url, { responseType: "stream" });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "inline");
+    res.setHeader("Cross-Origin-Resource-Policy", "same-site");
+    response.data.pipe(res);
+  } catch (err) {
+    console.error("[getCVPdf]", err);
+    res.status(500).json({ error: "Failed to fetch PDF" });
+  }
+};
+
+export const getCVPreview = async (req: Request, res: Response) => {
+  try {
+    if (!req.identity) return res.status(401).json({ error: "Unauthorized" });
+
+    const cv = await CVModel.findOne({
+      _id: req.params.id,
+      ownerId: req.identity.id,
+      ownerType: req.identity.type,
+    });
+
+    if (!cv || !cv.cloudinaryPublicId) return res.status(404).json({ error: "Not found" });
+
+    const url = cloudinary.url(cv.cloudinaryPublicId, {
+      resource_type: "image",
+      secure: true,
+      format: "jpg",
+      page: 1,
+    });
+
+    const response = await axios.get(url, { responseType: "stream" });
+    res.setHeader("Content-Type", "image/jpeg");
+    res.setHeader("Cache-Control", "private, max-age=3600");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    response.data.pipe(res);
+  } catch (err) {
+    console.error("[getCVPreview]", err);
+    res.status(500).json({ error: "Failed to fetch preview" });
   }
 };

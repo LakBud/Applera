@@ -9,14 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as _protectedRouteRouteImport } from './routes/__protected/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
 import { Route as _protectedCvsIndexRouteImport } from './routes/__protected/cvs/index'
 import { Route as _protectedApplicationsIndexRouteImport } from './routes/__protected/applications/index'
+import { Route as AuthSignUpSplatRouteImport } from './routes/auth/sign-up/$'
+import { Route as AuthSignInSplatRouteImport } from './routes/auth/sign-in/$'
 import { Route as _protectedCvsCvIdRouteImport } from './routes/__protected/cvs/$cvId'
 import { Route as _protectedApplicationsApplicationIdRouteImport } from './routes/__protected/applications/$applicationId'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const _protectedRouteRoute = _protectedRouteRouteImport.update({
   id: '/__protected',
   getParentRoute: () => rootRouteImport,
@@ -24,11 +37,6 @@ const _protectedRouteRoute = _protectedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthSignUpRoute = AuthSignUpRouteImport.update({
-  id: '/auth/sign-up',
-  path: '/auth/sign-up',
   getParentRoute: () => rootRouteImport,
 } as any)
 const _protectedCvsIndexRoute = _protectedCvsIndexRouteImport.update({
@@ -42,6 +50,16 @@ const _protectedApplicationsIndexRoute =
     path: '/applications/',
     getParentRoute: () => _protectedRouteRoute,
   } as any)
+const AuthSignUpSplatRoute = AuthSignUpSplatRouteImport.update({
+  id: '/auth/sign-up/$',
+  path: '/auth/sign-up/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignInSplatRoute = AuthSignInSplatRouteImport.update({
+  id: '/auth/sign-in/$',
+  path: '/auth/sign-in/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const _protectedCvsCvIdRoute = _protectedCvsCvIdRouteImport.update({
   id: '/cvs/$cvId',
   path: '/cvs/$cvId',
@@ -56,17 +74,23 @@ const _protectedApplicationsApplicationIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth/sign-up': typeof AuthSignUpRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute
   '/cvs/$cvId': typeof _protectedCvsCvIdRoute
+  '/auth/sign-in/$': typeof AuthSignInSplatRoute
+  '/auth/sign-up/$': typeof AuthSignUpSplatRoute
   '/applications/': typeof _protectedApplicationsIndexRoute
   '/cvs/': typeof _protectedCvsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth/sign-up': typeof AuthSignUpRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute
   '/cvs/$cvId': typeof _protectedCvsCvIdRoute
+  '/auth/sign-in/$': typeof AuthSignInSplatRoute
+  '/auth/sign-up/$': typeof AuthSignUpSplatRoute
   '/applications': typeof _protectedApplicationsIndexRoute
   '/cvs': typeof _protectedCvsIndexRoute
 }
@@ -74,9 +98,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/__protected': typeof _protectedRouteRouteWithChildren
-  '/auth/sign-up': typeof AuthSignUpRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/__protected/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute
   '/__protected/cvs/$cvId': typeof _protectedCvsCvIdRoute
+  '/auth/sign-in/$': typeof AuthSignInSplatRoute
+  '/auth/sign-up/$': typeof AuthSignUpSplatRoute
   '/__protected/applications/': typeof _protectedApplicationsIndexRoute
   '/__protected/cvs/': typeof _protectedCvsIndexRoute
 }
@@ -84,26 +111,35 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth/sign-up'
+    | '/privacy'
+    | '/terms'
     | '/applications/$applicationId'
     | '/cvs/$cvId'
+    | '/auth/sign-in/$'
+    | '/auth/sign-up/$'
     | '/applications/'
     | '/cvs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth/sign-up'
+    | '/privacy'
+    | '/terms'
     | '/applications/$applicationId'
     | '/cvs/$cvId'
+    | '/auth/sign-in/$'
+    | '/auth/sign-up/$'
     | '/applications'
     | '/cvs'
   id:
     | '__root__'
     | '/'
     | '/__protected'
-    | '/auth/sign-up'
+    | '/privacy'
+    | '/terms'
     | '/__protected/applications/$applicationId'
     | '/__protected/cvs/$cvId'
+    | '/auth/sign-in/$'
+    | '/auth/sign-up/$'
     | '/__protected/applications/'
     | '/__protected/cvs/'
   fileRoutesById: FileRoutesById
@@ -111,11 +147,28 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   _protectedRouteRoute: typeof _protectedRouteRouteWithChildren
-  AuthSignUpRoute: typeof AuthSignUpRoute
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
+  AuthSignInSplatRoute: typeof AuthSignInSplatRoute
+  AuthSignUpSplatRoute: typeof AuthSignUpSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/__protected': {
       id: '/__protected'
       path: ''
@@ -128,13 +181,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/sign-up': {
-      id: '/auth/sign-up'
-      path: '/auth/sign-up'
-      fullPath: '/auth/sign-up'
-      preLoaderRoute: typeof AuthSignUpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/__protected/cvs/': {
@@ -150,6 +196,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/applications/'
       preLoaderRoute: typeof _protectedApplicationsIndexRouteImport
       parentRoute: typeof _protectedRouteRoute
+    }
+    '/auth/sign-up/$': {
+      id: '/auth/sign-up/$'
+      path: '/auth/sign-up/$'
+      fullPath: '/auth/sign-up/$'
+      preLoaderRoute: typeof AuthSignUpSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/sign-in/$': {
+      id: '/auth/sign-in/$'
+      path: '/auth/sign-in/$'
+      fullPath: '/auth/sign-in/$'
+      preLoaderRoute: typeof AuthSignInSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/__protected/cvs/$cvId': {
       id: '/__protected/cvs/$cvId'
@@ -190,7 +250,10 @@ const _protectedRouteRouteWithChildren = _protectedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   _protectedRouteRoute: _protectedRouteRouteWithChildren,
-  AuthSignUpRoute: AuthSignUpRoute,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
+  AuthSignInSplatRoute: AuthSignInSplatRoute,
+  AuthSignUpSplatRoute: AuthSignUpSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

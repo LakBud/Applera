@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
+import { toast } from "sonner";
 import { queryKeys } from "../queryKeys";
 import { client } from "../client";
 import { CVDocumentSchema, DashboardSchema, UploadCVResponseSchema, type CVDocument } from "../schemas";
@@ -34,9 +35,12 @@ export function useDeleteCV() {
       const res = await client.delete(`/api/cv/${cvId}`);
       return res.data;
     },
-
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.cv.all });
+      toast.success("CV deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete CV. Please try again.");
     },
   });
 }
@@ -48,14 +52,15 @@ export function useUploadCVFile() {
     mutationFn: async (file: File) => {
       const form = new FormData();
       form.append("cv", file);
-
       const res = await client.post("/api/cv", form);
-
       return UploadCVResponseSchema.parse(res.data);
     },
-
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.cv.all });
+      toast.success("CV uploaded successfully");
+    },
+    onError: () => {
+      toast.error("Failed to upload CV. Please try again.");
     },
   });
 }
@@ -65,15 +70,15 @@ export function useUploadCVText() {
 
   return useMutation({
     mutationFn: async (cvText: string) => {
-      const res = await client.post("/api/cv", {
-        cvText,
-      });
-
+      const res = await client.post("/api/cv", { cvText });
       return UploadCVResponseSchema.parse(res.data);
     },
-
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.cv.all });
+      toast.success("CV saved successfully");
+    },
+    onError: () => {
+      toast.error("Failed to save CV. Please try again.");
     },
   });
 }
@@ -99,6 +104,9 @@ export function usePinCV() {
         if (!old) return old;
         return old.map((cv) => (cv._id === id ? { ...cv, pinned: !cv.pinned } : cv));
       });
+    },
+    onError: () => {
+      toast.error("Failed to update pin. Please try again.");
     },
   });
 }

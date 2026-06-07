@@ -1,6 +1,6 @@
 export function CVCardSkeleton() {
   return (
-    <div className="w-full h-full bg-white/40 rounded-lg ring-1 ring-border overflow-hidden flex flex-col animate-pulse">
+    <div className="w-full h-full rounded-lg ring-1 ring-green-700 ring-border overflow-hidden flex flex-col animate-pulse">
       {/* image */}
       <div className="w-full h-56 bg-border/40" />
 

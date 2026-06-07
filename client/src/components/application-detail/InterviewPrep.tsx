@@ -1,29 +1,32 @@
-import { Lightbulb, Loader2, MessageSquare } from "lucide-react";
+import { Lightbulb, Loader2 } from "lucide-react";
 import { useGenerateInterviewPrep, useInterviewPrep } from "../../api";
 import { Button } from "../ui/button";
-import { Section } from "../common/Section";
+import { ApplicationAccordion } from "../ui/accordion";
+import { SectionHeading } from "../ui/section";
 
 export function InterviewPrepSection({ applicationId }: { applicationId: string }) {
-  const { data: prep, isLoading, isError } = useInterviewPrep(applicationId);
+  const { data: prep, isLoading } = useInterviewPrep(applicationId);
   const { mutate: generate, isPending } = useGenerateInterviewPrep();
+
+  const hasNoPrep = !prep && !isLoading;
 
   if (isLoading) {
     return (
-      <Section title="Interview prep">
-        <div className="space-y-2">
+      <ApplicationAccordion title="Interview preparation">
+        <div className="p-4 space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="h-3.5 bg-muted animate-pulse rounded w-full" />
           ))}
         </div>
-      </Section>
+      </ApplicationAccordion>
     );
   }
 
-  if (!prep || isError) {
+  if (hasNoPrep) {
     return (
-      <Section title="Interview prep">
-        <div className="flex flex-col items-start gap-3">
-          <p className="text-sm text-muted-foreground">No interview prep generated yet.</p>
+      <ApplicationAccordion title="Interview preparation">
+        <div className="p-4 flex flex-col items-start gap-3">
+          <p className="text-sm text-tx-muted">No interview prep generated yet.</p>
           <Button size="sm" variant="outline" disabled={isPending} onClick={() => generate(applicationId)}>
             {isPending ? (
               <>
@@ -38,14 +41,15 @@ export function InterviewPrepSection({ applicationId }: { applicationId: string 
             )}
           </Button>
         </div>
-      </Section>
+      </ApplicationAccordion>
     );
   }
 
+  if (!prep) return null;
+
   return (
-    <Section title="Interview prep">
-      <div className="space-y-6">
-        {/* Questions grouped by category */}
+    <ApplicationAccordion title="Interview preparation">
+      <div className="p-4 space-y-6">
         {Object.entries(
           prep.questions.reduce<Record<string, typeof prep.questions>>((acc, q) => {
             acc[q.category] = [...(acc[q.category] ?? []), q];
@@ -53,32 +57,25 @@ export function InterviewPrepSection({ applicationId }: { applicationId: string 
           }, {}),
         ).map(([category, questions]) => (
           <div key={category}>
-            <div className="flex items-center gap-1.5 mb-3">
-              <MessageSquare className="w-3.5 h-3.5 text-muted-foreground" />
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{category}</p>
-            </div>
+            <SectionHeading>{category}</SectionHeading>
             <div className="space-y-3">
               {questions.map((q, i) => (
-                <div key={i} className="border border-border p-3 space-y-1.5">
-                  <p className="text-sm font-medium">{q.question}</p>
-                  <p className="text-xs text-muted-foreground">{q.tip}</p>
+                <div key={i} className="border border-border rounded-lg p-3 space-y-1.5 bg-surface-muted">
+                  <p className="text-sm font-medium text-tx-body">{q.question}</p>
+                  <p className="text-xs text-tx-muted">{q.tip}</p>
                 </div>
               ))}
             </div>
           </div>
         ))}
 
-        {/* General tips */}
         {prep.general_tips.length > 0 && (
           <div>
-            <div className="flex items-center gap-1.5 mb-3">
-              <Lightbulb className="w-3.5 h-3.5 text-muted-foreground" />
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">General tips</p>
-            </div>
+            <SectionHeading>General tips</SectionHeading>
             <ul className="space-y-1.5">
               {prep.general_tips.map((tip, i) => (
-                <li key={i} className="text-xs text-muted-foreground flex gap-2">
-                  <span className="mt-0.5 shrink-0">·</span>
+                <li key={i} className="text-xs text-tx-muted flex gap-2">
+                  <span className="mt-0.5 shrink-0 text-tx-caption">·</span>
                   {tip}
                 </li>
               ))}
@@ -86,7 +83,6 @@ export function InterviewPrepSection({ applicationId }: { applicationId: string 
           </div>
         )}
 
-        {/* Regenerate */}
         <Button size="sm" variant="outline" disabled={isPending} onClick={() => generate(applicationId)}>
           {isPending ? (
             <>
@@ -101,6 +97,6 @@ export function InterviewPrepSection({ applicationId }: { applicationId: string 
           )}
         </Button>
       </div>
-    </Section>
+    </ApplicationAccordion>
   );
 }

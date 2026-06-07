@@ -11,6 +11,9 @@
    ============================================================================= */
 
 @layer utilities {
+  .cl-rootBox {
+    font-family: var(--font-sans);
+  }
   .btn-primary {
     background-color: hsl(var(--primary));
     color: white;
@@ -131,6 +134,31 @@
     --shadow-md: 0 4px 6px -1px rgb(30 45 34 / 0.09);
     --shadow-lg: 0 10px 15px -3px rgb(30 45 34 / 0.09);
     --shadow-green: 0 4px 14px 0 rgb(31 160 40 / 0.28);
+
+    /* CLERK */
+    --clerk-color-primary: hsl(var(--primary));
+    --clerk-color-primary-foreground: hsl(var(--primary-foreground));
+
+    --clerk-color-background: var(--surface);
+    --clerk-color-foreground: var(--text-body);
+
+    --clerk-color-input: var(--surface);
+    --clerk-color-input-foreground: var(--text-body);
+
+    --clerk-color-neutral: var(--text-secondary);
+
+    --clerk-color-danger: var(--clr-error);
+    --clerk-color-success: var(--clr-success);
+    --clerk-color-warning: var(--clr-warning);
+
+    --clerk-color-ring: hsl(var(--ring));
+
+    --clerk-color-modal-backdrop: rgba(0, 0, 0, 0.4);
+
+    --clerk-color-shimmer: var(--surface-muted);
+
+    --clerk-border-radius: var(--radius);
+    --clerk-spacing: 1.125rem;
   }
 
   .dark {
@@ -181,6 +209,7 @@
 @layer base {
   html {
     font-family: var(--font-sans);
+    scroll-behavior: smooth;
   }
 
   body {

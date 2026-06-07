@@ -4,6 +4,9 @@ import type { CVDocument } from "../../api/schemas";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, CardAction } from "../ui/card";
 import { Button } from "../ui/button";
 import { FileText, Pin } from "lucide-react";
+import { getCVPreviewUrl } from "../../utils/cv-id/url";
+import { useState } from "react";
+import { DeleteModal } from "../common/DeleteModal";
 
 type CVCardProps = {
   cv: CVDocument;
@@ -15,6 +18,7 @@ type CVCardProps = {
 export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
   const del = useDeleteCV();
   const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const latestExp = cv.parsed.experience?.[0];
   const topSkills =
@@ -35,8 +39,8 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
     >
       {/* IMAGE */}
       <div className="w-full h-56 border-b overflow-hidden bg-muted flex items-center justify-center">
-        {cv.previewImageUrl ? (
-          <img src={cv.previewImageUrl} alt="CV preview" className="w-full h-full object-cover" />
+        {cv.cloudinaryPublicId ? (
+          <img src={getCVPreviewUrl(cv._id)} alt="CV preview" className="w-full h-full object-cover" />
         ) : (
           <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
             <FileText className="w-10 h-10 opacity-30" />
@@ -108,9 +112,17 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
       <CardFooter className="flex justify-between">
         {/* IMPORTANT: prevent navigation on delete */}
         <div onClick={(e) => e.stopPropagation()}>
-          <Button variant="outline" className="text-green-900" onClick={() => del.mutate(cv._id)}>
+          <Button variant="outline" className="text-green-900" onClick={() => setShowDeleteModal(true)}>
             Delete
           </Button>
+
+          <DeleteModal
+            open={showDeleteModal}
+            onOpenChange={setShowDeleteModal}
+            type="cv"
+            name={cv.parsed?.name}
+            onConfirm={() => del.mutate(cv._id)}
+          />
         </div>
 
         <CardAction className="pt-1">

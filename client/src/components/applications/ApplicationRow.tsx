@@ -3,8 +3,8 @@ import { FileText, TrendingUp, MapPin } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Badge } from "../ui/badge";
 import { STATUS_STYLES } from "../../utils/statusStyles";
-import { RowBase } from "../common/RowBase";
 import type { Application } from "../../api/schemas";
+import { RowBase } from "../ui/row";
 
 export function ApplicationRow({ application }: { application: Application }) {
   const navigate = useNavigate();

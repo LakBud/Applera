@@ -70,7 +70,7 @@ export default function GeneratorSection({ state }: Props) {
             type="button"
             onClick={handleGenerate}
             disabled={!canGenerate}
-            className="px-10 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-6 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isPending ? <Loader size="sm" text="Generating…" /> : "Generate application"}
           </Button>
@@ -79,7 +79,7 @@ export default function GeneratorSection({ state }: Props) {
             type="button"
             onClick={state.handleReset}
             variant="outline"
-            className="px-10 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-6 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             New application
           </Button>

@@ -11,13 +11,13 @@ export function UploadSuccess({
   onClick?: (e: React.MouseEvent) => void;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3">
-      <CheckCircle2 className="w-10 h-10 text-green-600 mb-3" />
+    <div className="flex flex-col items-center gap-2">
+      <CheckCircle2 className="w-10 h-10 text-green-600" />
       <p className="text-sm text-green-800 font-medium">{label} saved</p>
       <Button
         type="button"
         onClick={onClick ?? onClear}
-        className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
+        className="text-xs text-shadow-green-700 text-muted-foreground hover:text-foreground underline transition-colors"
       >
         Remove
       </Button>

@@ -6,14 +6,7 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Loader2 } from "lucide-react";
 import { Toaster } from "../components/ui/sonner";
-
-function GlobalPending() {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Loader2 className="w-6 h-6 animate-spin text-primary" />
-    </div>
-  );
-}
+import { NotFoundPage } from "../pages/NotFound";
 
 interface RouterContext {
   queryClient: QueryClient;
@@ -22,8 +15,17 @@ interface RouterContext {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   pendingComponent: GlobalPending,
+  notFoundComponent: NotFoundPage,
   component: RootLayout,
 });
+
+function GlobalPending() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader2 className="w-6 h-6 animate-spin text-green-800" />
+    </div>
+  );
+}
 
 function RootLayout() {
   const { isSignedIn, isLoaded } = useAuth();

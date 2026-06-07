@@ -19,7 +19,7 @@ export default function PreviewSection() {
           </p>
 
           <a
-            href="#generator"
+            href="#"
             className="inline-block text-sm font-semibold text-secondary bg-primary hover:scale-98 duration-300 px-6 py-2.5 transition ease-out"
           >
             Try it yourself →

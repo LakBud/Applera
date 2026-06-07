@@ -32,6 +32,7 @@ const InterviewPrepSchema = new mongoose.Schema(
     ],
 
     general_tips: [{ type: String, trim: true }],
+    regenerationCount: { type: Number, default: 0 },
   },
   {
     timestamps: true,

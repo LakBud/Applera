@@ -73,6 +73,11 @@ const CVSchema = new mongoose.Schema(
     previewImageUrl: { type: String },
     pinned: { type: Boolean, default: false },
 
+    cloudinaryPublicId: {
+      type: String,
+      trim: true,
+    },
+
     contentHash: {
       type: String,
       index: true,

@@ -14,7 +14,7 @@ export function CVCompletenessBar({ completeness, missing }: Props) {
       </div>
 
       {/* progress */}
-      <div className="w-full h-6 bg-surface-muted rounded-full relative overflow-hidden">
+      <div className="w-full h-6 bg-surface-muted rounded-lg relative overflow-hidden">
         <div
           className="absolute top-0 left-0 h-full bg-[#1fa028] transition-all duration-700 ease-out"
           style={{

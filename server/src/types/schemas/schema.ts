@@ -50,6 +50,7 @@ export const CVSchema = z.object({
 
   pdfUrl: z.string().optional(),
   previewImageUrl: z.string().optional(),
+  cloudinaryPublicId: z.string().optional(),
 });
 
 export type CVSchemaData = z.infer<typeof CVSchema>;

@@ -257,9 +257,6 @@ export const createApplication = async (req: Request, res: Response) => {
     // generate LLM output
     const applicationOutput = await generateApplication(cleanCV, cleanJob, match);
 
-    console.log("job.location:", job.location);
-    console.log("parsed.location:", job.parsed);
-
     const application = await Application.create({
       ownerId,
       ownerType,

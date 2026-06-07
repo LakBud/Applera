@@ -1,7 +1,7 @@
-import { useCVs } from "../api";
-import { usePinCV } from "../api/hooks/useCV";
-import { CVCard } from "../components/cvs/CVCard";
-import { CVCardSkeleton } from "../components/cvs/CVCardSkeleton";
+import { useCVs } from "../../api";
+import { usePinCV } from "../../api/hooks/useCV";
+import { CVCard } from "../../components/cvs/CVCard";
+import { CVCardSkeleton } from "../../components/cvs/CVCardSkeleton";
 
 export function CVsPage() {
   const { data: cvs, isLoading } = useCVs();

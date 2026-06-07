@@ -12,6 +12,7 @@ import { getParam } from "../utils/req.js";
 import { z } from "zod";
 import CV from "../models/CV.js";
 import Job from "../models/Job.js";
+import { deleteCache } from "../lib/cache.js";
 
 export type CVSchemaData = z.infer<typeof CVSchema>;
 export type JobSchemaData = z.infer<typeof JobSchema>;
@@ -63,6 +64,20 @@ export const generatePrep = async (req: Request, res: Response) => {
       });
     }
 
+    const existing = await InterviewPrep.findOne({
+      application: applicationId,
+      ownerId: identity.id,
+      ownerType: identity.type,
+    })
+      .select("regenerationCount")
+      .lean();
+
+    if (existing && existing.regenerationCount >= 3) {
+      return res.status(429).json({ error: "Maximum regenerations reached." });
+    }
+
+    await deleteCache(`interview:${applicationId}`);
+
     const prep = await generateInterviewPrep(cv as CVSchemaData, job as JobSchemaData, match, applicationId);
 
     const saved = await InterviewPrep.findOneAndUpdate(
@@ -77,6 +92,7 @@ export const generatePrep = async (req: Request, res: Response) => {
         ownerType: identity.type,
         questions: prep.questions,
         general_tips: prep.general_tips,
+        $inc: { regenerationCount: 1 },
       },
       {
         upsert: true,
