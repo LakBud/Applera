@@ -14,7 +14,7 @@ function ProtectedLayout() {
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
-      navigate({ to: "/auth/sign-up" });
+      navigate({ to: "/auth/sign-up/$" });
     }
   }, [isLoaded, isSignedIn]);
 
