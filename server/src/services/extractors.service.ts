@@ -24,7 +24,7 @@ export async function extractCVData(cvText: string): Promise<CVSchemaData> {
   const safeText = sanitise(cvText, "cvText");
 
   return cachedLLM<CVSchemaData>({
-    cacheKey: `cv:v3 :${hash(safeText)}`,
+    cacheKey: `cv:v4 :${hash(safeText)}`,
     ttl: 60 * 60 * 24,
 
     fn: async () => {
@@ -63,7 +63,7 @@ export async function extractJobData(jobText: string): Promise<JobSchemaData> {
   const safeText = sanitise(jobText, "jobText");
 
   return cachedLLM<JobSchemaData>({
-    cacheKey: `job:${hash(safeText)}`,
+    cacheKey: `job:v4 :${hash(safeText)}`,
     ttl: 60 * 60 * 24,
 
     fn: async () => {
