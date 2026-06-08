@@ -1,13 +1,10 @@
 import { openai, model } from "../../integrations/openai.js";
 import parseModelJson from "../../lib/parseModelJson.js";
-import env from "../../config/env.js";
-import type { ChatCompletion } from "openai/resources/chat/completions";
 import { getCache, setCache } from "../../lib/cache.js";
 import { randomUUID } from "crypto";
+import { IS_PROD } from "../../config/env.js";
 
 const BASE_DELAY_MS = 500;
-
-const IS_PROD = env.NODE_ENV === "production";
 
 // ─────────────────────────────────────────────
 // Error class

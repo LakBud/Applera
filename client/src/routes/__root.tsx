@@ -2,14 +2,11 @@ import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { useAuth } from "@clerk/clerk-react";
 import type { QueryClient } from "@tanstack/react-query";
 import Nav from "../components/common/nav/Nav";
-
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Loader2 } from "lucide-react";
 import { Toaster } from "../components/ui/sonner";
 import { NotFoundPage } from "../pages/NotFound";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 interface RouterContext {
   queryClient: QueryClient;
@@ -79,8 +76,6 @@ function RootLayout() {
           },
         }}
       />
-      <TanStackRouterDevtools />
-      <ReactQueryDevtools initialIsOpen={false} />
     </div>
   );
 }

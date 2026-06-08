@@ -3,7 +3,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 const FAQ = [
   {
     q: "Is my data stored?",
-    a: "Yes. Your CVs and generated applications are securely saved to your account so you can reuse them anytime from your dashboard. You can delete them whenever you want.",
+    a: "Yes. Your CVs and generated applications are securely saved to your account so you can reuse them anytime from your dashboard. You can delete everything, including your account, at any time.",
   },
   {
     q: "What language is the application written in?",
@@ -11,15 +11,23 @@ const FAQ = [
   },
   {
     q: "How does the match score work?",
-    a: "It compares your CV against the job description using skills, keywords, and context. It's meant to highlight strengths and gaps — not to decide your eligibility.",
+    a: "It compares your CV against the job description using skills, keywords, and experience. It highlights your strengths and gaps — not to decide your eligibility, but to help you apply smarter.",
   },
   {
     q: "Can I use the generated cover letter directly?",
-    a: "Yes, but it's recommended to review and adjust it so it reflects your own voice. The AI gives you a strong draft, not a final submission.",
+    a: "Yes, but we recommend reviewing and adjusting it so it reflects your own voice. The AI gives you a strong draft — the finishing touches are yours.",
   },
   {
     q: "Do I need to upload my CV every time?",
-    a: "No. Once uploaded, your CV is stored in your account and automatically reused for future applications.",
+    a: "No. Once uploaded, your CV is saved to your account and automatically available for future applications.",
+  },
+  {
+    q: "What AI model powers Applera?",
+    a: "Applera uses a large language model via Groq for fast, high-quality generation of cover letters, application emails, and match analysis.",
+  },
+  {
+    q: "Is there a free plan?",
+    a: "Yes. You can get started for free with core features included. No credit card required.",
   },
 ];
 
