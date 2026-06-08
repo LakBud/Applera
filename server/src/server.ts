@@ -116,6 +116,9 @@ const CSRF_SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (CSRF_SAFE_METHODS.has(req.method)) return next();
 
+  // Bearer token auth is CSRF-safe by default — skip cookie check
+  if (req.headers.authorization?.startsWith("Bearer ")) return next();
+
   const tokenFromCookie = req.cookies["csrf-token"];
   const tokenFromHeader = req.headers["x-csrf-token"];
 
