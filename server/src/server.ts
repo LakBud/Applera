@@ -41,7 +41,7 @@ app.use(
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"], // tighten if you control styles
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", CLIENT_URL || "http://localhost:5173"],
+        connectSrc: ["'self'", CLIENT_URL, "http://localhost:5173"],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
