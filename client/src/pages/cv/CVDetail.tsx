@@ -8,7 +8,7 @@ import { CVPdfDrawer } from "../../components/cv-detail/CVPdfDrawer";
 import { Loader } from "../../components/common/Loader";
 import CVTabsSection from "../../components/cv-detail/sections/CVTabs";
 import { CVHeaderSection } from "../../components/cv-detail/sections/CVHeader";
-import { getCVPdfUrl, getCVPreviewUrl } from "../../utils/cv-id/url";
+import { getCVPdfUrl } from "../../utils/cv-id/url";
 
 export function CVDetailPage() {
   const { cvId } = Route.useParams();
@@ -35,7 +35,7 @@ export function CVDetailPage() {
   }
 
   const pdfUrl = getCVPdfUrl(cv._id);
-  const previewUrl = getCVPreviewUrl(cv._id);
+  const previewUrl = cv.previewUrl;
   const openPdf = () => setPdfOpen(true);
 
   const formatDate = (d: string) => new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
