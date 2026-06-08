@@ -32,7 +32,7 @@ export const CLERK_WEBHOOK_SECRET = requireEnv("CLERK_WEBHOOK_SECRET");
 // ── Server ────────────────────────────────────────────────────────────────────
 
 export const PORT = optionalEnv("PORT", "5005");
-export const CLIENT_URL = optionalEnv("CLIENT_URL", "http://localhost:5173");
+export const CLIENT_URL = IS_PROD ? requireEnv("CLIENT_URL") : optionalEnv("CLIENT_URL", "http://localhost:5173");
 
 // ── Database ──────────────────────────────────────────────────────────────────
 
