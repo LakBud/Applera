@@ -237,13 +237,24 @@ export const getCVById = async (req: Request, res: Response) => {
       ownerType: req.identity.type,
     });
 
-    return res.json({ ...cv, applicationsCount });
+    const previewUrl = cv.cloudinaryPublicId
+      ? cloudinary.url(cv.cloudinaryPublicId, {
+          resource_type: "image",
+          secure: true,
+          format: "jpg",
+        })
+      : null;
+
+    return res.json({
+      ...cv,
+      applicationsCount,
+      previewUrl,
+    });
   } catch (err) {
     console.error("[getCVById]", err);
     return res.status(500).json({ error: "Failed to fetch CV" });
   }
 };
-
 // ─────────────────────────────────────────────
 // DELETE /api/cv/:id
 // ─────────────────────────────────────────────
