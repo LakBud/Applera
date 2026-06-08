@@ -22,40 +22,11 @@ const router = express.Router();
 // ─────────────────────────────────────────────
 router.post(
   "/",
-  (req, _res, next) => {
-    console.log("A validate");
-    next();
-  },
   validate("createApplication"),
-
-  (req, _res, next) => {
-    console.log("B idempotency");
-    next();
-  },
   idempotency,
-
-  (req, _res, next) => {
-    console.log("C usageLimiter");
-    next();
-  },
   usageLimiter,
-
-  (req, _res, next) => {
-    console.log("D applicationLimiter");
-    next();
-  },
   applicationLimiter,
-
-  (req, _res, next) => {
-    console.log("E aiTimeout");
-    next();
-  },
   aiTimeout(60_000),
-
-  (req, _res, next) => {
-    console.log("F createApplication");
-    next();
-  },
   createApplication,
 );
 
