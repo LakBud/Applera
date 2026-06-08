@@ -145,7 +145,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 
 app.use(sanitizeHpp);
 app.use(globalLimiter);
-if (!IS_PROD) app.use(requestLogger);
+app.use(requestLogger);
 
 // ─────────────────────────────────────────────
 // Routes
