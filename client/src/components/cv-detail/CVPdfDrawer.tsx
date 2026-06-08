@@ -9,9 +9,10 @@ interface CVPdfDrawerProps {
   onClose: () => void;
   pdfUrl?: string;
   previewImageUrl?: string;
+  isLoading: boolean;
 }
 
-export function CVPdfDrawer({ open, onClose, pdfUrl, previewImageUrl }: CVPdfDrawerProps) {
+export function CVPdfDrawer({ open, onClose, pdfUrl, previewImageUrl, isLoading }: CVPdfDrawerProps) {
   if (!open || !pdfUrl) return null;
   const [imgLoaded, setImgLoaded] = useState(false);
   const src = previewImageUrl ?? pdfUrl;
@@ -38,10 +39,13 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewImageUrl }: CVPdfDra
             <ArrowRight size={15} className="text-tx-muted " />
 
             <a
-              href={pdfUrl}
+              href={isLoading ? undefined : pdfUrl}
+              onClick={isLoading ? (e) => e.preventDefault() : undefined}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-tx-muted hover:text-tx-body underline underline-offset-2 transition"
+              className={`text-xs underline underline-offset-2 transition ${
+                isLoading ? "text-tx-muted opacity-50 cursor-not-allowed pointer-events-none" : "text-tx-muted hover:text-tx-body"
+              }`}
             >
               Open PDF
             </a>

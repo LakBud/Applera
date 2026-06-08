@@ -18,7 +18,8 @@ export function limiter(config: LimiterConfig) {
     try {
       const identity = req.identity;
 
-      const key = identity?.id ? `rl:${config.keyPrefix}:user:${identity.id}` : `rl:${config.keyPrefix}:ip:${req.ip}`;
+      const ip = req.headers["cf-connecting-ip"] || req.headers["x-forwarded-for"] || req.ip;
+      const key = identity?.id ? `rl:${config.keyPrefix}:user:${identity.id}` : `rl:${config.keyPrefix}:ip:${ip}`;
 
       const current = await redis.incr(key);
 

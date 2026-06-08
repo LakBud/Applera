@@ -68,6 +68,7 @@ export function CVDetailPage() {
         onClose={() => setPdfOpen(false)}
         pdfUrl={getCVPdfUrl(cv._id)}
         previewImageUrl={getCVPreviewUrl(cv._id)}
+        isLoading={loading}
       />
     </div>
   );
