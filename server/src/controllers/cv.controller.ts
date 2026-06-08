@@ -10,8 +10,7 @@ import { normalizeParsedCV } from "../utils/cv.normalize.utils.js";
 import { getParam } from "../utils/req.js";
 import { deleteCache, getCache, setCache } from "../lib/cache.js";
 import { hash } from "../lib/hash.js";
-import { uploadPDF } from "../lib/cloudinary.upload.js";
-import { getPdfThumbnail } from "../utils/getPdfThumbnail.utils.js";
+import { uploadImage } from "../lib/cloudinary.upload.js";
 import Application from "../models/Application.js";
 import { cloudinary } from "../config/cloudinary.js";
 import axios from "axios";
@@ -68,7 +67,7 @@ export const createCV = async (req: Request, res: Response) => {
         return res.status(200).json({ message: "CV already exists", cv: existing });
       }
 
-      const upload = await uploadPDF(file.buffer, req.identity.id);
+      const upload = await uploadImage(file.buffer, req.identity.id);
       cloudinaryPublicId = upload.public_id;
     } else if (req.body?.cvText?.trim()) {
       rawText = req.body.cvText.trim();
