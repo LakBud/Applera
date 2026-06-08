@@ -7,8 +7,8 @@ export function CvListItem({ cv, selected, onSelect }: { cv: CVDocument; selecte
       className={`relative w-16 h-20 border rounded-lg cursor-pointer transition overflow-hidden shrink-0
   ${selected ? "border-2 border-green-600" : "border-border hover:bg-muted/40"}`}
     >
-      {cv.previewImageUrl ? (
-        <img src={cv.previewImageUrl} alt="CV preview" className="w-full h-full object-cover" />
+      {cv.previewUrl ? (
+        <img src={cv.previewUrl} alt="CV preview" className="w-full h-full object-cover" />
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-muted p-2">
           <span className="text-xs text-muted-foreground text-center warp-break-words leading-tight">
