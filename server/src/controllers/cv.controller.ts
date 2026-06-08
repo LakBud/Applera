@@ -350,7 +350,10 @@ export const getCVPdf = async (req: Request, res: Response) => {
       ownerType: req.identity.type,
     });
 
-    if (!cv || !cv.cloudinaryPublicId) return res.status(404).json({ error: "Not found" });
+    if (!cv || !cv.cloudinaryPublicId) {
+      res.setHeader("Content-Type", "image/png");
+      return res.status(404).send(Buffer.from(""));
+    }
 
     const url = cloudinary.url(cv.cloudinaryPublicId, {
       resource_type: "image",
