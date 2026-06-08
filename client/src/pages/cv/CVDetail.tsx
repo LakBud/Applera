@@ -8,17 +8,18 @@ import { CVPdfDrawer } from "../../components/cv-detail/CVPdfDrawer";
 import { Loader } from "../../components/common/Loader";
 import CVTabsSection from "../../components/cv-detail/sections/CVTabs";
 import { CVHeaderSection } from "../../components/cv-detail/sections/CVHeader";
-import { getCVPdfUrl } from "../../utils/cv-id/url";
 
 export function CVDetailPage() {
   const { cvId } = Route.useParams();
-  const [pdfOpen, setPdfOpen] = useState(false);
 
   const { data: cv, isLoading: cvLoading, error: cvError } = useCV(cvId);
   const { data: dashboard, isLoading: dashLoading, error: dashError } = useCVDashboard(cvId);
 
   const { completeness, missing } = useCVCompleteness(cv);
   const { successRate } = useCVSuccessRate(dashboard);
+
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const [activePdfUrl, setActivePdfUrl] = useState<string | null>(null);
 
   const loading = cvLoading || dashLoading;
 
@@ -34,7 +35,21 @@ export function CVDetailPage() {
     );
   }
 
-  const formatDate = (d: string) => new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+  const openPdf = () => {
+    const url = cv.pdfUrl || cv.previewUrl;
+
+    if (!url) return;
+
+    setActivePdfUrl(url);
+    setPdfOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-bg animate-fade-in">
@@ -44,8 +59,8 @@ export function CVDetailPage() {
             name={cv.parsed.name}
             seniority={cv.parsed.seniority_level}
             updatedAtLabel={`Updated ${formatDate(cv.updatedAt ?? "")}`}
-            showPdf={!!getCVPdfUrl(cv._id)}
-            onOpenPdf={() => setPdfOpen(true)}
+            showPdf={!!(cv.pdfUrl || cv.previewUrl)}
+            onOpenPdf={openPdf}
           />
         </div>
 
@@ -58,18 +73,10 @@ export function CVDetailPage() {
           missing={missing}
         />
 
-        {/* Main tabs */}
         <CVTabsSection cv={cv} dashboard={dashboard} isLoading={loading} />
       </div>
 
-      {/* PDF drawer */}
-      <CVPdfDrawer
-        open={pdfOpen}
-        onClose={() => setPdfOpen(false)}
-        pdfUrl={cv.pdfUrl}
-        previewUrl={cv.previewUrl}
-        isLoading={cvLoading || dashLoading}
-      />
+      <CVPdfDrawer open={pdfOpen} onClose={() => setPdfOpen(false)} pdfUrl={activePdfUrl} isLoading={cvLoading || dashLoading} />
     </div>
   );
 }
