@@ -17,6 +17,12 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
       await redis.expire(key, 60 * 60 * 24 * 7); // 7 days rolling
     }
 
+    console.log({
+      userId,
+      count,
+      limit,
+    });
+
     if (count > limit) {
       return res.status(403).json({
         error: "Free limit reached",
