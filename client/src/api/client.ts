@@ -7,10 +7,34 @@ export const client = axios.create({
   withCredentials: true,
 });
 
+// CSRF
+let csrfToken: string | null = null;
+
+async function getCsrfToken(): Promise<string> {
+  if (csrfToken) return csrfToken;
+  const res = await client.get("/api/csrf-token");
+  csrfToken = res.data.csrfToken;
+  return csrfToken!;
+}
+
+const CSRF_SAFE = new Set(["GET", "HEAD", "OPTIONS"]);
+
+client.interceptors.request.use(async (config) => {
+  if (!CSRF_SAFE.has(config.method?.toUpperCase() ?? "")) {
+    config.headers["x-csrf-token"] = await getCsrfToken();
+  }
+  return config;
+});
+
 // Response errors
 client.interceptors.response.use(
   (res) => res,
   async (error) => {
+    // Stale CSRF token — reset so next request fetches a fresh one
+    if (error.response?.status === 403) {
+      csrfToken = null;
+    }
+
     const data: ApiError | undefined = error.response?.data;
 
     if (error.code === "ECONNABORTED") {

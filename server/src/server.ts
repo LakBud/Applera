@@ -100,6 +100,40 @@ app.use(clerkMiddleware());
 app.use(attachIdentity);
 
 // ─────────────────────────────────────────────
+// CSRF protection (double-submit cookie pattern)
+// Clerk sends auth as a Bearer token in the Authorization header,
+// so pure JWT API routes are CSRF-safe by default. This guard
+// covers any route that may fall back to cookie-based sessions.
+// ─────────────────────────────────────────────
+
+const CSRF_SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (CSRF_SAFE_METHODS.has(req.method)) return next();
+
+  const tokenFromCookie = req.cookies["csrf-token"];
+  const tokenFromHeader = req.headers["x-csrf-token"];
+
+  if (!tokenFromCookie || tokenFromCookie !== tokenFromHeader) {
+    res.status(403).json({ error: "Invalid CSRF token" });
+    return;
+  }
+
+  next();
+});
+
+// Endpoint the client can call to get a fresh CSRF token
+publicRouter.get("/api/csrf-token", (req: Request, res: Response) => {
+  const token = crypto.randomUUID();
+  res.cookie("csrf-token", token, {
+    httpOnly: false, // client JS needs to read this
+    sameSite: IS_PROD ? "none" : "strict",
+    secure: IS_PROD,
+  });
+  res.json({ csrfToken: token });
+});
+
+// ─────────────────────────────────────────────
 // Input sanitisation
 // ─────────────────────────────────────────────
 
