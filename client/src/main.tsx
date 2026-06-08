@@ -4,6 +4,7 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ClerkProvider, useAuth } from "@clerk/clerk-react";
 import { routeTree } from "./routeTree.gen";
+import { Analytics } from "@vercel/analytics/next";
 import "@fontsource-variable/geist";
 import "./globals.css";
 
@@ -37,6 +38,7 @@ createRoot(document.getElementById("root")!).render(
     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterMultiSessionSingleSignOutUrl={"/"}>
       <QueryClientProvider client={queryClient}>
         <InnerApp />
+        <Analytics />
       </QueryClientProvider>
     </ClerkProvider>
   </StrictMode>,
