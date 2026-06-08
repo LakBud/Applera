@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { ApiError } from "./types";
+import { getToken } from "@clerk/react";
 
 export const client = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:5005",
@@ -20,9 +21,29 @@ async function getCsrfToken(): Promise<string> {
 const CSRF_SAFE = new Set(["GET", "HEAD", "OPTIONS"]);
 
 client.interceptors.request.use(async (config) => {
+  // -----------------------------
+  // 1. AUTH (Clerk)
+  // -----------------------------
+  try {
+    const token = await getToken();
+
+    if (token) {
+      config.headers = config.headers ?? {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } catch (err) {
+    // If Clerk not ready yet, just continue without crashing
+    console.warn("[auth] token not available yet");
+  }
+
+  // -----------------------------
+  // 2. CSRF
+  // -----------------------------
   if (!CSRF_SAFE.has(config.method?.toUpperCase() ?? "")) {
+    config.headers = config.headers ?? {};
     config.headers["x-csrf-token"] = await getCsrfToken();
   }
+
   return config;
 });
 
