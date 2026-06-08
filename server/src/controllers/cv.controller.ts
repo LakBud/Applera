@@ -358,9 +358,16 @@ export const getCVPdf = async (req: Request, res: Response) => {
     });
 
     const response = await axios.get(url, { responseType: "stream" });
+
+    const allowedHeaders = ["content-type", "content-length"];
+    Object.keys(response.headers).forEach((key) => {
+      if (allowedHeaders.includes(key.toLowerCase())) {
+        res.setHeader(key, response.headers[key]);
+      }
+    });
+
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "inline");
-    res.setHeader("Cross-Origin-Resource-Policy", "same-site");
     response.data.pipe(res);
   } catch (err) {
     console.error("[getCVPdf]", err);
