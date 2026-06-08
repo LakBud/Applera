@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { ApiError } from "./types";
-import { getToken } from "@clerk/react";
+import { safeGetToken } from "./auth";
 
 export const client = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:5005",
@@ -8,36 +8,36 @@ export const client = axios.create({
   withCredentials: true,
 });
 
-// CSRF
 let csrfToken: string | null = null;
-
-async function getCsrfToken(): Promise<string> {
-  if (csrfToken) return csrfToken;
-  const res = await client.get("/api/csrf-token");
-  csrfToken = res.data.csrfToken;
-  return csrfToken!;
-}
 
 const CSRF_SAFE = new Set(["GET", "HEAD", "OPTIONS"]);
 
+async function getCsrfToken(): Promise<string> {
+  if (csrfToken) return csrfToken;
+
+  const res = await client.get("/api/csrf-token");
+  csrfToken = res.data.csrfToken;
+
+  if (!csrfToken) {
+    throw new Error("CSRF token failed to initialize");
+  }
+
+  return csrfToken;
+}
+
 client.interceptors.request.use(async (config) => {
   // -----------------------------
-  // 1. AUTH (Clerk)
+  // AUTH (safe)
   // -----------------------------
-  try {
-    const token = await getToken();
+  const token = await safeGetToken();
 
-    if (token) {
-      config.headers = config.headers ?? {};
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  } catch (err) {
-    // If Clerk not ready yet, just continue without crashing
-    console.warn("[auth] token not available yet");
+  if (token) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
   // -----------------------------
-  // 2. CSRF
+  // CSRF
   // -----------------------------
   if (!CSRF_SAFE.has(config.method?.toUpperCase() ?? "")) {
     config.headers = config.headers ?? {};
@@ -47,11 +47,9 @@ client.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Response errors
 client.interceptors.response.use(
   (res) => res,
   async (error) => {
-    // Stale CSRF token — reset so next request fetches a fresh one
     if (error.response?.status === 403) {
       csrfToken = null;
     }
@@ -63,7 +61,7 @@ client.interceptors.response.use(
     }
 
     if (error.response?.status === 429) {
-      return Promise.reject(new Error("Too many requests. Please wait a moment and try again."));
+      return Promise.reject(new Error("Too many requests. Please wait and try again."));
     }
 
     return Promise.reject(new Error(data?.error ?? error.message ?? "Something went wrong"));
