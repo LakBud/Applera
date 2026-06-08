@@ -1,8 +1,6 @@
 import { ArrowRight, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Loader } from "../common/Loader";
-import { useEffect, useState } from "react";
-import { cn } from "../../lib/utils";
 
 interface CVPdfDrawerProps {
   open: boolean;
@@ -13,16 +11,6 @@ interface CVPdfDrawerProps {
 }
 
 export function CVPdfDrawer({ open, onClose, pdfUrl, previewUrl, isLoading }: CVPdfDrawerProps) {
-  const [imgLoaded, setImgLoaded] = useState(false);
-
-  useEffect(() => {
-    if (open) {
-      setImgLoaded(false);
-    }
-  }, [open, previewUrl]);
-
-  const isImage = !!previewUrl;
-
   if (!open) return null;
 
   return (
@@ -70,23 +58,12 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewUrl, isLoading }: CV
 
         {/* content */}
         <div className="overflow-auto flex-1 p-4 bg-surface-muted relative">
-          {!imgLoaded && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Loader />
-            </div>
-          )}
-          {isImage ? (
-            <img
-              src={previewUrl}
-              alt="CV preview"
-              onLoad={() => setImgLoaded(true)}
-              className={cn(
-                "w-full object-contain rounded-lg shadow-sm transition-opacity duration-300",
-                imgLoaded ? "opacity-100" : "opacity-0",
-              )}
-            />
+          {isLoading ? (
+            <Loader />
+          ) : previewUrl ? (
+            <img src={previewUrl} alt="CV preview" className="w-full object-contain rounded-lg shadow-sm" />
           ) : (
-            <iframe src={pdfUrl} className="w-full h-[80vh] rounded-lg" />
+            <p className="text-sm text-tx-muted">No preview available</p>
           )}
         </div>
       </div>
