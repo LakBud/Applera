@@ -3,6 +3,7 @@ import { queryKeys } from "../queryKeys";
 import { client } from "../client";
 import { CreateJobResponseSchema, JobDocumentSchema } from "../schemas";
 import { z } from "zod";
+import { toast } from "sonner";
 
 export function useJobs() {
   return useQuery({
@@ -33,11 +34,12 @@ export function useDeleteJob() {
       const res = await client.delete(`/api/job/${jobId}`);
       return res.data;
     },
-
     onSuccess: () => {
-      qc.invalidateQueries({
-        queryKey: queryKeys.job.all,
-      });
+      qc.invalidateQueries({ queryKey: queryKeys.job.all });
+      toast.success("Job deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete job. Please try again.");
     },
   });
 }
@@ -51,12 +53,14 @@ export function useAnalyzeJobFile() {
       form.append("job", file);
 
       const res = await client.post("/api/job", form);
-
       return CreateJobResponseSchema.parse(res.data);
     },
-
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.job.all });
+      toast.success("Job analyzed successfully");
+    },
+    onError: () => {
+      toast.error("Failed to analyze job file. Please try again.");
     },
   });
 }
@@ -66,15 +70,15 @@ export function useAnalyzeJobText() {
 
   return useMutation({
     mutationFn: async (jobText: string) => {
-      const res = await client.post("/api/job", {
-        jobText,
-      });
-
+      const res = await client.post("/api/job", { jobText });
       return CreateJobResponseSchema.parse(res.data);
     },
-
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.job.all });
+      toast.success("Job analyzed successfully");
+    },
+    onError: () => {
+      toast.error("Failed to analyze job text. Please try again.");
     },
   });
 }
