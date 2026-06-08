@@ -19,6 +19,7 @@ import { stripObject } from "./utils/utils.js";
 import { clerkMiddleware } from "@clerk/express";
 import { attachIdentity } from "./middleware/global/identity.js";
 import cookieParser from "cookie-parser";
+import { CLIENT_URL } from "./config/env.js";
 
 const app: express.Application = express();
 
@@ -40,7 +41,7 @@ app.use(
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"], // tighten if you control styles
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'"],
+        connectSrc: ["'self'", CLIENT_URL || "http://localhost:5173"],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
@@ -64,7 +65,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // 2. CORS
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: CLIENT_URL || "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
@@ -126,7 +127,7 @@ publicRouter.get("/api/csrf-token", (req: Request, res: Response) => {
   const token = crypto.randomUUID();
   res.cookie("csrf-token", token, {
     httpOnly: false, // client JS needs to read this
-    sameSite: "strict",
+    sameSite: IS_PROD ? "none" : "strict",
     secure: IS_PROD,
   });
   res.json({ csrfToken: token });
