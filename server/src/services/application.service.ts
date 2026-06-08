@@ -8,6 +8,7 @@ import type { CVSchema, JobSchema } from "../types/schemas/schema.js";
 import type { MatchReport } from "../types/match.types.js";
 import { ApplicationLLMSchema } from "../types/schemas/llm.schemas.js";
 import { cachedLLM, callLLM } from "./llm/llm.service.js";
+import { CACHE_VERSIONS } from "../utils/cache.versions.js";
 
 export type CVSchemaData = z.infer<typeof CVSchema>;
 export type JobSchemaData = z.infer<typeof JobSchema>;
@@ -33,7 +34,7 @@ export async function generateApplication(
   job: JobSchemaData,
   match: MatchReport,
 ): Promise<ApplicationLLMOutput> {
-  const cacheKey = buildCacheKey(cv, job, match);
+  const cacheKey = buildCacheKey(CACHE_VERSIONS.application, cv, job, match);
 
   const raw = await cachedLLM({
     cacheKey,

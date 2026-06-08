@@ -13,6 +13,7 @@ import {
 } from "../utils/match.utils.js";
 import { MatchReport } from "../types/match.types.js";
 import { CVSchemaData, JobSchemaData } from "../types/schemas/schema.js";
+import { CACHE_VERSIONS } from "../utils/cache.versions.js";
 
 // ── Public API ────────────────────────────────────────────────────────────────
 
@@ -22,7 +23,7 @@ import { CVSchemaData, JobSchemaData } from "../types/schemas/schema.js";
  * @returns Match report — synchronous, no LLM call
  */
 export async function matchCVToJob(cv: CVSchemaData, job: JobSchemaData): Promise<MatchReport> {
-  const key = `match:${hash(
+  const key = `match:${CACHE_VERSIONS.match}:${hash(
     JSON.stringify({
       cvSkills: cv.skills,
       jobSkills: job.required_skills,

@@ -37,3 +37,10 @@ export async function setCache<T>(key: string, value: T, ttlSeconds = 60 * 60) {
 export async function deleteCache(key: string) {
   await redis.del(key);
 }
+
+export async function deleteCachePattern(pattern: string) {
+  const keys = await redis.keys(pattern);
+  if (keys.length > 0) {
+    await redis.del(...keys);
+  }
+}

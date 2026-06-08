@@ -7,6 +7,7 @@ import { CVSchema, CVSchemaData, JobSchema, JobSchemaData } from "../types/schem
 import { repairCV } from "./repair/cvRepair.service.js";
 import { repairJob } from "./repair/jobRepair.service.js";
 import { sanitise } from "../utils/extractors.utils.js";
+import { CACHE_VERSIONS } from "../utils/cache.versions.js";
 
 // ─────────────────────────────────────────────────────────────
 // CV extractor
@@ -24,7 +25,7 @@ export async function extractCVData(cvText: string): Promise<CVSchemaData> {
   const safeText = sanitise(cvText, "cvText");
 
   return cachedLLM<CVSchemaData>({
-    cacheKey: `cv:v4 :${hash(safeText)}`,
+    cacheKey: `cv:${CACHE_VERSIONS.cv}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
 
     fn: async () => {
@@ -63,7 +64,7 @@ export async function extractJobData(jobText: string): Promise<JobSchemaData> {
   const safeText = sanitise(jobText, "jobText");
 
   return cachedLLM<JobSchemaData>({
-    cacheKey: `job:v4 :${hash(safeText)}`,
+    cacheKey: `job:${CACHE_VERSIONS.job}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
 
     fn: async () => {

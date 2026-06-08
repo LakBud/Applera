@@ -6,6 +6,8 @@ import InterviewPrep from "../models/InterviewPrep.js";
 import User from "../models/User.js";
 import { cloudinary } from "../config/cloudinary.js";
 import { CLERK_WEBHOOK_SECRET } from "../config/env.js";
+import { redis } from "../integrations/redis.js";
+import { deleteCache, deleteCachePattern } from "../lib/cache.js";
 
 export async function handleClerkWebhook(req: Request, res: Response) {
   // Verify signature
@@ -49,12 +51,23 @@ async function handleUserDeleted(clerkId: string) {
     const applications = await Application.find({ ownerId: clerkId }).select("_id");
     const applicationIds = applications.map((a) => a._id);
 
+    // cache cleanup
+    await Promise.allSettled([
+      deleteCachePattern(`cv:hash:${clerkId}:*`),
+      deleteCachePattern(`cvs:${clerkId}:*`),
+      deleteCachePattern(`usage:${clerkId}`),
+      deleteCachePattern(`rl:*:user:${clerkId}`),
+      ...applicationIds.map((id) => deleteCache(`interview:${id}`)),
+      ...applicationIds.map((id) => deleteCachePattern(`application:*${id}*`)),
+    ]);
+
     // 4. Delete all DB records
     await Promise.all([
       InterviewPrep.deleteMany({ application: { $in: applicationIds } }),
       Application.deleteMany({ ownerId: clerkId }),
       CV.deleteMany({ ownerId: clerkId }),
       User.deleteOne({ clerkId }),
+      deleteCachePattern(`*${clerkId}*`),
     ]);
 
     console.log(`[webhook] Successfully deleted all data for user: ${clerkId}`);

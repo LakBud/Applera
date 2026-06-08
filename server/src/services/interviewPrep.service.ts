@@ -1,5 +1,6 @@
 import { callLLM, cachedLLM } from "./llm/llm.service.js";
 import { INTERVIEW_PREP_PROMPT } from "../prompts/interviewPrepPrompt.js";
+import { CACHE_VERSIONS } from "../utils/cache.versions.js";
 
 const INTERVIEW_TTL = 60 * 60 * 24; // 24 hours — questions don't change unless regenerated
 
@@ -19,7 +20,7 @@ export async function generateInterviewPrep(
   applicationId: string, // used as cache key
 ): Promise<InterviewPrepOutput> {
   return cachedLLM<InterviewPrepOutput>({
-    cacheKey: `interview:${applicationId}`,
+    cacheKey: `interview:${CACHE_VERSIONS.interview}:${applicationId}`,
     ttl: INTERVIEW_TTL,
     fn: () =>
       callLLM({
