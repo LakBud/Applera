@@ -368,6 +368,7 @@ export const getCVPdf = async (req: Request, res: Response) => {
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "inline");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     response.data.pipe(res);
   } catch (err) {
     console.error("[getCVPdf]", err);
@@ -405,6 +406,7 @@ export const getCVPreview = async (req: Request, res: Response) => {
 
     res.setHeader("Content-Type", "image/jpeg");
     res.setHeader("Cache-Control", "private, max-age=3600");
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     response.data.pipe(res);
   } catch (err) {
     console.error("[getCVPreview]", err);
