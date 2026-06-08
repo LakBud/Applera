@@ -395,9 +395,16 @@ export const getCVPreview = async (req: Request, res: Response) => {
     });
 
     const response = await axios.get(url, { responseType: "stream" });
+
+    const allowedHeaders = ["content-type", "content-length"];
+    Object.keys(response.headers).forEach((key) => {
+      if (allowedHeaders.includes(key.toLowerCase())) {
+        res.setHeader(key, response.headers[key]);
+      }
+    });
+
     res.setHeader("Content-Type", "image/jpeg");
     res.setHeader("Cache-Control", "private, max-age=3600");
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
     response.data.pipe(res);
   } catch (err) {
     console.error("[getCVPreview]", err);

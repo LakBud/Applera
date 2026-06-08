@@ -65,7 +65,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // 2. CORS
 app.use(
   cors({
-    origin: [CLIENT_URL || "http://localhost:5173", "https://www.applera.site", "https://applera.site"],
+    origin: (origin, callback) => {
+      const allowed = [CLIENT_URL || "http://localhost:5173", "https://www.applera.site", "https://applera.site"];
+      if (!origin || origin === "null") return callback(null, true);
+      if (allowed.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
