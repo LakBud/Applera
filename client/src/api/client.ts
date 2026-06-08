@@ -30,9 +30,11 @@ client.interceptors.request.use(async (config) => {
 client.interceptors.response.use(
   (res) => res,
   async (error) => {
-    // Stale CSRF token — reset so next request fetches a fresh one
-    if (error.response?.status === 403) {
+    if (error.response?.status === 403 && !error.config._csrfRetry) {
       csrfToken = null;
+      error.config._csrfRetry = true;
+      error.config.headers["x-csrf-token"] = await getCsrfToken();
+      return client(error.config);
     }
 
     const data: ApiError | undefined = error.response?.data;
