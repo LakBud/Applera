@@ -350,10 +350,7 @@ export const getCVPdf = async (req: Request, res: Response) => {
       ownerType: req.identity.type,
     });
 
-    if (!cv || !cv.cloudinaryPublicId) {
-      res.setHeader("Content-Type", "image/png");
-      return res.status(404).send(Buffer.from(""));
-    }
+    if (!cv || !cv.cloudinaryPublicId) return res.status(404).json({ error: "Not found" });
 
     const url = cloudinary.url(cv.cloudinaryPublicId, {
       resource_type: "image",
@@ -395,24 +392,11 @@ export const getCVPreview = async (req: Request, res: Response) => {
       resource_type: "image",
       secure: true,
       format: "jpg",
-      page: 1,
     });
 
-    const response = await axios.get(url, { responseType: "stream" });
-
-    const allowedHeaders = ["content-type", "content-length"];
-    Object.keys(response.headers).forEach((key) => {
-      if (allowedHeaders.includes(key.toLowerCase())) {
-        res.setHeader(key, response.headers[key]);
-      }
-    });
-
-    res.setHeader("Content-Type", "image/jpeg");
-    res.setHeader("Cache-Control", "private, max-age=3600");
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-    response.data.pipe(res);
+    return res.redirect(url);
   } catch (err) {
     console.error("[getCVPreview]", err);
-    res.status(500).json({ error: "Failed to fetch preview" });
+    return res.status(500).json({ error: "Failed to fetch preview" });
   }
 };
