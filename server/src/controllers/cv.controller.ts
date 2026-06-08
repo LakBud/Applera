@@ -378,25 +378,47 @@ export const getCVPdf = async (req: Request, res: Response) => {
 
 export const getCVPreview = async (req: Request, res: Response) => {
   try {
-    if (!req.identity) return res.status(401).json({ error: "Unauthorized" });
+    const { identity } = req;
+    const { id } = req.params;
+
+    if (!identity) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    if (!id) {
+      return res.status(400).json({ error: "Missing CV id" });
+    }
 
     const cv = await CVModel.findOne({
-      _id: req.params.id,
-      ownerId: req.identity.id,
-      ownerType: req.identity.type,
-    });
+      _id: id,
+      ownerId: identity.id,
+      ownerType: identity.type,
+    }).lean();
 
-    if (!cv || !cv.cloudinaryPublicId) return res.status(404).json({ error: "Not found" });
+    if (!cv?.cloudinaryPublicId) {
+      return res.status(404).json({ error: "CV not found" });
+    }
 
-    const url = cloudinary.url(cv.cloudinaryPublicId, {
+    const cloudinaryUrl = cloudinary.url(cv.cloudinaryPublicId, {
       resource_type: "image",
       secure: true,
       format: "jpg",
+      // future-proofing if you enable signed delivery later:
+      // sign_url: true,
     });
 
-    return res.redirect(url);
+    // Cache images aggressively (huge performance win)
+    res.setHeader("Cache-Control", "public, max-age=3600, immutable");
+
+    // Prevent embedding issues across origins (safe for images)
+    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+
+    return res.redirect(302, cloudinaryUrl);
   } catch (err) {
     console.error("[getCVPreview]", err);
-    return res.status(500).json({ error: "Failed to fetch preview" });
+
+    return res.status(500).json({
+      error: "Failed to fetch CV preview",
+    });
   }
 };
