@@ -6,7 +6,7 @@ import { validate } from "../middleware/validate.js";
 import { aiTimeout } from "../middleware/timeout.js";
 import { concurrencyLimit } from "../middleware/concurrency.js";
 
-import { createCV, getCVs, getCVById, deleteCV, pinCV, getCVPdf, getCVPreview } from "../controllers/cv.controller.js";
+import { createCV, getCVs, getCVById, deleteCV, pinCV, getCVPdf } from "../controllers/cv.controller.js";
 import { parseCvPdf } from "../middleware/parsePdf.js";
 
 const router = express.Router();
@@ -45,12 +45,6 @@ router.get("/:id", getCVById);
  * Get pdf of CV
  */
 router.get("/:id/pdf", getCVPdf);
-
-/**
- * GET /api/cv/:id/pdf
- * Get image of CV
- */
-router.get("/:id/preview", getCVPreview);
 
 /**
  * DELETE /api/cv/:id

@@ -52,7 +52,6 @@ export const createCV = async (req: Request, res: Response) => {
 
     let rawText: string;
     let pdfUrl: string | undefined;
-    let previewImageUrl: string | undefined;
     let contentHash: string;
     let cloudinaryPublicId: string | undefined;
 
@@ -70,8 +69,6 @@ export const createCV = async (req: Request, res: Response) => {
       }
 
       const upload = await uploadPDF(file.buffer, req.identity.id);
-      pdfUrl = upload.secure_url;
-      previewImageUrl = getPdfThumbnail(upload.public_id);
       cloudinaryPublicId = upload.public_id;
     } else if (req.body?.cvText?.trim()) {
       rawText = req.body.cvText.trim();
@@ -106,7 +103,6 @@ export const createCV = async (req: Request, res: Response) => {
         rawText,
         parsed,
         pdfUrl,
-        previewImageUrl,
         cloudinaryPublicId,
         contentHash,
       });
@@ -196,6 +192,13 @@ export const getCVs = async (req: Request, res: Response) => {
     const enriched = cvs.map((cv) => ({
       ...cv,
       applicationsCount: countMap.get(cv._id.toString()) ?? 0,
+      previewUrl: cv.cloudinaryPublicId
+        ? cloudinary.url(cv.cloudinaryPublicId, {
+            resource_type: "image",
+            secure: true,
+            format: "jpg",
+          })
+        : null,
     }));
 
     await setCache(key, enriched, 60 * 10);
@@ -373,52 +376,5 @@ export const getCVPdf = async (req: Request, res: Response) => {
   } catch (err) {
     console.error("[getCVPdf]", err);
     res.status(500).json({ error: "Failed to fetch PDF" });
-  }
-};
-
-export const getCVPreview = async (req: Request, res: Response) => {
-  try {
-    const { identity } = req;
-    const { id } = req.params;
-
-    if (!identity) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    if (!id) {
-      return res.status(400).json({ error: "Missing CV id" });
-    }
-
-    const cv = await CVModel.findOne({
-      _id: id,
-      ownerId: identity.id,
-      ownerType: identity.type,
-    }).lean();
-
-    if (!cv?.cloudinaryPublicId) {
-      return res.status(404).json({ error: "CV not found" });
-    }
-
-    const cloudinaryUrl = cloudinary.url(cv.cloudinaryPublicId, {
-      resource_type: "image",
-      secure: true,
-      format: "jpg",
-      // future-proofing if you enable signed delivery later:
-      // sign_url: true,
-    });
-
-    // Cache images aggressively (huge performance win)
-    res.setHeader("Cache-Control", "public, max-age=3600, immutable");
-
-    // Prevent embedding issues across origins (safe for images)
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-
-    return res.redirect(302, cloudinaryUrl);
-  } catch (err) {
-    console.error("[getCVPreview]", err);
-
-    return res.status(500).json({
-      error: "Failed to fetch CV preview",
-    });
   }
 };

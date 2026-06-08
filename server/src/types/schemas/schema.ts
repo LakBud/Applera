@@ -49,7 +49,7 @@ export const CVSchema = z.object({
     .default([]),
 
   pdfUrl: z.string().optional(),
-  previewImageUrl: z.string().optional(),
+  previewUrl: z.string().optional(),
   cloudinaryPublicId: z.string().optional(),
 });
 

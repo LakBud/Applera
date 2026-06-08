@@ -1,21 +1,26 @@
 import { ArrowRight, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Loader } from "../common/Loader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "../../lib/utils";
 
 interface CVPdfDrawerProps {
   open: boolean;
   onClose: () => void;
   pdfUrl?: string;
-  previewImageUrl?: string;
+  previewUrl?: string;
   isLoading: boolean;
 }
 
-export function CVPdfDrawer({ open, onClose, pdfUrl, previewImageUrl, isLoading }: CVPdfDrawerProps) {
+export function CVPdfDrawer({ open, onClose, pdfUrl, previewUrl, isLoading }: CVPdfDrawerProps) {
   if (!open || !pdfUrl) return null;
   const [imgLoaded, setImgLoaded] = useState(false);
-  const src = previewImageUrl ?? pdfUrl;
+
+  useEffect(() => {
+    if (open) {
+      setImgLoaded(false);
+    }
+  }, [open, previewUrl]);
 
   return (
     <div
@@ -67,9 +72,9 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewImageUrl, isLoading 
               <Loader />
             </div>
           )}
-          {src && (
+          {previewUrl && (
             <img
-              src={src}
+              src={previewUrl}
               alt="CV preview"
               onLoad={() => setImgLoaded(true)}
               className={cn(

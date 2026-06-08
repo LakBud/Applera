@@ -8,7 +8,7 @@ import { CVPdfDrawer } from "../../components/cv-detail/CVPdfDrawer";
 import { Loader } from "../../components/common/Loader";
 import CVTabsSection from "../../components/cv-detail/sections/CVTabs";
 import { CVHeaderSection } from "../../components/cv-detail/sections/CVHeader";
-import { getCVPdfUrl, getCVPreviewUrl } from "../../utils/cv-id/url";
+import { getCVPdfUrl } from "../../utils/cv-id/url";
 
 export function CVDetailPage() {
   const { cvId } = Route.useParams();
@@ -66,9 +66,9 @@ export function CVDetailPage() {
       <CVPdfDrawer
         open={pdfOpen}
         onClose={() => setPdfOpen(false)}
-        pdfUrl={getCVPdfUrl(cv._id)}
-        previewImageUrl={getCVPreviewUrl(cv._id)}
-        isLoading={loading}
+        pdfUrl={cv.pdfUrl}
+        previewUrl={cv.previewUrl}
+        isLoading={cvLoading || dashLoading}
       />
     </div>
   );

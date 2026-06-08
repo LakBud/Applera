@@ -4,7 +4,6 @@ import type { CVDocument } from "../../api/schemas";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, CardAction } from "../ui/card";
 import { Button } from "../ui/button";
 import { FileText, Pin } from "lucide-react";
-import { getCVPreviewUrl } from "../../utils/cv-id/url";
 import { useState } from "react";
 import { DeleteModal } from "../common/DeleteModal";
 
@@ -39,8 +38,8 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
     >
       {/* IMAGE */}
       <div className="w-full h-56 border-b overflow-hidden bg-muted flex items-center justify-center">
-        {cv.cloudinaryPublicId ? (
-          <img src={getCVPreviewUrl(cv._id)} alt="CV preview" className="w-full h-full object-cover" />
+        {cv.previewUrl ? (
+          <img src={cv.previewUrl} alt="CV preview" className="w-full h-full object-cover" />
         ) : (
           <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
             <FileText className="w-10 h-10 opacity-30" />
