@@ -5,6 +5,13 @@ import { getUsageLimit } from "../lib/getUsageLimit.js";
 
 export async function usageLimiter(req: Request, res: Response, next: NextFunction) {
   const userId = getUserId(req);
+
+  if (!userId) {
+    return res.status(401).json({
+      error: "Unauthorized",
+    });
+  }
+
   const limit = getUsageLimit(req);
 
   const key = `usage:${userId}`;
