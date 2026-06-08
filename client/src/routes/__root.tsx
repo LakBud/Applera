@@ -7,6 +7,8 @@ import { Toaster } from "../components/ui/sonner";
 import { NotFoundPage } from "../pages/NotFound";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { useEffect } from "react";
+import axios from "axios";
 
 interface RouterContext {
   queryClient: QueryClient;
@@ -55,6 +57,18 @@ export function GlobalError({ error }: { error: unknown }) {
 
 function RootLayout() {
   const { isSignedIn, isLoaded } = useAuth();
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/health`, {
+        signal: controller.signal,
+      })
+      .catch(() => {});
+
+    return () => controller.abort();
+  }, []);
 
   return (
     <div className="min-h-screen bg-bg text-text font-body">
