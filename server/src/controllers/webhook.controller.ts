@@ -8,7 +8,7 @@ import { cloudinary } from "../config/cloudinary.js";
 import { CLERK_WEBHOOK_SECRET } from "../config/env.js";
 
 export async function handleClerkWebhook(req: Request, res: Response) {
-  // 1. Verify signature
+  // Verify signature
   const wh = new Webhook(CLERK_WEBHOOK_SECRET);
   let event: any;
 

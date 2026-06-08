@@ -71,7 +71,10 @@ app.use(
   }),
 );
 
-// 3. Body parsing
+// 3. Webhooks (must be before body parsing)
+app.use("/api/webhooks", webhookRoutes);
+
+// 4. Body parsing
 app.use(express.json({ limit: "50kb" }));
 app.use(express.urlencoded({ extended: true, limit: "50kb" }));
 app.use(cookieParser());
@@ -91,8 +94,6 @@ app.use(publicRouter);
 // ─────────────────────────────────────────────
 // Clerk middleware (ATTACHES req.auth)
 // ─────────────────────────────────────────────
-
-app.use("/api/webhooks", webhookRoutes);
 
 app.use(clerkMiddleware());
 app.use(attachIdentity);
