@@ -130,6 +130,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   const tokenFromCookie = req.cookies["csrf-token"];
   const tokenFromHeader = req.headers["x-csrf-token"];
 
+  console.log("[CSRF tokens]", {
+    cookie: tokenFromCookie?.slice(0, 8),
+    header: tokenFromHeader?.slice(0, 8),
+    match: tokenFromCookie === tokenFromHeader,
+  });
+
   if (!tokenFromCookie || tokenFromCookie !== tokenFromHeader) {
     res.status(403).json({ error: "Invalid CSRF token" });
     return;
