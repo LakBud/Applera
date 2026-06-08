@@ -116,25 +116,10 @@ const CSRF_SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (CSRF_SAFE_METHODS.has(req.method)) return next();
 
-  console.log("[CSRF]", {
-    method: req.method,
-    path: req.path,
-    hasAuth: !!req.headers.authorization,
-    authType: req.headers.authorization?.split(" ")[0],
-    hasCookie: !!req.cookies["csrf-token"],
-    hasHeader: !!req.headers["x-csrf-token"],
-  });
-
   if (req.headers.authorization?.startsWith("Bearer ")) return next();
 
   const tokenFromCookie = req.cookies["csrf-token"];
   const tokenFromHeader = req.headers["x-csrf-token"];
-
-  console.log("[CSRF tokens]", {
-    cookie: tokenFromCookie?.slice(0, 8),
-    header: tokenFromHeader?.slice(0, 8),
-    match: tokenFromCookie === tokenFromHeader,
-  });
 
   if (!tokenFromCookie || tokenFromCookie !== tokenFromHeader) {
     res.status(403).json({ error: "Invalid CSRF token" });
@@ -167,7 +152,7 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 
 app.use(sanitizeHpp);
 app.use(globalLimiter);
-if (!IS_PROD) app.use(requestLogger);
+app.use(requestLogger);
 
 // ─────────────────────────────────────────────
 // Routes
