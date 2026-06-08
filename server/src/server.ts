@@ -65,7 +65,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // 2. CORS
 app.use(
   cors({
-    origin: CLIENT_URL || "http://localhost:5173",
+    origin: [CLIENT_URL || "http://localhost:5173", "https://www.applera.site", "https://applera.site"],
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
