@@ -17,7 +17,7 @@ import webhookRoutes from "./routes/webhook.routes.js";
 import { stripObject } from "./utils/utils.js";
 
 import { clerkMiddleware } from "@clerk/express";
-import { attachIdentity } from "./middleware/global/identity.js";
+import { attachIdentity, requireUser } from "./middleware/global/identity.js";
 import cookieParser from "cookie-parser";
 import { CLIENT_URL } from "./config/env.js";
 
@@ -158,12 +158,12 @@ if (!IS_PROD) app.use(requestLogger);
 // Routes
 // ─────────────────────────────────────────────
 
-app.use("/api/cv", cvRoutes);
-app.use("/api/job", jobRoutes);
-app.use("/api/application", applicationRoutes);
-app.use("/api/interview", interviewRoutes);
-app.use("/api/tracker", trackerRoutes);
-app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/cv", requireUser, cvRoutes);
+app.use("/api/job", requireUser, jobRoutes);
+app.use("/api/application", requireUser, applicationRoutes);
+app.use("/api/interview", requireUser, interviewRoutes);
+app.use("/api/tracker", requireUser, trackerRoutes);
+app.use("/api/dashboard", requireUser, dashboardRoutes);
 
 // ─────────────────────────────────────────────
 // 404 catch-all (must come after all routes)

@@ -111,3 +111,12 @@ export async function attachIdentity(req: Request, res: Response, next: NextFunc
     return res.status(500).json({ error: "Identity resolution failed" });
   }
 }
+
+export function requireUser(req: Request, res: Response, next: NextFunction) {
+  if (!req.identity || req.identity.type !== "user") {
+    return res.status(401).json({
+      error: "You need to sign in to access this feature",
+    });
+  }
+  return next();
+}

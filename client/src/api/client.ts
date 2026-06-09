@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { ApiError } from "./types";
 import { safeGetToken } from "./auth";
+import { toast } from "sonner";
 
 export const client = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:5005",
@@ -57,13 +58,23 @@ client.interceptors.response.use(
     const data: ApiError | undefined = error.response?.data;
 
     if (error.code === "ECONNABORTED") {
+      toast.error("Request timed out. Please try again.");
       return Promise.reject(new Error("Request timed out. Please try again."));
     }
 
+    if (error.response?.status === 401) {
+      toast.error(error.response.data.error);
+      window.location.href = "/auth/sign-up/$";
+      return Promise.reject(new Error(error.response.data.error));
+    }
+
     if (error.response?.status === 429) {
+      toast.error("Too many requests. Please wait and try again.");
       return Promise.reject(new Error("Too many requests. Please wait and try again."));
     }
 
-    return Promise.reject(new Error(data?.error ?? error.message ?? "Something went wrong"));
+    const message = data?.error ?? error.message ?? "Something went wrong";
+    toast.error("Something went wrong. Please try again.");
+    return Promise.reject(new Error(message));
   },
 );

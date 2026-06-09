@@ -277,6 +277,10 @@ export const deleteCV = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "CV not found" });
     }
 
+    if (deleted.cloudinaryPublicId) {
+      await cloudinary.uploader.destroy(deleted.cloudinaryPublicId, { resource_type: "image" });
+    }
+
     await deleteCache(cvListKey(req.identity.id, req.identity.type));
     await deleteCache(cvHashKey(req.identity.id, deleted.contentHash));
 

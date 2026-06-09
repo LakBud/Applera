@@ -1,4 +1,3 @@
-import rateLimit, { RateLimitRequestHandler } from "express-rate-limit";
 import { auditLog } from "./log/audit.logger.js";
 import { redis } from "../integrations/redis.js";
 // Tiered rate limits — stricter on expensive AI routes, looser on cheap ones.
@@ -18,8 +17,7 @@ export function limiter(config: LimiterConfig) {
     try {
       const identity = req.identity;
 
-      const ip = req.headers["cf-connecting-ip"] || req.headers["x-forwarded-for"] || req.ip;
-      const key = identity?.id ? `rl:${config.keyPrefix}:user:${identity.id}` : `rl:${config.keyPrefix}:ip:${ip}`;
+      const key = `rl:${config.keyPrefix}:user:${identity.id}`;
 
       const current = await redis.incr(key);
 
@@ -30,8 +28,8 @@ export function limiter(config: LimiterConfig) {
       if (current > config.max) {
         void auditLog({
           event: "RATE_LIMIT_HIT",
-          userId: identity?.id ?? "unknown",
-          userType: identity?.type ?? "guest",
+          userId: identity.id,
+          userType: identity.type,
           requestId: req.requestId,
           ip: req.ip,
           userAgent: req.headers["user-agent"],
@@ -78,6 +76,6 @@ export const parseLimiter = limiter({
 export const globalLimiter = limiter({
   windowMinutes: 15,
   max: 250,
-  message: "Too many requests from this IP. Please try again later.",
+  message: "Too many requests. Please try again later.",
   keyPrefix: "global",
 });

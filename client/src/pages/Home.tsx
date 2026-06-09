@@ -36,7 +36,7 @@ export default function HomePage() {
               <Link to="/auth/sign-up/$" className="text-primary underline underline-offset-2 font-medium">
                 Create a free account
               </Link>{" "}
-              to save applications, track progress, and reuse more of your CVs.
+              to create and save your applications, track progress, and reuse your CVs.
             </p>
           )}
 
