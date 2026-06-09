@@ -38,8 +38,8 @@ createRoot(document.getElementById("root")!).render(
     <ClerkProvider
       publishableKey={PUBLISHABLE_KEY}
       afterMultiSessionSingleSignOutUrl={"/"}
-      signUpUrl="/auth/sign-up/$"
-      signInUrl="/auth/sign-in/$"
+      signUpUrl="/auth/sign-up/"
+      signInUrl="/auth/sign-in/"
     >
       <QueryClientProvider client={queryClient}>
         <InnerApp />
