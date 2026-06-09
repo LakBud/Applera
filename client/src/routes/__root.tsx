@@ -1,4 +1,4 @@
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet, useLocation } from "@tanstack/react-router";
 import { useAuth } from "@clerk/clerk-react";
 import type { QueryClient } from "@tanstack/react-query";
 import Nav from "../components/common/nav/Nav";
@@ -58,6 +58,10 @@ export function GlobalError({ error }: { error: unknown }) {
 function RootLayout() {
   const { isSignedIn, isLoaded } = useAuth();
 
+  const { pathname } = useLocation();
+
+  const hideNav = pathname.startsWith("/auth");
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -72,8 +76,8 @@ function RootLayout() {
 
   return (
     <div className="min-h-screen bg-bg text-text font-body">
-      <Nav isSignedIn={!!isSignedIn} isLoaded={isLoaded} />
-      <main className="pt-14">
+      {!hideNav && <Nav isSignedIn={!!isSignedIn} isLoaded={isLoaded} />}
+      <main className={hideNav ? "" : "pt-14"}>
         <Outlet />
       </main>
       <Toaster
