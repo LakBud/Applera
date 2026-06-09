@@ -5,25 +5,29 @@ import { queryKeys } from "../queryKeys";
 import { client } from "../client";
 import { CVDocumentSchema, DashboardSchema, UploadCVResponseSchema, type CVDocument } from "../schemas";
 import { pinCV } from "../cv.api";
+import { useAuth } from "@clerk/clerk-react";
 
-export function useCVs() {
+export function useCVs(options?: { enabled?: boolean }) {
+  const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.cv.list(),
     queryFn: async () => {
       const res = await client.get("/api/cv");
       return z.array(CVDocumentSchema).parse(res.data);
     },
+    enabled: !!isSignedIn && (options?.enabled ?? true),
   });
 }
 
 export function useCV(cvId: string) {
+  const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.cv.detail(cvId),
     queryFn: async () => {
       const res = await client.get(`/api/cv/${cvId}`);
       return CVDocumentSchema.parse(res.data);
     },
-    enabled: !!cvId,
+    enabled: !!isSignedIn && !!cvId,
   });
 }
 
@@ -84,13 +88,14 @@ export function useUploadCVText() {
 }
 
 export function useCVDashboard(cvId: string) {
+  const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.dashboard.byCv(cvId),
     queryFn: async () => {
       const res = await client.get(`/api/dashboard/${cvId}`);
       return DashboardSchema.parse(res.data);
     },
-    enabled: !!cvId,
+    enabled: !!isSignedIn && !!cvId,
   });
 }
 

@@ -35,7 +35,12 @@ function InnerApp() {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterMultiSessionSingleSignOutUrl={"/"}>
+    <ClerkProvider
+      publishableKey={PUBLISHABLE_KEY}
+      afterMultiSessionSingleSignOutUrl={"/"}
+      signUpUrl="/auth/sign-up/$"
+      signInUrl="/auth/sign-in/$"
+    >
       <QueryClientProvider client={queryClient}>
         <InnerApp />
         <Analytics />

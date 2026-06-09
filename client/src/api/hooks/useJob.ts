@@ -4,25 +4,29 @@ import { client } from "../client";
 import { CreateJobResponseSchema, JobDocumentSchema } from "../schemas";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/clerk-react";
 
 export function useJobs() {
+  const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.job.list(),
     queryFn: async () => {
       const res = await client.get("/api/job");
       return z.array(JobDocumentSchema).parse(res.data);
     },
+    enabled: !!isSignedIn,
   });
 }
 
 export function useJob(jobId: string) {
+  const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.job.detail(jobId),
     queryFn: async () => {
       const res = await client.get(`/api/job/${jobId}`);
       return JobDocumentSchema.parse(res.data);
     },
-    enabled: !!jobId,
+    enabled: !!isSignedIn && !!jobId,
   });
 }
 

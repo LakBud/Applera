@@ -3,8 +3,10 @@ import { toast } from "sonner";
 import { client } from "../client";
 import { InterviewPrepSchema } from "../schemas";
 import { queryKeys } from "../queryKeys";
+import { useAuth } from "@clerk/clerk-react";
 
 export function useInterviewPrep(applicationId: string) {
+  const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.interviewPrep.byApplication(applicationId),
     queryFn: async () => {
@@ -16,7 +18,7 @@ export function useInterviewPrep(applicationId: string) {
         throw err;
       }
     },
-    enabled: !!applicationId,
+    enabled: !!isSignedIn && !!applicationId,
     retry: false,
   });
 }

@@ -4,36 +4,41 @@ import { client } from "../client";
 import { ApplicationSchema, CreateApplicationResponseSchema } from "../schemas";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/clerk-react";
 
 export function useApplicationsByCv(cvId: string) {
+  const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.application.byCv(cvId),
     queryFn: async () => {
       const res = await client.get(`/api/tracker/${cvId}`);
       return z.array(ApplicationSchema).parse(res.data.applications);
     },
-    enabled: !!cvId,
+    enabled: !!isSignedIn && !!cvId,
   });
 }
 
 export function useApplication(id: string) {
+  const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.application.detail(id),
     queryFn: async () => {
       const res = await client.get(`/api/tracker/application/${id}`);
       return ApplicationSchema.parse(res.data.application);
     },
-    enabled: !!id,
+    enabled: !!isSignedIn && !!id,
   });
 }
 
 export function useApplications() {
+  const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.application.all,
     queryFn: async () => {
       const res = await client.get("/api/application");
       return z.array(ApplicationSchema).parse(res.data.applications);
     },
+    enabled: !!isSignedIn,
   });
 }
 
