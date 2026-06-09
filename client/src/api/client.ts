@@ -73,6 +73,10 @@ client.interceptors.response.use(
       return Promise.reject(new Error("Too many requests. Please wait and try again."));
     }
 
+    if (error.response?.status === 404) {
+      return Promise.reject(error);
+    }
+
     const message = data?.error ?? error.message ?? "Something went wrong";
     toast.error("Something went wrong. Please try again.");
     return Promise.reject(new Error(message));
