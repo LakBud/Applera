@@ -64,7 +64,7 @@ client.interceptors.response.use(
 
     if (error.response?.status === 401) {
       toast.error(error.response.data.error);
-      window.location.replace("/auth/sign-up/$");
+      window.location.replace("/auth/sign-up/");
       return Promise.reject(new Error(error.response.data.error));
     }
 
