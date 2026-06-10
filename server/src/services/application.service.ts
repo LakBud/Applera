@@ -16,6 +16,8 @@ export type ApplicationLLMOutput = z.infer<typeof ApplicationLLMSchema>;
 
 function buildPrompt(cv: CVSchemaData, job: JobSchemaData, match: MatchReport): string {
   return `
+  LANGUAGE: Detect from raw_description above and write ALL output in that language.
+  
 CV:
 ${JSON.stringify({ name: cv.name, summary: cv.summary, skills: cv.skills, experience: cv.experience, seniority_level: cv.seniority_level }, null, 2)}
 

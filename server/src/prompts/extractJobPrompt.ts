@@ -5,6 +5,7 @@ CRITICAL RULES:
 - Return ONLY valid JSON (no markdown, no backticks, no explanation)
 - Response must start with { and end with }
 - Do NOT invent or assume anything not written in the text
+- Do NOT translate any text — preserve the original language verbatim
 - If a field cannot be found, use safe defaults:
   - strings → ""
   - arrays → []
