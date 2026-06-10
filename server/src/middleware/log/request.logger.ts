@@ -17,7 +17,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
         path: req.originalUrl,
         status: res.statusCode,
         duration_ms: Date.now() - start,
-        ip: req.ip,
+        ip: req.ip?.replace(/\.\d+$/, ".xxx"),
         userAgent: req.headers["user-agent"],
       }),
     );
