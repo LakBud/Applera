@@ -306,15 +306,12 @@ export function calculateScore(cvSkills: string[], jobSkills: string[], textScor
   const skillScore = weightedSkillScore(cvSkills, jobSkills);
 
   // text is now only supporting signal (NOT dominant)
-  const textComponent = textScore * 0.15;
+  const textComponent = textScore * 0.25;
 
   // smooth blending (prevents extreme low scores like 25)
   const raw = skillScore * 0.8 + textComponent;
 
-  // stabilization curve (prevents harsh drops)
-  const stabilized = Math.sqrt(raw) * 10;
-
-  return Math.round(Math.min(100, Math.max(0, stabilized)));
+  return Math.round(Math.min(100, Math.max(0, raw)));
 }
 
 // ── Runtime guard (safe object check) ─────────────────────────────────────────

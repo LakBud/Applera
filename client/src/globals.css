@@ -69,7 +69,7 @@
   :root {
     --radius: 0.5rem;
 
-    /* TEXT TOKENS (UNCHANGED DESIGN, FIXED CONSISTENCY) */
+    /* TEXT TOKENS */
     --text-h1: #1fa028;
     --text-label: #1a8c22;
     --text-link: #1fa028;
@@ -87,7 +87,7 @@
     --text-muted: #6b8c74;
     --text-caption: #94b09c;
 
-    /* SHADCN HSL TOKENS (UNCHANGED) */
+    /* SHADCN HSL TOKENS */
     --background: 108 100% 98%;
     --foreground: 135 20% 14%;
 
@@ -115,7 +115,7 @@
     --input: 135 20% 86%;
     --ring: 123 67% 37%;
 
-    /* SEMANTIC COLORS (FIXED FORMAT CONSISTENCY) */
+    /* SEMANTIC COLORS */
     --bg: #f7fff5;
     --surface: #ffffff;
     --surface-muted: #f0faf2;
@@ -167,49 +167,6 @@
 
     --clerk-border-radius: var(--radius);
     --clerk-spacing: 1.125rem;
-  }
-
-  .dark {
-    --text-h1: #4ade80;
-    --text-label: #4ade80;
-    --text-link: #4ade80;
-    --text-link-hover: #86efac;
-
-    --text-h2: #f0fdf4;
-    --text-body: #d1fae5;
-
-    --text-h3: #86efac;
-    --text-h4: #a7f3d0;
-
-    --text-secondary: #6ee7b7;
-    --text-muted: #4b7a5e;
-    --text-caption: #2d5040;
-
-    --background: 132 15% 7%;
-    --foreground: 140 40% 88%;
-
-    --card: 132 12% 10%;
-    --card-foreground: 140 40% 88%;
-
-    --primary: 142 60% 52%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 142 28% 17%;
-    --secondary-foreground: 142 55% 75%;
-
-    --muted: 132 12% 14%;
-    --muted-foreground: 140 20% 52%;
-
-    --accent: 142 28% 17%;
-    --accent-foreground: 142 55% 75%;
-
-    --border: 132 15% 18%;
-    --ring: 142 60% 52%;
-
-    --bg: #0c1410;
-    --surface: #111a13;
-    --surface-muted: #172019;
-    --border-color: #1e3226;
   }
 }
 

@@ -14,6 +14,15 @@ CRITICAL OUTPUT RULE (ABSOLUTE)
 - NEVER mix languages
 - If multiple languages exist, use ONLY the job description and NOT the CV language
 
+
+────────────────────────────────────────
+LANGUAGE SOURCE OF TRUTH (NEW RULE)
+────────────────────────────────────────
+- The primary language must be inferred from raw_description
+- If raw_description is empty, fallback to title and location
+- Never infer language from required_skills or responsibilities
+- Always match the language of raw_description
+
 ────────────────────────────────────────
 INPUT GROUNDING RULE (HARD LIMIT)
 ────────────────────────────────────────

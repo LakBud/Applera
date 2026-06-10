@@ -7,6 +7,7 @@ export const JobSchema = z.object({
   required_skills: z.array(z.string()).default([]),
   responsibilities: z.array(z.string()).default([]),
   seniority: z.enum(["executive", "intern", "junior", "mid", "senior", "lead", "unknown"]).default("unknown"),
+  raw_description: z.string().default(""),
 });
 
 export const CVSchema = z.object({
