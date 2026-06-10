@@ -8,19 +8,24 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
   const start = Date.now();
 
   res.on("finish", () => {
-    console.info(
-      "[request]",
-      JSON.stringify({
-        requestId,
-        timestamp: new Date().toISOString(),
-        method: req.method,
-        path: req.originalUrl,
-        status: res.statusCode,
-        duration_ms: Date.now() - start,
-        ip: req.ip?.replace(/\.\d+$/, ".xxx"),
-        userAgent: req.headers["user-agent"],
-      }),
-    );
+    const duration = Date.now() - start;
+    const status = res.statusCode;
+
+    const log = {
+      requestId,
+      timestamp: new Date().toISOString(),
+      method: req.method,
+      path: req.originalUrl.split("?")[0],
+      status,
+      duration_ms: duration,
+      ip: req.ip?.replace(/\.\d+$/, ".xxx"),
+      userAgent: req.headers["user-agent"],
+    };
+
+    if (status >= 500) console.error("[request:error]", JSON.stringify(log));
+    else if (status >= 400) console.warn("[request:warn]", JSON.stringify(log));
+    else if (duration > 3000) console.warn("[request:slow]", JSON.stringify(log));
+    else console.info("[request]", JSON.stringify(log));
   });
 
   next();
