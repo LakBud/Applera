@@ -41,8 +41,6 @@ export const createJob = async (req: Request, res: Response) => {
       ownerType: identity.type,
       rawText,
       parsed,
-      company: parsed.company?.trim() || "",
-      location: parsed.location?.trim() || "",
     });
 
     await auditLog({
