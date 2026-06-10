@@ -84,19 +84,18 @@ export const UploadCVResponseSchema = z.object({
 
 export const JobParsedSchema = z.object({
   title: z.string().optional(),
+  company: z.string().optional(),
   required_skills: z.array(z.string()),
   responsibilities: z.array(z.string()),
   seniority: z.string().optional(),
   location: z.string().optional(),
+  raw_description: z.string().optional(),
 });
 
 export const JobDocumentSchema = z.object({
   _id: z.string(),
   rawText: z.string().optional(),
   parsed: JobParsedSchema,
-
-  company: z.string().optional(),
-  location: z.string().optional(),
 
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),

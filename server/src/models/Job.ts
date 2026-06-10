@@ -26,6 +26,8 @@ const JobSchema = new mongoose.Schema(
         type: String,
         trim: true,
       },
+      company: { type: String, trim: true },
+      location: { type: String, trim: true },
 
       required_skills: [{ type: String, trim: true }],
       responsibilities: [{ type: String, trim: true }],
@@ -35,6 +37,7 @@ const JobSchema = new mongoose.Schema(
         enum: ["executive", "intern", "junior", "mid", "senior", "lead", "unknown"],
         default: "unknown",
       },
+      raw_description: { type: String, maxlength: 100000 },
     },
 
     company: {
