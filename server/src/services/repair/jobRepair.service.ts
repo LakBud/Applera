@@ -37,5 +37,6 @@ export function repairJob(job: unknown): JobSchemaData {
     required_skills: dedupe(normalizeArray(data.required_skills)),
     responsibilities: dedupe(normalizeArray(data.responsibilities)),
     seniority: normalizeSeniority(data.seniority),
+    raw_description: data.raw_description,
   };
 }
