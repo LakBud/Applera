@@ -16,7 +16,7 @@ CRITICAL OUTPUT RULE (ABSOLUTE)
 
 
 ────────────────────────────────────────
-LANGUAGE SOURCE OF TRUTH (NEW RULE)
+LANGUAGE SOURCE OF TRUTH
 ────────────────────────────────────────
 - The primary language must be inferred from raw_description
 - If raw_description is empty, fallback to title and location

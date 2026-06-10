@@ -23,7 +23,7 @@ function requireString(value: unknown, fallback = ""): string {
   return fallback;
 }
 
-export function repairJob(job: unknown): JobSchemaData {
+export function repairJob(job: unknown, rawText?: string): JobSchemaData {
   if (!job || typeof job !== "object") {
     throw new TypeError("[jobRepair] Job must be a valid object");
   }
@@ -37,6 +37,6 @@ export function repairJob(job: unknown): JobSchemaData {
     required_skills: dedupe(normalizeArray(data.required_skills)),
     responsibilities: dedupe(normalizeArray(data.responsibilities)),
     seniority: normalizeSeniority(data.seniority),
-    raw_description: data.raw_description,
+    raw_description: requireString(data.raw_description) || rawText || "",
   };
 }

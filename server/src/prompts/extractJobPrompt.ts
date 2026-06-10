@@ -16,7 +16,8 @@ OUTPUT FORMAT (MUST MATCH EXACTLY):
   "location": "",
   "required_skills": [],
   "responsibilities": [],
-  "seniority": ""
+  "seniority": "",
+  "raw_description": "" 
 }
 
 FIELD RULES:
@@ -58,4 +59,9 @@ seniority:
   - executive titles (CTO, VP, Head of Engineering) → "executive"
 - If not clearly determinable → "unknown"
 - NEVER return an empty string for this field
+
+raw_description:
+- Copy the FULL original job posting text verbatim, unmodified
+- Do NOT summarise, clean, or truncate
+- This is used downstream for language detection
 `.trim();
