@@ -114,7 +114,17 @@ export function extractAllText(obj: unknown): string {
 
   const o = obj as Record<string, unknown>;
 
-  return [o.summary ?? "", flatten(o.skills), flatten(o.experience), flatten(o.education)].join(" ").replace(/\s+/g, " ").trim();
+  return [
+    o.summary ?? "",
+    flatten(o.skills),
+    flatten(o.experience),
+    flatten(o.education),
+    flatten(o.responsibilities),
+    o.raw_description ?? "",
+  ]
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /* ── Text overlap score ───────────────────────────────────────────────────── */
@@ -163,7 +173,7 @@ export function calculateTextOverlap(cvText: string, jobText: string): number {
   // FIX: prevent extreme low scores
   const raw = matches / jobWords.length;
 
-  return Math.round(Math.min(100, raw * 100 * 1.3)); // small boost for realism
+  return Math.round(Math.min(100, raw * 100)); // small boost for realism
 }
 
 /* ── Confidence level ─────────────────────────────────────────────────────── */
@@ -238,12 +248,14 @@ export function expandSkills(skills: string[]): Set<string> {
 
   for (const raw of skills) {
     const skill = normalizeSkill(raw);
-
     expanded.add(skill);
 
-    const related = SKILL_GRAPH[skill];
-    if (related) {
-      related.forEach((r) => expanded.add(r));
+    // forward edges
+    SKILL_GRAPH[skill]?.forEach((r) => expanded.add(r));
+
+    // reverse edges — if cv has "react", also match "nextjs" jobs
+    for (const [parent, children] of Object.entries(SKILL_GRAPH)) {
+      if (children.includes(skill)) expanded.add(parent);
     }
   }
 
@@ -277,24 +289,20 @@ const SKILL_WEIGHTS: Record<string, number> = {
 };
 
 export function weightedSkillScore(cvSkills: string[], jobSkills: string[]): number {
-  const cv = expandSkills(cvSkills);
-  const job = expandSkills(jobSkills);
+  const cvExpanded = expandSkills(cvSkills);
 
   let totalWeight = 0;
   let matchedWeight = 0;
 
-  for (const skill of job) {
-    const weight = SKILL_WEIGHTS[skill] ?? 1;
-
+  for (const skill of jobSkills) {
+    // original job skills only
+    const normalized = normalizeSkill(skill);
+    const weight = SKILL_WEIGHTS[normalized] ?? 1;
     totalWeight += weight;
-
-    if (cv.has(skill)) {
-      matchedWeight += weight;
-    }
+    if (cvExpanded.has(normalized)) matchedWeight += weight;
   }
 
   if (totalWeight === 0) return 0;
-
   return Math.round((matchedWeight / totalWeight) * 100);
 }
 
@@ -304,13 +312,7 @@ export function weightedSkillScore(cvSkills: string[], jobSkills: string[]): num
 
 export function calculateScore(cvSkills: string[], jobSkills: string[], textScore: number): number {
   const skillScore = weightedSkillScore(cvSkills, jobSkills);
-
-  // text is now only supporting signal (NOT dominant)
-  const textComponent = textScore * 0.25;
-
-  // smooth blending (prevents extreme low scores like 25)
-  const raw = skillScore * 0.8 + textComponent;
-
+  const raw = skillScore * 0.65 + textScore * 0.35;
   return Math.round(Math.min(100, Math.max(0, raw)));
 }
 
