@@ -1,14 +1,14 @@
-import { Request, Response, NextFunction } from "express";
-import { redis } from "../integrations/redis.js";
-import { getUserId } from "../lib/getUserId.js";
-import { getUsageLimit } from "../lib/getUsageLimit.js";
+import { Request, Response, NextFunction } from 'express';
+import { redis } from '../integrations/redis.js';
+import { getUserId } from '../lib/getUserId.js';
+import { getUsageLimit } from '../lib/getUsageLimit.js';
 
 export async function usageLimiter(req: Request, res: Response, next: NextFunction) {
   const userId = getUserId(req);
 
   if (!userId) {
     return res.status(401).json({
-      error: "Unauthorized",
+      error: 'Unauthorized',
     });
   }
 
@@ -32,7 +32,7 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
 
     if (count > limit) {
       return res.status(403).json({
-        error: "Free limit reached",
+        error: 'Free limit reached',
         limit,
       });
     }
@@ -46,10 +46,10 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
 
     return next();
   } catch (err) {
-    console.error("[usageLimiter]", err);
+    console.error('[usageLimiter]', err);
 
     return res.status(503).json({
-      error: "Usage service unavailable",
+      error: 'Usage service unavailable',
     });
   }
 }

@@ -1,9 +1,9 @@
-import { useState } from "react";
-import type { CreateApplicationResponse } from "../../../api/schemas";
-import { Tabs } from "../../ui/tabs";
-import { ApplicationScorePanel } from "./ApplicationScorePanel";
-import { ApplicationTabsHeader } from "./ApplicationTabsHeader";
-import { ApplicationTabContent } from "./ApplicationTabsContent";
+import { useState } from 'react';
+import type { CreateApplicationResponse } from '../../../api/schemas';
+import { Tabs } from '../../ui/tabs';
+import { ApplicationScorePanel } from './ApplicationScorePanel';
+import { ApplicationTabsHeader } from './ApplicationTabsHeader';
+import { ApplicationTabContent } from './ApplicationTabsContent';
 
 type Props = {
   data: CreateApplicationResponse;
@@ -12,7 +12,7 @@ type Props = {
 export default function ApplicationResult({ data }: Props) {
   const { application } = data;
   const [copied, setCopied] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"letter" | "summary" | "email">("letter");
+  const [activeTab, setActiveTab] = useState<'letter' | 'summary' | 'email'>('letter');
 
   function copy(text: string, key: string) {
     navigator.clipboard.writeText(text);
@@ -23,14 +23,14 @@ export default function ApplicationResult({ data }: Props) {
   const score = application.match?.score ?? 0;
   const scoreColor =
     score >= 80
-      ? "text-tx-h1" // #1fa028 — bright green (high)
+      ? 'text-tx-h1' // #1fa028 — bright green (high)
       : score >= 60
-        ? "text-tx-h3" // #166534 — mid green
-        : "text-tx-secondary"; // #3d5a45 — dark muted green (low)
+        ? 'text-tx-h3' // #166534 — mid green
+        : 'text-tx-secondary'; // #3d5a45 — dark muted green (low)
 
-  const barColor = score >= 80 ? "bg-[#1fa028]" : score >= 60 ? "bg-[#166534]" : "bg-[#3d5a45]";
+  const barColor = score >= 80 ? 'bg-[#1fa028]' : score >= 60 ? 'bg-[#166534]' : 'bg-[#3d5a45]';
 
-  const scoreLabel = score >= 80 ? "Strong match" : score >= 60 ? "Decent match" : "Weak match";
+  const scoreLabel = score >= 80 ? 'Strong match' : score >= 60 ? 'Decent match' : 'Weak match';
 
   const activeContent = {
     summary: application.tailored_cv_summary,
@@ -61,7 +61,11 @@ export default function ApplicationResult({ data }: Props) {
         {/* ══════════════════════════════════
             RIGHT PANEL — TABS
         ══════════════════════════════════ */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="flex flex-col">
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => setActiveTab(v as typeof activeTab)}
+          className="flex flex-col"
+        >
           <ApplicationTabsHeader
             activeTab={activeTab}
             setActiveTab={setActiveTab}

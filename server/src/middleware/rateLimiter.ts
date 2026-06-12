@@ -1,5 +1,5 @@
-import { auditLog } from "./log/audit.logger.js";
-import { redis } from "../integrations/redis.js";
+import { auditLog } from './log/audit.logger.js';
+import { redis } from '../integrations/redis.js';
 // Tiered rate limits — stricter on expensive AI routes, looser on cheap ones.
 // Each failed LLM call still costs tokens, so we limit at the HTTP layer first.
 
@@ -27,12 +27,12 @@ export function limiter(config: LimiterConfig) {
 
       if (current > config.max) {
         void auditLog({
-          event: "RATE_LIMIT_HIT",
+          event: 'RATE_LIMIT_HIT',
           userId: identity.id,
           userType: identity.type,
           requestId: req.requestId,
           ip: req.ip,
-          userAgent: req.headers["user-agent"],
+          userAgent: req.headers['user-agent'],
           metadata: {
             path: req.path,
             method: req.method,
@@ -48,7 +48,7 @@ export function limiter(config: LimiterConfig) {
       return next();
     } catch (err) {
       // Fail open (do NOT block traffic if Redis is down)
-      console.error("[rateLimiter] Redis error:", err);
+      console.error('[rateLimiter] Redis error:', err);
       return next();
     }
   };
@@ -60,22 +60,22 @@ export function limiter(config: LimiterConfig) {
 export const applicationLimiter = limiter({
   windowMinutes: 15,
   max: 10,
-  message: "Too many application requests. Please wait 15 minutes before trying again.",
-  keyPrefix: "application",
+  message: 'Too many application requests. Please wait 15 minutes before trying again.',
+  keyPrefix: 'application',
 });
 
 // /api/cv/upload and /api/job/analyze — 1 LLM call each
 export const parseLimiter = limiter({
   windowMinutes: 10,
   max: 20,
-  message: "Too many requests. Please wait before trying again.",
-  keyPrefix: "parse",
+  message: 'Too many requests. Please wait before trying again.',
+  keyPrefix: 'parse',
 });
 
 // Global fallback applied to all routes
 export const globalLimiter = limiter({
   windowMinutes: 15,
   max: 250,
-  message: "Too many requests. Please try again later.",
-  keyPrefix: "global",
+  message: 'Too many requests. Please try again later.',
+  keyPrefix: 'global',
 });

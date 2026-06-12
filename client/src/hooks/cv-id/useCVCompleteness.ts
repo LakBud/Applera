@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import type { CVDocument } from "../../api/schemas";
-import { CV_COMPLETENESS_RULES } from "../../utils/cv-id/rules";
+import { useMemo } from 'react';
+import type { CVDocument } from '../../api/schemas';
+import { CV_COMPLETENESS_RULES } from '../../utils/cv-id/rules';
 
 type Result = {
   completeness: number;
@@ -12,7 +12,7 @@ export function useCVCompleteness(cv?: CVDocument): Result {
     if (!cv?.parsed) {
       return {
         completeness: 0,
-        missing: ["Summary", "Skills", "Experience", "Education"],
+        missing: ['Summary', 'Skills', 'Experience', 'Education'],
       };
     }
 
@@ -20,18 +20,18 @@ export function useCVCompleteness(cv?: CVDocument): Result {
 
     const checks = [
       {
-        label: "Skills",
-        weight: CV_COMPLETENESS_RULES.find((r) => r.key === "skills")!.weight,
+        label: 'Skills',
+        weight: CV_COMPLETENESS_RULES.find((r) => r.key === 'skills')!.weight,
         done: parsed.skills.length > 0,
       },
       {
-        label: "Experience",
-        weight: CV_COMPLETENESS_RULES.find((r) => r.key === "experience")!.weight,
+        label: 'Experience',
+        weight: CV_COMPLETENESS_RULES.find((r) => r.key === 'experience')!.weight,
         done: parsed.experience.length > 0,
       },
       {
-        label: "Education",
-        weight: CV_COMPLETENESS_RULES.find((r) => r.key === "education")!.weight,
+        label: 'Education',
+        weight: CV_COMPLETENESS_RULES.find((r) => r.key === 'education')!.weight,
         done: parsed.education.length > 0,
       },
     ];

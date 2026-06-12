@@ -1,11 +1,11 @@
-import type { UseMutationResult } from "@tanstack/react-query";
-import { useRef, useState } from "react";
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
-import { Textarea } from "../../ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "../../ui/toggle-group";
-import { CvList } from "./cv/CVList";
-import { UploadSuccess } from "./UploadSuccess";
+import type { UseMutationResult } from '@tanstack/react-query';
+import { useRef, useState } from 'react';
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
+import { Textarea } from '../../ui/textarea';
+import { ToggleGroup, ToggleGroupItem } from '../../ui/toggle-group';
+import { CvList } from './cv/CVList';
+import { UploadSuccess } from './UploadSuccess';
 
 type UploadFileMutation = UseMutationResult<any, Error, File>;
 type UploadTextMutation = UseMutationResult<any, Error, string>;
@@ -25,7 +25,7 @@ type UploaderProps = {
 
 export default function Uploader({
   label,
-  placeholder = "Paste text here...",
+  placeholder = 'Paste text here...',
   uploadFile,
   uploadText,
   onSuccess,
@@ -36,8 +36,8 @@ export default function Uploader({
   selectedCvId,
 }: UploaderProps) {
   const fileRef = useRef<HTMLInputElement | null>(null);
-  const [text, setText] = useState("");
-  const [mode, setMode] = useState<"file" | "text">("file");
+  const [text, setText] = useState('');
+  const [mode, setMode] = useState<'file' | 'text'>('file');
   const [uploadedId, setUploadedId] = useState<string | null>(null);
 
   const isUploading = uploadFile.isPending || uploadText.isPending;
@@ -67,7 +67,7 @@ export default function Uploader({
       const id = getId(res);
       setUploadedId(id ?? null);
       onSuccess?.(id);
-      setText("");
+      setText('');
     } catch {}
   }
 
@@ -80,7 +80,7 @@ export default function Uploader({
           <ToggleGroup
             type="single"
             value={mode}
-            onValueChange={(v) => v && setMode(v as "file" | "text")}
+            onValueChange={(v) => v && setMode(v as 'file' | 'text')}
             className="bg-[#1fa028]/20 rounded-full p-1 flex gap-1 w-full md:w-auto"
           >
             <ToggleGroupItem
@@ -100,14 +100,14 @@ export default function Uploader({
       </div>
 
       {/* FILE MODE */}
-      {mode === "file" && (
+      {mode === 'file' && (
         <div className="space-y-4">
           <div
             onClick={() => !isUploading && !isSelected && fileRef.current?.click()}
             className={`
               border min-h-44 md:h-64 p-6 md:p-10 border-dashed rounded-xl text-center transition
-              ${isUploading ? "opacity-60 cursor-not-allowed" : ""}
-              ${isSelected ? "border-green-600 bg-green-50 cursor-default" : "border-border cursor-pointer hover:bg-surface-muted"}
+              ${isUploading ? 'opacity-60 cursor-not-allowed' : ''}
+              ${isSelected ? 'border-green-600 bg-green-50 cursor-default' : 'border-border cursor-pointer hover:bg-surface-muted'}
             `}
           >
             <Input
@@ -118,7 +118,7 @@ export default function Uploader({
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) handleFile(file);
-                e.target.value = "";
+                e.target.value = '';
               }}
             />
             {isSelected ? (
@@ -133,7 +133,9 @@ export default function Uploader({
             ) : (
               <>
                 <p className="text-body">
-                  {uploadFile.isPending ? "Uploading..." : `Drop your ${label.toLowerCase()} or click to upload`}
+                  {uploadFile.isPending
+                    ? 'Uploading...'
+                    : `Drop your ${label.toLowerCase()} or click to upload`}
                 </p>
                 <p className="text-caption text-xs mt-1">PDF supported</p>
               </>
@@ -156,7 +158,7 @@ export default function Uploader({
       )}
 
       {/* TEXT MODE */}
-      {mode === "text" && (
+      {mode === 'text' && (
         <div className="space-y-3">
           {isSelected ? (
             <div className="border border-green-600 bg-green-50 rounded-xl p-6 text-center min-h-44 md:h-80 flex flex-col items-center justify-center">

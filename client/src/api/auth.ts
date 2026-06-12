@@ -1,4 +1,4 @@
-import { getToken } from "@clerk/react";
+import { getToken } from '@clerk/react';
 
 export async function safeGetToken(): Promise<string | null> {
   try {

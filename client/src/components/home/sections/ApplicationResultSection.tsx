@@ -1,6 +1,6 @@
-import ApplicationResult from "../application/ApplicationResult";
-import PreviewMock from "../PreviewMock";
-import type { HomeState } from "./Generator";
+import ApplicationResult from '../application/ApplicationResult';
+import PreviewMock from '../PreviewMock';
+import type { HomeState } from './Generator';
 
 type Props = {
   state: HomeState;
@@ -21,7 +21,11 @@ export default function ApplicationResultSection({ state }: Props) {
         </div>
 
         {/* Result / empty / loading state */}
-        {result ? <ApplicationResult data={result} /> : <PreviewMock skeleton={isPending || !result} />}
+        {result ? (
+          <ApplicationResult data={result} />
+        ) : (
+          <PreviewMock skeleton={isPending || !result} />
+        )}
       </div>
     </section>
   );

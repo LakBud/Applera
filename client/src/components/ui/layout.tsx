@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { Logo } from "../common/Logo";
+import { Link } from '@tanstack/react-router';
+import { Logo } from '../common/Logo';
 
 type Props = {
   subtitle?: React.ReactNode;
@@ -18,7 +18,11 @@ export function AuthLayout({ subtitle, children }: Props) {
             <Link to="/">
               <Logo />
             </Link>
-            {subtitle && <div className="text-tx-muted text-sm max-w-sm mx-auto leading-relaxed">{subtitle}</div>}
+            {subtitle && (
+              <div className="text-tx-muted text-sm max-w-sm mx-auto leading-relaxed">
+                {subtitle}
+              </div>
+            )}
           </div>
 
           {/* CONTENT */}

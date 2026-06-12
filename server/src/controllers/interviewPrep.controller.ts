@@ -1,18 +1,18 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
-import Application from "../models/Application.js";
-import InterviewPrep from "../models/InterviewPrep.js";
-import { generateInterviewPrep } from "../services/interviewPrep.service.js";
+import Application from '../models/Application.js';
+import InterviewPrep from '../models/InterviewPrep.js';
+import { generateInterviewPrep } from '../services/interviewPrep.service.js';
 
-import type { CVSchema, JobSchema } from "../types/schemas/schema.js";
-import type { MatchReport } from "../types/match.types.js";
+import type { CVSchema, JobSchema } from '../types/schemas/schema.js';
+import type { MatchReport } from '../types/match.types.js';
 
-import { auditLog } from "../middleware/log/audit.logger.js";
-import { getParam } from "../utils/req.js";
-import { z } from "zod";
-import CV from "../models/CV.js";
-import Job from "../models/Job.js";
-import { deleteCache } from "../lib/cache.js";
+import { auditLog } from '../middleware/log/audit.logger.js';
+import { getParam } from '../utils/req.js';
+import { z } from 'zod';
+import CV from '../models/CV.js';
+import Job from '../models/Job.js';
+import { deleteCache } from '../lib/cache.js';
 
 export type CVSchemaData = z.infer<typeof CVSchema>;
 export type JobSchemaData = z.infer<typeof JobSchema>;
@@ -27,7 +27,7 @@ export const generatePrep = async (req: Request, res: Response) => {
     const identity = req.identity;
 
     if (!identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const application = await Application.findOne({
@@ -35,18 +35,18 @@ export const generatePrep = async (req: Request, res: Response) => {
       ownerId: identity.id,
       ownerType: identity.type,
     })
-      .select("cv job match ownerId ownerType")
+      .select('cv job match ownerId ownerType')
       .lean();
 
     if (!application) {
       return res.status(404).json({
-        error: "Application not found.",
+        error: 'Application not found.',
       });
     }
 
     // IMPORTANT: parsed must already exist on stored refs OR be fetched separately
-    const cvDoc = await CV.findById(application.cv).select("parsed").lean();
-    const jobDoc = await Job.findById(application.job).select("parsed").lean();
+    const cvDoc = await CV.findById(application.cv).select('parsed').lean();
+    const jobDoc = await Job.findById(application.job).select('parsed').lean();
 
     const cv = cvDoc?.parsed;
     const job = jobDoc?.parsed;
@@ -54,13 +54,13 @@ export const generatePrep = async (req: Request, res: Response) => {
 
     if (!cv || !job) {
       return res.status(400).json({
-        error: "Missing CV or Job parsed data.",
+        error: 'Missing CV or Job parsed data.',
       });
     }
 
     if (!match) {
       return res.status(400).json({
-        error: "Missing match data.",
+        error: 'Missing match data.',
       });
     }
 
@@ -69,16 +69,21 @@ export const generatePrep = async (req: Request, res: Response) => {
       ownerId: identity.id,
       ownerType: identity.type,
     })
-      .select("regenerationCount")
+      .select('regenerationCount')
       .lean();
 
     if (existing && existing.regenerationCount >= 3) {
-      return res.status(429).json({ error: "Maximum regenerations reached." });
+      return res.status(429).json({ error: 'Maximum regenerations reached.' });
     }
 
     await deleteCache(`interview:${applicationId}`);
 
-    const prep = await generateInterviewPrep(cv as CVSchemaData, job as JobSchemaData, match, applicationId);
+    const prep = await generateInterviewPrep(
+      cv as CVSchemaData,
+      job as JobSchemaData,
+      match,
+      applicationId,
+    );
 
     const saved = await InterviewPrep.findOneAndUpdate(
       {
@@ -101,7 +106,7 @@ export const generatePrep = async (req: Request, res: Response) => {
     );
 
     await auditLog({
-      event: "INTERVIEW_PREP_GENERATED",
+      event: 'INTERVIEW_PREP_GENERATED',
       userId: identity.id,
       userType: identity.type,
       requestId: req.requestId,
@@ -117,9 +122,9 @@ export const generatePrep = async (req: Request, res: Response) => {
       prep: saved,
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unknown error";
+    const message = err instanceof Error ? err.message : 'Unknown error';
 
-    console.error("[generatePrep]", message);
+    console.error('[generatePrep]', message);
 
     return res.status(500).json({
       error: message,
@@ -139,7 +144,7 @@ export const getPrep = async (req: Request, res: Response) => {
 
     if (!identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -151,15 +156,15 @@ export const getPrep = async (req: Request, res: Response) => {
 
     if (!prep) {
       return res.status(404).json({
-        error: "No interview prep found. Generate one first.",
+        error: 'No interview prep found. Generate one first.',
       });
     }
 
     return res.json({ prep });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unknown error";
+    const message = err instanceof Error ? err.message : 'Unknown error';
 
-    console.error("[getPrep]", message);
+    console.error('[getPrep]', message);
 
     return res.status(500).json({
       error: message,

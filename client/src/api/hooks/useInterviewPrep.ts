@@ -1,9 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { client } from "../client";
-import { InterviewPrepSchema } from "../schemas";
-import { queryKeys } from "../queryKeys";
-import { useAuth } from "@clerk/clerk-react";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { client } from '../client';
+import { InterviewPrepSchema } from '../schemas';
+import { queryKeys } from '../queryKeys';
+import { useAuth } from '@clerk/clerk-react';
 
 export function useInterviewPrep(applicationId: string) {
   const { isSignedIn } = useAuth();
@@ -33,13 +33,13 @@ export function useGenerateInterviewPrep() {
     },
     onSuccess: (data, applicationId) => {
       qc.setQueryData(queryKeys.interviewPrep.byApplication(applicationId), data);
-      toast.success("Interview prep generated");
+      toast.success('Interview prep generated');
     },
     onError: (err: any) => {
       if (err?.response?.status === 429) {
         toast.error("You've reached the maximum of 3 regenerations for this application.");
       } else {
-        toast.error("Failed to generate interview prep. Please try again.");
+        toast.error('Failed to generate interview prep. Please try again.');
       }
     },
   });

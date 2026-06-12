@@ -1,7 +1,7 @@
-import { CVSchemaData } from "../../types/schemas/schema.js";
-import { dedupe, normalizeArray, normalizeString } from "../../utils/repair.utils.js";
+import { CVSchemaData } from '../../types/schemas/schema.js';
+import { dedupe, normalizeArray, normalizeString } from '../../utils/repair.utils.js';
 
-type CVSeniority = "executive" | "intern" | "junior" | "mid" | "senior" | "lead" | "unknown";
+type CVSeniority = 'executive' | 'intern' | 'junior' | 'mid' | 'senior' | 'lead' | 'unknown';
 
 // ─────────────────────────────────────────────
 // Seniority normalization (more robust)
@@ -10,18 +10,18 @@ type CVSeniority = "executive" | "intern" | "junior" | "mid" | "senior" | "lead"
 function normalizeSeniority(input: unknown): CVSeniority {
   const v = normalizeString(String(input)).toLowerCase();
 
-  if (!v) return "unknown";
+  if (!v) return 'unknown';
 
-  if (v.includes("intern")) return "intern";
-  if (v.includes("junior")) return "junior";
-  if (v.includes("lead")) return "lead";
-  if (v.includes("senior")) return "senior";
-  if (v.includes("mid") || v.includes("intermediate")) return "mid";
-  if (v.includes("executive") || v.includes("c-level") || v.includes("cto") || v.includes("ceo")) {
-    return "executive";
+  if (v.includes('intern')) return 'intern';
+  if (v.includes('junior')) return 'junior';
+  if (v.includes('lead')) return 'lead';
+  if (v.includes('senior')) return 'senior';
+  if (v.includes('mid') || v.includes('intermediate')) return 'mid';
+  if (v.includes('executive') || v.includes('c-level') || v.includes('cto') || v.includes('ceo')) {
+    return 'executive';
   }
 
-  return "unknown";
+  return 'unknown';
 }
 
 // ─────────────────────────────────────────────
@@ -29,8 +29,8 @@ function normalizeSeniority(input: unknown): CVSeniority {
 // ─────────────────────────────────────────────
 
 export function repairCV(cv: unknown): CVSchemaData {
-  if (!cv || typeof cv !== "object") {
-    throw new TypeError("[cvRepair] CV must be a valid object");
+  if (!cv || typeof cv !== 'object') {
+    throw new TypeError('[cvRepair] CV must be a valid object');
   }
 
   const data = cv as any;

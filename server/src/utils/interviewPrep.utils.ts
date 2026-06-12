@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
 export function isPopulatedOrThrow<T extends { _id: Types.ObjectId }>(
   value: T | Types.ObjectId | null | undefined,

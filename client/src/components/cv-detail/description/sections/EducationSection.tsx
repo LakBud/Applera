@@ -1,5 +1,5 @@
-import { Card2 } from "../../../ui/card";
-import { SectionHeading } from "../../../ui/section";
+import { Card2 } from '../../../ui/card';
+import { SectionHeading } from '../../../ui/section';
 
 export function EducationSection({ education }: { education: any[] }) {
   if (!education.length) return null;

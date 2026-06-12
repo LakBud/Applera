@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "crypto";
+import { timingSafeEqual } from 'crypto';
 
 // API_KEY compare func
 export function safeCompare(a: string, b: string): boolean {
@@ -9,10 +9,10 @@ export function safeCompare(a: string, b: string): boolean {
 }
 // NoSQL sanitiser func
 export function stripObject(obj: unknown): void {
-  if (!obj || typeof obj !== "object") return;
+  if (!obj || typeof obj !== 'object') return;
   for (const key of Object.keys(obj as Record<string, unknown>)) {
     const value = (obj as Record<string, unknown>)[key];
-    if (key.startsWith("$") || key.includes(".")) {
+    if (key.startsWith('$') || key.includes('.')) {
       delete (obj as Record<string, unknown>)[key];
     } else {
       stripObject(value);

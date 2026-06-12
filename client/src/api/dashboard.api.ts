@@ -1,5 +1,5 @@
-import { client } from "./client";
-import { DashboardSchema, type DashboardResponse } from "./schemas";
+import { client } from './client';
+import { DashboardSchema, type DashboardResponse } from './schemas';
 
 // ── GET dashboard for CV ────────────────────────────────────────
 export async function getDashboard(cvId: string): Promise<DashboardResponse> {

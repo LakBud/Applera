@@ -1,3 +1,3 @@
-import { startAuditWorker } from "./audit.worker.js";
+import { startAuditWorker } from './audit.worker.js';
 
 startAuditWorker();

@@ -1,14 +1,14 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
 export function concurrencyLimit(max: number) {
-  if (max < 1) throw new Error("concurrencyLimit: max must be at least 1");
+  if (max < 1) throw new Error('concurrencyLimit: max must be at least 1');
 
   let active = 0;
 
   return (_req: Request, res: Response, next: NextFunction) => {
     if (active >= max) {
       return res.status(503).json({
-        error: "Server is busy. Please try again in a moment.",
+        error: 'Server is busy. Please try again in a moment.',
       });
     }
 
@@ -21,8 +21,8 @@ export function concurrencyLimit(max: number) {
       active--;
     };
 
-    res.on("finish", cleanup);
-    res.on("close", cleanup);
+    res.on('finish', cleanup);
+    res.on('close', cleanup);
 
     try {
       next();

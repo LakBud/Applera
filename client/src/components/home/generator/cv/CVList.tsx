@@ -1,7 +1,7 @@
-import type { CVDocument } from "../../../../api/schemas";
-import { useCVs } from "../../../../api";
-import { CvListItem } from "./CVListItem";
-import { useAuth } from "@clerk/clerk-react";
+import type { CVDocument } from '../../../../api/schemas';
+import { useCVs } from '../../../../api';
+import { CvListItem } from './CVListItem';
+import { useAuth } from '@clerk/clerk-react';
 
 export function CvList({
   onSelectCv,
@@ -34,7 +34,7 @@ export function CvList({
     return (
       <div className="pt-2 border-t border-border">
         <p className="text-xs text-muted-foreground">
-          No pinned CVs. Pin up to 5 CVs from your{" "}
+          No pinned CVs. Pin up to 5 CVs from your{' '}
           <a href="/cvs" className="underline">
             CV library
           </a>

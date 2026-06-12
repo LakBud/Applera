@@ -1,5 +1,5 @@
-import { CVCompletenessBar } from "../stats/CVCompleteBar";
-import { CVStats } from "../stats/CVStats";
+import { CVCompletenessBar } from '../stats/CVCompleteBar';
+import { CVStats } from '../stats/CVStats';
 
 type Props = {
   successRate: number;
@@ -10,10 +10,22 @@ type Props = {
   missing: string[];
 };
 
-export function CVStatsSection({ successRate, totalApplications, avgScore, bestScore, completeness, missing }: Props) {
+export function CVStatsSection({
+  successRate,
+  totalApplications,
+  avgScore,
+  bestScore,
+  completeness,
+  missing,
+}: Props) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-      <CVStats successRate={successRate} totalApplications={totalApplications} avgScore={avgScore} bestScore={bestScore} />
+      <CVStats
+        successRate={successRate}
+        totalApplications={totalApplications}
+        avgScore={avgScore}
+        bestScore={bestScore}
+      />
 
       <CVCompletenessBar completeness={completeness} missing={missing} />
     </div>

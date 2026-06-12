@@ -1,4 +1,4 @@
-import PreviewMock from "../PreviewMock";
+import PreviewMock from '../PreviewMock';
 
 export default function PreviewSection() {
   return (
@@ -14,8 +14,8 @@ export default function PreviewSection() {
           </h2>
 
           <p className="text-secondary text-sm leading-relaxed max-w-sm">
-            The match score gives you an instant read on your strengths and gaps. Keywords and missing requirements are surfaced
-            clearly.
+            The match score gives you an instant read on your strengths and gaps. Keywords and
+            missing requirements are surfaced clearly.
           </p>
 
           <a

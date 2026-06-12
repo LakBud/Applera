@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ApplicationDetailPage } from "../../../pages/application/ApplicationDetail";
+import { createFileRoute } from '@tanstack/react-router';
+import { ApplicationDetailPage } from '../../../pages/application/ApplicationDetail';
 
-export const Route = createFileRoute("/__protected/applications/$applicationId")({
+export const Route = createFileRoute('/__protected/applications/$applicationId')({
   component: ApplicationDetailPage,
 });

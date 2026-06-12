@@ -1,6 +1,13 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-export const APPLICATION_STATUSES = ["generated", "applied", "interviewing", "offered", "rejected", "withdrawn"] as const;
+export const APPLICATION_STATUSES = [
+  'generated',
+  'applied',
+  'interviewing',
+  'offered',
+  'rejected',
+  'withdrawn',
+] as const;
 
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
@@ -15,20 +22,20 @@ const ApplicationSchema = new mongoose.Schema(
 
     ownerType: {
       type: String,
-      enum: ["user", "guest"],
+      enum: ['user', 'guest'],
       required: true,
       index: true,
     },
 
     cv: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "CV",
+      ref: 'CV',
       required: true,
     },
 
     job: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Job",
+      ref: 'Job',
       required: true,
     },
 
@@ -78,7 +85,7 @@ const ApplicationSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: APPLICATION_STATUSES,
-      default: "generated",
+      default: 'generated',
     },
 
     statusUpdatedAt: {
@@ -103,4 +110,4 @@ ApplicationSchema.index({ ownerId: 1, createdAt: -1 });
 ApplicationSchema.index({ cv: 1 });
 ApplicationSchema.index({ job: 1 });
 
-export default mongoose.model("Application", ApplicationSchema);
+export default mongoose.model('Application', ApplicationSchema);

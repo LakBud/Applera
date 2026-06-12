@@ -1,12 +1,12 @@
-import { Link } from "@tanstack/react-router";
-import { Button } from "../../../ui/button";
-import { StatusSummary } from "../../../applications/StatusSummary";
-import { CVApplicationRow } from "./CVApplicationRow";
-import { CVApplicationRowSkeleton } from "./CVApplicationRowSkeleton";
+import { Link } from '@tanstack/react-router';
+import { Button } from '../../../ui/button';
+import { StatusSummary } from '../../../applications/StatusSummary';
+import { CVApplicationRow } from './CVApplicationRow';
+import { CVApplicationRowSkeleton } from './CVApplicationRowSkeleton';
 
 interface CVApplicationsProps {
   applications: any[];
-  isLoading: Boolean;
+  isLoading: boolean;
 }
 
 export function CVApplications({ applications, isLoading }: CVApplicationsProps) {

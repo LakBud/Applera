@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from '../models/User.js';
 
 type ClerkUserInput = {
   clerkId: string;
@@ -14,10 +14,10 @@ export async function findOrCreateUser(input: ClerkUserInput) {
     {
       $setOnInsert: {
         clerkId: input.clerkId,
-        email: input.email ?? "",
-        firstName: input.firstName ?? "",
-        lastName: input.lastName ?? "",
-        imageUrl: input.imageUrl ?? "",
+        email: input.email ?? '',
+        firstName: input.firstName ?? '',
+        lastName: input.lastName ?? '',
+        imageUrl: input.imageUrl ?? '',
       },
     },
     {

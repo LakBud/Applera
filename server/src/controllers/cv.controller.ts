@@ -1,19 +1,19 @@
-import CVModel from "../models/CV.js";
-import { Request, Response } from "express";
+import CVModel from '../models/CV.js';
+import { Request, Response } from 'express';
 
-import { extractTextFromPdf } from "../lib/pdfParser.js";
-import { extractCVData } from "../services/extractors.service.js";
+import { extractTextFromPdf } from '../lib/pdfParser.js';
+import { extractCVData } from '../services/extractors.service.js';
 
-import { auditLog } from "../middleware/log/audit.logger.js";
-import { normalizeParsedCV } from "../utils/cv.normalize.utils.js";
+import { auditLog } from '../middleware/log/audit.logger.js';
+import { normalizeParsedCV } from '../utils/cv.normalize.utils.js';
 
-import { getParam } from "../utils/req.js";
-import { deleteCache, getCache, setCache } from "../lib/cache.js";
-import { hash } from "../lib/hash.js";
-import { uploadImage } from "../lib/cloudinary.upload.js";
-import Application from "../models/Application.js";
-import { cloudinary } from "../config/cloudinary.js";
-import axios from "axios";
+import { getParam } from '../utils/req.js';
+import { deleteCache, getCache, setCache } from '../lib/cache.js';
+import { hash } from '../lib/hash.js';
+import { uploadImage } from '../lib/cloudinary.upload.js';
+import Application from '../models/Application.js';
+import { cloudinary } from '../config/cloudinary.js';
+import axios from 'axios';
 
 const cvHashKey = (userId: string, hash: string) => `cv:hash:${userId}:${hash}`;
 const cvListKey = (userId: string, type: string) => `cvs:${userId}:${type}`;
@@ -44,7 +44,7 @@ async function findExistingCV(ownerId: string, contentHash: string) {
 export const createCV = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const file = req.file as Express.Multer.File | undefined;
@@ -60,11 +60,11 @@ export const createCV = async (req: Request, res: Response) => {
 
     if (file?.buffer) {
       rawText = await extractTextFromPdf(file.buffer);
-      contentHash = hash(file.buffer.toString("base64"));
+      contentHash = hash(file.buffer.toString('base64'));
 
       const existing = await findExistingCV(req.identity.id, contentHash);
       if (existing) {
-        return res.status(200).json({ message: "CV already exists", cv: existing });
+        return res.status(200).json({ message: 'CV already exists', cv: existing });
       }
 
       const upload = await uploadImage(file.buffer, req.identity.id);
@@ -75,10 +75,10 @@ export const createCV = async (req: Request, res: Response) => {
 
       const existing = await findExistingCV(req.identity.id, contentHash);
       if (existing) {
-        return res.status(200).json({ message: "CV already exists", cv: existing });
+        return res.status(200).json({ message: 'CV already exists', cv: existing });
       }
     } else {
-      return res.status(400).json({ error: "Provide a CV as PDF or text" });
+      return res.status(400).json({ error: 'Provide a CV as PDF or text' });
     }
 
     // ─────────────────────────────
@@ -111,7 +111,7 @@ export const createCV = async (req: Request, res: Response) => {
           ownerId: req.identity.id,
           contentHash,
         });
-        return res.status(200).json({ message: "CV already exists", cv: existing });
+        return res.status(200).json({ message: 'CV already exists', cv: existing });
       }
       throw err;
     }
@@ -129,7 +129,7 @@ export const createCV = async (req: Request, res: Response) => {
     // ─────────────────────────────
 
     await auditLog({
-      event: "CV_CREATED",
+      event: 'CV_CREATED',
       userId: req.identity.id,
       userType: req.identity.type,
       requestId: req.requestId,
@@ -138,10 +138,10 @@ export const createCV = async (req: Request, res: Response) => {
       metadata: { cvId: String(createdCV._id) },
     });
 
-    return res.status(201).json({ message: "CV created successfully", cv: createdCV });
+    return res.status(201).json({ message: 'CV created successfully', cv: createdCV });
   } catch (err) {
-    console.error("[createCV]", err);
-    return res.status(500).json({ error: "Failed to create CV" });
+    console.error('[createCV]', err);
+    return res.status(500).json({ error: 'Failed to create CV' });
   }
 };
 
@@ -152,7 +152,7 @@ export const createCV = async (req: Request, res: Response) => {
 export const getCVs = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const key = cvListKey(req.identity.id, req.identity.type);
@@ -165,7 +165,7 @@ export const getCVs = async (req: Request, res: Response) => {
       ownerType: req.identity.type,
     })
       .sort({ pinned: -1, createdAt: -1 })
-      .select("-rawText")
+      .select('-rawText')
       .lean();
 
     const cvIds = cvs.map((cv) => cv._id);
@@ -180,7 +180,7 @@ export const getCVs = async (req: Request, res: Response) => {
       },
       {
         $group: {
-          _id: "$cv",
+          _id: '$cv',
           count: { $sum: 1 },
         },
       },
@@ -193,9 +193,9 @@ export const getCVs = async (req: Request, res: Response) => {
       applicationsCount: countMap.get(cv._id.toString()) ?? 0,
       previewUrl: cv.cloudinaryPublicId
         ? cloudinary.url(cv.cloudinaryPublicId, {
-            resource_type: "image",
+            resource_type: 'image',
             secure: true,
-            format: "jpg",
+            format: 'jpg',
           })
         : null,
     }));
@@ -204,8 +204,8 @@ export const getCVs = async (req: Request, res: Response) => {
 
     return res.json(enriched);
   } catch (err) {
-    console.error("[getCVs]", err);
-    return res.status(500).json({ error: "Failed to fetch CVs" });
+    console.error('[getCVs]', err);
+    return res.status(500).json({ error: 'Failed to fetch CVs' });
   }
 };
 
@@ -216,7 +216,7 @@ export const getCVs = async (req: Request, res: Response) => {
 export const getCVById = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const id = getParam(req.params.id);
@@ -228,7 +228,7 @@ export const getCVById = async (req: Request, res: Response) => {
     }).lean();
 
     if (!cv) {
-      return res.status(404).json({ error: "CV not found" });
+      return res.status(404).json({ error: 'CV not found' });
     }
 
     const applicationsCount = await Application.countDocuments({
@@ -239,9 +239,9 @@ export const getCVById = async (req: Request, res: Response) => {
 
     const previewUrl = cv.cloudinaryPublicId
       ? cloudinary.url(cv.cloudinaryPublicId, {
-          resource_type: "image",
+          resource_type: 'image',
           secure: true,
-          format: "jpg",
+          format: 'jpg',
         })
       : null;
 
@@ -251,8 +251,8 @@ export const getCVById = async (req: Request, res: Response) => {
       previewUrl,
     });
   } catch (err) {
-    console.error("[getCVById]", err);
-    return res.status(500).json({ error: "Failed to fetch CV" });
+    console.error('[getCVById]', err);
+    return res.status(500).json({ error: 'Failed to fetch CV' });
   }
 };
 // ─────────────────────────────────────────────
@@ -262,7 +262,7 @@ export const getCVById = async (req: Request, res: Response) => {
 export const deleteCV = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const id = getParam(req.params.id);
@@ -274,18 +274,18 @@ export const deleteCV = async (req: Request, res: Response) => {
     });
 
     if (!deleted) {
-      return res.status(404).json({ error: "CV not found" });
+      return res.status(404).json({ error: 'CV not found' });
     }
 
     if (deleted.cloudinaryPublicId) {
-      await cloudinary.uploader.destroy(deleted.cloudinaryPublicId, { resource_type: "image" });
+      await cloudinary.uploader.destroy(deleted.cloudinaryPublicId, { resource_type: 'image' });
     }
 
     await deleteCache(cvListKey(req.identity.id, req.identity.type));
     await deleteCache(cvHashKey(req.identity.id, deleted.contentHash));
 
     await auditLog({
-      event: "CV_DELETED",
+      event: 'CV_DELETED',
       userId: req.identity.id,
       userType: req.identity.type,
       requestId: req.requestId,
@@ -294,10 +294,10 @@ export const deleteCV = async (req: Request, res: Response) => {
       metadata: { cvId: id },
     });
 
-    return res.json({ message: "CV deleted successfully" });
+    return res.json({ message: 'CV deleted successfully' });
   } catch (err) {
-    console.error("[deleteCV]", err);
-    return res.status(500).json({ error: "Failed to delete CV" });
+    console.error('[deleteCV]', err);
+    return res.status(500).json({ error: 'Failed to delete CV' });
   }
 };
 
@@ -308,7 +308,7 @@ export const deleteCV = async (req: Request, res: Response) => {
 export const pinCV = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const { id: ownerId, type: ownerType } = req.identity;
@@ -317,7 +317,7 @@ export const pinCV = async (req: Request, res: Response) => {
     const cv = await CVModel.findOne({ _id: id, ownerId, ownerType });
 
     if (!cv) {
-      return res.status(404).json({ error: "CV not found" });
+      return res.status(404).json({ error: 'CV not found' });
     }
 
     // Unpin
@@ -332,7 +332,7 @@ export const pinCV = async (req: Request, res: Response) => {
     const pinnedCount = await CVModel.countDocuments({ ownerId, ownerType, pinned: true });
     if (pinnedCount >= 5) {
       return res.status(400).json({
-        error: "You can only pin up to 5 CVs. Unpin one first.",
+        error: 'You can only pin up to 5 CVs. Unpin one first.',
       });
     }
 
@@ -341,7 +341,7 @@ export const pinCV = async (req: Request, res: Response) => {
     await deleteCache(cvListKey(ownerId, ownerType));
 
     await auditLog({
-      event: "CV_PINNED",
+      event: 'CV_PINNED',
       userId: ownerId,
       userType: ownerType,
       resourceId: id,
@@ -351,15 +351,15 @@ export const pinCV = async (req: Request, res: Response) => {
 
     return res.json({ cv, pinned: true });
   } catch (err) {
-    console.error("[pinCV]", err);
-    return res.status(500).json({ error: "Failed to pin CV" });
+    console.error('[pinCV]', err);
+    return res.status(500).json({ error: 'Failed to pin CV' });
   }
 };
 
 // GET /api/cv/:id/pdf
 export const getCVPdf = async (req: Request, res: Response) => {
   try {
-    if (!req.identity) return res.status(401).json({ error: "Unauthorized" });
+    if (!req.identity) return res.status(401).json({ error: 'Unauthorized' });
 
     const cv = await CVModel.findOne({
       _id: req.params.id,
@@ -367,28 +367,28 @@ export const getCVPdf = async (req: Request, res: Response) => {
       ownerType: req.identity.type,
     });
 
-    if (!cv || !cv.cloudinaryPublicId) return res.status(404).json({ error: "Not found" });
+    if (!cv || !cv.cloudinaryPublicId) return res.status(404).json({ error: 'Not found' });
 
     const url = cloudinary.url(cv.cloudinaryPublicId, {
-      resource_type: "image",
+      resource_type: 'image',
       secure: true,
     });
 
-    const response = await axios.get(url, { responseType: "stream" });
+    const response = await axios.get(url, { responseType: 'stream' });
 
-    const allowedHeaders = ["content-type", "content-length"];
+    const allowedHeaders = ['content-type', 'content-length'];
     Object.keys(response.headers).forEach((key) => {
       if (allowedHeaders.includes(key.toLowerCase())) {
         res.setHeader(key, response.headers[key]);
       }
     });
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "inline");
-    res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
     response.data.pipe(res);
   } catch (err) {
-    console.error("[getCVPdf]", err);
-    res.status(500).json({ error: "Failed to fetch PDF" });
+    console.error('[getCVPdf]', err);
+    res.status(500).json({ error: 'Failed to fetch PDF' });
   }
 };

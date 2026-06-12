@@ -1,5 +1,5 @@
-import type { Request, Response, NextFunction } from "express";
-import { extractTextFromPdf } from "../lib/pdfParser.js";
+import type { Request, Response, NextFunction } from 'express';
+import { extractTextFromPdf } from '../lib/pdfParser.js';
 
 const MIN_LENGTH = 50;
 
@@ -17,7 +17,7 @@ export function parseCvPdf(req: Request, res: Response, next: NextFunction): voi
 
   if (!file.buffer) {
     res.status(400).json({
-      error: "Invalid CV upload: missing buffer",
+      error: 'Invalid CV upload: missing buffer',
     });
     return;
   }
@@ -28,7 +28,7 @@ export function parseCvPdf(req: Request, res: Response, next: NextFunction): voi
 
       if (!cleaned || cleaned.length < MIN_LENGTH) {
         res.status(400).json({
-          error: "CV PDF is empty or unreadable",
+          error: 'CV PDF is empty or unreadable',
         });
         return;
       }
@@ -39,10 +39,10 @@ export function parseCvPdf(req: Request, res: Response, next: NextFunction): voi
       next();
     })
     .catch((err: unknown) => {
-      console.error("[parseCvPdf]", err);
+      console.error('[parseCvPdf]', err);
 
       res.status(400).json({
-        error: "Failed to parse CV PDF",
+        error: 'Failed to parse CV PDF',
       });
     });
 }
@@ -61,7 +61,7 @@ export function parseJobPdf(req: Request, res: Response, next: NextFunction): vo
 
   if (!file.buffer) {
     res.status(400).json({
-      error: "Invalid Job upload: missing buffer",
+      error: 'Invalid Job upload: missing buffer',
     });
     return;
   }
@@ -72,7 +72,7 @@ export function parseJobPdf(req: Request, res: Response, next: NextFunction): vo
 
       if (!cleaned || cleaned.length < MIN_LENGTH) {
         res.status(400).json({
-          error: "Job PDF is empty or unreadable",
+          error: 'Job PDF is empty or unreadable',
         });
         return;
       }
@@ -83,10 +83,10 @@ export function parseJobPdf(req: Request, res: Response, next: NextFunction): vo
       next();
     })
     .catch((err: unknown) => {
-      console.error("[parseJobPdf]", err);
+      console.error('[parseJobPdf]', err);
 
       res.status(400).json({
-        error: "Failed to parse Job PDF",
+        error: 'Failed to parse Job PDF',
       });
     });
 }

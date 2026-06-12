@@ -8,107 +8,106 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as _protectedRouteRouteImport } from './routes/__protected/route'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as _protectedCvsIndexRouteImport } from './routes/__protected/cvs/index'
-import { Route as _protectedApplicationsIndexRouteImport } from './routes/__protected/applications/index'
-import { Route as AuthSignUpSplatRouteImport } from './routes/auth/sign-up/$'
-import { Route as AuthSignInSplatRouteImport } from './routes/auth/sign-in/$'
-import { Route as _protectedCvsCvIdRouteImport } from './routes/__protected/cvs/$cvId'
-import { Route as _protectedApplicationsApplicationIdRouteImport } from './routes/__protected/applications/$applicationId'
+import { Route as rootRouteImport } from './routes/__root';
+import { Route as TermsRouteImport } from './routes/terms';
+import { Route as PrivacyRouteImport } from './routes/privacy';
+import { Route as _protectedRouteRouteImport } from './routes/__protected/route';
+import { Route as IndexRouteImport } from './routes/index';
+import { Route as _protectedCvsIndexRouteImport } from './routes/__protected/cvs/index';
+import { Route as _protectedApplicationsIndexRouteImport } from './routes/__protected/applications/index';
+import { Route as AuthSignUpSplatRouteImport } from './routes/auth/sign-up/$';
+import { Route as AuthSignInSplatRouteImport } from './routes/auth/sign-in/$';
+import { Route as _protectedCvsCvIdRouteImport } from './routes/__protected/cvs/$cvId';
+import { Route as _protectedApplicationsApplicationIdRouteImport } from './routes/__protected/applications/$applicationId';
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const _protectedRouteRoute = _protectedRouteRouteImport.update({
   id: '/__protected',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const _protectedCvsIndexRoute = _protectedCvsIndexRouteImport.update({
   id: '/cvs/',
   path: '/cvs/',
   getParentRoute: () => _protectedRouteRoute,
-} as any)
-const _protectedApplicationsIndexRoute =
-  _protectedApplicationsIndexRouteImport.update({
-    id: '/applications/',
-    path: '/applications/',
-    getParentRoute: () => _protectedRouteRoute,
-  } as any)
+} as any);
+const _protectedApplicationsIndexRoute = _protectedApplicationsIndexRouteImport.update({
+  id: '/applications/',
+  path: '/applications/',
+  getParentRoute: () => _protectedRouteRoute,
+} as any);
 const AuthSignUpSplatRoute = AuthSignUpSplatRouteImport.update({
   id: '/auth/sign-up/$',
   path: '/auth/sign-up/$',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const AuthSignInSplatRoute = AuthSignInSplatRouteImport.update({
   id: '/auth/sign-in/$',
   path: '/auth/sign-in/$',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const _protectedCvsCvIdRoute = _protectedCvsCvIdRouteImport.update({
   id: '/cvs/$cvId',
   path: '/cvs/$cvId',
   getParentRoute: () => _protectedRouteRoute,
-} as any)
+} as any);
 const _protectedApplicationsApplicationIdRoute =
   _protectedApplicationsApplicationIdRouteImport.update({
     id: '/applications/$applicationId',
     path: '/applications/$applicationId',
     getParentRoute: () => _protectedRouteRoute,
-  } as any)
+  } as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/privacy': typeof PrivacyRoute
-  '/terms': typeof TermsRoute
-  '/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute
-  '/cvs/$cvId': typeof _protectedCvsCvIdRoute
-  '/auth/sign-in/$': typeof AuthSignInSplatRoute
-  '/auth/sign-up/$': typeof AuthSignUpSplatRoute
-  '/applications/': typeof _protectedApplicationsIndexRoute
-  '/cvs/': typeof _protectedCvsIndexRoute
+  '/': typeof IndexRoute;
+  '/privacy': typeof PrivacyRoute;
+  '/terms': typeof TermsRoute;
+  '/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute;
+  '/cvs/$cvId': typeof _protectedCvsCvIdRoute;
+  '/auth/sign-in/$': typeof AuthSignInSplatRoute;
+  '/auth/sign-up/$': typeof AuthSignUpSplatRoute;
+  '/applications/': typeof _protectedApplicationsIndexRoute;
+  '/cvs/': typeof _protectedCvsIndexRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/privacy': typeof PrivacyRoute
-  '/terms': typeof TermsRoute
-  '/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute
-  '/cvs/$cvId': typeof _protectedCvsCvIdRoute
-  '/auth/sign-in/$': typeof AuthSignInSplatRoute
-  '/auth/sign-up/$': typeof AuthSignUpSplatRoute
-  '/applications': typeof _protectedApplicationsIndexRoute
-  '/cvs': typeof _protectedCvsIndexRoute
+  '/': typeof IndexRoute;
+  '/privacy': typeof PrivacyRoute;
+  '/terms': typeof TermsRoute;
+  '/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute;
+  '/cvs/$cvId': typeof _protectedCvsCvIdRoute;
+  '/auth/sign-in/$': typeof AuthSignInSplatRoute;
+  '/auth/sign-up/$': typeof AuthSignUpSplatRoute;
+  '/applications': typeof _protectedApplicationsIndexRoute;
+  '/cvs': typeof _protectedCvsIndexRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/__protected': typeof _protectedRouteRouteWithChildren
-  '/privacy': typeof PrivacyRoute
-  '/terms': typeof TermsRoute
-  '/__protected/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute
-  '/__protected/cvs/$cvId': typeof _protectedCvsCvIdRoute
-  '/auth/sign-in/$': typeof AuthSignInSplatRoute
-  '/auth/sign-up/$': typeof AuthSignUpSplatRoute
-  '/__protected/applications/': typeof _protectedApplicationsIndexRoute
-  '/__protected/cvs/': typeof _protectedCvsIndexRoute
+  __root__: typeof rootRouteImport;
+  '/': typeof IndexRoute;
+  '/__protected': typeof _protectedRouteRouteWithChildren;
+  '/privacy': typeof PrivacyRoute;
+  '/terms': typeof TermsRoute;
+  '/__protected/applications/$applicationId': typeof _protectedApplicationsApplicationIdRoute;
+  '/__protected/cvs/$cvId': typeof _protectedCvsCvIdRoute;
+  '/auth/sign-in/$': typeof AuthSignInSplatRoute;
+  '/auth/sign-up/$': typeof AuthSignUpSplatRoute;
+  '/__protected/applications/': typeof _protectedApplicationsIndexRoute;
+  '/__protected/cvs/': typeof _protectedCvsIndexRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
     | '/'
     | '/privacy'
@@ -118,8 +117,8 @@ export interface FileRouteTypes {
     | '/auth/sign-in/$'
     | '/auth/sign-up/$'
     | '/applications/'
-    | '/cvs/'
-  fileRoutesByTo: FileRoutesByTo
+    | '/cvs/';
+  fileRoutesByTo: FileRoutesByTo;
   to:
     | '/'
     | '/privacy'
@@ -129,7 +128,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in/$'
     | '/auth/sign-up/$'
     | '/applications'
-    | '/cvs'
+    | '/cvs';
   id:
     | '__root__'
     | '/'
@@ -141,111 +140,110 @@ export interface FileRouteTypes {
     | '/auth/sign-in/$'
     | '/auth/sign-up/$'
     | '/__protected/applications/'
-    | '/__protected/cvs/'
-  fileRoutesById: FileRoutesById
+    | '/__protected/cvs/';
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  _protectedRouteRoute: typeof _protectedRouteRouteWithChildren
-  PrivacyRoute: typeof PrivacyRoute
-  TermsRoute: typeof TermsRoute
-  AuthSignInSplatRoute: typeof AuthSignInSplatRoute
-  AuthSignUpSplatRoute: typeof AuthSignUpSplatRoute
+  IndexRoute: typeof IndexRoute;
+  _protectedRouteRoute: typeof _protectedRouteRouteWithChildren;
+  PrivacyRoute: typeof PrivacyRoute;
+  TermsRoute: typeof TermsRoute;
+  AuthSignInSplatRoute: typeof AuthSignInSplatRoute;
+  AuthSignUpSplatRoute: typeof AuthSignUpSplatRoute;
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/terms';
+      path: '/terms';
+      fullPath: '/terms';
+      preLoaderRoute: typeof TermsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/privacy';
+      path: '/privacy';
+      fullPath: '/privacy';
+      preLoaderRoute: typeof PrivacyRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/__protected': {
-      id: '/__protected'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof _protectedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/__protected';
+      path: '';
+      fullPath: '/';
+      preLoaderRoute: typeof _protectedRouteRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/';
+      path: '/';
+      fullPath: '/';
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/__protected/cvs/': {
-      id: '/__protected/cvs/'
-      path: '/cvs'
-      fullPath: '/cvs/'
-      preLoaderRoute: typeof _protectedCvsIndexRouteImport
-      parentRoute: typeof _protectedRouteRoute
-    }
+      id: '/__protected/cvs/';
+      path: '/cvs';
+      fullPath: '/cvs/';
+      preLoaderRoute: typeof _protectedCvsIndexRouteImport;
+      parentRoute: typeof _protectedRouteRoute;
+    };
     '/__protected/applications/': {
-      id: '/__protected/applications/'
-      path: '/applications'
-      fullPath: '/applications/'
-      preLoaderRoute: typeof _protectedApplicationsIndexRouteImport
-      parentRoute: typeof _protectedRouteRoute
-    }
+      id: '/__protected/applications/';
+      path: '/applications';
+      fullPath: '/applications/';
+      preLoaderRoute: typeof _protectedApplicationsIndexRouteImport;
+      parentRoute: typeof _protectedRouteRoute;
+    };
     '/auth/sign-up/$': {
-      id: '/auth/sign-up/$'
-      path: '/auth/sign-up/$'
-      fullPath: '/auth/sign-up/$'
-      preLoaderRoute: typeof AuthSignUpSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/auth/sign-up/$';
+      path: '/auth/sign-up/$';
+      fullPath: '/auth/sign-up/$';
+      preLoaderRoute: typeof AuthSignUpSplatRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/auth/sign-in/$': {
-      id: '/auth/sign-in/$'
-      path: '/auth/sign-in/$'
-      fullPath: '/auth/sign-in/$'
-      preLoaderRoute: typeof AuthSignInSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+      id: '/auth/sign-in/$';
+      path: '/auth/sign-in/$';
+      fullPath: '/auth/sign-in/$';
+      preLoaderRoute: typeof AuthSignInSplatRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/__protected/cvs/$cvId': {
-      id: '/__protected/cvs/$cvId'
-      path: '/cvs/$cvId'
-      fullPath: '/cvs/$cvId'
-      preLoaderRoute: typeof _protectedCvsCvIdRouteImport
-      parentRoute: typeof _protectedRouteRoute
-    }
+      id: '/__protected/cvs/$cvId';
+      path: '/cvs/$cvId';
+      fullPath: '/cvs/$cvId';
+      preLoaderRoute: typeof _protectedCvsCvIdRouteImport;
+      parentRoute: typeof _protectedRouteRoute;
+    };
     '/__protected/applications/$applicationId': {
-      id: '/__protected/applications/$applicationId'
-      path: '/applications/$applicationId'
-      fullPath: '/applications/$applicationId'
-      preLoaderRoute: typeof _protectedApplicationsApplicationIdRouteImport
-      parentRoute: typeof _protectedRouteRoute
-    }
+      id: '/__protected/applications/$applicationId';
+      path: '/applications/$applicationId';
+      fullPath: '/applications/$applicationId';
+      preLoaderRoute: typeof _protectedApplicationsApplicationIdRouteImport;
+      parentRoute: typeof _protectedRouteRoute;
+    };
   }
 }
 
 interface _protectedRouteRouteChildren {
-  _protectedApplicationsApplicationIdRoute: typeof _protectedApplicationsApplicationIdRoute
-  _protectedCvsCvIdRoute: typeof _protectedCvsCvIdRoute
-  _protectedApplicationsIndexRoute: typeof _protectedApplicationsIndexRoute
-  _protectedCvsIndexRoute: typeof _protectedCvsIndexRoute
+  _protectedApplicationsApplicationIdRoute: typeof _protectedApplicationsApplicationIdRoute;
+  _protectedCvsCvIdRoute: typeof _protectedCvsCvIdRoute;
+  _protectedApplicationsIndexRoute: typeof _protectedApplicationsIndexRoute;
+  _protectedCvsIndexRoute: typeof _protectedCvsIndexRoute;
 }
 
 const _protectedRouteRouteChildren: _protectedRouteRouteChildren = {
-  _protectedApplicationsApplicationIdRoute:
-    _protectedApplicationsApplicationIdRoute,
+  _protectedApplicationsApplicationIdRoute: _protectedApplicationsApplicationIdRoute,
   _protectedCvsCvIdRoute: _protectedCvsCvIdRoute,
   _protectedApplicationsIndexRoute: _protectedApplicationsIndexRoute,
   _protectedCvsIndexRoute: _protectedCvsIndexRoute,
-}
+};
 
 const _protectedRouteRouteWithChildren = _protectedRouteRoute._addFileChildren(
   _protectedRouteRouteChildren,
-)
+);
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -254,7 +252,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   AuthSignInSplatRoute: AuthSignInSplatRoute,
   AuthSignUpSplatRoute: AuthSignUpSplatRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();

@@ -9,9 +9,15 @@ export interface ApiError {
   error: string;
 }
 
-export type Confidence = "high" | "medium" | "low";
+export type Confidence = 'high' | 'medium' | 'low';
 
-export type ApplicationStatus = "generated" | "applied" | "interviewing" | "offered" | "rejected" | "withdrawn";
+export type ApplicationStatus =
+  | 'generated'
+  | 'applied'
+  | 'interviewing'
+  | 'offered'
+  | 'rejected'
+  | 'withdrawn';
 
 // ─────────────────────────────────────────────
 // CV

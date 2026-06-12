@@ -1,7 +1,7 @@
-import { useHomeState } from "../../../hooks/useHomeState";
-import { Loader } from "../../common/Loader";
-import { Button } from "../../ui/button";
-import Uploader from "../generator/Uploader";
+import { useHomeState } from '../../../hooks/useHomeState';
+import { Loader } from '../../common/Loader';
+import { Button } from '../../ui/button';
+import Uploader from '../generator/Uploader';
 
 export type HomeState = ReturnType<typeof useHomeState>;
 
@@ -31,7 +31,9 @@ export default function GeneratorSection({ state }: Props) {
   return (
     <div className="space-y-6">
       {/* INPUTS (locked when result exists) */}
-      <div className={`grid md:grid-cols-2 gap-6 transition-all ${isLocked ? "grayscale opacity-50 pointer-events-none" : ""}`}>
+      <div
+        className={`grid md:grid-cols-2 gap-6 transition-all ${isLocked ? 'grayscale opacity-50 pointer-events-none' : ''}`}
+      >
         {/* CV */}
         <div className="space-y-2">
           <Uploader
@@ -72,7 +74,7 @@ export default function GeneratorSection({ state }: Props) {
             disabled={!canGenerate}
             className="px-6 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {isPending ? <Loader size="sm" text="Generating…" /> : "Generate application"}
+            {isPending ? <Loader size="sm" text="Generating…" /> : 'Generate application'}
           </Button>
         ) : (
           <Button

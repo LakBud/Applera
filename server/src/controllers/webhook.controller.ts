@@ -1,13 +1,12 @@
-import { Request, Response } from "express";
-import { Webhook } from "svix";
-import CV from "../models/CV.js";
-import Application from "../models/Application.js";
-import InterviewPrep from "../models/InterviewPrep.js";
-import User from "../models/User.js";
-import { cloudinary } from "../config/cloudinary.js";
-import { CLERK_WEBHOOK_SECRET } from "../config/env.js";
-import { redis } from "../integrations/redis.js";
-import { deleteCache, deleteCachePattern } from "../lib/cache.js";
+import { Request, Response } from 'express';
+import { Webhook } from 'svix';
+import CV from '../models/CV.js';
+import Application from '../models/Application.js';
+import InterviewPrep from '../models/InterviewPrep.js';
+import User from '../models/User.js';
+import { cloudinary } from '../config/cloudinary.js';
+import { CLERK_WEBHOOK_SECRET } from '../config/env.js';
+import { deleteCache, deleteCachePattern } from '../lib/cache.js';
 
 export async function handleClerkWebhook(req: Request, res: Response) {
   // Verify signature
@@ -16,17 +15,17 @@ export async function handleClerkWebhook(req: Request, res: Response) {
 
   try {
     event = wh.verify(req.body, {
-      "svix-id": req.headers["svix-id"] as string,
-      "svix-timestamp": req.headers["svix-timestamp"] as string,
-      "svix-signature": req.headers["svix-signature"] as string,
+      'svix-id': req.headers['svix-id'] as string,
+      'svix-timestamp': req.headers['svix-timestamp'] as string,
+      'svix-signature': req.headers['svix-signature'] as string,
     });
   } catch (err) {
-    console.error("[webhook] Invalid signature", err);
-    res.status(400).json({ error: "Invalid signature" });
+    console.error('[webhook] Invalid signature', err);
+    res.status(400).json({ error: 'Invalid signature' });
     return;
   }
 
-  if (event.type === "user.deleted") {
+  if (event.type === 'user.deleted') {
     await handleUserDeleted(event.data.id);
   }
 
@@ -38,17 +37,22 @@ async function handleUserDeleted(clerkId: string) {
 
   try {
     // 1. Collect all Cloudinary public IDs from CVs
-    const cvs = await CV.find({ ownerId: clerkId, cloudinaryPublicId: { $exists: true, $ne: null } });
+    const cvs = await CV.find({
+      ownerId: clerkId,
+      cloudinaryPublicId: { $exists: true, $ne: null },
+    });
     const cloudinaryIds = cvs.map((cv) => cv.cloudinaryPublicId).filter(Boolean) as string[];
 
     // 2. Delete Cloudinary assets in parallel
     if (cloudinaryIds.length > 0) {
-      await Promise.allSettled(cloudinaryIds.map((id) => cloudinary.uploader.destroy(id, { resource_type: "image" })));
+      await Promise.allSettled(
+        cloudinaryIds.map((id) => cloudinary.uploader.destroy(id, { resource_type: 'image' })),
+      );
       console.log(`[webhook] Deleted ${cloudinaryIds.length} Cloudinary assets`);
     }
 
     // 3. Get application IDs to clean up InterviewPreps
-    const applications = await Application.find({ ownerId: clerkId }).select("_id");
+    const applications = await Application.find({ ownerId: clerkId }).select('_id');
     const applicationIds = applications.map((a) => a._id);
 
     // cache cleanup

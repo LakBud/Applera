@@ -1,4 +1,4 @@
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 const MIN_TEXT_LENGTH = 50;
 
@@ -8,8 +8,8 @@ type PDFTextItem = {
 
 function normalizePdfText(text: string): string {
   return text
-    .replace(/\s+/g, " ")
-    .replace(/\n\s*\n/g, "\n")
+    .replace(/\s+/g, ' ')
+    .replace(/\n\s*\n/g, '\n')
     .trim();
 }
 
@@ -24,7 +24,7 @@ export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
 
   const pdf = await loadingTask.promise;
 
-  let text = "";
+  let text = '';
 
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
@@ -32,9 +32,9 @@ export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
     try {
       const content = await page.getTextContent();
 
-      const pageText = (content.items as PDFTextItem[]).map((item) => item.str).join(" ");
+      const pageText = (content.items as PDFTextItem[]).map((item) => item.str).join(' ');
 
-      text += pageText + "\n";
+      text += pageText + '\n';
     } finally {
       page.cleanup();
     }
@@ -43,7 +43,7 @@ export async function extractTextFromPdf(buffer: Buffer): Promise<string> {
   const finalText = normalizePdfText(text);
 
   if (finalText.length < MIN_TEXT_LENGTH) {
-    throw new Error("[pdfParser] Low text output — likely scanned/image-based PDF");
+    throw new Error('[pdfParser] Low text output — likely scanned/image-based PDF');
   }
 
   return finalText;

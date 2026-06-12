@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const CVSchema = new mongoose.Schema(
   {
@@ -11,7 +11,7 @@ const CVSchema = new mongoose.Schema(
 
     ownerType: {
       type: String,
-      enum: ["user", "guest"],
+      enum: ['user', 'guest'],
       required: true,
       index: true,
     },
@@ -37,8 +37,8 @@ const CVSchema = new mongoose.Schema(
 
       seniority_level: {
         type: String,
-        enum: ["executive", "junior", "mid", "senior", "lead", "unknown"],
-        default: "unknown",
+        enum: ['executive', 'junior', 'mid', 'senior', 'lead', 'unknown'],
+        default: 'unknown',
       },
 
       skills: [{ type: String, trim: true }],
@@ -95,4 +95,4 @@ const CVSchema = new mongoose.Schema(
 CVSchema.index({ ownerId: 1, createdAt: -1 });
 CVSchema.index({ ownerId: 1, pinned: -1, lastUsedAt: -1 });
 
-export default mongoose.model("CV", CVSchema);
+export default mongoose.model('CV', CVSchema);

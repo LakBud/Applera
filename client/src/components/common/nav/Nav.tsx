@@ -1,13 +1,13 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from '@tanstack/react-router';
 
-import { Logo } from "../Logo";
-import { useState } from "react";
+import { Logo } from '../Logo';
+import { useState } from 'react';
 
-import { NavLink } from "./NavLink";
-import { MobileDrawer } from "./MobileDrawer";
-import { GithubStarButton } from "./GithubStarButton";
-import { NavAuthActions } from "./NavAuthActions";
-import { MobileNavActions } from "./MobileNavActions";
+import { NavLink } from './NavLink';
+import { MobileDrawer } from './MobileDrawer';
+import { GithubStarButton } from './GithubStarButton';
+import { NavAuthActions } from './NavAuthActions';
+import { MobileNavActions } from './MobileNavActions';
 
 export default function Nav({ isSignedIn, isLoaded }: { isSignedIn: boolean; isLoaded: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -41,13 +41,25 @@ export default function Nav({ isSignedIn, isLoaded }: { isSignedIn: boolean; isL
 
             <NavAuthActions isLoaded={isLoaded} isSignedIn={isSignedIn} />
 
-            <MobileNavActions isLoaded={isLoaded} isSignedIn={isSignedIn} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+            <MobileNavActions
+              isLoaded={isLoaded}
+              isSignedIn={isSignedIn}
+              menuOpen={menuOpen}
+              setMenuOpen={setMenuOpen}
+            />
           </div>
         </div>
       </nav>
 
       {/* Mobile drawer */}
-      {menuOpen && <MobileDrawer menuOpen={menuOpen} closeMenu={closeMenu} isLoaded={isLoaded} isSignedIn={isSignedIn} />}
+      {menuOpen && (
+        <MobileDrawer
+          menuOpen={menuOpen}
+          closeMenu={closeMenu}
+          isLoaded={isLoaded}
+          isSignedIn={isSignedIn}
+        />
+      )}
     </>
   );
 }

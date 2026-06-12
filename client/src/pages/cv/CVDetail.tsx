@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { useCV, useCVDashboard } from "../../api";
-import { Route } from "../../routes/__protected/cvs/$cvId";
-import { useCVSuccessRate } from "../../hooks/cv-id/useCVSuccessRate";
-import { useCVCompleteness } from "../../hooks/cv-id/useCVCompleteness";
-import { CVStatsSection } from "../../components/cv-detail/sections/CVStats";
-import { CVPdfDrawer } from "../../components/cv-detail/CVPdfDrawer";
-import { Loader } from "../../components/common/Loader";
-import CVTabsSection from "../../components/cv-detail/sections/CVTabs";
-import { CVHeaderSection } from "../../components/cv-detail/sections/CVHeader";
-import { getCVPdfUrl } from "../../utils/cv-id/url";
+import { useState } from 'react';
+import { useCV, useCVDashboard } from '../../api';
+import { Route } from '../../routes/__protected/cvs/$cvId';
+import { useCVSuccessRate } from '../../hooks/cv-id/useCVSuccessRate';
+import { useCVCompleteness } from '../../hooks/cv-id/useCVCompleteness';
+import { CVStatsSection } from '../../components/cv-detail/sections/CVStats';
+import { CVPdfDrawer } from '../../components/cv-detail/CVPdfDrawer';
+import { Loader } from '../../components/common/Loader';
+import CVTabsSection from '../../components/cv-detail/sections/CVTabs';
+import { CVHeaderSection } from '../../components/cv-detail/sections/CVHeader';
+import { getCVPdfUrl } from '../../utils/cv-id/url';
 
 export function CVDetailPage() {
   const { cvId } = Route.useParams();
@@ -38,7 +38,8 @@ export function CVDetailPage() {
   const previewUrl = cv.previewUrl;
   const openPdf = () => setPdfOpen(true);
 
-  const formatDate = (d: string) => new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
     <div className="min-h-screen bg-bg animate-fade-in">
@@ -47,7 +48,7 @@ export function CVDetailPage() {
           <CVHeaderSection
             name={cv.parsed.name}
             seniority={cv.parsed.seniority_level}
-            updatedAtLabel={`Updated ${formatDate(cv.updatedAt ?? "")}`}
+            updatedAtLabel={`Updated ${formatDate(cv.updatedAt ?? '')}`}
             showPdf={!!pdfUrl}
             onOpenPdf={openPdf}
           />
@@ -67,7 +68,13 @@ export function CVDetailPage() {
       </div>
 
       {/* PDF drawer */}
-      <CVPdfDrawer open={pdfOpen} onClose={() => setPdfOpen(false)} pdfUrl={pdfUrl} previewUrl={previewUrl} isLoading={loading} />
+      <CVPdfDrawer
+        open={pdfOpen}
+        onClose={() => setPdfOpen(false)}
+        pdfUrl={pdfUrl}
+        previewUrl={previewUrl}
+        isLoading={loading}
+      />
     </div>
   );
 }

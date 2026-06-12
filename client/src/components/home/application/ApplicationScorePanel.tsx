@@ -7,7 +7,14 @@ type Props = {
   missingSkills?: string[];
 };
 
-export function ApplicationScorePanel({ score, scoreColor, barColor, scoreLabel, strengths, missingSkills }: Props) {
+export function ApplicationScorePanel({
+  score,
+  scoreColor,
+  barColor,
+  scoreLabel,
+  strengths,
+  missingSkills,
+}: Props) {
   return (
     <div className="border-b md:border-b-0 md:border-r border-border p-4 md:p-6 space-y-4 md:space-y-6">
       {/* Score ring */}
@@ -18,7 +25,15 @@ export function ApplicationScorePanel({ score, scoreColor, barColor, scoreLabel,
           <span className="text-[10px] uppercase tracking-widest text-label mt-1">match</span>
 
           <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="4" className="text-border" />
+            <circle
+              cx="50"
+              cy="50"
+              r="46"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="4"
+              className="text-border"
+            />
             <circle
               cx="50"
               cy="50"
@@ -30,7 +45,7 @@ export function ApplicationScorePanel({ score, scoreColor, barColor, scoreLabel,
               strokeDashoffset={`${2 * Math.PI * 46 * (1 - score / 100)}`}
               strokeLinecap="round"
               className={scoreColor}
-              style={{ transition: "stroke-dashoffset 1s ease" }}
+              style={{ transition: 'stroke-dashoffset 1s ease' }}
             />
           </svg>
         </div>
@@ -45,7 +60,10 @@ export function ApplicationScorePanel({ score, scoreColor, barColor, scoreLabel,
         <div className="flex flex-wrap gap-1.5">
           {strengths?.length ? (
             strengths.map((s) => (
-              <span key={s} className="text-xs px-2 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20">
+              <span
+                key={s}
+                className="text-xs px-2 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20"
+              >
                 {s}
               </span>
             ))
@@ -62,7 +80,10 @@ export function ApplicationScorePanel({ score, scoreColor, barColor, scoreLabel,
         <div className="flex flex-wrap gap-1.5">
           {missingSkills?.length ? (
             missingSkills.map((s) => (
-              <span key={s} className="text-xs px-2 py-1 rounded-lg text-green-900 border border-error/20">
+              <span
+                key={s}
+                className="text-xs px-2 py-1 rounded-lg text-green-900 border border-error/20"
+              >
                 {s}
               </span>
             ))
@@ -80,7 +101,10 @@ export function ApplicationScorePanel({ score, scoreColor, barColor, scoreLabel,
         </div>
 
         <div className="h-1.5 bg-surface-muted rounded-full overflow-hidden">
-          <div className={`h-full rounded-full transition-all duration-700 ${barColor}`} style={{ width: `${score}%` }} />
+          <div
+            className={`h-full rounded-full transition-all duration-700 ${barColor}`}
+            style={{ width: `${score}%` }}
+          />
         </div>
       </div>
     </div>

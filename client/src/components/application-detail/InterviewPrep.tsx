@@ -1,8 +1,8 @@
-import { Lightbulb, Loader2 } from "lucide-react";
-import { useGenerateInterviewPrep, useInterviewPrep } from "../../api";
-import { Button } from "../ui/button";
-import { ApplicationAccordion } from "../ui/accordion";
-import { SectionHeading } from "../ui/section";
+import { Lightbulb, Loader2 } from 'lucide-react';
+import { useGenerateInterviewPrep, useInterviewPrep } from '../../api';
+import { Button } from '../ui/button';
+import { ApplicationAccordion } from '../ui/accordion';
+import { SectionHeading } from '../ui/section';
 
 export function InterviewPrepSection({ applicationId }: { applicationId: string }) {
   const { data: prep, isLoading } = useInterviewPrep(applicationId);
@@ -77,7 +77,9 @@ export function InterviewPrepSection({ applicationId }: { applicationId: string 
                     bg-surface-muted
                   "
                 >
-                  <p className="text-sm font-medium text-tx-body leading-snug wrap-break-words">{q.question}</p>
+                  <p className="text-sm font-medium text-tx-body leading-snug wrap-break-words">
+                    {q.question}
+                  </p>
                   <p className="text-xs text-tx-muted leading-relaxed wrap-break-words">{q.tip}</p>
                 </div>
               ))}

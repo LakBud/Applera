@@ -1,15 +1,15 @@
-import { useNavigate } from "@tanstack/react-router";
-import { Route } from "../../routes/__protected/applications/$applicationId";
-import { useApplication, useUpdateApplicationStatus } from "../../api";
-import { useDeleteApplication } from "../../api/hooks/useApplication";
-import ApplicationResult from "../../components/home/application/ApplicationResult";
-import { Loader } from "../../components/common/Loader";
-import { ApplicationActionSection } from "../../components/application-detail/ApplicationDetailAction";
+import { useNavigate } from '@tanstack/react-router';
+import { Route } from '../../routes/__protected/applications/$applicationId';
+import { useApplication, useUpdateApplicationStatus } from '../../api';
+import { useDeleteApplication } from '../../api/hooks/useApplication';
+import ApplicationResult from '../../components/home/application/ApplicationResult';
+import { Loader } from '../../components/common/Loader';
+import { ApplicationActionSection } from '../../components/application-detail/ApplicationDetailAction';
 
-import { ApplicationDetailHeader } from "../../components/application-detail/ApplicationDetailHeader";
-import { format } from "date-fns";
-import { JobListingSection } from "../../components/application-detail/JobListing";
-import { InterviewPrepSection } from "../../components/application-detail/InterviewPrep";
+import { ApplicationDetailHeader } from '../../components/application-detail/ApplicationDetailHeader';
+import { format } from 'date-fns';
+import { JobListingSection } from '../../components/application-detail/JobListing';
+import { InterviewPrepSection } from '../../components/application-detail/InterviewPrep';
 
 export function ApplicationDetailPage() {
   const { applicationId } = Route.useParams();
@@ -20,7 +20,7 @@ export function ApplicationDetailPage() {
 
   const handleDelete = () => {
     deleteApp(applicationId, {
-      onSuccess: () => navigate({ to: "/applications" }),
+      onSuccess: () => navigate({ to: '/applications' }),
     });
   };
 
@@ -42,9 +42,9 @@ export function ApplicationDetailPage() {
     );
   }
 
-  const cv = typeof application.cv === "object" ? application.cv : null;
-  const job = typeof application.job === "object" ? application.job : null;
-  const formatDate = (d: string) => format(new Date(d), "d MMM yyyy");
+  const cv = typeof application.cv === 'object' ? application.cv : null;
+  const job = typeof application.job === 'object' ? application.job : null;
+  const formatDate = (d: string) => format(new Date(d), 'd MMM yyyy');
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
@@ -66,14 +66,19 @@ export function ApplicationDetailPage() {
         cvId={cv?._id}
         cvName={cv?.parsed?.name}
         seniority={job?.parsed?.seniority}
-        createdAtLabel={`Applied ${formatDate(application.createdAt ?? "")}`}
+        createdAtLabel={`Applied ${formatDate(application.createdAt ?? '')}`}
       />
 
       {/* Result */}
       <ApplicationResult data={{ application }} />
 
       <div className="grid grid-cols-2 gap-4 items-start">
-        <JobListingSection company={job?.company} location={job?.location} rawText={job?.rawText} parsed={job?.parsed} />
+        <JobListingSection
+          company={job?.company}
+          location={job?.location}
+          rawText={job?.rawText}
+          parsed={job?.parsed}
+        />
         <InterviewPrepSection applicationId={applicationId} />
       </div>
     </div>

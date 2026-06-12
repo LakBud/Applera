@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const JobSchema = new mongoose.Schema(
   {
     ownerId: { type: String, required: true, index: true, trim: true },
-    ownerType: { type: String, enum: ["user", "guest"], required: true, index: true },
+    ownerType: { type: String, enum: ['user', 'guest'], required: true, index: true },
     rawText: { type: String, maxlength: 100000 },
     parsed: {
       title: { type: String, trim: true },
@@ -13,8 +13,8 @@ const JobSchema = new mongoose.Schema(
       responsibilities: [{ type: String, trim: true }],
       seniority: {
         type: String,
-        enum: ["executive", "intern", "junior", "mid", "senior", "lead", "unknown"],
-        default: "unknown",
+        enum: ['executive', 'intern', 'junior', 'mid', 'senior', 'lead', 'unknown'],
+        default: 'unknown',
       },
       raw_description: { type: String, maxlength: 100000 },
     },
@@ -25,4 +25,4 @@ const JobSchema = new mongoose.Schema(
 
 JobSchema.index({ ownerId: 1, createdAt: -1 });
 
-export default mongoose.model("Job", JobSchema);
+export default mongoose.model('Job', JobSchema);

@@ -1,14 +1,14 @@
-import ApplicationResultSection from "../components/home/sections/ApplicationResultSection";
-import FAQSection from "../components/home/sections/FAQ";
-import FeatureSection from "../components/home/sections/Feature";
-import GeneratorSection from "../components/home/sections/Generator";
-import PreviewSection from "../components/home/sections/Preview";
-import { useHomeState } from "../hooks/useHomeState";
-import { useAuth } from "@clerk/clerk-react";
-import { Link } from "@tanstack/react-router";
-import { Check } from "lucide-react";
-import { FEATURES, HOW_IT_WORKS, WHAT_YOU_GET } from "../utils/home/features";
-import { Footer } from "../components/common/Footer";
+import ApplicationResultSection from '../components/home/sections/ApplicationResultSection';
+import FAQSection from '../components/home/sections/FAQ';
+import FeatureSection from '../components/home/sections/Feature';
+import GeneratorSection from '../components/home/sections/Generator';
+import PreviewSection from '../components/home/sections/Preview';
+import { useHomeState } from '../hooks/useHomeState';
+import { useAuth } from '@clerk/clerk-react';
+import { Link } from '@tanstack/react-router';
+import { Check } from 'lucide-react';
+import { FEATURES, HOW_IT_WORKS, WHAT_YOU_GET } from '../utils/home/features';
+import { Footer } from '../components/common/Footer';
 
 export default function HomePage() {
   const homeState = useHomeState();
@@ -24,18 +24,23 @@ export default function HomePage() {
 
         <div className="relative text-center mb-8 space-y-4">
           <h1 className="font-display text-4xl md:text-5xl leading-tight">
-            <span className="text-h1">Tailor your application</span> <span className="text-h2">in seconds.</span>
+            <span className="text-h1">Tailor your application</span>{' '}
+            <span className="text-h2">in seconds.</span>
           </h1>
 
           <p className="text-sm text-secondary max-w-xl mx-auto leading-relaxed">
-            Paste your CV and a job listing — get a tailored cover letter, match score, and email draft.
+            Paste your CV and a job listing — get a tailored cover letter, match score, and email
+            draft.
           </p>
 
           {!isSignedIn && isLoaded && (
             <p className="text-xs text-muted-foreground">
-              <Link to="/auth/sign-up/$" className="text-primary underline underline-offset-2 font-medium">
+              <Link
+                to="/auth/sign-up/$"
+                className="text-primary underline underline-offset-2 font-medium"
+              >
                 Create a free account
-              </Link>{" "}
+              </Link>{' '}
               to create and save your applications, track progress, and reuse your CVs.
             </p>
           )}
@@ -48,7 +53,9 @@ export default function HomePage() {
               </span>
             ))}
           </div>
-          <p className="text-xs text-caption py-2">Used by students, juniors, and career switchers</p>
+          <p className="text-xs text-caption py-2">
+            Used by students, juniors, and career switchers
+          </p>
         </div>
 
         {/* ───────────── INPUT STATE ───────────── */}

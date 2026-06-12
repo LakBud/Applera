@@ -1,10 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "../queryKeys";
-import { client } from "../client";
-import { ApplicationSchema, CreateApplicationResponseSchema } from "../schemas";
-import { z } from "zod";
-import { toast } from "sonner";
-import { useAuth } from "@clerk/clerk-react";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../queryKeys';
+import { client } from '../client';
+import { ApplicationSchema, CreateApplicationResponseSchema } from '../schemas';
+import { z } from 'zod';
+import { toast } from 'sonner';
+import { useAuth } from '@clerk/clerk-react';
 
 export function useApplicationsByCv(cvId: string) {
   const { isSignedIn } = useAuth();
@@ -35,7 +35,7 @@ export function useApplications() {
   return useQuery({
     queryKey: queryKeys.application.all,
     queryFn: async () => {
-      const res = await client.get("/api/application");
+      const res = await client.get('/api/application');
       return z.array(ApplicationSchema).parse(res.data.applications);
     },
     enabled: !!isSignedIn,
@@ -47,15 +47,15 @@ export function useCreateApplication() {
 
   return useMutation({
     mutationFn: async (data: { cvId: string; jobId: string }) => {
-      const res = await client.post("/api/application", data);
+      const res = await client.post('/api/application', data);
       return CreateApplicationResponseSchema.parse(res.data);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.application.all });
-      toast.success("Application created");
+      toast.success('Application created');
     },
     onError: () => {
-      toast.error("Failed to create application. Please try again.");
+      toast.error('Failed to create application. Please try again.');
     },
   });
 }
@@ -70,10 +70,10 @@ export function useDeleteApplication() {
     onSuccess: (_, id) => {
       qc.invalidateQueries({ queryKey: queryKeys.application.all });
       qc.removeQueries({ queryKey: queryKeys.application.detail(id) });
-      toast.success("Application deleted");
+      toast.success('Application deleted');
     },
     onError: () => {
-      toast.error("Failed to delete application. Please try again.");
+      toast.error('Failed to delete application. Please try again.');
     },
   });
 }
@@ -89,10 +89,10 @@ export function useUpdateApplicationStatus() {
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: queryKeys.application.detail(vars.id) });
       qc.invalidateQueries({ queryKey: queryKeys.application.all });
-      toast.success("Status updated");
+      toast.success('Status updated');
     },
     onError: () => {
-      toast.error("Failed to update status. Please try again.");
+      toast.error('Failed to update status. Please try again.');
     },
   });
 }

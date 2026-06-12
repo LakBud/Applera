@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { NavLink } from "./NavLink";
-import { GithubStarButton } from "./GithubStarButton";
+import { Link } from '@tanstack/react-router';
+import { NavLink } from './NavLink';
+import { GithubStarButton } from './GithubStarButton';
 
 type Props = {
   menuOpen: boolean;

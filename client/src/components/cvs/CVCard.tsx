@@ -1,11 +1,19 @@
-import { useNavigate } from "@tanstack/react-router";
-import { useDeleteCV } from "../../api";
-import type { CVDocument } from "../../api/schemas";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, CardAction } from "../ui/card";
-import { Button } from "../ui/button";
-import { FileText, Pin } from "lucide-react";
-import { useState } from "react";
-import { DeleteModal } from "../common/DeleteModal";
+import { useNavigate } from '@tanstack/react-router';
+import { useDeleteCV } from '../../api';
+import type { CVDocument } from '../../api/schemas';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  CardAction,
+} from '../ui/card';
+import { Button } from '../ui/button';
+import { FileText, Pin } from 'lucide-react';
+import { useState } from 'react';
+import { DeleteModal } from '../common/DeleteModal';
 
 type CVCardProps = {
   cv: CVDocument;
@@ -22,18 +30,18 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
   const latestExp = cv.parsed.experience?.[0];
   const topSkills =
     cv.parsed.skills?.reduce<string[]>((acc, skill) => {
-      const total = acc.join("").length + skill.length;
+      const total = acc.join('').length + skill.length;
       return total < 60 ? [...acc, skill] : acc;
     }, []) ?? [];
 
-  const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : "");
+  const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : '');
 
-  const showSeniority = cv.parsed.seniority_level && cv.parsed.seniority_level !== "unknown";
+  const showSeniority = cv.parsed.seniority_level && cv.parsed.seniority_level !== 'unknown';
 
   return (
     <Card
-      style={{ "--tw-ring-color": "#1fa028" } as React.CSSProperties}
-      onClick={() => navigate({ to: "/cvs/$cvId", params: { cvId: cv._id } })}
+      style={{ '--tw-ring-color': '#1fa028' } as React.CSSProperties}
+      onClick={() => navigate({ to: '/cvs/$cvId', params: { cvId: cv._id } })}
       className="w-full h-full hover:shadow-md transition cursor-pointer group bg-white/40 overflow-hidden flex flex-col ring-1"
     >
       {/* IMAGE */}
@@ -43,7 +51,7 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
         ) : (
           <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
             <FileText className="w-10 h-10 opacity-30" />
-            <span className="text-xs opacity-50">{cv.parsed?.name || "No preview"}</span>
+            <span className="text-xs opacity-50">{cv.parsed?.name || 'No preview'}</span>
           </div>
         )}
       </div>
@@ -52,13 +60,17 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
       <CardHeader>
         <div className="flex items-start justify-between gap-2">
           <div>
-            <CardTitle style={{ color: "#1fa028" }}>{cv.parsed.name || "Untitled CV"}</CardTitle>
+            <CardTitle style={{ color: '#1fa028' }}>{cv.parsed.name || 'Untitled CV'}</CardTitle>
 
-            <CardDescription style={{ color: "#1fa028", opacity: 0.7 }}>Updated {formatDate(cv.updatedAt)}</CardDescription>
+            <CardDescription style={{ color: '#1fa028', opacity: 0.7 }}>
+              Updated {formatDate(cv.updatedAt)}
+            </CardDescription>
           </div>
           <div className="flex items-center gap-1">
             {showSeniority && (
-              <span className="text-xs px-2 py-1 rounded-full bg-muted whitespace-nowrap">{cv.parsed.seniority_level}</span>
+              <span className="text-xs px-2 py-1 rounded-full bg-muted whitespace-nowrap">
+                {cv.parsed.seniority_level}
+              </span>
             )}
             <div
               onClick={(e) => {
@@ -71,10 +83,10 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
                   onPin?.();
                 }}
                 disabled={isPinning || canPin}
-                title={canPin ? "Unpin a CV first" : cv.pinned ? "Unpin" : "Pin"}
+                title={canPin ? 'Unpin a CV first' : cv.pinned ? 'Unpin' : 'Pin'}
                 className={`p-1.5 rounded-md transition
-                ${cv.pinned ? "text-green-600 bg-green-50" : "text-muted-foreground hover:text-foreground"}
-                ${canPin ? "opacity-30 cursor-not-allowed" : ""}
+                ${cv.pinned ? 'text-green-600 bg-green-50' : 'text-muted-foreground hover:text-foreground'}
+                ${canPin ? 'opacity-30 cursor-not-allowed' : ''}
               `}
               >
                 <Pin className="w-3.5 h-3.5" />
@@ -90,7 +102,10 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
         {topSkills.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {topSkills.map((skill, i) => (
-              <span key={i} className="text-xs px-2 py-1 rounded-md bg-muted text-tx-secondary border border-rounded-2xl">
+              <span
+                key={i}
+                className="text-xs px-2 py-1 rounded-md bg-muted text-tx-secondary border border-rounded-2xl"
+              >
                 {skill}
               </span>
             ))}
@@ -99,7 +114,9 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
 
         {/* Stats */}
         <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-          {cv.applicationsCount !== undefined && <p className="text-green-900">Used in {cv.applicationsCount} applications</p>}
+          {cv.applicationsCount !== undefined && (
+            <p className="text-green-900">Used in {cv.applicationsCount} applications</p>
+          )}
 
           {latestExp && cv.parsed.experience.length > 1 && (
             <p className="text-green-900">{cv.parsed.experience.length} experiences</p>
@@ -111,7 +128,11 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
       <CardFooter className="flex justify-between">
         {/* IMPORTANT: prevent navigation on delete */}
         <div onClick={(e) => e.stopPropagation()}>
-          <Button variant="outline" className="text-green-900" onClick={() => setShowDeleteModal(true)}>
+          <Button
+            variant="outline"
+            className="text-green-900"
+            onClick={() => setShowDeleteModal(true)}
+          >
             Delete
           </Button>
 
@@ -125,7 +146,7 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
         </div>
 
         <CardAction className="pt-1">
-          <span style={{ color: "#1fa028", opacity: 1 }} className="text-xs">
+          <span style={{ color: '#1fa028', opacity: 1 }} className="text-xs">
             Click to view →
           </span>
         </CardAction>

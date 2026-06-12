@@ -1,12 +1,12 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 function validateMongoUri(uri: string): void {
-  if (!uri.startsWith("mongodb+srv://") && !uri.includes("ssl=true") && !uri.includes("tls=true")) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("MONGO_URI must use TLS in production (mongodb+srv:// or ?tls=true)");
+  if (!uri.startsWith('mongodb+srv://') && !uri.includes('ssl=true') && !uri.includes('tls=true')) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('MONGO_URI must use TLS in production (mongodb+srv:// or ?tls=true)');
     }
 
-    console.warn("[db] Warning: MongoDB connection is not using TLS");
+    console.warn('[db] Warning: MongoDB connection is not using TLS');
   }
 }
 
@@ -15,15 +15,15 @@ export async function connectDB(): Promise<void> {
     validateMongoUri(process.env.MONGO_URI!);
 
     const conn = await mongoose.connect(process.env.MONGO_URI!, {
-      tls: process.env.NODE_ENV === "production",
+      tls: process.env.NODE_ENV === 'production',
     });
 
     console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (err: unknown) {
     if (err instanceof Error) {
-      console.error("MongoDB connection error:", err.message);
+      console.error('MongoDB connection error:', err.message);
     } else {
-      console.error("MongoDB connection error:", err);
+      console.error('MongoDB connection error:', err);
     }
 
     process.exit(1);

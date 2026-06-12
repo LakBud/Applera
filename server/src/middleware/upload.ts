@@ -1,15 +1,19 @@
-import type { Request, Response, NextFunction } from "express";
-import multer from "multer";
+import type { Request, Response, NextFunction } from 'express';
+import multer from 'multer';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
-const PDF_MIME = "application/pdf";
+const PDF_MIME = 'application/pdf';
 const PDF_MAGIC = Buffer.from([0x25, 0x50, 0x44, 0x46]); // %PDF
 
 // ── File filter ─────────────────────────────────────────────
 
-export function pdfOnly(_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback): void {
+export function pdfOnly(
+  _req: Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback,
+): void {
   if (file.mimetype !== PDF_MIME) {
-    cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE", file.fieldname));
+    cb(new multer.MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname));
     return;
   }
 
@@ -28,8 +32,8 @@ const upload = multer({
 
 // ── Named uploaders ─────────────────────────────────────────
 
-export const uploadCV = upload.single("cv");
-export const uploadJob = upload.single("job");
+export const uploadCV = upload.single('cv');
+export const uploadJob = upload.single('job');
 
 // ── PDF magic validation ─────────────────────────────────────
 
@@ -40,7 +44,7 @@ export function validatePdfMagic(req: Request, res: Response, next: NextFunction
 
   if (!header.equals(PDF_MAGIC)) {
     res.status(400).json({
-      error: "Invalid file. Only real PDFs are accepted",
+      error: 'Invalid file. Only real PDFs are accepted',
     });
     return;
   }
@@ -50,15 +54,20 @@ export function validatePdfMagic(req: Request, res: Response, next: NextFunction
 
 // ── Error handler ────────────────────────────────────────────
 
-export function handleUploadError(err: unknown, _req: Request, res: Response, next: NextFunction): Response | void {
+export function handleUploadError(
+  err: unknown,
+  _req: Request,
+  res: Response,
+  next: NextFunction,
+): Response | void {
   if (!(err instanceof multer.MulterError)) return next(err);
 
   const messages: Record<string, string> = {
-    LIMIT_FILE_SIZE: "File is too large. Maximum size is 5 MB.",
-    LIMIT_UNEXPECTED_FILE: "Invalid file type. Only PDF files are accepted.",
+    LIMIT_FILE_SIZE: 'File is too large. Maximum size is 5 MB.',
+    LIMIT_UNEXPECTED_FILE: 'Invalid file type. Only PDF files are accepted.',
   };
 
   return res.status(400).json({
-    error: messages[err.code] ?? "Upload error",
+    error: messages[err.code] ?? 'Upload error',
   });
 }

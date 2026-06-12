@@ -1,11 +1,16 @@
-import { client } from "./client";
+import { client } from './client';
 
-import { CreateJobResponseSchema, JobDocumentSchema, type CreateJobResponse, type JobDocument } from "./schemas";
-import { z } from "zod";
+import {
+  CreateJobResponseSchema,
+  JobDocumentSchema,
+  type CreateJobResponse,
+  type JobDocument,
+} from './schemas';
+import { z } from 'zod';
 
 // GET /api/job
 export async function getJobs(): Promise<JobDocument[]> {
-  const response = await client.get("/api/job");
+  const response = await client.get('/api/job');
 
   return z.array(JobDocumentSchema).parse(response.data);
 }
@@ -20,16 +25,16 @@ export async function getJobById(id: string): Promise<JobDocument> {
 // POST /api/job
 export async function createJobFile(file: File): Promise<CreateJobResponse> {
   const form = new FormData();
-  form.append("job", file);
+  form.append('job', file);
 
-  const response = await client.post("/api/job", form);
+  const response = await client.post('/api/job', form);
 
   return CreateJobResponseSchema.parse(response.data);
 }
 
 // POST /api/job
 export async function createJobText(jobText: string): Promise<CreateJobResponse> {
-  const response = await client.post("/api/job", { jobText });
+  const response = await client.post('/api/job', { jobText });
 
   return CreateJobResponseSchema.parse(response.data);
 }

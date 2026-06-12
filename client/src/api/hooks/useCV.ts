@@ -1,18 +1,23 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { z } from "zod";
-import { toast } from "sonner";
-import { queryKeys } from "../queryKeys";
-import { client } from "../client";
-import { CVDocumentSchema, DashboardSchema, UploadCVResponseSchema, type CVDocument } from "../schemas";
-import { pinCV } from "../cv.api";
-import { useAuth } from "@clerk/clerk-react";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { z } from 'zod';
+import { toast } from 'sonner';
+import { queryKeys } from '../queryKeys';
+import { client } from '../client';
+import {
+  CVDocumentSchema,
+  DashboardSchema,
+  UploadCVResponseSchema,
+  type CVDocument,
+} from '../schemas';
+import { pinCV } from '../cv.api';
+import { useAuth } from '@clerk/clerk-react';
 
 export function useCVs(options?: { enabled?: boolean }) {
   const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.cv.list(),
     queryFn: async () => {
-      const res = await client.get("/api/cv");
+      const res = await client.get('/api/cv');
       return z.array(CVDocumentSchema).parse(res.data);
     },
     enabled: !!isSignedIn && (options?.enabled ?? true),
@@ -41,10 +46,10 @@ export function useDeleteCV() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.cv.all });
-      toast.success("CV deleted");
+      toast.success('CV deleted');
     },
     onError: () => {
-      toast.error("Failed to delete CV. Please try again.");
+      toast.error('Failed to delete CV. Please try again.');
     },
   });
 }
@@ -55,16 +60,16 @@ export function useUploadCVFile() {
   return useMutation({
     mutationFn: async (file: File) => {
       const form = new FormData();
-      form.append("cv", file);
-      const res = await client.post("/api/cv", form);
+      form.append('cv', file);
+      const res = await client.post('/api/cv', form);
       return UploadCVResponseSchema.parse(res.data);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.cv.all });
-      toast.success("CV uploaded successfully");
+      toast.success('CV uploaded successfully');
     },
     onError: () => {
-      toast.error("Failed to upload CV. Please try again.");
+      toast.error('Failed to upload CV. Please try again.');
     },
   });
 }
@@ -74,15 +79,15 @@ export function useUploadCVText() {
 
   return useMutation({
     mutationFn: async (cvText: string) => {
-      const res = await client.post("/api/cv", { cvText });
+      const res = await client.post('/api/cv', { cvText });
       return UploadCVResponseSchema.parse(res.data);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.cv.all });
-      toast.success("CV saved successfully");
+      toast.success('CV saved successfully');
     },
     onError: () => {
-      toast.error("Failed to save CV. Please try again.");
+      toast.error('Failed to save CV. Please try again.');
     },
   });
 }
@@ -111,7 +116,7 @@ export function usePinCV() {
       });
     },
     onError: () => {
-      toast.error("Failed to update pin. Please try again.");
+      toast.error('Failed to update pin. Please try again.');
     },
   });
 }

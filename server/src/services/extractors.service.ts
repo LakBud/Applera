@@ -1,13 +1,13 @@
-import { cachedLLM, callLLM } from "./llm/llm.service.js";
-import { EXTRACT_CV_PROMPT } from "../prompts/extractCVPrompt.js";
-import { EXTRACT_JOB_PROMPT } from "../prompts/extractJobPrompt.js";
-import { hash } from "../lib/hash.js";
-import { CVSchema, CVSchemaData, JobSchema, JobSchemaData } from "../types/schemas/schema.js";
+import { cachedLLM, callLLM } from './llm/llm.service.js';
+import { EXTRACT_CV_PROMPT } from '../prompts/extract/extractCVPrompt.js';
+import { EXTRACT_JOB_PROMPT } from '../prompts/application/extractJobPrompt.js';
+import { hash } from '../lib/hash.js';
+import { CVSchema, CVSchemaData, JobSchema, JobSchemaData } from '../types/schemas/schema.js';
 
-import { repairCV } from "./repair/cvRepair.service.js";
-import { repairJob } from "./repair/jobRepair.service.js";
-import { sanitise } from "../utils/extractors.utils.js";
-import { CACHE_VERSIONS } from "../utils/cache.versions.js";
+import { repairCV } from './repair/cvRepair.service.js';
+import { repairJob } from './repair/jobRepair.service.js';
+import { sanitise } from '../utils/extractors.utils.js';
+import { CACHE_VERSIONS } from '../utils/cache.versions.js';
 
 // ─────────────────────────────────────────────────────────────
 // CV extractor
@@ -22,7 +22,7 @@ import { CACHE_VERSIONS } from "../utils/cache.versions.js";
  * 5. Repair/normalize structured output
  */
 export async function extractCVData(cvText: string): Promise<CVSchemaData> {
-  const safeText = sanitise(cvText, "cvText");
+  const safeText = sanitise(cvText, 'cvText');
 
   return cachedLLM<CVSchemaData>({
     cacheKey: `cv:${CACHE_VERSIONS.cv}:${hash(safeText)}`,
@@ -38,8 +38,8 @@ export async function extractCVData(cvText: string): Promise<CVSchemaData> {
       const parsed = CVSchema.safeParse(result);
 
       if (!parsed.success) {
-        console.error("[CV VALIDATION ERROR]", parsed.error.issues);
-        throw new Error("[CV] Invalid LLM output shape");
+        console.error('[CV VALIDATION ERROR]', parsed.error.issues);
+        throw new Error('[CV] Invalid LLM output shape');
       }
 
       const cleaned = repairCV(parsed.data);
@@ -61,7 +61,7 @@ export async function extractCVData(cvText: string): Promise<CVSchemaData> {
  * 5. Repair/normalize structured output
  */
 export async function extractJobData(jobText: string): Promise<JobSchemaData> {
-  const safeText = sanitise(jobText, "jobText");
+  const safeText = sanitise(jobText, 'jobText');
 
   return cachedLLM<JobSchemaData>({
     cacheKey: `job:${CACHE_VERSIONS.job}:${hash(safeText)}`,
@@ -77,8 +77,8 @@ export async function extractJobData(jobText: string): Promise<JobSchemaData> {
       const parsed = JobSchema.safeParse(result);
 
       if (!parsed.success) {
-        console.error("[JOB VALIDATION ERROR]", parsed.error.format());
-        throw new Error("[JOB] Invalid LLM output shape");
+        console.error('[JOB VALIDATION ERROR]', parsed.error.format());
+        throw new Error('[JOB] Invalid LLM output shape');
       }
 
       const cleaned = repairJob(parsed.data);

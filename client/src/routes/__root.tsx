@@ -1,14 +1,14 @@
-import { createRootRouteWithContext, Outlet, useLocation } from "@tanstack/react-router";
-import { useAuth } from "@clerk/clerk-react";
-import type { QueryClient } from "@tanstack/react-query";
-import Nav from "../components/common/nav/Nav";
-import { Loader2 } from "lucide-react";
-import { Toaster } from "../components/ui/sonner";
-import { NotFoundPage } from "../pages/NotFound";
-import { AlertTriangle } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { useEffect } from "react";
-import axios from "axios";
+import { createRootRouteWithContext, Outlet, useLocation } from '@tanstack/react-router';
+import { useAuth } from '@clerk/clerk-react';
+import type { QueryClient } from '@tanstack/react-query';
+import Nav from '../components/common/nav/Nav';
+import { Loader2 } from 'lucide-react';
+import { Toaster } from '../components/ui/sonner';
+import { NotFoundPage } from '../pages/NotFound';
+import { AlertTriangle } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 interface RouterContext {
   queryClient: QueryClient;
@@ -31,7 +31,7 @@ function GlobalPending() {
 }
 
 export function GlobalError({ error }: { error: unknown }) {
-  const message = error instanceof Error ? error.message : "Something went wrong.";
+  const message = error instanceof Error ? error.message : 'Something went wrong.';
 
   return (
     <div className="min-h-dvh w-full flex items-center justify-center bg-bg text-tx-body px-6">
@@ -60,7 +60,7 @@ function RootLayout() {
 
   const { pathname } = useLocation();
 
-  const hideNav = pathname.startsWith("/auth");
+  const hideNav = pathname.startsWith('/auth');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -77,7 +77,7 @@ function RootLayout() {
   return (
     <div className="min-h-screen bg-bg text-text font-body">
       {!hideNav && <Nav isSignedIn={!!isSignedIn} isLoaded={isLoaded} />}
-      <main className={hideNav ? "" : "pt-14"}>
+      <main className={hideNav ? '' : 'pt-14'}>
         <Outlet />
       </main>
       <Toaster
@@ -86,11 +86,11 @@ function RootLayout() {
           unstyled: true,
           classNames: {
             toast:
-              "flex items-center gap-3 bg-white border border-green-100 text-green-900 text-sm font-sans px-4 py-3 rounded-md shadow-md w-full",
-            success: "border-green-200 [&>[data-icon]]:text-green-600",
-            error: "border-red-200 text-red-800 [&>[data-icon]]:text-red-500",
-            title: "font-medium",
-            description: "text-xs opacity-70",
+              'flex items-center gap-3 bg-white border border-green-100 text-green-900 text-sm font-sans px-4 py-3 rounded-md shadow-md w-full',
+            success: 'border-green-200 [&>[data-icon]]:text-green-600',
+            error: 'border-red-200 text-red-800 [&>[data-icon]]:text-red-500',
+            title: 'font-medium',
+            description: 'text-xs opacity-70',
           },
         }}
       />

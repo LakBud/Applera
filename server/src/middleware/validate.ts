@@ -1,5 +1,5 @@
-import type { Request, Response, NextFunction } from "express";
-import { z } from "zod";
+import type { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
 
 const textField = (label: string, max = 20_000, min = 10) =>
   z
@@ -16,11 +16,11 @@ const schemas = {
   }),
 
   createJob: z.object({
-    jobText: textField("jobText").optional(), // optional because file upload has no body
+    jobText: textField('jobText').optional(), // optional because file upload has no body
   }),
 
   uploadCV: z.object({
-    cvText: textField("cvText").optional(), // optional because file upload has no body
+    cvText: textField('cvText').optional(), // optional because file upload has no body
   }),
 } as const;
 
@@ -34,7 +34,7 @@ export function validate<T extends SchemaName>(schemaName: T) {
 
     if (!result.success) {
       return res.status(400).json({
-        error: "Validation failed",
+        error: 'Validation failed',
         message: result.error.issues[0].message,
         issues: result.error.issues,
       });

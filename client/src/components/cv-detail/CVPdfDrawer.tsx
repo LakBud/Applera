@@ -1,6 +1,6 @@
-import { ArrowRight, X } from "lucide-react";
-import { Button } from "../ui/button";
-import { Loader } from "../common/Loader";
+import { ArrowRight, X } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Loader } from '../common/Loader';
 
 interface CVPdfDrawerProps {
   open: boolean;
@@ -40,7 +40,9 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewUrl, isLoading }: CV
               target="_blank"
               rel="noopener noreferrer"
               className={`text-xs underline underline-offset-2 transition ${
-                isLoading ? "text-tx-muted opacity-50 cursor-not-allowed pointer-events-none" : "text-tx-muted hover:text-tx-body"
+                isLoading
+                  ? 'text-tx-muted opacity-50 cursor-not-allowed pointer-events-none'
+                  : 'text-tx-muted hover:text-tx-body'
               }`}
             >
               Open PDF
@@ -61,7 +63,11 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewUrl, isLoading }: CV
           {isLoading ? (
             <Loader />
           ) : previewUrl ? (
-            <img src={previewUrl} alt="CV preview" className="w-full object-contain rounded-lg shadow-sm" />
+            <img
+              src={previewUrl}
+              alt="CV preview"
+              className="w-full object-contain rounded-lg shadow-sm"
+            />
           ) : (
             <p className="text-sm text-tx-muted">No preview available</p>
           )}

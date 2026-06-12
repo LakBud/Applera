@@ -1,7 +1,7 @@
 // Pure utility functions for CV-to-job matching.
 // No side effects, no imports — easy to unit test in isolation.
 
-import { MatchReport } from "../types/match.types.js";
+import { MatchReport } from '../types/match.types.js';
 
 /* ── Normalisation ────────────────────────────────────────────────────────── */
 
@@ -10,13 +10,13 @@ import { MatchReport } from "../types/match.types.js";
  * "Node.js" → "nodejs",  "React Native" → "reactnative"
  */
 export function normalizeSkill(s: string): string {
-  return String(s || "")
+  return String(s || '')
     .toLowerCase()
     .trim()
-    .replace(/[\s.\-_/]+/g, "") // collapse repeats properly
-    .replace(/js$/, "js") // keeps nodejs/reactjs stable
-    .replace(/typescript/, "ts")
-    .replace(/javascript/, "js");
+    .replace(/[\s.\-_/]+/g, '') // collapse repeats properly
+    .replace(/js$/, 'js') // keeps nodejs/reactjs stable
+    .replace(/typescript/, 'ts')
+    .replace(/javascript/, 'js');
 }
 
 /**
@@ -33,12 +33,12 @@ export function normalizeSkills(arr: unknown): string[] {
 /* ── Skill matching ───────────────────────────────────────────────────────── */
 
 const SKILL_ALIASES: Record<string, string[]> = {
-  react: ["reactjs", "reactnative"],
-  nodejs: ["node", "express"],
-  ts: ["typescript"],
-  js: ["javascript"],
-  aws: ["amazonwebservices"],
-  docker: ["containerization"],
+  react: ['reactjs', 'reactnative'],
+  nodejs: ['node', 'express'],
+  ts: ['typescript'],
+  js: ['javascript'],
+  aws: ['amazonwebservices'],
+  docker: ['containerization'],
 };
 
 /**
@@ -82,7 +82,9 @@ export function detectDomainMismatch(cvSkills: unknown, jobSkills: unknown): boo
 
   if (job.length < 3) return false;
 
-  const overlap = job.filter((skill) => [...cv].some((cvSkill) => isSkillMatch(cvSkill, skill))).length;
+  const overlap = job.filter((skill) =>
+    [...cv].some((cvSkill) => isSkillMatch(cvSkill, skill)),
+  ).length;
 
   const similarity = overlap / job.length;
 
@@ -99,31 +101,31 @@ export function detectDomainMismatch(cvSkills: unknown, jobSkills: unknown): boo
  * as noise words that inflated or deflated match scores incorrectly.
  */
 export function extractAllText(obj: unknown): string {
-  if (!obj || typeof obj !== "object") return "";
+  if (!obj || typeof obj !== 'object') return '';
 
   const flatten = (val: unknown): string => {
-    if (!val) return "";
-    if (typeof val === "string") return val;
-    if (Array.isArray(val)) return val.map(flatten).join(" ");
-    if (typeof val === "object")
+    if (!val) return '';
+    if (typeof val === 'string') return val;
+    if (Array.isArray(val)) return val.map(flatten).join(' ');
+    if (typeof val === 'object')
       return Object.values(val as Record<string, unknown>)
         .map(flatten)
-        .join(" ");
+        .join(' ');
     return String(val);
   };
 
   const o = obj as Record<string, unknown>;
 
   return [
-    o.summary ?? "",
+    o.summary ?? '',
     flatten(o.skills),
     flatten(o.experience),
     flatten(o.education),
     flatten(o.responsibilities),
-    o.raw_description ?? "",
+    o.raw_description ?? '',
   ]
-    .join(" ")
-    .replace(/\s+/g, " ")
+    .join(' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
@@ -137,21 +139,21 @@ export function extractAllText(obj: unknown): string {
  * Now lowercases and filters out short stop-words before comparing.
  */
 const STOPWORDS = new Set([
-  "the",
-  "and",
-  "for",
-  "with",
-  "you",
-  "are",
-  "this",
-  "that",
-  "we",
-  "our",
-  "your",
-  "will",
-  "have",
-  "from",
-  "work",
+  'the',
+  'and',
+  'for',
+  'with',
+  'you',
+  'are',
+  'this',
+  'that',
+  'we',
+  'our',
+  'your',
+  'will',
+  'have',
+  'from',
+  'work',
 ]);
 
 export function calculateTextOverlap(cvText: string, jobText: string): number {
@@ -190,7 +192,7 @@ export function getConfidenceLevel({
   cvSkills?: string[];
   jobSkills?: string[];
   textScore?: number;
-}): "high" | "medium" | "low" {
+}): 'high' | 'medium' | 'low' {
   let confidence = 100;
 
   if (jobSkills.length < 4) confidence -= 10; // less harsh
@@ -201,9 +203,9 @@ export function getConfidenceLevel({
 
   confidence = Math.max(0, Math.min(100, confidence));
 
-  if (confidence >= 70) return "high";
-  if (confidence >= 40) return "medium";
-  return "low";
+  if (confidence >= 70) return 'high';
+  if (confidence >= 40) return 'medium';
+  return 'low';
 }
 
 // ── Seniority ─────────────────────────────────────────────────────────────────
@@ -216,31 +218,31 @@ const SENIORITY_RANK: Record<string, number> = {
   principal: 5,
 };
 
-function rankSeniority(level: string = ""): number {
+function rankSeniority(level: string = ''): number {
   const key = level.toLowerCase().trim();
   return SENIORITY_RANK[key] ?? 2; // default to mid if unknown
 }
 
-export function getSeniorityFit(cvLevel: string, jobLevel: string): MatchReport["seniority_fit"] {
+export function getSeniorityFit(cvLevel: string, jobLevel: string): MatchReport['seniority_fit'] {
   const diff = rankSeniority(cvLevel) - rankSeniority(jobLevel);
 
-  if (diff < 0) return "under";
-  if (diff > 0) return "over";
-  return "match";
+  if (diff < 0) return 'under';
+  if (diff > 0) return 'over';
+  return 'match';
 }
 
 // ── Score calculation ─────────────────────────────────────────────────────────
 
 export const SKILL_GRAPH: Record<string, string[]> = {
-  react: ["frontend", "ui", "web"],
-  nextjs: ["react", "frontend"],
-  nodejs: ["backend", "api"],
-  express: ["nodejs", "backend"],
-  typescript: ["javascript"],
-  mongodb: ["database", "nosql"],
-  postgresql: ["database", "sql"],
-  aws: ["cloud", "devops"],
-  docker: ["devops", "deployment"],
+  react: ['frontend', 'ui', 'web'],
+  nextjs: ['react', 'frontend'],
+  nodejs: ['backend', 'api'],
+  express: ['nodejs', 'backend'],
+  typescript: ['javascript'],
+  mongodb: ['database', 'nosql'],
+  postgresql: ['database', 'sql'],
+  aws: ['cloud', 'devops'],
+  docker: ['devops', 'deployment'],
 };
 
 export function expandSkills(skills: string[]): Set<string> {
@@ -319,7 +321,7 @@ export function calculateScore(cvSkills: string[], jobSkills: string[], textScor
 // ── Runtime guard (safe object check) ─────────────────────────────────────────
 
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /* ── Recommendation ───────────────────────────────────────────────────────── */
@@ -328,8 +330,8 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
  * Returns a human-readable recommendation string based on the match score.
  */
 export function generateRecommendation(score: number): string {
-  if (score >= 80) return "Strong match — apply immediately";
-  if (score >= 60) return "Good match — consider applying";
-  if (score >= 40) return "Moderate match — improve CV first";
-  return "Weak match — not recommended";
+  if (score >= 80) return 'Strong match — apply immediately';
+  if (score >= 60) return 'Good match — consider applying';
+  if (score >= 40) return 'Moderate match — improve CV first';
+  return 'Weak match — not recommended';
 }

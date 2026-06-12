@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
 type Props = {
   left: ReactNode;
@@ -17,7 +17,9 @@ export function RowBase({ left, middle, right, onClick }: Props) {
       <div className="min-w-0 flex-1">{left}</div>
 
       {/* MIDDLE */}
-      <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground shrink-0">{middle}</div>
+      <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground shrink-0">
+        {middle}
+      </div>
 
       {/* RIGHT */}
       <div className="flex items-center gap-3 shrink-0">{right}</div>

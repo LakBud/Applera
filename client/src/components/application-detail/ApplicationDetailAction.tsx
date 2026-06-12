@@ -1,12 +1,12 @@
-import { Link } from "@tanstack/react-router";
-import { Trash2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { STATUS_STYLES } from "../../utils/statusStyles";
-import { Loader } from "../common/Loader";
-import { Button } from "../ui/button";
-import { cn } from "../../lib/utils";
-import { useState } from "react";
-import { DeleteModal } from "../common/DeleteModal";
+import { Link } from '@tanstack/react-router';
+import { Trash2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { STATUS_STYLES } from '../../utils/statusStyles';
+import { Loader } from '../common/Loader';
+import { Button } from '../ui/button';
+import { cn } from '../../lib/utils';
+import { useState } from 'react';
+import { DeleteModal } from '../common/DeleteModal';
 
 type Props = {
   jobTitle?: string;
@@ -17,7 +17,14 @@ type Props = {
   onDelete: () => void;
 };
 
-export function ApplicationActionSection({ jobTitle, status, isUpdatingStatus, isDeleting, onStatusChange, onDelete }: Props) {
+export function ApplicationActionSection({
+  jobTitle,
+  status,
+  isUpdatingStatus,
+  isDeleting,
+  onStatusChange,
+  onDelete,
+}: Props) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   return (
@@ -30,7 +37,9 @@ export function ApplicationActionSection({ jobTitle, status, isUpdatingStatus, i
 
         <span className="text-tx-muted/50">›</span>
 
-        <span className="text-tx-body font-medium truncate max-w-50 sm:max-w-50">{jobTitle ?? "Untitled Role"}</span>
+        <span className="text-tx-body font-medium truncate max-w-50 sm:max-w-50">
+          {jobTitle ?? 'Untitled Role'}
+        </span>
       </div>
 
       {/* Actions */}
@@ -38,15 +47,23 @@ export function ApplicationActionSection({ jobTitle, status, isUpdatingStatus, i
         <Select value={status} disabled={isUpdatingStatus} onValueChange={onStatusChange}>
           <SelectTrigger className="text-xs h-8 w-full sm:w-36 ring-[#c8dece]">
             <SelectValue>
-              <span className={cn("font-medium", STATUS_STYLES[status]?.selectClass)}>
+              <span className={cn('font-medium', STATUS_STYLES[status]?.selectClass)}>
                 {STATUS_STYLES[status]?.label ?? status}
               </span>
             </SelectValue>
           </SelectTrigger>
 
-          <SelectContent position="popper" align="start" className="bg-[#f7fff5] ring-[#c8dece] w-36">
+          <SelectContent
+            position="popper"
+            align="start"
+            className="bg-[#f7fff5] ring-[#c8dece] w-36"
+          >
             {Object.entries(STATUS_STYLES).map(([s, { label, selectClass }]) => (
-              <SelectItem key={s} value={s} className={cn("text-xs font-medium cursor-pointer", selectClass)}>
+              <SelectItem
+                key={s}
+                value={s}
+                className={cn('text-xs font-medium cursor-pointer', selectClass)}
+              >
                 {label}
               </SelectItem>
             ))}

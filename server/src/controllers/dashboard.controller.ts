@@ -1,8 +1,8 @@
-import Application from "../models/Application.js";
-import CV from "../models/CV.js";
+import Application from '../models/Application.js';
+import CV from '../models/CV.js';
 
-import { getParam } from "../utils/req.js";
-import { Request, Response } from "express";
+import { getParam } from '../utils/req.js';
+import { Request, Response } from 'express';
 
 // ─────────────────────────────────────────────
 // Route params
@@ -18,7 +18,7 @@ export const getDashboard = async (req: Request, res: Response) => {
 
     if (!identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -34,7 +34,7 @@ export const getDashboard = async (req: Request, res: Response) => {
 
     if (!cvDoc) {
       return res.status(404).json({
-        error: "CV not found",
+        error: 'CV not found',
       });
     }
 
@@ -44,7 +44,7 @@ export const getDashboard = async (req: Request, res: Response) => {
       ownerType,
       cv: cvDoc._id,
     })
-      .select("match status createdAt jobTitleSnapshot companySnapshot locationSnapshot")
+      .select('match status createdAt jobTitleSnapshot companySnapshot locationSnapshot')
       .sort({ createdAt: -1 })
       .lean();
 
@@ -62,9 +62,12 @@ export const getDashboard = async (req: Request, res: Response) => {
     }
 
     // ── Score calculations ─────────────────────────────
-    const scores = applications.map((a) => a.match?.score).filter((s): s is number => typeof s === "number");
+    const scores = applications
+      .map((a) => a.match?.score)
+      .filter((s): s is number => typeof s === 'number');
 
-    const averageScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+    const averageScore =
+      scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
 
     const highestScore = scores.length > 0 ? Math.max(...scores) : 0;
 
@@ -72,13 +75,13 @@ export const getDashboard = async (req: Request, res: Response) => {
 
     // ── Breakdowns ─────────────────────────────────────
     const statusBreakdown = applications.reduce<Record<string, number>>((acc, a) => {
-      const status = a.status ?? "generated";
+      const status = a.status ?? 'generated';
       acc[status] = (acc[status] ?? 0) + 1;
       return acc;
     }, {});
 
     const confidenceBreakdown = applications.reduce<Record<string, number>>((acc, a) => {
-      const confidence = a.match?.confidence ?? "low";
+      const confidence = a.match?.confidence ?? 'low';
       acc[confidence] = (acc[confidence] ?? 0) + 1;
       return acc;
     }, {});
@@ -86,12 +89,12 @@ export const getDashboard = async (req: Request, res: Response) => {
     // ── Lightweight summaries ──────────────────────────
     const summaries = applications.map((a) => ({
       _id: a._id,
-      job_title: a.jobTitleSnapshot || "Unknown Role",
-      company: a.companySnapshot || "Unknown Company",
-      location: a.locationSnapshot || "",
+      job_title: a.jobTitleSnapshot || 'Unknown Role',
+      company: a.companySnapshot || 'Unknown Company',
+      location: a.locationSnapshot || '',
       score: a.match?.score ?? 0,
-      confidence: a.match?.confidence ?? "low",
-      status: a.status ?? "generated",
+      confidence: a.match?.confidence ?? 'low',
+      status: a.status ?? 'generated',
       createdAt: a.createdAt,
     }));
 
@@ -106,9 +109,9 @@ export const getDashboard = async (req: Request, res: Response) => {
       applications: summaries,
     });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Unknown error";
+    const message = err instanceof Error ? err.message : 'Unknown error';
 
-    console.error("[getDashboard]", message);
+    console.error('[getDashboard]', message);
 
     return res.status(500).json({
       error: message,

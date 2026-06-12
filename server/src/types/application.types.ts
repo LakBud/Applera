@@ -1,4 +1,4 @@
-import type { MatchReport } from "./match.types.js";
+import type { MatchReport } from './match.types.js';
 
 export type ApplicationLLMOutput = {
   cv_summary: string;
@@ -29,5 +29,5 @@ export type Application = {
     body: string;
   };
 
-  status: "generated" | "applied" | "interviewing" | "offered" | "rejected" | "withdrawn";
+  status: 'generated' | 'applied' | 'interviewing' | 'offered' | 'rejected' | 'withdrawn';
 };

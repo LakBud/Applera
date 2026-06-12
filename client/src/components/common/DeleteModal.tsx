@@ -1,8 +1,15 @@
-import { Trash2 } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Button } from "../ui/button";
+import { Trash2 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
+import { Button } from '../ui/button';
 
-type DeleteType = "cv" | "application";
+type DeleteType = 'cv' | 'application';
 
 interface DeleteModalProps {
   open: boolean;
@@ -14,13 +21,14 @@ interface DeleteModalProps {
 
 const config: Record<DeleteType, { title: string; description: (name?: string) => string }> = {
   cv: {
-    title: "Delete CV",
+    title: 'Delete CV',
     description: (name?) =>
       `Are you sure you want to delete "${name}"? This CV will be permanently removed and cannot be recovered.`,
   },
   application: {
-    title: "Delete Application",
-    description: (name?) => `Are you sure you want to delete your application to "${name}"? This action cannot be undone.`,
+    title: 'Delete Application',
+    description: (name?) =>
+      `Are you sure you want to delete your application to "${name}"? This action cannot be undone.`,
   },
 };
 
@@ -37,7 +45,9 @@ export function DeleteModal({ open, onOpenChange, type, name, onConfirm }: Delet
             </div>
             <DialogTitle className="text-tx-h2 text-green-900 bold">{title}</DialogTitle>
           </div>
-          <DialogDescription className="text-tx-secondary text-sm leading-relaxed">{description(name)}</DialogDescription>
+          <DialogDescription className="text-tx-secondary text-sm leading-relaxed">
+            {description(name)}
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:gap-2">
           <Button variant="outline" className="text-green-700" onClick={() => onOpenChange(false)}>

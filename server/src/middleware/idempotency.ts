@@ -1,18 +1,18 @@
-import { Request, Response, NextFunction } from "express";
-import { hashRequest } from "../utils/hashRequest.js";
-import { redis } from "../integrations/redis.js";
+import { Request, Response, NextFunction } from 'express';
+import { hashRequest } from '../utils/hashRequest.js';
+import { redis } from '../integrations/redis.js';
 
 const TTL_SECONDS = 60;
 
-const IDEMPOTENT_ROUTES = new Set(["/api/application/create", "/api/interview/generate"]);
+const IDEMPOTENT_ROUTES = new Set(['/api/application/create', '/api/interview/generate']);
 
 function normalizePath(path: string) {
-  return path.split("?")[0];
+  return path.split('?')[0];
 }
 
 export async function idempotency(req: Request, res: Response, next: NextFunction) {
   try {
-    if (!["POST", "PATCH"].includes(req.method)) return next();
+    if (!['POST', 'PATCH'].includes(req.method)) return next();
 
     const path = normalizePath(req.originalUrl);
 
@@ -32,7 +32,7 @@ export async function idempotency(req: Request, res: Response, next: NextFunctio
     const cached = await redis.get(redisKey);
 
     if (cached) {
-      if (typeof cached === "string") {
+      if (typeof cached === 'string') {
         return res.status(200).json(JSON.parse(cached));
       }
       return res.status(200).json(cached);

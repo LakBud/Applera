@@ -1,67 +1,45 @@
-import { hash } from "../lib/hash.js";
-import { getCache, setCache } from "../lib/cache.js";
-import {
-  normalizeSkills,
-  isSkillMatch,
-  detectDomainMismatch,
-  extractAllText,
-  calculateTextOverlap,
-  getConfidenceLevel,
-  generateRecommendation,
-  calculateScore,
-  getSeniorityFit,
-} from "../utils/match.utils.js";
-import { MatchReport } from "../types/match.types.js";
-import { CVSchemaData, JobSchemaData } from "../types/schemas/schema.js";
-import { CACHE_VERSIONS } from "../utils/cache.versions.js";
+import { hash } from '../lib/hash.js';
+import { extractAllText } from '../utils/match.utils.js';
+import { CVSchemaData, JobSchemaData } from '../types/schemas/schema.js';
+import { CACHE_VERSIONS } from '../utils/cache.versions.js';
+import { MatchReport, MatchReportSchema } from '../types/schemas/match.schemas.js';
+import { cachedLLM } from './llm/llm.service.js';
+import { runMathMatch } from '../lib/match/math.match.js';
+import { runAIEnrichment } from '../lib/match/ai.match.js';
 
-// ── Public API ────────────────────────────────────────────────────────────────
+// ── Public API ─────────────────────────────────────────────────────────────────
 
-/**
- * @param cv   Structured CV from extractCVData
- * @param job  Structured job from extractJobData
- * @returns Match report — synchronous, no LLM call
- */
-export async function matchCVToJob(cv: CVSchemaData, job: JobSchemaData): Promise<MatchReport> {
-  const key = `match:${CACHE_VERSIONS.match}:${hash(
+export async function matchCVToJob(
+  cv: CVSchemaData,
+  job: JobSchemaData,
+  { skipAI = false }: { skipAI?: boolean } = {},
+): Promise<MatchReport> {
+  const cacheKey = `match:${CACHE_VERSIONS.match}:${hash(
     JSON.stringify({
       cvSkills: cv.skills,
       jobSkills: job.required_skills,
       cvText: extractAllText(cv),
       jobText: extractAllText(job),
+      skipAI,
     }),
   )}`;
 
-  const cached = await getCache<MatchReport>(key);
-  if (cached) return cached;
+  return cachedLLM({
+    cacheKey,
+    ttl: 60 * 60 * 24,
+    fn: async () => {
+      const mathResult = runMathMatch(cv, job);
 
-  // ── CORE LOGIC ───────────────────────────────────────────────
+      // only call AI for ambiguous or low-confidence results
+      const needsAI =
+        !skipAI &&
+        (mathResult.confidence === 'low' || (mathResult.score >= 30 && mathResult.score <= 75));
 
-  const cvSkills = normalizeSkills(cv.skills);
-  const jobSkills = normalizeSkills(job.required_skills);
+      const ai_insights = needsAI ? await runAIEnrichment(cv, job, mathResult) : null;
 
-  const matchingSkills = jobSkills.filter((jobSkill) => cvSkills.some((cvSkill) => isSkillMatch(cvSkill, jobSkill)));
+      const result: MatchReport = { ...mathResult, ai_insights };
 
-  const missingSkills = jobSkills.filter((jobSkill) => !matchingSkills.includes(jobSkill));
-
-  const textScore = calculateTextOverlap(extractAllText(cv), extractAllText(job));
-
-  const score = calculateScore(matchingSkills, jobSkills, textScore);
-
-  const seniorityFit = getSeniorityFit(cv.seniority_level, job.seniority);
-
-  const result: MatchReport = {
-    score,
-    strengths: matchingSkills,
-    missing_skills: missingSkills,
-    seniority_fit: seniorityFit,
-    domain_mismatch: detectDomainMismatch(cvSkills, jobSkills),
-    confidence: getConfidenceLevel({ cvSkills, jobSkills, textScore }),
-    recommendation: generateRecommendation(score),
-    text_overlap: textScore,
-  };
-
-  await setCache(key, result, 60 * 60 * 24);
-
-  return result;
+      return MatchReportSchema.parse(result); // validates the whole thing before caching
+    },
+  });
 }

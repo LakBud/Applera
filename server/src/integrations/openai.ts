@@ -1,5 +1,5 @@
-import OpenAI from "openai";
-import { GROQ_API_KEY, GROQ_BASE_URL, GROQ_MODEL } from "../config/env.js";
+import OpenAI from 'openai';
+import { GROQ_API_KEY, GROQ_BASE_URL, GROQ_MODEL } from '../config/env.js';
 
 export const openai = new OpenAI({
   apiKey: GROQ_API_KEY,

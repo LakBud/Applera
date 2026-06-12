@@ -1,8 +1,8 @@
-import { Briefcase } from "lucide-react";
-import { useApplications } from "../../api/hooks/useApplication";
-import { StatusSummary } from "../../components/applications/StatusSummary";
-import { ApplicationRow } from "../../components/applications/ApplicationRow";
-import { ApplicationRowSkeleton } from "../../components/applications/ApplicationRowSkeleton";
+import { Briefcase } from 'lucide-react';
+import { useApplications } from '../../api/hooks/useApplication';
+import { StatusSummary } from '../../components/applications/StatusSummary';
+import { ApplicationRow } from '../../components/applications/ApplicationRow';
+import { ApplicationRowSkeleton } from '../../components/applications/ApplicationRowSkeleton';
 
 export function ApplicationsPage() {
   const { data: applications, isLoading, isError } = useApplications();

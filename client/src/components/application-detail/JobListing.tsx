@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { MapPin, Building2, ChevronDown, ChevronUp, Briefcase, Calendar } from "lucide-react";
-import { ApplicationAccordion } from "../ui/accordion";
-import { SectionHeading } from "../ui/section";
-import { Button } from "../ui/button";
+import { useState } from 'react';
+import { MapPin, Building2, ChevronDown, ChevronUp, Briefcase, Calendar } from 'lucide-react';
+import { ApplicationAccordion } from '../ui/accordion';
+import { SectionHeading } from '../ui/section';
+import { Button } from '../ui/button';
 
 type JobParsed = {
   title?: string;
@@ -29,7 +29,11 @@ export function JobListingSection({ company, location, rawText, parsed, createdA
       <div className="p-4 sm:p-5 space-y-6">
         {/* Title + meta */}
         <div className="space-y-2">
-          {parsed?.title && <p className="text-sm sm:text-base font-medium text-green-700 wrap-break-words">{parsed.title}</p>}
+          {parsed?.title && (
+            <p className="text-sm sm:text-base font-medium text-green-700 wrap-break-words">
+              {parsed.title}
+            </p>
+          )}
 
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs">
             {company && (
@@ -46,7 +50,7 @@ export function JobListingSection({ company, location, rawText, parsed, createdA
               </span>
             )}
 
-            {parsed?.seniority && parsed.seniority !== "unknown" && (
+            {parsed?.seniority && parsed.seniority !== 'unknown' && (
               <span className="flex items-center gap-1 text-tx-secondary">
                 <Briefcase className="w-3 h-3 shrink-0" />
                 <span className="capitalize">{parsed.seniority}</span>
@@ -57,10 +61,10 @@ export function JobListingSection({ company, location, rawText, parsed, createdA
               <span className="flex items-center gap-1 text-tx-caption">
                 <Calendar className="w-3 h-3 shrink-0" />
                 <span>
-                  {new Date(createdAt).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
+                  {new Date(createdAt).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
                   })}
                 </span>
               </span>
@@ -126,7 +130,7 @@ export function JobListingSection({ company, location, rawText, parsed, createdA
             >
               {showRaw ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
 
-              <span>{showRaw ? "Hide" : "Show"} full description</span>
+              <span>{showRaw ? 'Hide' : 'Show'} full description</span>
             </Button>
 
             {showRaw && (

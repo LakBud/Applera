@@ -1,6 +1,6 @@
-import "@clerk/express";
-import type { Identity } from "./identity.js";
-import type { z } from "zod";
+import '@clerk/express';
+import type { Identity } from './identity.js';
+import type { z } from 'zod';
 
 declare global {
   namespace Express {
@@ -9,7 +9,7 @@ declare global {
       requestId?: string;
       auth?: {
         userId?: string;
-        plan?: "free" | "pro" | "enterprise" | "admin";
+        plan?: 'free' | 'pro' | 'enterprise' | 'admin';
       };
 
       validated?: unknown;

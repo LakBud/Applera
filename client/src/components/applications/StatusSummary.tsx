@@ -5,10 +5,10 @@ export function StatusSummary({ applications }: { applications: any[] }) {
   }, {});
 
   const stats = [
-    { label: "Total", value: applications.length },
-    { label: "Applied", value: counts.applied ?? 0 },
-    { label: "Interviewing", value: counts.interviewing ?? 0 },
-    { label: "Offered", value: counts.offered ?? 0 },
+    { label: 'Total', value: applications.length },
+    { label: 'Applied', value: counts.applied ?? 0 },
+    { label: 'Interviewing', value: counts.interviewing ?? 0 },
+    { label: 'Offered', value: counts.offered ?? 0 },
   ];
 
   return (

@@ -1,12 +1,12 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ClerkProvider, useAuth } from "@clerk/clerk-react";
-import { routeTree } from "./routeTree.gen";
-import "@fontsource-variable/geist";
-import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ClerkProvider, useAuth } from '@clerk/clerk-react';
+import { routeTree } from './routeTree.gen';
+import '@fontsource-variable/geist';
+import './globals.css';
+import { Analytics } from '@vercel/analytics/react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,7 +20,7 @@ const router = createRouter({
   context: { queryClient, auth: undefined! },
 });
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;
   }
@@ -33,11 +33,11 @@ function InnerApp() {
   return <RouterProvider router={router} context={{ queryClient, auth }} />;
 }
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ClerkProvider
       publishableKey={PUBLISHABLE_KEY}
-      afterMultiSessionSingleSignOutUrl={"/"}
+      afterMultiSessionSingleSignOutUrl={'/'}
       signUpUrl="/auth/sign-up/"
       signInUrl="/auth/sign-in/"
     >

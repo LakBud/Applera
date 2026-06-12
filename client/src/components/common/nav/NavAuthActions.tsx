@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { UserButton } from "@clerk/clerk-react";
-import { clerkUserButtonAppearance } from "../../../utils/clerkStyle";
+import { Link } from '@tanstack/react-router';
+import { UserButton } from '@clerk/clerk-react';
+import { clerkUserButtonAppearance } from '../../../utils/clerkStyle';
 
 type Props = {
   isLoaded: boolean;

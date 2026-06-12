@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 // Enforces a hard deadline on requests and closes hung connections.
 //
 // Without this, a stalled OpenAI call holds the connection open indefinitely.
@@ -22,17 +22,17 @@ export function aiTimeout(ms: number) {
 
       if (!res.headersSent) {
         res.status(503).json({
-          error: "Request timed out",
+          error: 'Request timed out',
         });
       }
     }, ms);
 
-    res.on("finish", () => {
+    res.on('finish', () => {
       finished = true;
       clearTimeout(timer);
     });
 
-    res.on("close", () => {
+    res.on('close', () => {
       finished = true;
       clearTimeout(timer);
     });

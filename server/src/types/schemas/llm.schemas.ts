@@ -1,26 +1,4 @@
-import { z } from "zod";
-
-// ─────────────────────────────────────────────
-// Match schema
-// ─────────────────────────────────────────────
-
-export const MatchReportSchema = z.object({
-  score: z.number(),
-
-  confidence: z.enum(["low", "medium", "high"]),
-
-  strengths: z.array(z.string()),
-  missing_skills: z.array(z.string()),
-
-  matched_keywords: z.array(z.string()).optional(),
-  explanation: z.string().optional(),
-
-  seniority_fit: z.enum(["under", "over", "match"]),
-  domain_mismatch: z.boolean(),
-  text_overlap: z.number(),
-
-  recommendation: z.string(),
-});
+import { z } from 'zod';
 
 // ─────────────────────────────────────────────
 // Application LLM schema

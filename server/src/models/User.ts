@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema(
   {
@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema(
 
     email: {
       type: String,
-      default: "",
+      default: '',
       index: true,
       trim: true,
       lowercase: true,
@@ -34,8 +34,8 @@ const UserSchema = new mongoose.Schema(
     },
     plan: {
       type: String,
-      enum: ["free", "pro", "enterprise"],
-      default: "free",
+      enum: ['free', 'pro', 'enterprise'],
+      default: 'free',
     },
   },
   {
@@ -44,4 +44,4 @@ const UserSchema = new mongoose.Schema(
   },
 );
 
-export default mongoose.model("User", UserSchema);
+export default mongoose.model('User', UserSchema);

@@ -36,7 +36,7 @@ export function detectInjection(text: string): boolean {
 const MAX_INPUT_LENGTH = 20_000;
 
 export function sanitise(text: string, label: string): string {
-  if (typeof text !== "string" || !text.trim()) {
+  if (typeof text !== 'string' || !text.trim()) {
     throw new TypeError(`[extractors] "${label}" must be non-empty`);
   }
 

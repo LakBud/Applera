@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const InterviewPrepSchema = new mongoose.Schema(
   {
@@ -11,14 +11,14 @@ const InterviewPrepSchema = new mongoose.Schema(
 
     ownerType: {
       type: String,
-      enum: ["user", "guest"],
+      enum: ['user', 'guest'],
       required: true,
       index: true,
     },
 
     application: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Application",
+      ref: 'Application',
       required: true,
       unique: true,
     },
@@ -40,4 +40,4 @@ const InterviewPrepSchema = new mongoose.Schema(
   },
 );
 
-export default mongoose.model("InterviewPrep", InterviewPrepSchema);
+export default mongoose.model('InterviewPrep', InterviewPrepSchema);

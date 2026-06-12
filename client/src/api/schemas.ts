@@ -1,12 +1,19 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 // ─────────────────────────────────────────────
 // Shared
 // ─────────────────────────────────────────────
 
-export const ConfidenceSchema = z.enum(["high", "medium", "low"]);
+export const ConfidenceSchema = z.enum(['high', 'medium', 'low']);
 
-export const ApplicationStatusSchema = z.enum(["generated", "applied", "interviewing", "offered", "rejected", "withdrawn"]);
+export const ApplicationStatusSchema = z.enum([
+  'generated',
+  'applied',
+  'interviewing',
+  'offered',
+  'rejected',
+  'withdrawn',
+]);
 
 export const MatchSchema = z.object({
   score: z.number(),
@@ -218,7 +225,7 @@ export const DashboardSchema = z.object({
   ),
 });
 
-export const SuccessStatusSchema = z.enum(["applied", "interviewing", "offered"]);
+export const SuccessStatusSchema = z.enum(['applied', 'interviewing', 'offered']);
 
 // inferred TS types
 export type UploadCVResponse = z.infer<typeof UploadCVResponseSchema>;

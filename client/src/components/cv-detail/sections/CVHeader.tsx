@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { Button } from "../../ui/button";
+import { Link } from '@tanstack/react-router';
+import { Button } from '../../ui/button';
 
 type Props = {
   name?: string;
@@ -11,7 +11,7 @@ type Props = {
 
 export function isValidSeniority(value?: string) {
   if (!value) return false;
-  return value !== "unknown";
+  return value !== 'unknown';
 }
 
 export function CVHeaderSection({ name, seniority, updatedAtLabel, showPdf, onOpenPdf }: Props) {
@@ -27,7 +27,7 @@ export function CVHeaderSection({ name, seniority, updatedAtLabel, showPdf, onOp
 
         <span className="text-tx-muted/50">›</span>
 
-        <span className="text-tx-body font-medium truncate max-w-50">{name || "Untitled CV"}</span>
+        <span className="text-tx-body font-medium truncate max-w-50">{name || 'Untitled CV'}</span>
 
         {showPdf && (
           <Button
@@ -54,7 +54,9 @@ export function CVHeaderSection({ name, seniority, updatedAtLabel, showPdf, onOp
         {/* LEFT */}
         <div className="space-y-2">
           {/* Title */}
-          <h1 className="font-display text-3xl md:text-4xl font-semibold text-tx-h1 leading-tight">{name || "Untitled CV"}</h1>
+          <h1 className="font-display text-3xl md:text-4xl font-semibold text-tx-h1 leading-tight">
+            {name || 'Untitled CV'}
+          </h1>
 
           {/* Meta row */}
           <div className="flex items-center gap-2 flex-wrap text-xs text-tx-muted">

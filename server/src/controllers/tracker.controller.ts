@@ -1,10 +1,13 @@
-import { Response, Request } from "express";
+import { Response, Request } from 'express';
 
-import Application, { APPLICATION_STATUSES, type ApplicationStatus } from "../models/Application.js";
+import Application, {
+  APPLICATION_STATUSES,
+  type ApplicationStatus,
+} from '../models/Application.js';
 
-import { auditLog } from "../middleware/log/audit.logger.js";
+import { auditLog } from '../middleware/log/audit.logger.js';
 
-import { getParam } from "../utils/req.js";
+import { getParam } from '../utils/req.js';
 
 // ─────────────────────────────────────────────
 // GET /api/tracker/:cvId
@@ -14,7 +17,7 @@ export const getApplicationsByCv = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -42,10 +45,10 @@ export const getApplicationsByCv = async (req: Request, res: Response) => {
 
     return res.json({ applications });
   } catch (err) {
-    console.error("[getApplicationsByCv]", err);
+    console.error('[getApplicationsByCv]', err);
 
     return res.status(500).json({
-      error: "Failed to fetch applications",
+      error: 'Failed to fetch applications',
     });
   }
 };
@@ -58,7 +61,7 @@ export const getApplication = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -69,12 +72,12 @@ export const getApplication = async (req: Request, res: Response) => {
       ownerId: req.identity.id,
       ownerType: req.identity.type,
     })
-      .populate("cv")
-      .populate("job");
+      .populate('cv')
+      .populate('job');
 
     if (!application) {
       return res.status(404).json({
-        error: "Application not found.",
+        error: 'Application not found.',
       });
     }
 
@@ -82,10 +85,10 @@ export const getApplication = async (req: Request, res: Response) => {
       application,
     });
   } catch (err) {
-    console.error("[getApplication]", err);
+    console.error('[getApplication]', err);
 
     return res.status(500).json({
-      error: "Failed to fetch application",
+      error: 'Failed to fetch application',
     });
   }
 };
@@ -98,7 +101,7 @@ export const updateStatus = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -107,7 +110,7 @@ export const updateStatus = async (req: Request, res: Response) => {
 
     if (!APPLICATION_STATUSES.includes(status)) {
       return res.status(400).json({
-        error: `Invalid status. Must be one of: ${APPLICATION_STATUSES.join(", ")}`,
+        error: `Invalid status. Must be one of: ${APPLICATION_STATUSES.join(', ')}`,
       });
     }
 
@@ -131,18 +134,18 @@ export const updateStatus = async (req: Request, res: Response) => {
 
     if (!application) {
       return res.status(404).json({
-        error: "Application not found.",
+        error: 'Application not found.',
       });
     }
 
     await auditLog({
-      event: "APPLICATION_STATUS_CHANGED",
+      event: 'APPLICATION_STATUS_CHANGED',
       userId: req.identity.id,
       userType: req.identity.type,
       resourceId: id,
       requestId: req.requestId,
       ip: req.ip,
-      userAgent: req.headers["user-agent"],
+      userAgent: req.headers['user-agent'],
       metadata: {
         newStatus: status,
         notes: notes ?? null,
@@ -153,10 +156,10 @@ export const updateStatus = async (req: Request, res: Response) => {
       application,
     });
   } catch (err) {
-    console.error("[updateStatus]", err);
+    console.error('[updateStatus]', err);
 
     return res.status(500).json({
-      error: "Failed to update status",
+      error: 'Failed to update status',
     });
   }
 };

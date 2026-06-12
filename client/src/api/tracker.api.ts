@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { client } from "./client";
-import { ApplicationSchema } from "./schemas";
+import { z } from 'zod';
+import { client } from './client';
+import { ApplicationSchema } from './schemas';
 
 // GET /api/tracker/:cvId
 export async function getApplicationsByCv(cvId: string) {

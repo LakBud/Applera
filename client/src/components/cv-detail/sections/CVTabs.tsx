@@ -1,19 +1,20 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
-import type { Dashboard } from "../../../api/schemas";
-import type { CVParsed } from "../../../api";
-import { CVDescription } from "../description/CVDescription";
-import { CVApplications } from "../description/applications/CVApplications";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
+import type { Dashboard } from '../../../api/schemas';
+import type { CVParsed } from '../../../api';
+import { CVDescription } from '../description/CVDescription';
+import { CVApplications } from '../description/applications/CVApplications';
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 
 interface CVTabsSectionProps {
   cv: { parsed: CVParsed };
   dashboard: Dashboard;
-  isLoading: Boolean;
+  isLoading: boolean;
 }
 
 export default function CVTabsSection({ cv, dashboard, isLoading }: CVTabsSectionProps) {
-  const tabBase = "relative rounded-lg text-xs font-medium px-4 py-2 transition-all duration-200 text-black hover:text-tx-body";
+  const tabBase =
+    'relative rounded-lg text-xs font-medium px-4 py-2 transition-all duration-200 text-black hover:text-tx-body';
 
   return (
     <Tabs defaultValue="content" className="w-full">

@@ -1,9 +1,9 @@
-import { redis } from "../integrations/redis.js";
-import auditevent from "../models/AuditEvent.js";
+import { redis } from '../integrations/redis.js';
+import auditevent from '../models/AuditEvent.js';
 
-const STREAM_KEY = "audit:stream";
-const GROUP = "audit-group";
-const CONSUMER = "audit-consumer-1";
+const STREAM_KEY = 'audit:stream';
+const GROUP = 'audit-group';
+const CONSUMER = 'audit-consumer-1';
 
 type StreamMessage = {
   id: string;
@@ -12,10 +12,10 @@ type StreamMessage = {
 
 async function init() {
   try {
-    await (redis as any).sendCommand(["XGROUP", "CREATE", STREAM_KEY, GROUP, "0", "MKSTREAM"]);
+    await (redis as any).sendCommand(['XGROUP', 'CREATE', STREAM_KEY, GROUP, '0', 'MKSTREAM']);
   } catch (err: any) {
-    if (!err.message.includes("BUSYGROUP")) {
-      console.error("[audit worker init error]", err);
+    if (!err.message.includes('BUSYGROUP')) {
+      console.error('[audit worker init error]', err);
     }
   }
 }
@@ -23,22 +23,22 @@ async function init() {
 export async function startAuditWorker() {
   await init();
 
-  console.log("[audit worker] started");
+  console.log('[audit worker] started');
 
   while (true) {
     try {
       const response = (await (redis as any).sendCommand([
-        "XREADGROUP",
-        "GROUP",
+        'XREADGROUP',
+        'GROUP',
         GROUP,
         CONSUMER,
-        "COUNT",
-        "10",
-        "BLOCK",
-        "5000",
-        "STREAMS",
+        'COUNT',
+        '10',
+        'BLOCK',
+        '5000',
+        'STREAMS',
         STREAM_KEY,
-        ">",
+        '>',
       ])) as any;
 
       if (!response) continue;
@@ -66,14 +66,14 @@ export async function startAuditWorker() {
               metadata: data.metadata ? JSON.parse(data.metadata) : undefined,
             });
 
-            await (redis as any).sendCommand(["XACK", STREAM_KEY, GROUP, id]);
+            await (redis as any).sendCommand(['XACK', STREAM_KEY, GROUP, id]);
           } catch (err) {
-            console.error("[audit worker failed event]", err);
+            console.error('[audit worker failed event]', err);
           }
         }
       }
     } catch (err) {
-      console.error("[audit worker loop error]", err);
+      console.error('[audit worker loop error]', err);
       await new Promise((r) => setTimeout(r, 2000));
     }
   }

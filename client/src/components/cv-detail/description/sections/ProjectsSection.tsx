@@ -1,11 +1,11 @@
-import { ExternalLink } from "lucide-react";
-import { Card2 } from "../../../ui/card";
-import { SectionHeading } from "../../../ui/section";
+import { ExternalLink } from 'lucide-react';
+import { Card2 } from '../../../ui/card';
+import { SectionHeading } from '../../../ui/section';
 
 function normalizeUrl(url?: string) {
-  if (!url) return "";
+  if (!url) return '';
 
-  if (url.startsWith("http://") || url.startsWith("https://")) {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
 
@@ -54,7 +54,9 @@ export function ProjectsSection({ projects }: { projects: any[] }) {
             </div>
 
             {/* Description */}
-            {project.description && <p className="text-xs text-tx-secondary mt-1">{project.description}</p>}
+            {project.description && (
+              <p className="text-xs text-tx-secondary mt-1">{project.description}</p>
+            )}
 
             {/* Tech pills (aligned with SkillsSection style) */}
             {project.tech?.length > 0 && (

@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { SuccessStatusSchema, type Dashboard, type SuccessStatus } from "../../api/schemas";
+import { useMemo } from 'react';
+import { SuccessStatusSchema, type Dashboard, type SuccessStatus } from '../../api/schemas';
 
 export function useCVSuccessRate(dashboard?: Dashboard) {
   return useMemo(() => {
@@ -12,9 +12,12 @@ export function useCVSuccessRate(dashboard?: Dashboard) {
 
     const successSet = new Set<SuccessStatus>(successStatuses);
 
-    const successCount = dashboard.applications.filter((app) => successSet.has(app.status as SuccessStatus)).length;
+    const successCount = dashboard.applications.filter((app) =>
+      successSet.has(app.status as SuccessStatus),
+    ).length;
 
-    const successRate = dashboard.total > 0 ? Math.round((successCount / dashboard.total) * 100) : 0;
+    const successRate =
+      dashboard.total > 0 ? Math.round((successCount / dashboard.total) * 100) : 0;
 
     return { successRate, successCount };
   }, [dashboard]);

@@ -1,20 +1,27 @@
-import { FaGithub } from "react-icons/fa";
-import { Star } from "lucide-react";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { FaGithub } from 'react-icons/fa';
+import { Star } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 type Props = {
   className?: string;
 };
 
-export function GithubStarButton({ className = "" }: Props) {
+export function GithubStarButton({ className = '' }: Props) {
   const [stars, setStars] = useState<number | null>(null);
 
   useEffect(() => {
-    axios.get("https://api.github.com/repos/LakBud/Applera").then((res) => setStars(res.data.stargazers_count));
+    axios
+      .get('https://api.github.com/repos/LakBud/Applera')
+      .then((res) => setStars(res.data.stargazers_count));
   }, []);
   return (
-    <a href="https://github.com/LakBud/Applera" target="_blank" rel="noopener noreferrer" className={className}>
+    <a
+      href="https://github.com/LakBud/Applera"
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+    >
       <FaGithub size={12} />
       Star on GitHub
       {stars !== null && (

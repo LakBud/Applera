@@ -1,4 +1,4 @@
-import { redis } from "../integrations/redis.js";
+import { redis } from '../integrations/redis.js';
 
 // ─────────────────────────────────────────────
 // GET CACHE
@@ -9,7 +9,7 @@ export async function getCache<T>(key: string): Promise<T | null> {
 
   if (!value) return null;
 
-  if (typeof value === "string") {
+  if (typeof value === 'string') {
     try {
       return JSON.parse(value) as T;
     } catch {

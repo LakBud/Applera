@@ -1,5 +1,5 @@
-import { Footer } from "../common/Footer";
-import { Section } from "./section";
+import { Footer } from '../common/Footer';
+import { Section } from './section';
 
 interface LegalPageProps {
   title: string;

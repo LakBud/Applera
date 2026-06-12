@@ -1,36 +1,36 @@
-import express, { Request, Response, NextFunction } from "express";
-import cors from "cors";
-import helmet from "helmet";
-import { connectDB } from "./db/db.js";
+import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import { connectDB } from './db/db.js';
 
-import cvRoutes from "./routes/cv.routes.js";
-import jobRoutes from "./routes/job.routes.js";
-import applicationRoutes from "./routes/application.routes.js";
-import interviewRoutes from "./routes/interviewPrep.routes.js";
-import trackerRoutes from "./routes/tracker.routes.js";
-import dashboardRoutes from "./routes/dashboard.routes.js";
+import cvRoutes from './routes/cv.routes.js';
+import jobRoutes from './routes/job.routes.js';
+import applicationRoutes from './routes/application.routes.js';
+import interviewRoutes from './routes/interviewPrep.routes.js';
+import trackerRoutes from './routes/tracker.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
 
-import { globalLimiter } from "./middleware/rateLimiter.js";
-import { sanitizeHpp } from "./middleware/global/sanitize.js";
-import { requestLogger } from "./middleware/log/request.logger.js";
-import webhookRoutes from "./routes/webhook.routes.js";
-import { stripObject } from "./utils/utils.js";
+import { globalLimiter } from './middleware/rateLimiter.js';
+import { sanitizeHpp } from './middleware/global/sanitize.js';
+import { requestLogger } from './middleware/log/request.logger.js';
+import webhookRoutes from './routes/webhook.routes.js';
+import { stripObject } from './utils/utils.js';
 
-import { clerkMiddleware } from "@clerk/express";
-import { attachIdentity, requireUser } from "./middleware/global/identity.js";
-import cookieParser from "cookie-parser";
-import { CLIENT_URL } from "./config/env.js";
+import { clerkMiddleware } from '@clerk/express';
+import { attachIdentity, requireUser } from './middleware/global/identity.js';
+import cookieParser from 'cookie-parser';
+import { CLIENT_URL } from './config/env.js';
 
 const app: express.Application = express();
 
 const PORT: number = Number(process.env.PORT) || 5005;
-const IS_PROD: boolean = process.env.NODE_ENV === "production";
+const IS_PROD: boolean = process.env.NODE_ENV === 'production';
 
 // ─────────────────────────────────────────────
 // Core security middleware
 // ─────────────────────────────────────────────
 
-if (IS_PROD) app.set("trust proxy", 1);
+if (IS_PROD) app.set('trust proxy', 1);
 
 // Strict CSP via Helmet
 app.use(
@@ -40,8 +40,8 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"], // tighten if you control styles
-        imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", CLIENT_URL, "http://localhost:5173"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", CLIENT_URL, 'http://localhost:5173'],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],
         frameAncestors: ["'none'"],
@@ -58,7 +58,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   const id = crypto.randomUUID();
   req.requestId = id;
   res.locals.requestId = id;
-  res.setHeader("X-Request-ID", id);
+  res.setHeader('X-Request-ID', id);
   next();
 });
 
@@ -66,23 +66,27 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowed = [CLIENT_URL || "http://localhost:5173", "https://www.applera.site", "https://applera.site"];
-      if (!origin || origin === "null") return callback(null, true);
+      const allowed = [
+        CLIENT_URL || 'http://localhost:5173',
+        'https://www.applera.site',
+        'https://applera.site',
+      ];
+      if (!origin || origin === 'null') return callback(null, true);
       if (allowed.includes(origin)) return callback(null, true);
-      return callback(new Error("Not allowed by CORS"));
+      return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
   }),
 );
 
 // 3. Webhooks (must be before body parsing)
-app.use("/api/webhooks", webhookRoutes);
+app.use('/api/webhooks', webhookRoutes);
 
 // 4. Body parsing
-app.use(express.json({ limit: "50kb" }));
-app.use(express.urlencoded({ extended: true, limit: "50kb" }));
+app.use(express.json({ limit: '50kb' }));
+app.use(express.urlencoded({ extended: true, limit: '50kb' }));
 app.use(cookieParser());
 
 // ─────────────────────────────────────────────
@@ -91,13 +95,13 @@ app.use(cookieParser());
 
 const publicRouter = express.Router();
 
-publicRouter.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
+publicRouter.get('/health', (_req, res) => {
+  res.json({ status: 'ok' });
 });
 
 app.use(publicRouter);
 
-app.get("/", (req, res) => res.status(200).json({ status: "ok" }));
+app.get('/', (req, res) => res.status(200).json({ status: 'ok' }));
 
 // ─────────────────────────────────────────────
 // Clerk middleware (ATTACHES req.auth)
@@ -113,18 +117,18 @@ app.use(attachIdentity);
 // covers any route that may fall back to cookie-based sessions.
 // ─────────────────────────────────────────────
 
-const CSRF_SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+const CSRF_SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (CSRF_SAFE_METHODS.has(req.method)) return next();
 
-  if (req.headers.authorization?.startsWith("Bearer ")) return next();
+  if (req.headers.authorization?.startsWith('Bearer ')) return next();
 
-  const tokenFromCookie = req.cookies["csrf-token"];
-  const tokenFromHeader = req.headers["x-csrf-token"];
+  const tokenFromCookie = req.cookies['csrf-token'];
+  const tokenFromHeader = req.headers['x-csrf-token'];
 
   if (!tokenFromCookie || tokenFromCookie !== tokenFromHeader) {
-    res.status(403).json({ error: "Invalid CSRF token" });
+    res.status(403).json({ error: 'Invalid CSRF token' });
     return;
   }
 
@@ -132,11 +136,11 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Endpoint the client can call to get a fresh CSRF token
-publicRouter.get("/api/csrf-token", (req: Request, res: Response) => {
+publicRouter.get('/api/csrf-token', (req: Request, res: Response) => {
   const token = crypto.randomUUID();
-  res.cookie("csrf-token", token, {
+  res.cookie('csrf-token', token, {
     httpOnly: false, // client JS needs to read this
-    sameSite: IS_PROD ? "none" : "strict",
+    sameSite: IS_PROD ? 'none' : 'strict',
     secure: IS_PROD,
   });
   res.json({ csrfToken: token });
@@ -160,19 +164,19 @@ app.use(requestLogger);
 // Routes
 // ─────────────────────────────────────────────
 
-app.use("/api/cv", requireUser, cvRoutes);
-app.use("/api/job", requireUser, jobRoutes);
-app.use("/api/application", requireUser, applicationRoutes);
-app.use("/api/interview", requireUser, interviewRoutes);
-app.use("/api/tracker", requireUser, trackerRoutes);
-app.use("/api/dashboard", requireUser, dashboardRoutes);
+app.use('/api/cv', requireUser, cvRoutes);
+app.use('/api/job', requireUser, jobRoutes);
+app.use('/api/application', requireUser, applicationRoutes);
+app.use('/api/interview', requireUser, interviewRoutes);
+app.use('/api/tracker', requireUser, trackerRoutes);
+app.use('/api/dashboard', requireUser, dashboardRoutes);
 
 // ─────────────────────────────────────────────
 // 404 catch-all (must come after all routes)
 // ─────────────────────────────────────────────
 
 app.use((_req: Request, res: Response) => {
-  res.status(404).json({ error: "Not found" });
+  res.status(404).json({ error: 'Not found' });
 });
 
 // ─────────────────────────────────────────────
@@ -180,15 +184,15 @@ app.use((_req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 
 app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
-  console.error("[server]", {
+  console.error('[server]', {
     requestId: res.locals.requestId,
     error: err,
   });
 
-  const message = err instanceof Error ? err.message : "Unknown server error";
+  const message = err instanceof Error ? err.message : 'Unknown server error';
 
   res.status(500).json({
-    error: IS_PROD ? "An unexpected error occurred." : message,
+    error: IS_PROD ? 'An unexpected error occurred.' : message,
     requestId: res.locals.requestId,
   });
 });

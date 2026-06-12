@@ -1,28 +1,28 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 export const AUDIT_EVENTS = [
-  "AUTH_LOGIN",
-  "AUTH_LOGOUT",
-  "GUEST_SESSION_CREATED",
+  'AUTH_LOGIN',
+  'AUTH_LOGOUT',
+  'GUEST_SESSION_CREATED',
 
-  "CV_CREATED",
-  "CV_UPLOADED",
-  "CV_DELETED",
+  'CV_CREATED',
+  'CV_UPLOADED',
+  'CV_DELETED',
 
-  "JOB_CREATED",
-  "JOB_ANALYZED",
+  'JOB_CREATED',
+  'JOB_ANALYZED',
 
-  "APPLICATION_CREATED",
-  "APPLICATION_UPDATED",
-  "APPLICATION_DELETED",
+  'APPLICATION_CREATED',
+  'APPLICATION_UPDATED',
+  'APPLICATION_DELETED',
 
-  "INTERVIEW_PREP_CREATED",
+  'INTERVIEW_PREP_CREATED',
 
-  "AI_REQUEST",
-  "AI_RESPONSE",
+  'AI_REQUEST',
+  'AI_RESPONSE',
 
-  "SYSTEM_ERROR",
-  "SECURITY_ALERT",
+  'SYSTEM_ERROR',
+  'SECURITY_ALERT',
 ] as const;
 
 export type AuditEventType = (typeof AUDIT_EVENTS)[number];
@@ -44,7 +44,7 @@ const AuditEventSchema = new mongoose.Schema(
 
     userType: {
       type: String,
-      enum: ["user", "guest"],
+      enum: ['user', 'guest'],
       required: true,
     },
 
@@ -67,4 +67,4 @@ AuditEventSchema.index({ userId: 1, createdAt: -1 });
 AuditEventSchema.index({ requestId: 1 });
 AuditEventSchema.index({ event: 1, createdAt: -1 });
 
-export default mongoose.model("AuditEvent", AuditEventSchema);
+export default mongoose.model('AuditEvent', AuditEventSchema);

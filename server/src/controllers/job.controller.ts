@@ -1,11 +1,11 @@
-import { Response, Request } from "express";
+import { Response, Request } from 'express';
 
-import Job from "../models/Job.js";
-import { extractTextFromPdf } from "../lib/pdfParser.js";
-import { extractJobData } from "../services/extractors.service.js";
-import { auditLog } from "../middleware/log/audit.logger.js";
+import Job from '../models/Job.js';
+import { extractTextFromPdf } from '../lib/pdfParser.js';
+import { extractJobData } from '../services/extractors.service.js';
+import { auditLog } from '../middleware/log/audit.logger.js';
 
-import { getParam } from "../utils/req.js";
+import { getParam } from '../utils/req.js';
 
 type UploadedFile = Express.Multer.File;
 
@@ -18,7 +18,7 @@ export const createJob = async (req: Request, res: Response) => {
     const identity = req.identity;
 
     if (!identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     let rawText: string;
@@ -30,7 +30,7 @@ export const createJob = async (req: Request, res: Response) => {
       rawText = req.body.jobText.trim();
     } else {
       return res.status(400).json({
-        error: "Provide a job listing as PDF or text",
+        error: 'Provide a job listing as PDF or text',
       });
     }
 
@@ -44,7 +44,7 @@ export const createJob = async (req: Request, res: Response) => {
     });
 
     await auditLog({
-      event: "JOB_CREATED",
+      event: 'JOB_CREATED',
       userId: identity.id,
       userType: identity.type,
       requestId: req.requestId,
@@ -57,13 +57,13 @@ export const createJob = async (req: Request, res: Response) => {
     });
 
     return res.status(201).json({
-      message: "Job created successfully",
+      message: 'Job created successfully',
       job: createdJob,
     });
   } catch (err) {
-    console.error("[createJob]", err);
+    console.error('[createJob]', err);
     return res.status(500).json({
-      error: "Failed to create job",
+      error: 'Failed to create job',
     });
   }
 };
@@ -78,7 +78,7 @@ export const getJobs = async (req: Request, res: Response) => {
 
     if (!identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -87,13 +87,13 @@ export const getJobs = async (req: Request, res: Response) => {
       ownerType: identity.type,
     })
       .sort({ createdAt: -1 })
-      .select("-rawText");
+      .select('-rawText');
 
     return res.json(jobs);
   } catch (err) {
-    console.error("[getJobs]", err);
+    console.error('[getJobs]', err);
     return res.status(500).json({
-      error: "Failed to fetch jobs",
+      error: 'Failed to fetch jobs',
     });
   }
 };
@@ -108,7 +108,7 @@ export const getJobById = async (req: Request, res: Response) => {
 
     if (!identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -122,15 +122,15 @@ export const getJobById = async (req: Request, res: Response) => {
 
     if (!job) {
       return res.status(404).json({
-        error: "Job not found",
+        error: 'Job not found',
       });
     }
 
     return res.json(job);
   } catch (err) {
-    console.error("[getJobById]", err);
+    console.error('[getJobById]', err);
     return res.status(500).json({
-      error: "Failed to fetch job",
+      error: 'Failed to fetch job',
     });
   }
 };
@@ -145,7 +145,7 @@ export const deleteJob = async (req: Request, res: Response) => {
 
     if (!identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -159,12 +159,12 @@ export const deleteJob = async (req: Request, res: Response) => {
 
     if (!deleted) {
       return res.status(404).json({
-        error: "Job not found",
+        error: 'Job not found',
       });
     }
 
     await auditLog({
-      event: "JOB_DELETED",
+      event: 'JOB_DELETED',
       userId: identity.id,
       userType: identity.type,
       requestId: req.requestId,
@@ -173,12 +173,12 @@ export const deleteJob = async (req: Request, res: Response) => {
     });
 
     return res.json({
-      message: "Job deleted successfully",
+      message: 'Job deleted successfully',
     });
   } catch (err) {
-    console.error("[deleteJob]", err);
+    console.error('[deleteJob]', err);
     return res.status(500).json({
-      error: "Failed to delete job",
+      error: 'Failed to delete job',
     });
   }
 };
@@ -194,7 +194,7 @@ export const parseJob = async (req: Request, res: Response) => {
 
     if (!identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -207,7 +207,7 @@ export const parseJob = async (req: Request, res: Response) => {
       rawText = req.body.jobText.trim();
     } else {
       return res.status(400).json({
-        error: "Provide a job listing as PDF or text",
+        error: 'Provide a job listing as PDF or text',
       });
     }
 
@@ -218,9 +218,9 @@ export const parseJob = async (req: Request, res: Response) => {
       parsed,
     });
   } catch (err) {
-    console.error("[parseJob]", err);
+    console.error('[parseJob]', err);
     return res.status(500).json({
-      error: "Failed to parse job",
+      error: 'Failed to parse job',
     });
   }
 };

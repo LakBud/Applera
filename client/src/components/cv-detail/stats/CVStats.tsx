@@ -7,9 +7,9 @@ type Props = {
 
 export function CVStats({ successRate, totalApplications, avgScore, bestScore }: Props) {
   const stats = [
-    { label: "Applications", value: totalApplications },
-    { label: "Avg Score", value: `${avgScore}%` },
-    { label: "Best Score", value: `${bestScore}%` },
+    { label: 'Applications', value: totalApplications },
+    { label: 'Avg Score', value: `${avgScore}%` },
+    { label: 'Best Score', value: `${bestScore}%` },
   ];
 
   return (

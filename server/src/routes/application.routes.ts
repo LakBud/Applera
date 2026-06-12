@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 
 import {
   createApplication,
@@ -6,13 +6,13 @@ import {
   getApplicationById,
   updateApplicationStatus,
   deleteApplication,
-} from "../controllers/application.controller.js";
+} from '../controllers/application.controller.js';
 
-import { applicationLimiter } from "../middleware/rateLimiter.js";
-import { validate } from "../middleware/validate.js";
-import { aiTimeout } from "../middleware/timeout.js";
-import { idempotency } from "../middleware/idempotency.js";
-import { usageLimiter } from "../middleware/usageLimiter.js";
+import { applicationLimiter } from '../middleware/rateLimiter.js';
+import { validate } from '../middleware/validate.js';
+import { aiTimeout } from '../middleware/timeout.js';
+import { idempotency } from '../middleware/idempotency.js';
+import { usageLimiter } from '../middleware/usageLimiter.js';
 
 const router = express.Router();
 
@@ -21,8 +21,8 @@ const router = express.Router();
 // Create application (LLM pipeline)
 // ─────────────────────────────────────────────
 router.post(
-  "/",
-  validate("createApplication"),
+  '/',
+  validate('createApplication'),
   idempotency,
   usageLimiter,
   applicationLimiter,
@@ -34,24 +34,24 @@ router.post(
 // GET /api/application
 // List applications
 // ─────────────────────────────────────────────
-router.get("/", getApplications);
+router.get('/', getApplications);
 
 // ─────────────────────────────────────────────
 // GET /api/application/:id
 // Get single application
 // ─────────────────────────────────────────────
-router.get("/:id", getApplicationById);
+router.get('/:id', getApplicationById);
 
 // ─────────────────────────────────────────────
 // PATCH /api/application/:id/status
 // Update status
 // ─────────────────────────────────────────────
-router.patch("/:id/status", updateApplicationStatus);
+router.patch('/:id/status', updateApplicationStatus);
 
 // ─────────────────────────────────────────────
 // DELETE /api/application/:id
 // Delete application
 // ─────────────────────────────────────────────
-router.delete("/:id", deleteApplication);
+router.delete('/:id', deleteApplication);
 
 export default router;

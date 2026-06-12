@@ -1,17 +1,17 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "../queryKeys";
-import { client } from "../client";
-import { CreateJobResponseSchema, JobDocumentSchema } from "../schemas";
-import { z } from "zod";
-import { toast } from "sonner";
-import { useAuth } from "@clerk/clerk-react";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../queryKeys';
+import { client } from '../client';
+import { CreateJobResponseSchema, JobDocumentSchema } from '../schemas';
+import { z } from 'zod';
+import { toast } from 'sonner';
+import { useAuth } from '@clerk/clerk-react';
 
 export function useJobs() {
   const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.job.list(),
     queryFn: async () => {
-      const res = await client.get("/api/job");
+      const res = await client.get('/api/job');
       return z.array(JobDocumentSchema).parse(res.data);
     },
     enabled: !!isSignedIn,
@@ -40,10 +40,10 @@ export function useDeleteJob() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.job.all });
-      toast.success("Job deleted");
+      toast.success('Job deleted');
     },
     onError: () => {
-      toast.error("Failed to delete job. Please try again.");
+      toast.error('Failed to delete job. Please try again.');
     },
   });
 }
@@ -54,17 +54,17 @@ export function useAnalyzeJobFile() {
   return useMutation({
     mutationFn: async (file: File) => {
       const form = new FormData();
-      form.append("job", file);
+      form.append('job', file);
 
-      const res = await client.post("/api/job", form);
+      const res = await client.post('/api/job', form);
       return CreateJobResponseSchema.parse(res.data);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.job.all });
-      toast.success("Job analyzed successfully");
+      toast.success('Job analyzed successfully');
     },
     onError: () => {
-      toast.error("Failed to analyze job file. Please try again.");
+      toast.error('Failed to analyze job file. Please try again.');
     },
   });
 }
@@ -74,15 +74,15 @@ export function useAnalyzeJobText() {
 
   return useMutation({
     mutationFn: async (jobText: string) => {
-      const res = await client.post("/api/job", { jobText });
+      const res = await client.post('/api/job', { jobText });
       return CreateJobResponseSchema.parse(res.data);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.job.all });
-      toast.success("Job analyzed successfully");
+      toast.success('Job analyzed successfully');
     },
     onError: () => {
-      toast.error("Failed to analyze job text. Please try again.");
+      toast.error('Failed to analyze job text. Please try again.');
     },
   });
 }

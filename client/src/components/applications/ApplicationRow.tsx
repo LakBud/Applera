@@ -1,25 +1,25 @@
-import { useNavigate } from "@tanstack/react-router";
-import { FileText, TrendingUp, MapPin } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { Badge } from "../ui/badge";
-import { STATUS_STYLES } from "../../utils/statusStyles";
-import type { Application } from "../../api/schemas";
-import { RowBase } from "../ui/row";
+import { useNavigate } from '@tanstack/react-router';
+import { FileText, TrendingUp, MapPin } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { Badge } from '../ui/badge';
+import { STATUS_STYLES } from '../../utils/statusStyles';
+import type { Application } from '../../api/schemas';
+import { RowBase } from '../ui/row';
 
 export function ApplicationRow({ application }: { application: Application }) {
   const navigate = useNavigate();
 
   const status = STATUS_STYLES[application.status] ?? {
     label: application.status,
-    className: "bg-gray-100 text-gray-600",
+    className: 'bg-gray-100 text-gray-600',
   };
 
-  const jobDoc = typeof application.job === "object" ? application.job : null;
-  const cvDoc = typeof application.cv === "object" ? application.cv : null;
+  const jobDoc = typeof application.job === 'object' ? application.job : null;
+  const cvDoc = typeof application.cv === 'object' ? application.cv : null;
 
-  const jobTitle = application.jobTitleSnapshot ?? jobDoc?.parsed?.title ?? "Untitled Role";
-  const company = application.companySnapshot ?? jobDoc?.company ?? "Unknown Company";
-  const cvName = application.cvNameSnapshot ?? cvDoc?.parsed?.name ?? "CV";
+  const jobTitle = application.jobTitleSnapshot ?? jobDoc?.parsed?.title ?? 'Untitled Role';
+  const company = application.companySnapshot ?? jobDoc?.company ?? 'Unknown Company';
+  const cvName = application.cvNameSnapshot ?? cvDoc?.parsed?.name ?? 'CV';
   const score = application.match?.score;
   const jobLocation = application.locationSnapshot;
 
@@ -27,7 +27,7 @@ export function ApplicationRow({ application }: { application: Application }) {
     <RowBase
       onClick={() =>
         navigate({
-          to: "/applications/$applicationId",
+          to: '/applications/$applicationId',
           params: { applicationId: application._id },
         })
       }

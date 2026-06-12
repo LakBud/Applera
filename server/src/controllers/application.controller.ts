@@ -1,17 +1,17 @@
-import { Response, Request } from "express";
+import { Response, Request } from 'express';
 
-import Application, { APPLICATION_STATUSES } from "../models/Application.js";
+import Application, { APPLICATION_STATUSES } from '../models/Application.js';
 
-import { auditLog } from "../middleware/log/audit.logger.js";
+import { auditLog } from '../middleware/log/audit.logger.js';
 
-import { getParam } from "../utils/req.js";
+import { getParam } from '../utils/req.js';
 
-import { matchCVToJob } from "../services/match.service.js";
-import { generateApplication } from "../services/application.service.js";
-import CVModel from "../models/CV.js";
-import JobModel from "../models/Job.js";
-import { repairCV } from "../services/repair/cvRepair.service.js";
-import { repairJob } from "../services/repair/jobRepair.service.js";
+import { matchCVToJob } from '../services/match.service.js';
+import { generateApplication } from '../services/application.service.js';
+import CVModel from '../models/CV.js';
+import JobModel from '../models/Job.js';
+import { repairCV } from '../services/repair/cvRepair.service.js';
+import { repairJob } from '../services/repair/jobRepair.service.js';
 
 // ─────────────────────────────────────────────
 // GET /api/application
@@ -21,7 +21,7 @@ export const getApplications = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -31,18 +31,18 @@ export const getApplications = async (req: Request, res: Response) => {
       ownerId,
       ownerType,
     })
-      .populate("cv", "parsed applicationsCount lastUsedAt")
-      .populate("job", "parsed company location")
+      .populate('cv', 'parsed applicationsCount lastUsedAt')
+      .populate('job', 'parsed company location')
       .sort({ createdAt: -1 });
 
     return res.json({
       applications,
     });
   } catch (err) {
-    console.error("[getApplications]", err);
+    console.error('[getApplications]', err);
 
     return res.status(500).json({
-      error: "Failed to fetch applications",
+      error: 'Failed to fetch applications',
     });
   }
 };
@@ -55,7 +55,7 @@ export const getApplicationById = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -87,7 +87,7 @@ export const getApplicationById = async (req: Request, res: Response) => {
 
     if (!application) {
       return res.status(404).json({
-        error: "Application not found",
+        error: 'Application not found',
       });
     }
 
@@ -95,10 +95,10 @@ export const getApplicationById = async (req: Request, res: Response) => {
       application,
     });
   } catch (err) {
-    console.error("[getApplicationById]", err);
+    console.error('[getApplicationById]', err);
 
     return res.status(500).json({
-      error: "Failed to fetch application",
+      error: 'Failed to fetch application',
     });
   }
 };
@@ -111,7 +111,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -121,7 +121,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
 
     if (!APPLICATION_STATUSES.includes(status as any)) {
       return res.status(400).json({
-        error: `Invalid status. Must be one of: ${APPLICATION_STATUSES.join(", ")}`,
+        error: `Invalid status. Must be one of: ${APPLICATION_STATUSES.join(', ')}`,
       });
     }
 
@@ -141,12 +141,12 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
 
     if (!updated) {
       return res.status(404).json({
-        error: "Application not found",
+        error: 'Application not found',
       });
     }
 
     await auditLog({
-      event: "APPLICATION_STATUS_UPDATED",
+      event: 'APPLICATION_STATUS_UPDATED',
       userId: ownerId,
       userType: ownerType,
       resourceId: id,
@@ -161,10 +161,10 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
       application: updated,
     });
   } catch (err) {
-    console.error("[updateApplicationStatus]", err);
+    console.error('[updateApplicationStatus]', err);
 
     return res.status(500).json({
-      error: "Failed to update status",
+      error: 'Failed to update status',
     });
   }
 };
@@ -177,7 +177,7 @@ export const deleteApplication = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
       return res.status(401).json({
-        error: "Unauthorized",
+        error: 'Unauthorized',
       });
     }
 
@@ -192,12 +192,12 @@ export const deleteApplication = async (req: Request, res: Response) => {
 
     if (!deleted) {
       return res.status(404).json({
-        error: "Application not found",
+        error: 'Application not found',
       });
     }
 
     await auditLog({
-      event: "APPLICATION_DELETED",
+      event: 'APPLICATION_DELETED',
       userId: ownerId,
       userType: ownerType,
       resourceId: id,
@@ -206,13 +206,13 @@ export const deleteApplication = async (req: Request, res: Response) => {
     });
 
     return res.json({
-      message: "Application deleted",
+      message: 'Application deleted',
     });
   } catch (err) {
-    console.error("[deleteApplication]", err);
+    console.error('[deleteApplication]', err);
 
     return res.status(500).json({
-      error: "Failed to delete application",
+      error: 'Failed to delete application',
     });
   }
 };
@@ -220,7 +220,7 @@ export const deleteApplication = async (req: Request, res: Response) => {
 export const createApplication = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const { id: ownerId, type: ownerType } = req.identity;
@@ -228,7 +228,7 @@ export const createApplication = async (req: Request, res: Response) => {
 
     if (!cvId || !jobId) {
       return res.status(400).json({
-        error: "cvId and jobId are required",
+        error: 'cvId and jobId are required',
       });
     }
 
@@ -237,13 +237,13 @@ export const createApplication = async (req: Request, res: Response) => {
 
     if (!cv || !job) {
       return res.status(404).json({
-        error: "CV or Job not found",
+        error: 'CV or Job not found',
       });
     }
 
     if (!cv.parsed) {
       return res.status(404).json({
-        error: "CV not parsed",
+        error: 'CV not parsed',
       });
     }
 
@@ -263,10 +263,10 @@ export const createApplication = async (req: Request, res: Response) => {
       cv: cv._id,
       job: job._id,
 
-      cvNameSnapshot: cv.parsed?.name?.trim() || "CV",
-      jobTitleSnapshot: job.parsed?.title?.trim() || "Untitled Role",
-      companySnapshot: job.parsed?.company?.trim() || "Unknown Company",
-      locationSnapshot: job.parsed?.location?.trim() || "",
+      cvNameSnapshot: cv.parsed?.name?.trim() || 'CV',
+      jobTitleSnapshot: job.parsed?.title?.trim() || 'Untitled Role',
+      companySnapshot: job.parsed?.company?.trim() || 'Unknown Company',
+      locationSnapshot: job.parsed?.location?.trim() || '',
 
       match,
 
@@ -276,15 +276,15 @@ export const createApplication = async (req: Request, res: Response) => {
         applicationOutput.application_letter.introduction,
         applicationOutput.application_letter.body,
         applicationOutput.application_letter.closing,
-      ].join("\n\n"),
+      ].join('\n\n'),
 
       application_email: applicationOutput.email_template,
 
-      status: "generated",
+      status: 'generated',
     });
 
     await auditLog({
-      event: "APPLICATION_CREATED",
+      event: 'APPLICATION_CREATED',
       userId: ownerId,
       userType: ownerType,
       resourceId: String(application._id),
@@ -294,7 +294,7 @@ export const createApplication = async (req: Request, res: Response) => {
 
     return res.status(201).json({ application });
   } catch (err) {
-    console.error("[createApplication]", err);
-    return res.status(500).json({ error: "Failed to create application" });
+    console.error('[createApplication]', err);
+    return res.status(500).json({ error: 'Failed to create application' });
   }
 };

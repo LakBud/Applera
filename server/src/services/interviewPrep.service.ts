@@ -1,6 +1,6 @@
-import { callLLM, cachedLLM } from "./llm/llm.service.js";
-import { INTERVIEW_PREP_PROMPT } from "../prompts/interviewPrepPrompt.js";
-import { CACHE_VERSIONS } from "../utils/cache.versions.js";
+import { callLLM, cachedLLM } from './llm/llm.service.js';
+import { INTERVIEW_PREP_PROMPT } from '../prompts/interviewPrepPrompt.js';
+import { CACHE_VERSIONS } from '../utils/cache.versions.js';
 
 const INTERVIEW_TTL = 60 * 60 * 24; // 24 hours — questions don't change unless regenerated
 
@@ -26,15 +26,15 @@ export async function generateInterviewPrep(
       callLLM({
         systemPrompt: INTERVIEW_PREP_PROMPT,
         userContent: [
-          "CV:",
+          'CV:',
           JSON.stringify(cv, null, 2),
-          "",
-          "JOB:",
+          '',
+          'JOB:',
           JSON.stringify(job, null, 2),
-          "",
-          "MATCH:",
+          '',
+          'MATCH:',
           JSON.stringify(match, null, 2),
-        ].join("\n"),
+        ].join('\n'),
         temperature: 0.4,
         maxTokens: 3000,
       }) as Promise<InterviewPrepOutput>,

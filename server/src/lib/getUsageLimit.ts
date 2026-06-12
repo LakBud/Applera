@@ -1,4 +1,4 @@
-import type { Request } from "express";
+import type { Request } from 'express';
 // ─────────────────────────────────────────────
 // Usage limits
 // ─────────────────────────────────────────────
@@ -7,20 +7,20 @@ export function getUsageLimit(req: Request): number {
   const identity = req.identity;
 
   // Guest users
-  if (!identity || identity.type !== "user") {
+  if (!identity || identity.type !== 'user') {
     return 3;
   }
 
   // Logged-in free tier
-  if (!identity.plan || identity.plan === "free") {
+  if (!identity.plan || identity.plan === 'free') {
     return 200;
   }
 
   // Paid tiers
-  if (identity.plan === "pro") return 100;
-  if (identity.plan === "enterprise") return 1000;
+  if (identity.plan === 'pro') return 100;
+  if (identity.plan === 'enterprise') return 1000;
 
-  if (identity.plan === "admin") return Infinity;
+  if (identity.plan === 'admin') return Infinity;
 
   return 20;
 }

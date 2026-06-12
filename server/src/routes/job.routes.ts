@@ -1,14 +1,14 @@
-import express from "express";
-import { uploadJob, validatePdfMagic, handleUploadError } from "../middleware/upload.js";
+import express from 'express';
+import { uploadJob, validatePdfMagic, handleUploadError } from '../middleware/upload.js';
 
-import { parseLimiter } from "../middleware/rateLimiter.js";
-import { validate } from "../middleware/validate.js";
-import { aiTimeout } from "../middleware/timeout.js";
-import { concurrencyLimit } from "../middleware/concurrency.js";
+import { parseLimiter } from '../middleware/rateLimiter.js';
+import { validate } from '../middleware/validate.js';
+import { aiTimeout } from '../middleware/timeout.js';
+import { concurrencyLimit } from '../middleware/concurrency.js';
 
-import { createJob, getJobs, getJobById, deleteJob } from "../controllers/job.controller.js";
+import { createJob, getJobs, getJobById, deleteJob } from '../controllers/job.controller.js';
 
-import { parseJobPdf } from "../middleware/parsePdf.js";
+import { parseJobPdf } from '../middleware/parsePdf.js';
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ const router = express.Router();
 // POST /api/job
 // ─────────────────────────────────────────────
 router.post(
-  "/",
+  '/',
 
   concurrencyLimit(5), // 0. safety: concurrent control
   parseLimiter, // 1. rate limit
@@ -29,7 +29,7 @@ router.post(
 
   parseJobPdf, // 5. extract PDF text
 
-  validate("createJob"), // 6. validate FINAL merged input (IMPORTANT FIX)
+  validate('createJob'), // 6. validate FINAL merged input (IMPORTANT FIX)
 
   aiTimeout(60_000), // 7. LLM timeout protection
 
@@ -39,16 +39,16 @@ router.post(
 // ─────────────────────────────────────────────
 // GET ALL JOBS
 // ─────────────────────────────────────────────
-router.get("/", getJobs);
+router.get('/', getJobs);
 
 // ─────────────────────────────────────────────
 // GET JOB BY ID
 // ─────────────────────────────────────────────
-router.get("/:id", getJobById);
+router.get('/:id', getJobById);
 
 // ─────────────────────────────────────────────
 // DELETE JOB
 // ─────────────────────────────────────────────
-router.delete("/:id", deleteJob);
+router.delete('/:id', deleteJob);
 
 export default router;

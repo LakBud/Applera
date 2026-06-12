@@ -1,5 +1,5 @@
-import mongoSanitize from "express-mongo-sanitize";
-import hpp from "hpp";
+import mongoSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
 
 /**
  * ─────────────────────────────────────────────
@@ -23,5 +23,5 @@ export const sanitizeMongo = mongoSanitize({
 // ── HTTP Parameter Pollution protection ────────────────────
 // whitelist allows multi-value query params when needed
 export const sanitizeHpp = hpp({
-  whitelist: ["tags", "skills", "sort", "filter"],
+  whitelist: ['tags', 'skills', 'sort', 'filter'],
 });

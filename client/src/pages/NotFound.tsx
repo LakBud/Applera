@@ -1,5 +1,5 @@
-import { Link } from "@tanstack/react-router";
-import { Logo } from "../components/common/Logo";
+import { Link } from '@tanstack/react-router';
+import { Logo } from '../components/common/Logo';
 
 export function NotFoundPage() {
   return (
@@ -8,7 +8,9 @@ export function NotFoundPage() {
       <div className="space-y-2">
         <p className="text-7xl font-display font-bold text-primary">404</p>
         <h1 className="text-xl font-semibold text-tx-h1">Page not found</h1>
-        <p className="text-sm text-tx-muted max-w-sm">The page you're looking for doesn't exist or has been moved.</p>
+        <p className="text-sm text-tx-muted max-w-sm">
+          The page you're looking for doesn't exist or has been moved.
+        </p>
       </div>
       <Link
         to="/"

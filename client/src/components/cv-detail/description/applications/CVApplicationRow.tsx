@@ -1,19 +1,19 @@
-import { useNavigate } from "@tanstack/react-router";
-import { Badge } from "../../../ui/badge";
-import { STATUS_STYLES } from "../../../../utils/statusStyles";
-import { TrendingUp, MapPin } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import type { Dashboard } from "../../../../api/schemas";
-import { RowBase } from "../../../ui/row";
+import { useNavigate } from '@tanstack/react-router';
+import { Badge } from '../../../ui/badge';
+import { STATUS_STYLES } from '../../../../utils/statusStyles';
+import { TrendingUp, MapPin } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import type { Dashboard } from '../../../../api/schemas';
+import { RowBase } from '../../../ui/row';
 
-type DashboardApplication = Dashboard["applications"][number];
+type DashboardApplication = Dashboard['applications'][number];
 
 export function CVApplicationRow({ application }: { application: DashboardApplication }) {
   const navigate = useNavigate();
 
   const status = STATUS_STYLES[application.status] ?? {
     label: application.status,
-    className: "bg-gray-100 text-gray-600",
+    className: 'bg-gray-100 text-gray-600',
   };
 
   const jobTitle = application.job_title;
@@ -25,7 +25,7 @@ export function CVApplicationRow({ application }: { application: DashboardApplic
     <RowBase
       onClick={() =>
         navigate({
-          to: "/applications/$applicationId",
+          to: '/applications/$applicationId',
           params: { applicationId: application._id },
         })
       }

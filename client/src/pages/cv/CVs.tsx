@@ -1,7 +1,7 @@
-import { useCVs } from "../../api";
-import { usePinCV } from "../../api/hooks/useCV";
-import { CVCard } from "../../components/cvs/CVCard";
-import { CVCardSkeleton } from "../../components/cvs/CVCardSkeleton";
+import { useCVs } from '../../api';
+import { usePinCV } from '../../api/hooks/useCV';
+import { CVCard } from '../../components/cvs/CVCard';
+import { CVCardSkeleton } from '../../components/cvs/CVCardSkeleton';
 
 export function CVsPage() {
   const { data: cvs, isLoading } = useCVs();
@@ -17,7 +17,9 @@ export function CVsPage() {
       </div>
 
       <section className="space-y-4">
-        {!isLoading && cvs?.length === 0 && <p className="text-muted-foreground">No CVs uploaded yet.</p>}
+        {!isLoading && cvs?.length === 0 && (
+          <p className="text-muted-foreground">No CVs uploaded yet.</p>
+        )}
 
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
           {isLoading

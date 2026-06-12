@@ -19,7 +19,7 @@ export function CVCompletenessBar({ completeness, missing }: Props) {
           className="absolute top-0 left-0 h-full bg-[#1fa028] transition-all duration-700 ease-out"
           style={{
             width: `${value}%`,
-            minWidth: value > 0 ? "2px" : "0px",
+            minWidth: value > 0 ? '2px' : '0px',
           }}
         />
       </div>
@@ -27,7 +27,7 @@ export function CVCompletenessBar({ completeness, missing }: Props) {
       {/* missing */}
       {missing.length > 0 && (
         <div className="text-xs text-tx-muted">
-          Missing <span className="text-tx-body font-medium">{missing.join(", ")}</span>
+          Missing <span className="text-tx-body font-medium">{missing.join(', ')}</span>
         </div>
       )}
     </div>

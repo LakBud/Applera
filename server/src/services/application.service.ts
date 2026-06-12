@@ -1,48 +1,20 @@
-import { APP_GEN_PROMPT } from "../prompts/applicationGenPrompt.js";
+import { APP_GEN_PROMPT } from '../prompts/application/applicationGen.system.js';
 
-import { buildCacheKey } from "../utils/application.utils.js";
-import { scrubPlaceholders } from "../utils/application.utils.js";
+import { buildCacheKey } from '../utils/application.utils.js';
+import { scrubPlaceholders } from '../utils/application.utils.js';
 
-import type { z } from "zod";
-import type { CVSchema, JobSchema } from "../types/schemas/schema.js";
-import type { MatchReport } from "../types/match.types.js";
-import { ApplicationLLMSchema } from "../types/schemas/llm.schemas.js";
-import { cachedLLM, callLLM } from "./llm/llm.service.js";
-import { CACHE_VERSIONS } from "../utils/cache.versions.js";
+import type { z } from 'zod';
+import type { CVSchema, JobSchema } from '../types/schemas/schema.js';
+import type { MatchReport } from '../types/match.types.js';
+import { ApplicationLLMSchema } from '../types/schemas/llm.schemas.js';
+import { cachedLLM, callLLM } from './llm/llm.service.js';
+import { CACHE_VERSIONS } from '../utils/cache.versions.js';
+import { buildApplicationPrompt } from '../prompts/application/applicationGen.user.js';
 
 export type CVSchemaData = z.infer<typeof CVSchema>;
 export type JobSchemaData = z.infer<typeof JobSchema>;
 export type ApplicationLLMOutput = z.infer<typeof ApplicationLLMSchema>;
 
-function buildPrompt(cv: CVSchemaData, job: JobSchemaData, match: MatchReport): string {
-  return `
-  LANGUAGE: Detect from raw_description above and write ALL output in that language.
-  
-CV:
-${JSON.stringify({ name: cv.name, summary: cv.summary, skills: cv.skills, experience: cv.experience, seniority_level: cv.seniority_level }, null, 2)}
-
-JOB:
-${JSON.stringify(
-  {
-    title: job.title,
-    company: job.company,
-    location: job.location,
-    required_skills: job.required_skills,
-    responsibilities: job.responsibilities,
-    seniority: job.seniority,
-    raw_description: job.raw_description,
-  },
-  null,
-  2,
-)}
-
-MATCH (DO NOT RECOMPUTE):
-${JSON.stringify({ score: match.score, strengths: match.strengths, missing_skills: match.missing_skills }, null, 2)}
-
-TASK:
-Generate a structured job application JSON strictly following the schema.
-`.trim();
-}
 export async function generateApplication(
   cv: CVSchemaData,
   job: JobSchemaData,
@@ -56,7 +28,7 @@ export async function generateApplication(
     fn: async () => {
       return callLLM({
         systemPrompt: APP_GEN_PROMPT,
-        userContent: buildPrompt(cv, job, match),
+        userContent: buildApplicationPrompt(cv, job, match),
         temperature: 0.3,
         jsonMode: true,
         maxTokens: 1500,
@@ -70,8 +42,8 @@ export async function generateApplication(
   const parsed = ApplicationLLMSchema.safeParse(cleaned);
 
   if (!parsed.success) {
-    console.error("[generateApplication INVALID OUTPUT]", parsed.error.flatten());
-    throw new Error("[generateApplication] Invalid LLM output schema");
+    console.error('[generateApplication INVALID OUTPUT]', parsed.error.flatten());
+    throw new Error('[generateApplication] Invalid LLM output schema');
   }
 
   return parsed.data;
