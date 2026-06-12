@@ -97,6 +97,8 @@ publicRouter.get("/health", (_req, res) => {
 
 app.use(publicRouter);
 
+app.get("/", (req, res) => res.status(200).json({ status: "ok" }));
+
 // ─────────────────────────────────────────────
 // Clerk middleware (ATTACHES req.auth)
 // ─────────────────────────────────────────────
