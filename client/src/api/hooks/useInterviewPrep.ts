@@ -1,5 +1,6 @@
 import { useAuth } from '@clerk/clerk-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import { toast } from 'sonner';
 
 import { client } from '../client';
@@ -14,8 +15,8 @@ export function useInterviewPrep(applicationId: string) {
       try {
         const res = await client.get(`/api/interview/${applicationId}`);
         return InterviewPrepSchema.parse(res.data.prep);
-      } catch (err: any) {
-        if (err?.response?.status === 404) return null;
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err) && err.response?.status === 404) return null;
         throw err;
       }
     },
@@ -36,8 +37,8 @@ export function useGenerateInterviewPrep() {
       qc.setQueryData(queryKeys.interviewPrep.byApplication(applicationId), data);
       toast.success('Interview prep generated');
     },
-    onError: (err: any) => {
-      if (err?.response?.status === 429) {
+    onError: (err: unknown) => {
+      if (axios.isAxiosError(err) && err.response?.status === 429) {
         toast.error("You've reached the maximum of 3 regenerations for this application.");
       } else {
         toast.error('Failed to generate interview prep. Please try again.');

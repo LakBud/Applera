@@ -19,7 +19,7 @@ export function ApplicationRow({ application }: { application: Application }) {
   const cvDoc = typeof application.cv === 'object' ? application.cv : null;
 
   const jobTitle = application.jobTitleSnapshot ?? jobDoc?.parsed?.title ?? 'Untitled Role';
-  const company = application.companySnapshot ?? jobDoc?.company ?? 'Unknown Company';
+  const company = application.companySnapshot ?? jobDoc?.parsed?.company ?? 'Unknown Company';
   const cvName = application.cvNameSnapshot ?? cvDoc?.parsed?.name ?? 'CV';
   const score = application.match?.score;
   const jobLocation = application.locationSnapshot;

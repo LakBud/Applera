@@ -5,8 +5,7 @@ import { buildApplicationPrompt } from '../prompts/application/applicationGen.us
 import type { MatchReport } from '../types/match.types.js';
 import { ApplicationLLMSchema } from '../types/schemas/llm.schemas.js';
 import type { CVSchema, JobSchema } from '../types/schemas/schema.js';
-import { buildCacheKey } from '../utils/application.utils.js';
-import { scrubPlaceholders } from '../utils/application.utils.js';
+import { buildCacheKey, scrubPlaceholders } from '../utils/application.utils.js';
 import { CACHE_VERSIONS } from '../utils/cache.versions.js';
 import { cachedLLM, callLLM } from './llm/llm.service.js';
 

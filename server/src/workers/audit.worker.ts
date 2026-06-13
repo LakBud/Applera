@@ -5,16 +5,13 @@ const STREAM_KEY = 'audit:stream';
 const GROUP = 'audit-group';
 const CONSUMER = 'audit-consumer-1';
 
-type StreamMessage = {
-  id: string;
-  message: Record<string, string>;
-};
+const r = redis as unknown as { sendCommand: (args: string[]) => Promise<unknown> };
 
 async function init() {
   try {
-    await (redis as any).sendCommand(['XGROUP', 'CREATE', STREAM_KEY, GROUP, '0', 'MKSTREAM']);
-  } catch (err: any) {
-    if (!err.message.includes('BUSYGROUP')) {
+    await r.sendCommand(['XGROUP', 'CREATE', STREAM_KEY, GROUP, '0', 'MKSTREAM']);
+  } catch (err: unknown) {
+    if (err instanceof Error && !err.message.includes('BUSYGROUP')) {
       console.error('[audit worker init error]', err);
     }
   }
@@ -27,7 +24,7 @@ export async function startAuditWorker() {
 
   while (true) {
     try {
-      const response = (await (redis as any).sendCommand([
+      const response = (await r.sendCommand([
         'XREADGROUP',
         'GROUP',
         GROUP,
@@ -39,30 +36,33 @@ export async function startAuditWorker() {
         'STREAMS',
         STREAM_KEY,
         '>',
-      ])) as any;
+      ])) as unknown[];
 
       if (!response) {
         continue;
       }
 
       for (const stream of response) {
-        for (const message of stream[1]) {
-          const [id, fields] = message;
+        for (const message of (stream as unknown[][])[1] as unknown[][]) {
+          const [id, fields] = message as [string, string[]];
 
           const data = Object.fromEntries(
-            fields.reduce((acc: any[], val: string, i: number, arr: string[]) => {
-              if (i % 2 === 0) {
-                acc.push([val, arr[i + 1]]);
-              }
-              return acc;
-            }, []),
+            (fields as string[]).reduce(
+              (acc: [string, string][], val: string, i: number, arr: string[]) => {
+                if (i % 2 === 0) {
+                  acc.push([val, arr[i + 1]]);
+                }
+                return acc;
+              },
+              [],
+            ),
           );
 
           try {
             await auditevent.create({
               event: data.event,
               userId: data.userId,
-              userType: data.userType,
+              userType: data.userType as 'user' | 'guest',
               requestId: data.requestId || undefined,
               resourceId: data.resourceId || undefined,
               ip: data.ip || undefined,
@@ -70,7 +70,7 @@ export async function startAuditWorker() {
               metadata: data.metadata ? JSON.parse(data.metadata) : undefined,
             });
 
-            await (redis as any).sendCommand(['XACK', STREAM_KEY, GROUP, id]);
+            await r.sendCommand(['XACK', STREAM_KEY, GROUP, id]);
           } catch (err) {
             console.error('[audit worker failed event]', err);
           }
@@ -78,7 +78,7 @@ export async function startAuditWorker() {
       }
     } catch (err) {
       console.error('[audit worker loop error]', err);
-      await new Promise((r) => setTimeout(r, 2000));
+      await new Promise((res) => setTimeout(res, 2000));
     }
   }
 }

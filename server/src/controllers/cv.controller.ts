@@ -37,6 +37,10 @@ async function findExistingCV(ownerId: string, contentHash: string) {
   return null;
 }
 
+function isMongoError(err: unknown): err is { code: number } {
+  return typeof err === 'object' && err !== null && 'code' in err;
+}
+
 // ─────────────────────────────────────────────
 // POST /api/cv
 // ─────────────────────────────────────────────
@@ -69,6 +73,7 @@ export const createCV = async (req: Request, res: Response) => {
 
       const upload = await uploadImage(file.buffer, req.identity.id);
       cloudinaryPublicId = upload.public_id;
+      pdfUrl = upload.secure_url;
     } else if (req.body?.cvText?.trim()) {
       rawText = req.body.cvText.trim();
       contentHash = hash(rawText);
@@ -105,8 +110,8 @@ export const createCV = async (req: Request, res: Response) => {
         cloudinaryPublicId,
         contentHash,
       });
-    } catch (err: any) {
-      if (err.code === 11000) {
+    } catch (err) {
+      if (isMongoError(err) && err.code === 11000) {
         const existing = await CVModel.findOne({
           ownerId: req.identity.id,
           contentHash,

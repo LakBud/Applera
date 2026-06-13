@@ -61,8 +61,8 @@ export function ApplicationDetailPage() {
       {/* Header */}
       <ApplicationDetailHeader
         jobTitle={job?.parsed?.title}
-        company={job?.company}
-        location={job?.location}
+        company={job?.parsed?.company}
+        location={job?.parsed?.location}
         cvId={cv?._id}
         cvName={cv?.parsed?.name}
         seniority={job?.parsed?.seniority}
@@ -74,8 +74,8 @@ export function ApplicationDetailPage() {
 
       <div className="grid grid-cols-2 gap-4 items-start">
         <JobListingSection
-          company={job?.company}
-          location={job?.location}
+          company={job?.parsed?.company}
+          location={job?.parsed?.location}
           rawText={job?.rawText}
           parsed={job?.parsed}
         />

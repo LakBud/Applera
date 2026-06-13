@@ -1,6 +1,8 @@
+import type { Application } from '../../../api/schemas';
+
 type Props = {
   activeTab: 'letter' | 'summary' | 'email';
-  application: any;
+  application: Application;
 };
 
 export function ApplicationTabContent({ activeTab, application }: Props) {

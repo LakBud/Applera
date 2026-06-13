@@ -1,5 +1,3 @@
-'use client';
-
 import { toggleVariants } from '@/components/ui/toggle';
 import { cn } from '@/lib/utils';
 

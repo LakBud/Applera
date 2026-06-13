@@ -1,4 +1,10 @@
-export function StatusSummary({ applications }: { applications: any[] }) {
+import type { Application } from '../../api/schemas';
+
+interface ApplicationStatusItem {
+  status: Application['status'];
+}
+
+export function StatusSummary({ applications }: { applications: ApplicationStatusItem[] }) {
   const counts = applications.reduce<Record<string, number>>((acc, app) => {
     acc[app.status] = (acc[app.status] ?? 0) + 1;
     return acc;

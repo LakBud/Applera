@@ -1,5 +1,5 @@
 import '@clerk/express';
-import type { z } from 'zod';
+import 'multer';
 
 import type { Identity } from './identity.js';
 
@@ -14,6 +14,8 @@ declare global {
       };
 
       validated?: unknown;
+      pdfText?: string;
+      jobPdfText?: string;
     }
   }
 }

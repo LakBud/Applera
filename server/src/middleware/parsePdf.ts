@@ -35,7 +35,7 @@ export function parseCvPdf(req: Request, res: Response, next: NextFunction): voi
       }
 
       // attach parsed text
-      (req as any).pdfText = cleaned;
+      req.pdfText = cleaned;
 
       next();
     })
@@ -79,7 +79,7 @@ export function parseJobPdf(req: Request, res: Response, next: NextFunction): vo
       }
 
       // attach parsed text separately
-      (req as any).jobPdfText = cleaned;
+      req.jobPdfText = cleaned;
 
       next();
     })

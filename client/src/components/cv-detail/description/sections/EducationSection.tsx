@@ -1,7 +1,10 @@
+import type { CVDocument } from '../../../../api/schemas';
 import { Card2 } from '../../../ui/card';
 import { SectionHeading } from '../../../ui/section';
 
-export function EducationSection({ education }: { education: any[] }) {
+type Education = CVDocument['parsed']['education'][number];
+
+export function EducationSection({ education }: { education: Education[] }) {
   if (!education.length) return null;
 
   return (

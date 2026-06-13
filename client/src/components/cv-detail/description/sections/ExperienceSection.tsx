@@ -1,7 +1,10 @@
+import type { CVDocument } from '../../../../api/schemas';
 import { Card2 } from '../../../ui/card';
 import { SectionHeading } from '../../../ui/section';
 
-export function ExperienceSection({ experience }: { experience: any[] }) {
+type Experience = CVDocument['parsed']['experience'][number];
+
+export function ExperienceSection({ experience }: { experience: Experience[] }) {
   if (!experience.length) return null;
 
   return (

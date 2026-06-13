@@ -1,50 +1,27 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { ClerkProvider, useAuth } from '@clerk/clerk-react';
+import { ClerkProvider } from '@clerk/clerk-react';
 import '@fontsource-variable/geist';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { Analytics } from '@vercel/analytics/react';
 
+import { App } from './core/App';
+import { queryClient } from './core/queryClient';
 import './globals.css';
-import { routeTree } from './routeTree.gen';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: 1, staleTime: 1000 * 60 * 5 },
-    mutations: { retry: 0 },
-  },
-});
-
-const router = createRouter({
-  routeTree,
-  context: { queryClient, auth: undefined! },
-});
-
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router;
-  }
-}
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
-function InnerApp() {
-  const auth = useAuth();
-  return <RouterProvider router={router} context={{ queryClient, auth }} />;
-}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ClerkProvider
       publishableKey={PUBLISHABLE_KEY}
-      afterMultiSessionSingleSignOutUrl={'/'}
+      afterMultiSessionSingleSignOutUrl="/"
       signUpUrl="/auth/sign-up/"
       signInUrl="/auth/sign-in/"
     >
       <QueryClientProvider client={queryClient}>
-        <InnerApp />
+        <App queryClient={queryClient} />
         <Analytics />
       </QueryClientProvider>
     </ClerkProvider>

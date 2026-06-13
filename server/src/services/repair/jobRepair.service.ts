@@ -40,7 +40,7 @@ export function repairJob(job: unknown, rawText?: string): JobSchemaData {
     throw new TypeError('[jobRepair] Job must be a valid object');
   }
 
-  const data = job as any;
+  const data = job as JobSchemaData;
 
   return {
     title: requireString(data.title),

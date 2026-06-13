@@ -2,35 +2,36 @@ import { CVSchemaData } from '../../types/schemas/schema.js';
 import { dedupe, normalizeArray, normalizeString } from '../../utils/repair.utils.js';
 
 type CVSeniority = 'executive' | 'intern' | 'junior' | 'mid' | 'senior' | 'lead' | 'unknown';
+type Raw = Record<string, unknown>;
+
+function toRaw(value: unknown): Raw {
+  return value && typeof value === 'object' ? (value as Raw) : {};
+}
+
+function toRawArray(value: unknown): Raw[] {
+  return Array.isArray(value) ? value.map(toRaw) : [];
+}
 
 // ─────────────────────────────────────────────
-// Seniority normalization (more robust)
+// Seniority normalization
 // ─────────────────────────────────────────────
 
 function normalizeSeniority(input: unknown): CVSeniority {
   const v = normalizeString(String(input)).toLowerCase();
 
-  if (!v) {
-    return 'unknown';
-  }
+  const map: Array<[CVSeniority, string[]]> = [
+    ['intern', ['intern']],
+    ['junior', ['junior']],
+    ['lead', ['lead']],
+    ['senior', ['senior']],
+    ['mid', ['mid', 'intermediate']],
+    ['executive', ['executive', 'c-level', 'cto', 'ceo']],
+  ];
 
-  if (v.includes('intern')) {
-    return 'intern';
-  }
-  if (v.includes('junior')) {
-    return 'junior';
-  }
-  if (v.includes('lead')) {
-    return 'lead';
-  }
-  if (v.includes('senior')) {
-    return 'senior';
-  }
-  if (v.includes('mid') || v.includes('intermediate')) {
-    return 'mid';
-  }
-  if (v.includes('executive') || v.includes('c-level') || v.includes('cto') || v.includes('ceo')) {
-    return 'executive';
+  for (const [level, keywords] of map) {
+    if (keywords.some((kw) => v.includes(kw))) {
+      return level;
+    }
   }
 
   return 'unknown';
@@ -45,24 +46,7 @@ export function repairCV(cv: unknown): CVSchemaData {
     throw new TypeError('[cvRepair] CV must be a valid object');
   }
 
-  const data = cv as any;
-
-  const skills = dedupe(normalizeArray(data.skills));
-
-  const experience = (Array.isArray(data.experience) ? data.experience : [])
-    .map((exp: any) => ({
-      title: normalizeString(exp?.title),
-      company: normalizeString(exp?.company),
-      highlights: dedupe(normalizeArray(exp?.highlights)),
-    }))
-    .filter((e: any) => e.title || e.company);
-
-  const education = (Array.isArray(data.education) ? data.education : [])
-    .map((edu: any) => ({
-      title: normalizeString(edu?.title),
-      school: normalizeString(edu?.school),
-    }))
-    .filter((e: any) => e.title || e.school);
+  const data = toRaw(cv);
 
   return {
     name: normalizeString(data.name),
@@ -70,22 +54,31 @@ export function repairCV(cv: unknown): CVSchemaData {
     phone: normalizeString(data.phone),
     github: normalizeString(data.github),
     summary: normalizeString(data.summary),
-
     seniority_level: normalizeSeniority(data.seniority_level),
+    skills: dedupe(normalizeArray(data.skills)),
 
-    skills,
-    experience,
-    education,
+    experience: toRawArray(data.experience)
+      .map((exp) => ({
+        title: normalizeString(exp.title),
+        company: normalizeString(exp.company),
+        highlights: dedupe(normalizeArray(exp.highlights)),
+      }))
+      .filter((e) => e.title || e.company),
 
-    projects: Array.isArray(data.projects)
-      ? data.projects
-          .map((p: any) => ({
-            name: normalizeString(p?.name),
-            description: normalizeString(p?.description),
-            url: normalizeString(p?.url),
-            tech: dedupe(normalizeArray(p?.tech)),
-          }))
-          .filter((p: any) => p.name || p.description)
-      : [],
+    education: toRawArray(data.education)
+      .map((edu) => ({
+        title: normalizeString(edu.title),
+        school: normalizeString(edu.school),
+      }))
+      .filter((e) => e.title || e.school),
+
+    projects: toRawArray(data.projects)
+      .map((p) => ({
+        name: normalizeString(p.name),
+        description: normalizeString(p.description),
+        url: normalizeString(p.url),
+        tech: dedupe(normalizeArray(p.tech)),
+      }))
+      .filter((p) => p.name || p.description),
   };
 }

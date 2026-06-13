@@ -9,23 +9,23 @@ import { ToggleGroup, ToggleGroupItem } from '../../ui/toggle-group';
 import { UploadSuccess } from './UploadSuccess';
 import { CvList } from './cv/CVList';
 
-type UploadFileMutation = UseMutationResult<any, Error, File>;
-type UploadTextMutation = UseMutationResult<any, Error, string>;
+type UploadFileMutation<T> = UseMutationResult<T, Error, File>;
+type UploadTextMutation<T> = UseMutationResult<T, Error, string>;
 
-type UploaderProps = {
+type UploaderProps<T> = {
   label: string;
   placeholder?: string;
-  uploadFile: UploadFileMutation;
-  uploadText: UploadTextMutation;
+  uploadFile: UploadFileMutation<T>;
+  uploadText: UploadTextMutation<T>;
   onSuccess?: (id?: string) => void;
-  getId: (res: any) => string | undefined;
+  getId: (res: T) => string | undefined;
   showCvList?: boolean;
   onSelectCv?: (id: string) => void;
   onDeselectCv?: () => void;
   selectedCvId?: string | null;
 };
 
-export default function Uploader({
+export default function Uploader<T>({
   label,
   placeholder = 'Paste text here...',
   uploadFile,
@@ -36,7 +36,7 @@ export default function Uploader({
   onSelectCv,
   onDeselectCv,
   selectedCvId,
-}: UploaderProps) {
+}: UploaderProps<T>) {
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [text, setText] = useState('');
   const [mode, setMode] = useState<'file' | 'text'>('file');
@@ -58,7 +58,9 @@ export default function Uploader({
       const id = getId(res);
       setUploadedId(id ?? null);
       onSuccess?.(id);
-    } catch {}
+    } catch (err) {
+      console.error('File upload failed:', err);
+    }
   }
 
   async function handleText() {
@@ -70,7 +72,9 @@ export default function Uploader({
       setUploadedId(id ?? null);
       onSuccess?.(id);
       setText('');
-    } catch {}
+    } catch (err) {
+      console.error('Text upload failed:', err);
+    }
   }
 
   return (

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import { auditLog } from '../middleware/log/audit.logger.js';
-import Application, { APPLICATION_STATUSES } from '../models/Application.js';
+import Application, { APPLICATION_STATUSES, ApplicationStatus } from '../models/Application.js';
 import CVModel from '../models/CV.js';
 import JobModel from '../models/Job.js';
 import { generateApplication } from '../services/application.service.js';
@@ -116,7 +116,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
     const id = getParam(req.params.id);
     const { status } = req.body;
 
-    if (!APPLICATION_STATUSES.includes(status as any)) {
+    if (!APPLICATION_STATUSES.includes(status as ApplicationStatus)) {
       return res.status(400).json({
         error: `Invalid status. Must be one of: ${APPLICATION_STATUSES.join(', ')}`,
       });

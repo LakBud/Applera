@@ -14,6 +14,7 @@ export function repairCVText(raw: string): string {
   text = text.normalize('NFKC');
 
   // 2. remove invisible/control chars
+  // eslint-disable-next-line no-control-regex
   text = text.replace(/[\u0000-\u001F\u007F]/g, '');
 
   // 3. normalize whitespace

@@ -34,7 +34,7 @@ client.interceptors.request.use(async (config) => {
   const token = await safeGetToken();
 
   if (token) {
-    config.headers = config.headers ?? {};
+    config.headers = config.headers ?? new axios.AxiosHeaders();
     config.headers.Authorization = `Bearer ${token}`;
   }
 
@@ -42,7 +42,7 @@ client.interceptors.request.use(async (config) => {
   // CSRF
   // -----------------------------
   if (!CSRF_SAFE.has(config.method?.toUpperCase() ?? '')) {
-    config.headers = config.headers ?? {};
+    config.headers = config.headers ?? new axios.AxiosHeaders();
     config.headers['x-csrf-token'] = await getCsrfToken();
   }
 

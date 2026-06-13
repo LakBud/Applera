@@ -1,3 +1,4 @@
+import type { WebhookEvent } from '@clerk/express';
 import { Request, Response } from 'express';
 import { Webhook } from 'svix';
 
@@ -10,16 +11,15 @@ import InterviewPrep from '../models/InterviewPrep.js';
 import User from '../models/User.js';
 
 export async function handleClerkWebhook(req: Request, res: Response) {
-  // Verify signature
   const wh = new Webhook(CLERK_WEBHOOK_SECRET);
-  let event: any;
+  let event: WebhookEvent;
 
   try {
     event = wh.verify(req.body, {
       'svix-id': req.headers['svix-id'] as string,
       'svix-timestamp': req.headers['svix-timestamp'] as string,
       'svix-signature': req.headers['svix-signature'] as string,
-    });
+    }) as WebhookEvent;
   } catch (err) {
     console.error('[webhook] Invalid signature', err);
     res.status(400).json({ error: 'Invalid signature' });
@@ -27,6 +27,10 @@ export async function handleClerkWebhook(req: Request, res: Response) {
   }
 
   if (event.type === 'user.deleted') {
+    if (!event.data.id) {
+      res.status(400).json({ error: 'Missing user id' });
+      return;
+    }
     await handleUserDeleted(event.data.id);
   }
 

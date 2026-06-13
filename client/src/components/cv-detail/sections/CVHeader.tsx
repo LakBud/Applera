@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 
+import { isValidSeniority } from '../../../utils/cv-id/isValidSeniority';
 import { Button } from '../../ui/button';
 
 type Props = {
@@ -9,11 +10,6 @@ type Props = {
   showPdf: boolean;
   onOpenPdf: () => void;
 };
-
-export function isValidSeniority(value?: string) {
-  if (!value) return false;
-  return value !== 'unknown';
-}
 
 export function CVHeaderSection({ name, seniority, updatedAtLabel, showPdf, onOpenPdf }: Props) {
   const hasSeniority = isValidSeniority(seniority);

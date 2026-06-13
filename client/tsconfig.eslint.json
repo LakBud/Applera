@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "tailwind.config.ts"],
+  "compilerOptions": {
+    "noEmit": true
+  }
+}

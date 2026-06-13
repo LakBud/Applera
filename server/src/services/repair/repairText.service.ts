@@ -28,7 +28,7 @@ export function normalizeText(text: string, options: NormalizeOptions = {}): str
   // ── Remove noise (job-specific)
   if (type === 'job') {
     t = t.replace(/apply now|click here|view all jobs|cookie policy/gi, '');
-    t = t.replace(/job description[:\-]?|about the role[:\-]?|what you'll do[:\-]?/gi, '');
+    t = t.replace(/job description[:-]?|about the role[:-]?|what you'll do[:-]?/gi, '');
   }
 
   // ── Remove CV noise
@@ -40,7 +40,7 @@ export function normalizeText(text: string, options: NormalizeOptions = {}): str
   // ONLY for matching layer, not for display
   if (skills.length > 0) {
     for (const skill of skills) {
-      const normalizedSkill = skill.toLowerCase().replace(/[\s.\-_/]/g, '');
+      const normalizedSkill = skill.toLowerCase().replace(/[\s._/]/g, '');
 
       // escape regex safely
       const escaped = skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -52,9 +52,8 @@ export function normalizeText(text: string, options: NormalizeOptions = {}): str
     }
   }
 
-  // ── Case handling (IMPORTANT FIX)
   if (!preserveCase) {
-    t = t; // keep original case (default safe)
+    t = t.toLowerCase();
   }
 
   // ── Truncate

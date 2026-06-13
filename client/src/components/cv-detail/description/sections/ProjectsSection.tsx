@@ -1,5 +1,6 @@
 import { ExternalLink } from 'lucide-react';
 
+import type { CVDocument } from '../../../../api/schemas';
 import { Card2 } from '../../../ui/card';
 import { SectionHeading } from '../../../ui/section';
 
@@ -13,7 +14,9 @@ function normalizeUrl(url?: string) {
   return `https://${url}`;
 }
 
-export function ProjectsSection({ projects }: { projects: any[] }) {
+type Project = CVDocument['parsed']['projects'][number];
+
+export function ProjectsSection({ projects }: { projects: Project[] }) {
   if (!projects.length) return null;
 
   return (

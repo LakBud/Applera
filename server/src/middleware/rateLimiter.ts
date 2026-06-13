@@ -1,3 +1,5 @@
+import { NextFunction, Request, Response } from 'express';
+
 import { redis } from '../integrations/redis.js';
 import { auditLog } from './log/audit.logger.js';
 
@@ -14,9 +16,13 @@ type LimiterConfig = {
 export function limiter(config: LimiterConfig) {
   const windowSeconds = config.windowMinutes * 60;
 
-  return async (req: any, res: any, next: any) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const identity = req.identity;
+
+      if (!identity) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
 
       const key = `rl:${config.keyPrefix}:user:${identity.id}`;
 

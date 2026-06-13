@@ -7,17 +7,19 @@ export const ALLOWED_SENIORITY = [
   'unknown',
 ] as const;
 
-export function normalizeSeniority(value: unknown): (typeof ALLOWED_SENIORITY)[number] {
+type Seniority = (typeof ALLOWED_SENIORITY)[number];
+
+export function normalizeSeniority(value: unknown): Seniority {
   if (typeof value !== 'string') {
     return 'unknown';
   }
-  if (ALLOWED_SENIORITY.includes(value as any)) {
-    return value as any;
+  if (ALLOWED_SENIORITY.includes(value as Seniority)) {
+    return value as Seniority;
   }
   return 'unknown';
 }
 
-export function normalizeParsedCV(parsedRaw: any) {
+export function normalizeParsedCV(parsedRaw: Record<string, unknown>) {
   return {
     ...parsedRaw,
     seniority_level: normalizeSeniority(parsedRaw?.seniority_level),

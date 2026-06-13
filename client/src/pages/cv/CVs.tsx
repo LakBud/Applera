@@ -1,3 +1,5 @@
+import type { CVDocument } from '@/api/schemas';
+
 import { useCVs } from '../../api';
 import { usePinCV } from '../../api/hooks/useCV';
 import { CVCard } from '../../components/cvs/CVCard';
@@ -7,7 +9,7 @@ export function CVsPage() {
   const { data: cvs, isLoading } = useCVs();
   const { mutate: pinCv, isPending: isPinning } = usePinCV();
 
-  const pinnedCount = cvs?.filter((cv: any) => cv.pinned).length ?? 0;
+  const pinnedCount = cvs?.filter((cv: CVDocument) => cv.pinned).length ?? 0;
 
   return (
     <div className="mx-auto max-w-6xl p-8 space-y-8">
@@ -24,7 +26,7 @@ export function CVsPage() {
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
           {isLoading
             ? Array.from({ length: 6 }).map((_, i) => <CVCardSkeleton key={i} />)
-            : cvs?.map((cv: any) => (
+            : cvs?.map((cv: CVDocument) => (
                 <CVCard
                   key={cv._id}
                   cv={cv}
