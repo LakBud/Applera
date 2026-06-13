@@ -22,4 +22,6 @@ client/dist/
 
 # Backend
 server/node_modules/
-tsconfig.tsbuildinfo
+
+# TypeScript
+**/*.tsbuildinfo
