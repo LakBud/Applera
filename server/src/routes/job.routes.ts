@@ -1,14 +1,12 @@
 import express from 'express';
-import { uploadJob, validatePdfMagic, handleUploadError } from '../middleware/upload.js';
 
-import { parseLimiter } from '../middleware/rateLimiter.js';
-import { validate } from '../middleware/validate.js';
-import { aiTimeout } from '../middleware/timeout.js';
+import { createJob, deleteJob, getJobById, getJobs } from '../controllers/job.controller.js';
 import { concurrencyLimit } from '../middleware/concurrency.js';
-
-import { createJob, getJobs, getJobById, deleteJob } from '../controllers/job.controller.js';
-
 import { parseJobPdf } from '../middleware/parsePdf.js';
+import { parseLimiter } from '../middleware/rateLimiter.js';
+import { aiTimeout } from '../middleware/timeout.js';
+import { handleUploadError, uploadJob, validatePdfMagic } from '../middleware/upload.js';
+import { validate } from '../middleware/validate.js';
 
 const router = express.Router();
 

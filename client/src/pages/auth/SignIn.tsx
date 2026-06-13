@@ -1,7 +1,8 @@
 import { SignIn, useAuth } from '@clerk/clerk-react';
-import { clerkAuthAppearance } from '../../utils/clerkStyle';
+
 import { Loader } from '../../components/common/Loader';
 import { AuthLayout } from '../../components/ui/layout';
+import { clerkAuthAppearance } from '../../utils/clerkStyle';
 
 export function SignInPage() {
   const { isLoaded } = useAuth();

@@ -1,4 +1,5 @@
 import { CheckCircle2 } from 'lucide-react';
+
 import { Button } from '../../ui/button';
 
 export function UploadSuccess({

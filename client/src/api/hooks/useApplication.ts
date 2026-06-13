@@ -1,10 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '../queryKeys';
-import { client } from '../client';
-import { ApplicationSchema, CreateApplicationResponseSchema } from '../schemas';
-import { z } from 'zod';
-import { toast } from 'sonner';
 import { useAuth } from '@clerk/clerk-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { z } from 'zod';
+
+import { client } from '../client';
+import { queryKeys } from '../queryKeys';
+import { ApplicationSchema, CreateApplicationResponseSchema } from '../schemas';
 
 export function useApplicationsByCv(cvId: string) {
   const { isSignedIn } = useAuth();

@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 
 const textField = (label: string, max = 20_000, min = 10) =>

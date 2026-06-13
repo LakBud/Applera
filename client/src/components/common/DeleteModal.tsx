@@ -1,4 +1,6 @@
 import { Trash2 } from 'lucide-react';
+
+import { Button } from '../ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import { Button } from '../ui/button';
 
 type DeleteType = 'cv' | 'application';
 

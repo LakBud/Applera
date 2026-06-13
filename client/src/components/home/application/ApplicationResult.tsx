@@ -1,9 +1,10 @@
 import { useState } from 'react';
+
 import type { CreateApplicationResponse } from '../../../api/schemas';
 import { Tabs } from '../../ui/tabs';
 import { ApplicationScorePanel } from './ApplicationScorePanel';
-import { ApplicationTabsHeader } from './ApplicationTabsHeader';
 import { ApplicationTabContent } from './ApplicationTabsContent';
+import { ApplicationTabsHeader } from './ApplicationTabsHeader';
 
 type Props = {
   data: CreateApplicationResponse;

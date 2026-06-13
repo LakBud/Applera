@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
+
 // Enforces a hard deadline on requests and closes hung connections.
 //
 // Without this, a stalled OpenAI call holds the connection open indefinitely.
@@ -16,7 +17,9 @@ export function aiTimeout(ms: number) {
     let finished = false;
 
     const timer = setTimeout(() => {
-      if (finished) return;
+      if (finished) {
+        return;
+      }
 
       finished = true;
 

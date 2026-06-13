@@ -1,7 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 export function concurrencyLimit(max: number) {
-  if (max < 1) throw new Error('concurrencyLimit: max must be at least 1');
+  if (max < 1) {
+    throw new Error('concurrencyLimit: max must be at least 1');
+  }
 
   let active = 0;
 
@@ -16,7 +18,9 @@ export function concurrencyLimit(max: number) {
 
     let cleaned = false;
     const cleanup = () => {
-      if (cleaned) return;
+      if (cleaned) {
+        return;
+      }
       cleaned = true;
       active--;
     };

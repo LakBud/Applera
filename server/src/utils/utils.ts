@@ -9,7 +9,9 @@ export function safeCompare(a: string, b: string): boolean {
 }
 // NoSQL sanitiser func
 export function stripObject(obj: unknown): void {
-  if (!obj || typeof obj !== 'object') return;
+  if (!obj || typeof obj !== 'object') {
+    return;
+  }
   for (const key of Object.keys(obj as Record<string, unknown>)) {
     const value = (obj as Record<string, unknown>)[key];
     if (key.startsWith('$') || key.includes('.')) {

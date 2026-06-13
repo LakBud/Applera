@@ -1,10 +1,11 @@
 import { z } from 'zod';
+
 import { client } from './client';
 import {
-  CVDocumentSchema,
-  UploadCVResponseSchema,
   type CVDocument,
+  CVDocumentSchema,
   type UploadCVResponse,
+  UploadCVResponseSchema,
 } from './schemas';
 
 // GET /api/cv

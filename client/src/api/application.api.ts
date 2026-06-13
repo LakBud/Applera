@@ -1,13 +1,13 @@
 import { client } from './client';
 import {
+  type Application,
+  type CreateApplicationRequest,
   CreateApplicationRequestSchema,
   CreateApplicationResponseSchema,
   GetApplicationResponseSchema,
   GetApplicationsResponseSchema,
-  UpdateApplicationStatusSchema,
-  type Application,
-  type CreateApplicationRequest,
   type UpdateApplicationStatusRequest,
+  UpdateApplicationStatusSchema,
 } from './schemas';
 
 /**

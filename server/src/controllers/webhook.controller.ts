@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { Webhook } from 'svix';
-import CV from '../models/CV.js';
-import Application from '../models/Application.js';
-import InterviewPrep from '../models/InterviewPrep.js';
-import User from '../models/User.js';
+
 import { cloudinary } from '../config/cloudinary.js';
 import { CLERK_WEBHOOK_SECRET } from '../config/env.js';
 import { deleteCache, deleteCachePattern } from '../lib/cache.js';
+import Application from '../models/Application.js';
+import CV from '../models/CV.js';
+import InterviewPrep from '../models/InterviewPrep.js';
+import User from '../models/User.js';
 
 export async function handleClerkWebhook(req: Request, res: Response) {
   // Verify signature

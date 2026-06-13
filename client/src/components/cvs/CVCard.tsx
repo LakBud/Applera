@@ -1,19 +1,21 @@
+import { useState } from 'react';
+
 import { useNavigate } from '@tanstack/react-router';
+import { FileText, Pin } from 'lucide-react';
+
 import { useDeleteCV } from '../../api';
 import type { CVDocument } from '../../api/schemas';
+import { DeleteModal } from '../common/DeleteModal';
+import { Button } from '../ui/button';
 import {
   Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-  CardAction,
 } from '../ui/card';
-import { Button } from '../ui/button';
-import { FileText, Pin } from 'lucide-react';
-import { useState } from 'react';
-import { DeleteModal } from '../common/DeleteModal';
 
 type CVCardProps = {
   cv: CVDocument;

@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
-import { NavLink } from './NavLink';
+
 import { GithubStarButton } from './GithubStarButton';
+import { NavLink } from './NavLink';
 
 type Props = {
   menuOpen: boolean;

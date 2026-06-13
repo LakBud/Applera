@@ -1,10 +1,9 @@
 import type { CVParsed } from '../../../api';
-
-import { SummarySection } from './sections/SummarySection';
-import { SkillsSection } from './sections/SkillsSection';
-import { ExperienceSection } from './sections/ExperienceSection';
 import { EducationSection } from './sections/EducationSection';
+import { ExperienceSection } from './sections/ExperienceSection';
 import { ProjectsSection } from './sections/ProjectsSection';
+import { SkillsSection } from './sections/SkillsSection';
+import { SummarySection } from './sections/SummarySection';
 
 export function CVDescription({ parsed }: { parsed: CVParsed }) {
   const skills = parsed.skills ?? [];

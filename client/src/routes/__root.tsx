@@ -1,14 +1,16 @@
-import { createRootRouteWithContext, Outlet, useLocation } from '@tanstack/react-router';
+import { useEffect } from 'react';
+
 import { useAuth } from '@clerk/clerk-react';
 import type { QueryClient } from '@tanstack/react-query';
-import Nav from '../components/common/nav/Nav';
+import { Outlet, createRootRouteWithContext, useLocation } from '@tanstack/react-router';
+import axios from 'axios';
 import { Loader2 } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
+
+import Nav from '../components/common/nav/Nav';
+import { Button } from '../components/ui/button';
 import { Toaster } from '../components/ui/sonner';
 import { NotFoundPage } from '../pages/NotFound';
-import { AlertTriangle } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { useEffect } from 'react';
-import axios from 'axios';
 
 interface RouterContext {
   queryClient: QueryClient;

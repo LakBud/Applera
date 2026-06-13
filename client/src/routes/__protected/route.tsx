@@ -1,7 +1,9 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { useAuth } from '@clerk/clerk-react';
-import { useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
+
+import { useAuth } from '@clerk/clerk-react';
+import { Outlet, createFileRoute } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
+
 import { Loader } from '../../components/common/Loader';
 
 export const Route = createFileRoute('/__protected')({

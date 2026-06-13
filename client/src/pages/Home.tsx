@@ -1,14 +1,15 @@
+import { useAuth } from '@clerk/clerk-react';
+import { Link } from '@tanstack/react-router';
+import { Check } from 'lucide-react';
+
+import { Footer } from '../components/common/Footer';
 import ApplicationResultSection from '../components/home/sections/ApplicationResultSection';
 import FAQSection from '../components/home/sections/FAQ';
 import FeatureSection from '../components/home/sections/Feature';
 import GeneratorSection from '../components/home/sections/Generator';
 import PreviewSection from '../components/home/sections/Preview';
 import { useHomeState } from '../hooks/useHomeState';
-import { useAuth } from '@clerk/clerk-react';
-import { Link } from '@tanstack/react-router';
-import { Check } from 'lucide-react';
 import { FEATURES, HOW_IT_WORKS, WHAT_YOU_GET } from '../utils/home/features';
-import { Footer } from '../components/common/Footer';
 
 export default function HomePage() {
   const homeState = useHomeState();

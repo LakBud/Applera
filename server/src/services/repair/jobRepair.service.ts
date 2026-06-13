@@ -6,12 +6,24 @@ type Seniority = 'executive' | 'intern' | 'junior' | 'mid' | 'senior' | 'lead' |
 function normalizeSeniority(input: unknown): Seniority {
   const v = normalizeString(String(input)).toLowerCase();
 
-  if (v.includes('intern')) return 'intern';
-  if (v.includes('junior')) return 'junior';
-  if (v.includes('mid')) return 'mid';
-  if (v.includes('senior') && !v.includes('lead')) return 'senior';
-  if (v.includes('lead')) return 'lead';
-  if (v.includes('executive') || v.includes('c-level')) return 'executive';
+  if (v.includes('intern')) {
+    return 'intern';
+  }
+  if (v.includes('junior')) {
+    return 'junior';
+  }
+  if (v.includes('mid')) {
+    return 'mid';
+  }
+  if (v.includes('senior') && !v.includes('lead')) {
+    return 'senior';
+  }
+  if (v.includes('lead')) {
+    return 'lead';
+  }
+  if (v.includes('executive') || v.includes('c-level')) {
+    return 'executive';
+  }
 
   return 'unknown';
 }

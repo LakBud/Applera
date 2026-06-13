@@ -1,9 +1,10 @@
 import { useNavigate } from '@tanstack/react-router';
-import { FileText, TrendingUp, MapPin } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { Badge } from '../ui/badge';
-import { STATUS_STYLES } from '../../utils/statusStyles';
+import { FileText, MapPin, TrendingUp } from 'lucide-react';
+
 import type { Application } from '../../api/schemas';
+import { STATUS_STYLES } from '../../utils/statusStyles';
+import { Badge } from '../ui/badge';
 import { RowBase } from '../ui/row';
 
 export function ApplicationRow({ application }: { application: Application }) {

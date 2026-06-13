@@ -1,10 +1,9 @@
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 
-import Job from '../models/Job.js';
 import { extractTextFromPdf } from '../lib/pdfParser.js';
-import { extractJobData } from '../services/extractors.service.js';
 import { auditLog } from '../middleware/log/audit.logger.js';
-
+import Job from '../models/Job.js';
+import { extractJobData } from '../services/extractors.service.js';
 import { getParam } from '../utils/req.js';
 
 type UploadedFile = Express.Multer.File;

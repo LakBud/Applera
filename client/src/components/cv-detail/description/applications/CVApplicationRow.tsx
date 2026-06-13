@@ -1,9 +1,10 @@
 import { useNavigate } from '@tanstack/react-router';
-import { Badge } from '../../../ui/badge';
-import { STATUS_STYLES } from '../../../../utils/statusStyles';
-import { TrendingUp, MapPin } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { MapPin, TrendingUp } from 'lucide-react';
+
 import type { Dashboard } from '../../../../api/schemas';
+import { STATUS_STYLES } from '../../../../utils/statusStyles';
+import { Badge } from '../../../ui/badge';
 import { RowBase } from '../../../ui/row';
 
 type DashboardApplication = Dashboard['applications'][number];

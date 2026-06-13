@@ -1,7 +1,8 @@
 import axios from 'axios';
-import type { ApiError } from './types';
-import { safeGetToken } from './auth';
 import { toast } from 'sonner';
+
+import { safeGetToken } from './auth';
+import type { ApiError } from './types';
 
 export const client = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:5005',

@@ -1,13 +1,14 @@
 import { useState } from 'react';
+
 import { useCV, useCVDashboard } from '../../api';
-import { Route } from '../../routes/__protected/cvs/$cvId';
-import { useCVSuccessRate } from '../../hooks/cv-id/useCVSuccessRate';
-import { useCVCompleteness } from '../../hooks/cv-id/useCVCompleteness';
-import { CVStatsSection } from '../../components/cv-detail/sections/CVStats';
-import { CVPdfDrawer } from '../../components/cv-detail/CVPdfDrawer';
 import { Loader } from '../../components/common/Loader';
-import CVTabsSection from '../../components/cv-detail/sections/CVTabs';
+import { CVPdfDrawer } from '../../components/cv-detail/CVPdfDrawer';
 import { CVHeaderSection } from '../../components/cv-detail/sections/CVHeader';
+import { CVStatsSection } from '../../components/cv-detail/sections/CVStats';
+import CVTabsSection from '../../components/cv-detail/sections/CVTabs';
+import { useCVCompleteness } from '../../hooks/cv-id/useCVCompleteness';
+import { useCVSuccessRate } from '../../hooks/cv-id/useCVSuccessRate';
+import { Route } from '../../routes/__protected/cvs/$cvId';
 import { getCVPdfUrl } from '../../utils/cv-id/url';
 
 export function CVDetailPage() {

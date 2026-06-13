@@ -1,4 +1,4 @@
-import { FileText, BarChart2, Mail } from 'lucide-react';
+import { BarChart2, FileText, Mail } from 'lucide-react';
 
 export const FEATURES = ['Cover letter', 'Match score', 'Email draft', 'CV summary'];
 

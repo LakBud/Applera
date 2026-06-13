@@ -1,7 +1,8 @@
-import { FaGithub } from 'react-icons/fa';
-import { Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { FaGithub } from 'react-icons/fa';
+
 import axios from 'axios';
+import { Star } from 'lucide-react';
 
 type Props = {
   className?: string;

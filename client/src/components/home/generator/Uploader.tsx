@@ -1,11 +1,13 @@
-import type { UseMutationResult } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
+
+import type { UseMutationResult } from '@tanstack/react-query';
+
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
 import { Textarea } from '../../ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '../../ui/toggle-group';
-import { CvList } from './cv/CVList';
 import { UploadSuccess } from './UploadSuccess';
+import { CvList } from './cv/CVList';
 
 type UploadFileMutation = UseMutationResult<any, Error, File>;
 type UploadTextMutation = UseMutationResult<any, Error, string>;

@@ -1,20 +1,19 @@
 import express from 'express';
-import { uploadCV, validatePdfMagic, handleUploadError } from '../middleware/upload.js';
-
-import { parseLimiter } from '../middleware/rateLimiter.js';
-import { validate } from '../middleware/validate.js';
-import { aiTimeout } from '../middleware/timeout.js';
-import { concurrencyLimit } from '../middleware/concurrency.js';
 
 import {
   createCV,
-  getCVs,
-  getCVById,
   deleteCV,
-  pinCV,
+  getCVById,
   getCVPdf,
+  getCVs,
+  pinCV,
 } from '../controllers/cv.controller.js';
+import { concurrencyLimit } from '../middleware/concurrency.js';
 import { parseCvPdf } from '../middleware/parsePdf.js';
+import { parseLimiter } from '../middleware/rateLimiter.js';
+import { aiTimeout } from '../middleware/timeout.js';
+import { handleUploadError, uploadCV, validatePdfMagic } from '../middleware/upload.js';
+import { validate } from '../middleware/validate.js';
 
 const router = express.Router();
 

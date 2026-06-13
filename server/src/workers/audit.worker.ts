@@ -41,7 +41,9 @@ export async function startAuditWorker() {
         '>',
       ])) as any;
 
-      if (!response) continue;
+      if (!response) {
+        continue;
+      }
 
       for (const stream of response) {
         for (const message of stream[1]) {
@@ -49,7 +51,9 @@ export async function startAuditWorker() {
 
           const data = Object.fromEntries(
             fields.reduce((acc: any[], val: string, i: number, arr: string[]) => {
-              if (i % 2 === 0) acc.push([val, arr[i + 1]]);
+              if (i % 2 === 0) {
+                acc.push([val, arr[i + 1]]);
+              }
               return acc;
             }, []),
           );

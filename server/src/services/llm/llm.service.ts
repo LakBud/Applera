@@ -1,8 +1,9 @@
-import { openai, model } from '../../integrations/openai.js';
-import parseModelJson from '../../lib/parseModelJson.js';
-import { getCache, setCache } from '../../lib/cache.js';
 import { randomUUID } from 'crypto';
+
 import { IS_PROD } from '../../config/env.js';
+import { model, openai } from '../../integrations/openai.js';
+import { getCache, setCache } from '../../lib/cache.js';
+import parseModelJson from '../../lib/parseModelJson.js';
 
 const BASE_DELAY_MS = 500;
 
@@ -37,7 +38,9 @@ function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: number): Pr
 // ─────────────────────────────────────────────
 
 function debugLog(label: string, content: unknown, requestId: string): void {
-  if (IS_PROD) return;
+  if (IS_PROD) {
+    return;
+  }
 
   const safe = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
 
@@ -141,7 +144,9 @@ export async function cachedLLM<T>({
   fn: () => Promise<T>;
 }): Promise<T> {
   const cached = await getCache<T>(cacheKey);
-  if (cached) return cached;
+  if (cached) {
+    return cached;
+  }
 
   const result = await fn();
 

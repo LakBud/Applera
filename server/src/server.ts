@@ -1,25 +1,23 @@
-import express, { Request, Response, NextFunction } from 'express';
+import { clerkMiddleware } from '@clerk/express';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import express, { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
+
+import { CLIENT_URL } from './config/env.js';
 import { connectDB } from './db/db.js';
-
-import cvRoutes from './routes/cv.routes.js';
-import jobRoutes from './routes/job.routes.js';
-import applicationRoutes from './routes/application.routes.js';
-import interviewRoutes from './routes/interviewPrep.routes.js';
-import trackerRoutes from './routes/tracker.routes.js';
-import dashboardRoutes from './routes/dashboard.routes.js';
-
-import { globalLimiter } from './middleware/rateLimiter.js';
+import { attachIdentity, requireUser } from './middleware/global/identity.js';
 import { sanitizeHpp } from './middleware/global/sanitize.js';
 import { requestLogger } from './middleware/log/request.logger.js';
+import { globalLimiter } from './middleware/rateLimiter.js';
+import applicationRoutes from './routes/application.routes.js';
+import cvRoutes from './routes/cv.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
+import interviewRoutes from './routes/interviewPrep.routes.js';
+import jobRoutes from './routes/job.routes.js';
+import trackerRoutes from './routes/tracker.routes.js';
 import webhookRoutes from './routes/webhook.routes.js';
 import { stripObject } from './utils/utils.js';
-
-import { clerkMiddleware } from '@clerk/express';
-import { attachIdentity, requireUser } from './middleware/global/identity.js';
-import cookieParser from 'cookie-parser';
-import { CLIENT_URL } from './config/env.js';
 
 const app: express.Application = express();
 
@@ -30,7 +28,9 @@ const IS_PROD: boolean = process.env.NODE_ENV === 'production';
 // Core security middleware
 // ─────────────────────────────────────────────
 
-if (IS_PROD) app.set('trust proxy', 1);
+if (IS_PROD) {
+  app.set('trust proxy', 1);
+}
 
 // Strict CSP via Helmet
 app.use(
@@ -71,8 +71,12 @@ app.use(
         'https://www.applera.site',
         'https://applera.site',
       ];
-      if (!origin || origin === 'null') return callback(null, true);
-      if (allowed.includes(origin)) return callback(null, true);
+      if (!origin || origin === 'null') {
+        return callback(null, true);
+      }
+      if (allowed.includes(origin)) {
+        return callback(null, true);
+      }
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
@@ -120,9 +124,13 @@ app.use(attachIdentity);
 const CSRF_SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-  if (CSRF_SAFE_METHODS.has(req.method)) return next();
+  if (CSRF_SAFE_METHODS.has(req.method)) {
+    return next();
+  }
 
-  if (req.headers.authorization?.startsWith('Bearer ')) return next();
+  if (req.headers.authorization?.startsWith('Bearer ')) {
+    return next();
+  }
 
   const tokenFromCookie = req.cookies['csrf-token'];
   const tokenFromHeader = req.headers['x-csrf-token'];

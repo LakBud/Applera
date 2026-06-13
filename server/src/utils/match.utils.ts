@@ -1,6 +1,5 @@
 // Pure utility functions for CV-to-job matching.
 // No side effects, no imports — easy to unit test in isolation.
-
 import { MatchReport } from '../types/match.types.js';
 
 /* ── Normalisation ────────────────────────────────────────────────────────── */
@@ -25,7 +24,9 @@ export function normalizeSkill(s: string): string {
  * NOTE: normalizeArray was a separate function that duplicated this logic — removed.
  */
 export function normalizeSkills(arr: unknown): string[] {
-  if (!Array.isArray(arr)) return [];
+  if (!Array.isArray(arr)) {
+    return [];
+  }
 
   return [...new Set(arr.map((s) => normalizeSkill(String(s))).filter(Boolean))];
 }
@@ -49,8 +50,12 @@ export function isSkillMatch(cvSkill: string, jobSkill: string): boolean {
   const a = normalizeSkill(cvSkill);
   const b = normalizeSkill(jobSkill);
 
-  if (!a || !b) return false;
-  if (a === b) return true;
+  if (!a || !b) {
+    return false;
+  }
+  if (a === b) {
+    return true;
+  }
 
   // alias matching (VERY IMPORTANT FIX)
   for (const [key, aliases] of Object.entries(SKILL_ALIASES)) {
@@ -80,7 +85,9 @@ export function detectDomainMismatch(cvSkills: unknown, jobSkills: unknown): boo
   const cv = new Set(normalizeSkills(cvSkills));
   const job = normalizeSkills(jobSkills);
 
-  if (job.length < 3) return false;
+  if (job.length < 3) {
+    return false;
+  }
 
   const overlap = job.filter((skill) =>
     [...cv].some((cvSkill) => isSkillMatch(cvSkill, skill)),
@@ -101,16 +108,25 @@ export function detectDomainMismatch(cvSkills: unknown, jobSkills: unknown): boo
  * as noise words that inflated or deflated match scores incorrectly.
  */
 export function extractAllText(obj: unknown): string {
-  if (!obj || typeof obj !== 'object') return '';
+  if (!obj || typeof obj !== 'object') {
+    return '';
+  }
 
   const flatten = (val: unknown): string => {
-    if (!val) return '';
-    if (typeof val === 'string') return val;
-    if (Array.isArray(val)) return val.map(flatten).join(' ');
-    if (typeof val === 'object')
+    if (!val) {
+      return '';
+    }
+    if (typeof val === 'string') {
+      return val;
+    }
+    if (Array.isArray(val)) {
+      return val.map(flatten).join(' ');
+    }
+    if (typeof val === 'object') {
       return Object.values(val as Record<string, unknown>)
         .map(flatten)
         .join(' ');
+    }
     return String(val);
   };
 
@@ -157,7 +173,9 @@ const STOPWORDS = new Set([
 ]);
 
 export function calculateTextOverlap(cvText: string, jobText: string): number {
-  if (!cvText || !jobText) return 0;
+  if (!cvText || !jobText) {
+    return 0;
+  }
 
   const tokenize = (text: string): string[] =>
     text
@@ -168,7 +186,9 @@ export function calculateTextOverlap(cvText: string, jobText: string): number {
   const cvWords = new Set(tokenize(cvText));
   const jobWords = tokenize(jobText);
 
-  if (jobWords.length === 0) return 0;
+  if (jobWords.length === 0) {
+    return 0;
+  }
 
   const matches = jobWords.filter((w) => cvWords.has(w)).length;
 
@@ -195,16 +215,28 @@ export function getConfidenceLevel({
 }): 'high' | 'medium' | 'low' {
   let confidence = 100;
 
-  if (jobSkills.length < 4) confidence -= 10; // less harsh
-  if (cvSkills.length < 3) confidence -= 10;
-  if (textScore < 15) confidence -= 15;
+  if (jobSkills.length < 4) {
+    confidence -= 10;
+  } // less harsh
+  if (cvSkills.length < 3) {
+    confidence -= 10;
+  }
+  if (textScore < 15) {
+    confidence -= 15;
+  }
 
-  if (jobSkills.length > 10) confidence += 5; // richer job desc helps accuracy
+  if (jobSkills.length > 10) {
+    confidence += 5;
+  } // richer job desc helps accuracy
 
   confidence = Math.max(0, Math.min(100, confidence));
 
-  if (confidence >= 70) return 'high';
-  if (confidence >= 40) return 'medium';
+  if (confidence >= 70) {
+    return 'high';
+  }
+  if (confidence >= 40) {
+    return 'medium';
+  }
   return 'low';
 }
 
@@ -226,8 +258,12 @@ function rankSeniority(level: string = ''): number {
 export function getSeniorityFit(cvLevel: string, jobLevel: string): MatchReport['seniority_fit'] {
   const diff = rankSeniority(cvLevel) - rankSeniority(jobLevel);
 
-  if (diff < 0) return 'under';
-  if (diff > 0) return 'over';
+  if (diff < 0) {
+    return 'under';
+  }
+  if (diff > 0) {
+    return 'over';
+  }
   return 'match';
 }
 
@@ -257,7 +293,9 @@ export function expandSkills(skills: string[]): Set<string> {
 
     // reverse edges — if cv has "react", also match "nextjs" jobs
     for (const [parent, children] of Object.entries(SKILL_GRAPH)) {
-      if (children.includes(skill)) expanded.add(parent);
+      if (children.includes(skill)) {
+        expanded.add(parent);
+      }
     }
   }
 
@@ -268,12 +306,16 @@ export function calculateSemanticSkillScore(cvSkills: string[], jobSkills: strin
   const cv = expandSkills(cvSkills);
   const job = expandSkills(jobSkills);
 
-  if (job.size === 0) return 0;
+  if (job.size === 0) {
+    return 0;
+  }
 
   let matches = 0;
 
   for (const skill of job) {
-    if (cv.has(skill)) matches++;
+    if (cv.has(skill)) {
+      matches++;
+    }
   }
 
   const score = matches / job.size;
@@ -301,10 +343,14 @@ export function weightedSkillScore(cvSkills: string[], jobSkills: string[]): num
     const normalized = normalizeSkill(skill);
     const weight = SKILL_WEIGHTS[normalized] ?? 1;
     totalWeight += weight;
-    if (cvExpanded.has(normalized)) matchedWeight += weight;
+    if (cvExpanded.has(normalized)) {
+      matchedWeight += weight;
+    }
   }
 
-  if (totalWeight === 0) return 0;
+  if (totalWeight === 0) {
+    return 0;
+  }
   return Math.round((matchedWeight / totalWeight) * 100);
 }
 
@@ -330,8 +376,14 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
  * Returns a human-readable recommendation string based on the match score.
  */
 export function generateRecommendation(score: number): string {
-  if (score >= 80) return 'Strong match — apply immediately';
-  if (score >= 60) return 'Good match — consider applying';
-  if (score >= 40) return 'Moderate match — improve CV first';
+  if (score >= 80) {
+    return 'Strong match — apply immediately';
+  }
+  if (score >= 60) {
+    return 'Good match — consider applying';
+  }
+  if (score >= 40) {
+    return 'Moderate match — improve CV first';
+  }
   return 'Weak match — not recommended';
 }

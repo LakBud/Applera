@@ -1,7 +1,8 @@
 import { Lightbulb, Loader2 } from 'lucide-react';
+
 import { useGenerateInterviewPrep, useInterviewPrep } from '../../api';
-import { Button } from '../ui/button';
 import { ApplicationAccordion } from '../ui/accordion';
+import { Button } from '../ui/button';
 import { SectionHeading } from '../ui/section';
 
 export function InterviewPrepSection({ applicationId }: { applicationId: string }) {

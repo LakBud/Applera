@@ -1,8 +1,9 @@
 import { SignUp, useAuth } from '@clerk/clerk-react';
-import { clerkAuthAppearance } from '../../utils/clerkStyle';
+import { Link } from '@tanstack/react-router';
+
 import { Loader } from '../../components/common/Loader';
 import { AuthLayout } from '../../components/ui/layout';
-import { Link } from '@tanstack/react-router';
+import { clerkAuthAppearance } from '../../utils/clerkStyle';
 
 export function SignUpPage() {
   const { isLoaded } = useAuth();

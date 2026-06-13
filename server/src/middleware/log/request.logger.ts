@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
+import { NextFunction, Request, Response } from 'express';
 
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
   const requestId = crypto.randomUUID();
@@ -22,10 +22,15 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
       userAgent: req.headers['user-agent'],
     };
 
-    if (status >= 500) console.error('[request:error]', JSON.stringify(log));
-    else if (status >= 400) console.warn('[request:warn]', JSON.stringify(log));
-    else if (duration > 3000) console.warn('[request:slow]', JSON.stringify(log));
-    else console.info('[request]', JSON.stringify(log));
+    if (status >= 500) {
+      console.error('[request:error]', JSON.stringify(log));
+    } else if (status >= 400) {
+      console.warn('[request:warn]', JSON.stringify(log));
+    } else if (duration > 3000) {
+      console.warn('[request:slow]', JSON.stringify(log));
+    } else {
+      console.info('[request]', JSON.stringify(log));
+    }
   });
 
   next();

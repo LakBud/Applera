@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router';
-import { Button } from '../../../ui/button';
+
 import { StatusSummary } from '../../../applications/StatusSummary';
+import { Button } from '../../../ui/button';
 import { CVApplicationRow } from './CVApplicationRow';
 import { CVApplicationRowSkeleton } from './CVApplicationRowSkeleton';
 

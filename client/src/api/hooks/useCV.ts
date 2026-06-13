@@ -1,16 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { z } from 'zod';
+import { useAuth } from '@clerk/clerk-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { queryKeys } from '../queryKeys';
+import { z } from 'zod';
+
 import { client } from '../client';
+import { pinCV } from '../cv.api';
+import { queryKeys } from '../queryKeys';
 import {
+  type CVDocument,
   CVDocumentSchema,
   DashboardSchema,
   UploadCVResponseSchema,
-  type CVDocument,
 } from '../schemas';
-import { pinCV } from '../cv.api';
-import { useAuth } from '@clerk/clerk-react';
 
 export function useCVs(options?: { enabled?: boolean }) {
   const { isSignedIn } = useAuth();

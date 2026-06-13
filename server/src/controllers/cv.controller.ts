@@ -1,19 +1,17 @@
-import CVModel from '../models/CV.js';
+import axios from 'axios';
 import { Request, Response } from 'express';
 
-import { extractTextFromPdf } from '../lib/pdfParser.js';
-import { extractCVData } from '../services/extractors.service.js';
-
-import { auditLog } from '../middleware/log/audit.logger.js';
-import { normalizeParsedCV } from '../utils/cv.normalize.utils.js';
-
-import { getParam } from '../utils/req.js';
-import { deleteCache, getCache, setCache } from '../lib/cache.js';
-import { hash } from '../lib/hash.js';
-import { uploadImage } from '../lib/cloudinary.upload.js';
-import Application from '../models/Application.js';
 import { cloudinary } from '../config/cloudinary.js';
-import axios from 'axios';
+import { deleteCache, getCache, setCache } from '../lib/cache.js';
+import { uploadImage } from '../lib/cloudinary.upload.js';
+import { hash } from '../lib/hash.js';
+import { extractTextFromPdf } from '../lib/pdfParser.js';
+import { auditLog } from '../middleware/log/audit.logger.js';
+import Application from '../models/Application.js';
+import CVModel from '../models/CV.js';
+import { extractCVData } from '../services/extractors.service.js';
+import { normalizeParsedCV } from '../utils/cv.normalize.utils.js';
+import { getParam } from '../utils/req.js';
 
 const cvHashKey = (userId: string, hash: string) => `cv:hash:${userId}:${hash}`;
 const cvListKey = (userId: string, type: string) => `cvs:${userId}:${type}`;
@@ -26,7 +24,9 @@ async function findExistingCV(ownerId: string, contentHash: string) {
   const cacheKey = cvHashKey(ownerId, contentHash);
 
   const cached = await getCache(cacheKey);
-  if (cached) return cached;
+  if (cached) {
+    return cached;
+  }
 
   const existing = await CVModel.findOne({ ownerId, contentHash });
   if (existing) {
@@ -158,7 +158,9 @@ export const getCVs = async (req: Request, res: Response) => {
     const key = cvListKey(req.identity.id, req.identity.type);
 
     const cached = await getCache(key);
-    if (cached) return res.json(cached);
+    if (cached) {
+      return res.json(cached);
+    }
 
     const cvs = await CVModel.find({
       ownerId: req.identity.id,
@@ -359,7 +361,9 @@ export const pinCV = async (req: Request, res: Response) => {
 // GET /api/cv/:id/pdf
 export const getCVPdf = async (req: Request, res: Response) => {
   try {
-    if (!req.identity) return res.status(401).json({ error: 'Unauthorized' });
+    if (!req.identity) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     const cv = await CVModel.findOne({
       _id: req.params.id,
@@ -367,7 +371,9 @@ export const getCVPdf = async (req: Request, res: Response) => {
       ownerType: req.identity.type,
     });
 
-    if (!cv || !cv.cloudinaryPublicId) return res.status(404).json({ error: 'Not found' });
+    if (!cv || !cv.cloudinaryPublicId) {
+      return res.status(404).json({ error: 'Not found' });
+    }
 
     const url = cloudinary.url(cv.cloudinaryPublicId, {
       resource_type: 'image',

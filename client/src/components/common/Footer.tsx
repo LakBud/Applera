@@ -1,5 +1,7 @@
-import { Link } from '@tanstack/react-router';
 import { FaGithub } from 'react-icons/fa';
+
+import { Link } from '@tanstack/react-router';
+
 import { Logo } from './Logo';
 
 const PRODUCT_LINKS = [

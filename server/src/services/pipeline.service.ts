@@ -1,9 +1,9 @@
+import { PipelineResult } from '../types/pipeline.types.js';
+import { toText } from '../utils/pipeline.utils.js';
+import { generateApplication } from './application.service.js';
 import { extractCVData, extractJobData } from './extractors.service.js';
 import { matchCVToJob } from './match.service.js';
-import { generateApplication } from './application.service.js';
 import { normalizeText } from './repair/repairText.service.js';
-import { toText } from '../utils/pipeline.utils.js';
-import { PipelineResult } from '../types/pipeline.types.js';
 
 export type Input = Buffer | string;
 

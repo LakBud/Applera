@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+
 import { Logo } from '../components/common/Logo';
 
 export function NotFoundPage() {

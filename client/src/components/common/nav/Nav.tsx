@@ -1,13 +1,13 @@
+import { useState } from 'react';
+
 import { Link } from '@tanstack/react-router';
 
 import { Logo } from '../Logo';
-import { useState } from 'react';
-
-import { NavLink } from './NavLink';
-import { MobileDrawer } from './MobileDrawer';
 import { GithubStarButton } from './GithubStarButton';
-import { NavAuthActions } from './NavAuthActions';
+import { MobileDrawer } from './MobileDrawer';
 import { MobileNavActions } from './MobileNavActions';
+import { NavAuthActions } from './NavAuthActions';
+import { NavLink } from './NavLink';
 
 export default function Nav({ isSignedIn, isLoaded }: { isSignedIn: boolean; isLoaded: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false);

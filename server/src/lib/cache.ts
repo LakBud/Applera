@@ -7,7 +7,9 @@ import { redis } from '../integrations/redis.js';
 export async function getCache<T>(key: string): Promise<T | null> {
   const value = await redis.get<string | T>(key);
 
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   if (typeof value === 'string') {
     try {

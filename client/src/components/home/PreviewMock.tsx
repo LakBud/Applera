@@ -1,5 +1,4 @@
 // ─── Types ───────────────────────────────────────────────────────────────────
-
 import { cn } from '../../lib/utils';
 
 type Tab = 'Cover letter' | 'CV summary' | 'Email draft';

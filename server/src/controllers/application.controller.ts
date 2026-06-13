@@ -1,17 +1,14 @@
-import { Response, Request } from 'express';
-
-import Application, { APPLICATION_STATUSES } from '../models/Application.js';
+import { Request, Response } from 'express';
 
 import { auditLog } from '../middleware/log/audit.logger.js';
-
-import { getParam } from '../utils/req.js';
-
-import { matchCVToJob } from '../services/match.service.js';
-import { generateApplication } from '../services/application.service.js';
+import Application, { APPLICATION_STATUSES } from '../models/Application.js';
 import CVModel from '../models/CV.js';
 import JobModel from '../models/Job.js';
+import { generateApplication } from '../services/application.service.js';
+import { matchCVToJob } from '../services/match.service.js';
 import { repairCV } from '../services/repair/cvRepair.service.js';
 import { repairJob } from '../services/repair/jobRepair.service.js';
+import { getParam } from '../utils/req.js';
 
 // ─────────────────────────────────────────────
 // GET /api/application

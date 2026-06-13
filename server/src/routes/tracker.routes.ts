@@ -1,7 +1,8 @@
 import express from 'express';
+
 import {
-  getApplicationsByCv,
   getApplication,
+  getApplicationsByCv,
   updateStatus,
 } from '../controllers/tracker.controller.js';
 

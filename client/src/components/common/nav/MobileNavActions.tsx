@@ -1,5 +1,6 @@
 import { UserButton } from '@clerk/clerk-react';
 import { Menu, X } from 'lucide-react';
+
 import { clerkUserButtonAppearance } from '../../../utils/clerkStyle';
 import { Button } from '../../ui/button';
 

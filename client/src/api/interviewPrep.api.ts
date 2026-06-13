@@ -1,5 +1,5 @@
 import { client } from './client';
-import { InterviewPrepSchema, type InterviewPrep } from './schemas';
+import { type InterviewPrep, InterviewPrepSchema } from './schemas';
 
 // POST /api/interview/:applicationId
 export async function generateInterviewPrep(applicationId: string): Promise<InterviewPrep> {

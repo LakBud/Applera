@@ -1,9 +1,10 @@
+import { useAuth } from '@clerk/clerk-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+
 import { client } from '../client';
-import { InterviewPrepSchema } from '../schemas';
 import { queryKeys } from '../queryKeys';
-import { useAuth } from '@clerk/clerk-react';
+import { InterviewPrepSchema } from '../schemas';
 
 export function useInterviewPrep(applicationId: string) {
   const { isSignedIn } = useAuth();

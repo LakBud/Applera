@@ -1,6 +1,6 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
-import type { Dashboard } from '../../../api/schemas';
 import type { CVParsed } from '../../../api';
+import type { Dashboard } from '../../../api/schemas';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { CVDescription } from '../description/CVDescription';
 import { CVApplications } from '../description/applications/CVApplications';
 

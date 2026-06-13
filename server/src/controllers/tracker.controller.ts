@@ -1,12 +1,10 @@
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 
+import { auditLog } from '../middleware/log/audit.logger.js';
 import Application, {
   APPLICATION_STATUSES,
   type ApplicationStatus,
 } from '../models/Application.js';
-
-import { auditLog } from '../middleware/log/audit.logger.js';
-
 import { getParam } from '../utils/req.js';
 
 // ─────────────────────────────────────────────

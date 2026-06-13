@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { MapPin, Building2, ChevronDown, ChevronUp, Briefcase, Calendar } from 'lucide-react';
+
+import { Briefcase, Building2, Calendar, ChevronDown, ChevronUp, MapPin } from 'lucide-react';
+
 import { ApplicationAccordion } from '../ui/accordion';
-import { SectionHeading } from '../ui/section';
 import { Button } from '../ui/button';
+import { SectionHeading } from '../ui/section';
 
 type JobParsed = {
   title?: string;

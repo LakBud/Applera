@@ -1,13 +1,12 @@
-import { cachedLLM, callLLM } from './llm/llm.service.js';
-import { EXTRACT_CV_PROMPT } from '../prompts/extract/extractCVPrompt.js';
-import { EXTRACT_JOB_PROMPT } from '../prompts/application/extractJobPrompt.js';
 import { hash } from '../lib/hash.js';
+import { EXTRACT_JOB_PROMPT } from '../prompts/application/extractJobPrompt.js';
+import { EXTRACT_CV_PROMPT } from '../prompts/extract/extractCVPrompt.js';
 import { CVSchema, CVSchemaData, JobSchema, JobSchemaData } from '../types/schemas/schema.js';
-
+import { CACHE_VERSIONS } from '../utils/cache.versions.js';
+import { sanitise } from '../utils/extractors.utils.js';
+import { cachedLLM, callLLM } from './llm/llm.service.js';
 import { repairCV } from './repair/cvRepair.service.js';
 import { repairJob } from './repair/jobRepair.service.js';
-import { sanitise } from '../utils/extractors.utils.js';
-import { CACHE_VERSIONS } from '../utils/cache.versions.js';
 
 // ─────────────────────────────────────────────────────────────
 // CV extractor

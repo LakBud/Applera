@@ -1,11 +1,11 @@
 import { hash } from '../lib/hash.js';
-import { extractAllText } from '../utils/match.utils.js';
+import { runAIEnrichment } from '../lib/match/ai.match.js';
+import { runMathMatch } from '../lib/match/math.match.js';
+import { MatchReport, MatchReportSchema } from '../types/schemas/match.schemas.js';
 import { CVSchemaData, JobSchemaData } from '../types/schemas/schema.js';
 import { CACHE_VERSIONS } from '../utils/cache.versions.js';
-import { MatchReport, MatchReportSchema } from '../types/schemas/match.schemas.js';
+import { extractAllText } from '../utils/match.utils.js';
 import { cachedLLM } from './llm/llm.service.js';
-import { runMathMatch } from '../lib/match/math.match.js';
-import { runAIEnrichment } from '../lib/match/ai.match.js';
 
 // ── Public API ─────────────────────────────────────────────────────────────────
 

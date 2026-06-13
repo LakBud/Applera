@@ -1,7 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
+
 import { redis } from '../integrations/redis.js';
-import { getUserId } from '../lib/getUserId.js';
 import { getUsageLimit } from '../lib/getUsageLimit.js';
+import { getUserId } from '../lib/getUserId.js';
 
 export async function usageLimiter(req: Request, res: Response, next: NextFunction) {
   const userId = getUserId(req);

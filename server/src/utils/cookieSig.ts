@@ -3,7 +3,6 @@
 //
 // sign(id)        → produces a hex HMAC signature for the given id
 // verify(id, sig) → returns true if the signature matches the id
-
 import { createHmac, timingSafeEqual } from 'crypto';
 
 const SECRET = process.env.COOKIE_SECRET;

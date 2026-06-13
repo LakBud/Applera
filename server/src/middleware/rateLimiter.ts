@@ -1,5 +1,6 @@
-import { auditLog } from './log/audit.logger.js';
 import { redis } from '../integrations/redis.js';
+import { auditLog } from './log/audit.logger.js';
+
 // Tiered rate limits — stricter on expensive AI routes, looser on cheap ones.
 // Each failed LLM call still costs tokens, so we limit at the HTTP layer first.
 

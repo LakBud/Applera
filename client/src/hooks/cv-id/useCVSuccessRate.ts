@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { SuccessStatusSchema, type Dashboard, type SuccessStatus } from '../../api/schemas';
+
+import { type Dashboard, type SuccessStatus, SuccessStatusSchema } from '../../api/schemas';
 
 export function useCVSuccessRate(dashboard?: Dashboard) {
   return useMemo(() => {

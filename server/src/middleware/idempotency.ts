@@ -1,6 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { hashRequest } from '../utils/hashRequest.js';
+import { NextFunction, Request, Response } from 'express';
+
 import { redis } from '../integrations/redis.js';
+import { hashRequest } from '../utils/hashRequest.js';
 
 const TTL_SECONDS = 60;
 
@@ -12,13 +13,19 @@ function normalizePath(path: string) {
 
 export async function idempotency(req: Request, res: Response, next: NextFunction) {
   try {
-    if (!['POST', 'PATCH'].includes(req.method)) return next();
+    if (!['POST', 'PATCH'].includes(req.method)) {
+      return next();
+    }
 
     const path = normalizePath(req.originalUrl);
 
-    if (!IDEMPOTENT_ROUTES.has(path)) return next();
+    if (!IDEMPOTENT_ROUTES.has(path)) {
+      return next();
+    }
 
-    if (!req.identity) return next();
+    if (!req.identity) {
+      return next();
+    }
 
     const requestHash = hashRequest({
       ownerId: req.identity.id,

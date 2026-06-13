@@ -1,15 +1,15 @@
 import { useNavigate } from '@tanstack/react-router';
-import { Route } from '../../routes/__protected/applications/$applicationId';
+import { format } from 'date-fns';
+
 import { useApplication, useUpdateApplicationStatus } from '../../api';
 import { useDeleteApplication } from '../../api/hooks/useApplication';
-import ApplicationResult from '../../components/home/application/ApplicationResult';
-import { Loader } from '../../components/common/Loader';
 import { ApplicationActionSection } from '../../components/application-detail/ApplicationDetailAction';
-
 import { ApplicationDetailHeader } from '../../components/application-detail/ApplicationDetailHeader';
-import { format } from 'date-fns';
-import { JobListingSection } from '../../components/application-detail/JobListing';
 import { InterviewPrepSection } from '../../components/application-detail/InterviewPrep';
+import { JobListingSection } from '../../components/application-detail/JobListing';
+import { Loader } from '../../components/common/Loader';
+import ApplicationResult from '../../components/home/application/ApplicationResult';
+import { Route } from '../../routes/__protected/applications/$applicationId';
 
 export function ApplicationDetailPage() {
   const { applicationId } = Route.useParams();

@@ -1,6 +1,7 @@
 import '@clerk/express';
-import type { Identity } from './identity.js';
 import type { z } from 'zod';
+
+import type { Identity } from './identity.js';
 
 declare global {
   namespace Express {

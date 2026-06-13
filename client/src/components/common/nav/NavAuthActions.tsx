@@ -1,5 +1,6 @@
-import { Link } from '@tanstack/react-router';
 import { UserButton } from '@clerk/clerk-react';
+import { Link } from '@tanstack/react-router';
+
 import { clerkUserButtonAppearance } from '../../../utils/clerkStyle';
 
 type Props = {

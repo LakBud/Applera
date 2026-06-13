@@ -31,7 +31,9 @@ function extractFirstJsonBlock(text: string): string {
 
   for (let i = 0; i < text.length; i++) {
     if (text[i] === '{') {
-      if (depth === 0) start = i;
+      if (depth === 0) {
+        start = i;
+      }
       depth++;
     }
 

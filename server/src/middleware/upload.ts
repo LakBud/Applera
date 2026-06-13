@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -38,7 +38,9 @@ export const uploadJob = upload.single('job');
 // ── PDF magic validation ─────────────────────────────────────
 
 export function validatePdfMagic(req: Request, res: Response, next: NextFunction): void {
-  if (!req.file?.buffer) return next();
+  if (!req.file?.buffer) {
+    return next();
+  }
 
   const header = req.file.buffer.subarray(0, 4);
 
@@ -60,7 +62,9 @@ export function handleUploadError(
   res: Response,
   next: NextFunction,
 ): Response | void {
-  if (!(err instanceof multer.MulterError)) return next(err);
+  if (!(err instanceof multer.MulterError)) {
+    return next(err);
+  }
 
   const messages: Record<string, string> = {
     LIMIT_FILE_SIZE: 'File is too large. Maximum size is 5 MB.',

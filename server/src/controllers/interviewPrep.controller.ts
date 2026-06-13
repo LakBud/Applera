@@ -1,18 +1,16 @@
 import { Request, Response } from 'express';
-
-import Application from '../models/Application.js';
-import InterviewPrep from '../models/InterviewPrep.js';
-import { generateInterviewPrep } from '../services/interviewPrep.service.js';
-
-import type { CVSchema, JobSchema } from '../types/schemas/schema.js';
-import type { MatchReport } from '../types/match.types.js';
-
-import { auditLog } from '../middleware/log/audit.logger.js';
-import { getParam } from '../utils/req.js';
 import { z } from 'zod';
-import CV from '../models/CV.js';
-import Job from '../models/Job.js';
+
 import { deleteCache } from '../lib/cache.js';
+import { auditLog } from '../middleware/log/audit.logger.js';
+import Application from '../models/Application.js';
+import CV from '../models/CV.js';
+import InterviewPrep from '../models/InterviewPrep.js';
+import Job from '../models/Job.js';
+import { generateInterviewPrep } from '../services/interviewPrep.service.js';
+import type { MatchReport } from '../types/match.types.js';
+import type { CVSchema, JobSchema } from '../types/schemas/schema.js';
+import { getParam } from '../utils/req.js';
 
 export type CVSchemaData = z.infer<typeof CVSchema>;
 export type JobSchemaData = z.infer<typeof JobSchema>;

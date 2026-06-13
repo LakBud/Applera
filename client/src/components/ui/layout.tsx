@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+
 import { Logo } from '../common/Logo';
 
 type Props = {

@@ -1,12 +1,11 @@
-import { Request, Response, NextFunction } from 'express';
+import { getAuth } from '@clerk/express';
 import { randomUUID } from 'crypto';
+import { NextFunction, Request, Response } from 'express';
+import { z } from 'zod';
 
 import User from '../../models/User.js';
+import { COOKIE_NAME, sign, verify } from '../../utils/cookieSig.js';
 import { auditLog } from '../log/audit.logger.js';
-import { verify, sign, COOKIE_NAME } from '../../utils/cookieSig.js';
-
-import { z } from 'zod';
-import { getAuth } from '@clerk/express';
 
 // ─────────────────────────────────────────────
 // Identity Schema (single source of truth)
@@ -32,13 +31,19 @@ function getAuthenticatedUserId(req: Request): string | null {
 function getValidGuestId(req: Request): string | null {
   const cookie = req.cookies?.[COOKIE_NAME];
 
-  if (!cookie || typeof cookie !== 'object') return null;
+  if (!cookie || typeof cookie !== 'object') {
+    return null;
+  }
 
   const { id, sig } = cookie as { id?: unknown; sig?: unknown };
 
-  if (typeof id !== 'string' || typeof sig !== 'string') return null;
+  if (typeof id !== 'string' || typeof sig !== 'string') {
+    return null;
+  }
 
-  if (!verify(id, sig)) return null;
+  if (!verify(id, sig)) {
+    return null;
+  }
 
   return id;
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { client } from './client';
 import { ApplicationSchema } from './schemas';
 

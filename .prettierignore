@@ -1,4 +1,11 @@
 node_modules
 dist
 build
+coverage
+
+# monorepo
+client/dist
+server/dist
+
+# lockfiles (optional preference)
 pnpm-lock.yaml
