@@ -15,34 +15,34 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ---------- Node + pnpm ----------
+      # Install pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      # setup Node
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: pnpm
 
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Activate pnpm
-        run: corepack prepare pnpm@10.20.0 --activate
-
-      # ---------- install ----------
+      # Install deps
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
+        run: pnpm install --frozen-lockfile
 
-      # ---------- lint ----------
+      # Lint
       - name: Lint
-        run: pnpm lint
+        run: pnpm -r lint
 
-      # ---------- typecheck (ROOT LEVEL ONLY RECOMMENDED) ----------
+      # Typecheck
       - name: Typecheck
-        run: pnpm typecheck
+        run: pnpm -r typecheck
 
-      # ---------- build ----------
-      - name: Build Server
-        run: pnpm --filter server build
-
-      - name: Build Client
-        run: pnpm --filter client build
+      # Build (parallel)
+      - name: Build
+        run: |
+          pnpm --filter server build &
+          pnpm --filter client build &
+          wait
