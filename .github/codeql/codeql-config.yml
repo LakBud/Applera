@@ -11,6 +11,6 @@ name: 'CodeQL Config'
 #   cannot trace custom middleware as a rate-limiting sink, so it flags
 #   every DB/FS-touching route handler even though they are covered.
 
-queries:
+query-filters:
   - exclude:
-      - 'js/missing-rate-limiting'
+      id: js/missing-rate-limiting
