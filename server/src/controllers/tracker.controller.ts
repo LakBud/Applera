@@ -124,7 +124,7 @@ export const updateStatus = async (req: Request, res: Response) => {
         ownerId: { $eq: req.identity.id },
         ownerType: { $eq: req.identity.type },
       },
-      update,
+      { $set: update },
       { new: true },
     );
 

@@ -76,6 +76,21 @@ export function ipLimiter(config: LimiterConfig) {
       }
 
       if (current > config.max) {
+        void auditLog({
+          event: 'RATE_LIMIT_HIT_IP',
+          userId: 'anonymous',
+          userType: 'guest',
+          requestId: req.requestId,
+          ip: req.ip,
+          userAgent: req.headers['user-agent'],
+          metadata: {
+            path: req.path,
+            method: req.method,
+            count: current,
+            keyPrefix: config.keyPrefix,
+          },
+        }).catch(() => {});
+
         return res.status(429).json({ error: config.message });
       }
 
