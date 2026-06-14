@@ -2,16 +2,16 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
+# workspace files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY client/package.json client/
 
-RUN pnpm install --frozen-lockfile
+# IMPORTANT: include full workspace (recommended)
+COPY . .
 
-COPY client ./client
+WORKDIR /app/apps/client
 
-WORKDIR /app/client
 
 RUN pnpm build
 
@@ -19,7 +19,7 @@ RUN pnpm build
 # production stage
 FROM nginx:alpine
 
-COPY --from=builder /app/client/dist /usr/share/nginx/html
+COPY --from=builder /app/apps/client/dist /usr/share/nginx/html
 
 EXPOSE 80
 

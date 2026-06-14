@@ -2,20 +2,15 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install pnpm
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy workspace manifests first (better caching)
+# workspace files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY server/package.json server/
 
-# Install dependencies (workspace-aware)
-RUN pnpm install --frozen-lockfile
+# IMPORTANT: copy full monorepo 
+COPY . .
 
-# Copy server source
-COPY server ./server
-
-WORKDIR /app/server
+WORKDIR /app/apps/server
 
 RUN pnpm build
 

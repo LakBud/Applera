@@ -2,18 +2,18 @@ services:
   server:
     build:
       context: .
-      dockerfile: server/Dockerfile
+      dockerfile: apps/server/Dockerfile
     ports:
       - '5005:5005'
     env_file:
-      - server/.env.production
+      - apps/server/.env.production
     command: pnpm start
 
   client:
     build:
       context: .
-      dockerfile: client/Dockerfile
+      dockerfile: apps/client/Dockerfile
     ports:
       - '80:80'
     env_file:
-      - client/.env.production
+      - apps/client/.env.production

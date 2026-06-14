@@ -2,22 +2,22 @@ services:
   server:
     build:
       context: .
-      dockerfile: server/Dockerfile
+      dockerfile: apps/server/Dockerfile
     ports:
       - '5005:5005'
     env_file:
-      - server/.env.development
+      - apps/server/.env.development
     volumes:
-      - ./server:/app/server
+      - ./apps/server:/app/server
     command: pnpm dev
 
   client:
     build:
       context: .
-      dockerfile: client/Dockerfile
+      dockerfile: apps/client/Dockerfile
     ports:
       - '5173:80'
     env_file:
-      - client/.env.development
+      - apps/client/.env.development
     depends_on:
-      - server
+      - apps/server
