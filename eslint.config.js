@@ -6,7 +6,7 @@ import globals from 'globals';
 import path from 'path';
 import tseslint from 'typescript-eslint';
 
-const root = process.cwd();
+const root = import.meta.dirname;
 
 export default defineConfig([
   // 1. IGNORES
