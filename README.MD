@@ -10,7 +10,7 @@ Applera is a full-stack TypeScript application designed to help job seekers mana
 
 The project is organized as a **monorepo** with two main components:
 
-### [`client/`](./client) — Frontend
+### [`client/`](apps/client) — Frontend
 
 A modern **React 19 + TypeScript** single-page application built with:
 
@@ -21,7 +21,7 @@ A modern **React 19 + TypeScript** single-page application built with:
 - **Tailwind CSS v4** + **shadcn/ui** for styling and components
 - **Deployed on Vercel**
 
-### [`server/`](./server) — Backend
+### [`server/`](apps/server) — Backend
 
 A **Node.js + Express** REST API built with:
 
@@ -116,24 +116,35 @@ pnpm dev
 
 ```
 .
-├── client/              # React frontend (Vite + TanStack Router)
-│   ├── src/
-│   │   ├── api/         # Axios client and API functions
-│   │   ├── components/  # UI components
-│   │   ├── pages/       # Page components
-│   │   ├── routes/      # File-based routes
-│   │   └── hooks/       # Custom React hooks
-│   └── package.json
-├── server/              # Express backend (REST API)
-│   ├── src/
-│   │   ├── routes/      # API route handlers
-│   │   ├── models/      # Mongoose schemas
-│   │   ├── middleware/  # Express middleware
-│   │   ├── services/    # Business logic
-│   │   └── server.ts    # App entry point
-│   └── package.json
+├── apps/
+│   ├── client/              # React frontend (Vite + TanStack Router)
+│   │   ├── src/
+│   │   │   ├── api/         # Axios client and API functions
+│   │   │   ├── components/  # UI components
+│   │   │   ├── pages/       # Page components
+│   │   │   ├── routes/      # File-based routes
+│   │   │   └── hooks/       # Custom React hooks
+│   │   └── package.json
+│   │
+│   ├── server/              # Express backend (REST API)
+│   │   ├── src/
+│   │   │   ├── routes/      # API route handlers
+│   │   │   ├── models/      # Mongoose schemas
+│   │   │   ├── middleware/  # Express middleware
+│   │   │   ├── services/    # Business logic
+│   │   │   └── server.ts    # App entry point
+│   │   └── package.json
+│
+├── packages/                # (optional but recommended)
+│   └── shared/              # shared types/utils between client & server
+│       ├── src/
+│       └── package.json
+│
+├── pnpm-workspace.yaml      # workspace config
+├── package.json             # root workspace config
+├── tsconfig.json            # root TS config
 ├── .gitignore
-└── README.md            # This file
+└── README.md
 ```
 
 ## Documentation

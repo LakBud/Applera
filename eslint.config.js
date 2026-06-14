@@ -16,9 +16,9 @@ export default defineConfig([
       '**/dist/**',
       '**/build/**',
       '**/.turbo/**',
-      '**/client/dist/**',
-      '**/server/dist/**',
-      '**/client/routeTree.gen.ts',
+      '**apps/client/dist/**',
+      '**apps/server/dist/**',
+      '**apps/client/routeTree.gen.ts',
     ],
   },
 
@@ -36,13 +36,13 @@ export default defineConfig([
 
   // 2. CLIENT
   {
-    files: ['client/src/**/*.{ts,tsx}'],
+    files: ['apps/client/src/**/*.{ts,tsx}'],
 
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: [path.join(root, 'client/tsconfig.eslint.json')],
-        tsconfigRootDir: path.join(root, 'client'),
+        project: [path.join(root, 'apps/client/tsconfig.eslint.json')],
+        tsconfigRootDir: path.join(root, 'apps/client'),
       },
       globals: {
         ...globals.browser,
@@ -75,7 +75,7 @@ export default defineConfig([
 
   // 3. SHADCN UI
   {
-    files: ['client/src/components/ui/**/*.{ts,tsx}'],
+    files: ['apps/client/src/components/ui/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',
     },
@@ -84,10 +84,10 @@ export default defineConfig([
   // 4. APP LAYER (FAST REFRESH ENABLED)
   {
     files: [
-      'client/src/pages/**/*.{ts,tsx}',
-      'client/src/routes/**/*.{ts,tsx}',
-      'client/src/features/**/*.{ts,tsx}',
-      'client/src/main.tsx',
+      'apps/client/src/pages/**/*.{ts,tsx}',
+      'apps/client/src/routes/**/*.{ts,tsx}',
+      'apps/client/src/features/**/*.{ts,tsx}',
+      'apps/client/src/main.tsx',
     ],
     rules: {
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
@@ -96,7 +96,7 @@ export default defineConfig([
 
   // 5. SHARED CLIENT CODE
   {
-    files: ['client/src/{lib,utils}/**/*.{ts,tsx}'],
+    files: ['apps/client/src/{lib,utils}/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',
     },
@@ -104,13 +104,13 @@ export default defineConfig([
 
   // 6. SERVER
   {
-    files: ['server/src/**/*.ts'],
+    files: ['apps/server/src/**/*.ts'],
 
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: [path.join(root, 'server/tsconfig.json')],
-        tsconfigRootDir: path.join(root, 'server'),
+        project: [path.join(root, 'apps/server/tsconfig.json')],
+        tsconfigRootDir: path.join(root, 'apps/server'),
       },
       globals: {
         ...globals.node,
