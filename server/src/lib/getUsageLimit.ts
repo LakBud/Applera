@@ -9,12 +9,12 @@ export function getUsageLimit(req: Request): number {
 
   // Guest users
   if (!identity || identity.type !== 'user') {
-    return 3;
+    return 0;
   }
 
   // Logged-in free tier
   if (!identity.plan || identity.plan === 'free') {
-    return 200;
+    return 25;
   }
 
   // Paid tiers
@@ -26,8 +26,8 @@ export function getUsageLimit(req: Request): number {
   }
 
   if (identity.plan === 'admin') {
-    return Infinity;
+    return Number.MAX_SAFE_INTEGER;
   }
 
-  return 20;
+  return 0;
 }

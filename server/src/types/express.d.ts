@@ -1,7 +1,7 @@
 import '@clerk/express';
 import 'multer';
 
-import type { Identity } from './identity.js';
+import type { Identity } from './identitySchema.js';
 
 declare global {
   namespace Express {
