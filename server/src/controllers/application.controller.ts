@@ -233,8 +233,20 @@ export const createApplication = async (req: Request, res: Response) => {
       });
     }
 
-    const cv = await CVModel.findOne({ _id: cvId, ownerId, ownerType });
-    const job = await JobModel.findOne({ _id: jobId, ownerId, ownerType });
+    if (typeof cvId !== 'string' || typeof jobId !== 'string') {
+      return res.status(400).json({ error: 'cvId and jobId must be strings' });
+    }
+
+    const cv = await CVModel.findOne({
+      _id: { $eq: cvId },
+      ownerId: { $eq: ownerId },
+      ownerType: { $eq: ownerType },
+    });
+    const job = await JobModel.findOne({
+      _id: { $eq: jobId },
+      ownerId: { $eq: ownerId },
+      ownerType: { $eq: ownerType },
+    });
 
     if (!cv || !job) {
       return res.status(404).json({

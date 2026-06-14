@@ -1,0 +1,16 @@
+name: 'CodeQL Config'
+
+# This config excludes specific CodeQL queries that produce false positives
+# for this repo's architecture.
+#
+# js/missing-rate-limiting:
+#   This repo implements rate limiting via custom Redis-based middleware
+#   (server/src/middleware/rateLimiter.ts — globalLimiter, earlyLimiter,
+#   webhookLimiter, parseLimiter, applicationLimiter). CodeQL's query only
+#   recognizes a small allowlist of libraries (e.g. express-rate-limit) and
+#   cannot trace custom middleware as a rate-limiting sink, so it flags
+#   every DB/FS-touching route handler even though they are covered.
+
+queries:
+  - exclude:
+      - 'js/missing-rate-limiting'

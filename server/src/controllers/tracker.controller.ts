@@ -109,19 +109,20 @@ export const updateStatus = async (req: Request, res: Response) => {
       });
     }
 
-    const update: Record<string, unknown> = {
-      status,
-    };
+    if (notes !== undefined && typeof notes !== 'string') {
+      return res.status(400).json({ error: 'Invalid notes value' });
+    }
 
+    const update: Record<string, unknown> = { status };
     if (notes !== undefined) {
       update.notes = notes;
     }
 
     const application = await Application.findOneAndUpdate(
       {
-        _id: id,
-        ownerId: req.identity.id,
-        ownerType: req.identity.type,
+        _id: { $eq: id },
+        ownerId: { $eq: req.identity.id },
+        ownerType: { $eq: req.identity.type },
       },
       update,
       { new: true },

@@ -9,7 +9,7 @@ import { connectDB } from './db/db.js';
 import { attachIdentity, requireUser } from './middleware/global/identity.js';
 import { sanitizeHpp } from './middleware/global/sanitize.js';
 import { requestLogger } from './middleware/log/request.logger.js';
-import { globalLimiter } from './middleware/rateLimiter.js';
+import { earlyLimiter, globalLimiter, webhookLimiter } from './middleware/rateLimiter.js';
 import applicationRoutes from './routes/application.routes.js';
 import cvRoutes from './routes/cv.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
@@ -86,12 +86,14 @@ app.use(
 );
 
 // 3. Webhooks (must be before body parsing)
-app.use('/api/webhooks', webhookRoutes);
+app.use('/api/webhooks', webhookLimiter, webhookRoutes);
 
 // 4. Body parsing
 app.use(express.json({ limit: '50kb' }));
 app.use(express.urlencoded({ extended: true, limit: '50kb' }));
 app.use(cookieParser());
+
+app.use(earlyLimiter);
 
 // ─────────────────────────────────────────────
 // Health check (public)
