@@ -37,8 +37,8 @@ export function SignUpPage() {
       <SignUp
         appearance={clerkAuthAppearance}
         routing="path"
-        path="/auth/sign-up/"
-        signInUrl="/auth/sign-in/"
+        path="/auth/sign-up"
+        signInUrl="/auth/sign-in"
       />
     </AuthLayout>
   );
