@@ -6,8 +6,8 @@ import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
 import { Textarea } from '../../ui/textarea';
 import { ToggleGroup, ToggleGroupItem } from '../../ui/toggle-group';
-import { UploadSuccess } from './UploadSuccess';
 import { CvList } from './cv/CVList';
+import { UploadSuccess } from './UploadSuccess';
 
 type UploadFileMutation<T> = UseMutationResult<T, Error, File>;
 type UploadTextMutation<T> = UseMutationResult<T, Error, string>;

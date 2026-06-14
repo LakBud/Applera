@@ -1,4 +1,3 @@
-// ── AI pass ───────────────────────────────────────────────────────────────────
 import { CVSchemaData, JobSchemaData } from '../../controllers/interviewPrep.controller.js';
 import { buildMatchEnrichPrompt } from '../../prompts/matchEnrichPrompt.js';
 import { cachedLLM, callLLM } from '../../services/llm/llm.service.js';
@@ -6,6 +5,8 @@ import { MatchReport, MatchReportSchema } from '../../types/schemas/match.schema
 import { CACHE_VERSIONS } from '../../utils/cache.versions.js';
 import { extractAllText } from '../../utils/match.utils.js';
 import { hash } from '../hash.js';
+
+// ── AI pass ───────────────────────────────────────────────────────────────────
 
 export async function runAIEnrichment(
   cv: CVSchemaData,

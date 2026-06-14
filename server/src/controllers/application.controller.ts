@@ -214,6 +214,10 @@ export const deleteApplication = async (req: Request, res: Response) => {
   }
 };
 
+// ─────────────────────────────────────────────
+// POST /api/application
+// ─────────────────────────────────────────────
+
 export const createApplication = async (req: Request, res: Response) => {
   try {
     if (!req.identity) {

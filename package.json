@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "pnpm -r dev",
-    "build": "pnpm -r build",
+    "dev": "cross-env NODE_ENV=development pnpm -r dev",
+    "build": "cross-env NODE_ENV=production pnpm -r build",
     "lint": "eslint . --no-cache --ext .ts,.tsx,.js",
     "lint:fix": "eslint . --fix --ext .ts,.tsx,.js",
     "typecheck": "tsc -b",
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "cross-env": "^10.1.0",
     "eslint": "^10.4.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-refresh": "^0.5.2",
@@ -31,10 +32,6 @@
     "prettier": "^3.8.4",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.61.0"
-  },
-  "engines": {
-    "node": ">=24.0.0",
-    "pnpm": ">=10.0.0"
   },
   "packageManager": "pnpm@10.20.0"
 }

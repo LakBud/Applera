@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 
-dotenv.config();
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
+
+dotenv.config({ path: envFile });
 
 function requireEnv(key: string) {
   const value = process.env[key];
@@ -30,7 +32,10 @@ export const GUEST_SECRET = requireEnv('GUEST_SECRET');
 export const COOKIE_SECRET = requireEnv('COOKIE_SECRET');
 export const CLERK_SECRET_KEY = requireEnv('CLERK_SECRET_KEY');
 export const CLERK_PUBLISHABLE_KEY = requireEnv('CLERK_PUBLISHABLE_KEY');
-export const CLERK_WEBHOOK_SECRET = requireEnv('CLERK_WEBHOOK_SECRET');
+
+export const CLERK_WEBHOOK_SECRET = IS_PROD
+  ? requireEnv('CLERK_WEBHOOK_SECRET')
+  : optionalEnv('CLERK_WEBHOOK_SECRET', '');
 
 // ── Server ────────────────────────────────────────────────────────────────────
 

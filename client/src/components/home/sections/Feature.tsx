@@ -6,7 +6,7 @@ function OutputCard({ icon, title, desc }: { icon: React.ReactNode; title: strin
   return (
     <Card className="group transition transition-shadow-200 hover:shadow-xl bg-white">
       <CardContent className="p-5 flex gap-4">
-        <div className="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-green-700">
+        <div className="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-green-700 ">
           {icon}
         </div>
 
