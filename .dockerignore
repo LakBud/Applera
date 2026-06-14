@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+dist
+build
+.env
+.env.example
+.env.development
+.env.production

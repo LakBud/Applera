@@ -1,0 +1,19 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - '5005:5005'
+    env_file:
+      - server/.env.production
+    command: pnpm start
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    ports:
+      - '80:80'
+    env_file:
+      - client/.env.production
