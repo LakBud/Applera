@@ -16,8 +16,8 @@ export function SignInPage() {
           <SignIn
             appearance={clerkAuthAppearance}
             routing="path"
-            path="/auth/sign-in"
-            signUpUrl="/auth/sign-up"
+            path="/auth/sign-in/"
+            signUpUrl="/auth/sign-up/"
           />
         </div>
       </div>
