@@ -61,6 +61,32 @@ export function limiter(config: LimiterConfig) {
   };
 }
 
+// For unauthenticated routes (webhooks) — key by IP instead of user identity
+export function ipLimiter(config: LimiterConfig) {
+  const windowSeconds = config.windowMinutes * 60;
+
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const key = `rl:${config.keyPrefix}:ip:${req.ip}`;
+
+      const current = await redis.incr(key);
+
+      if (current === 1) {
+        await redis.expire(key, windowSeconds);
+      }
+
+      if (current > config.max) {
+        return res.status(429).json({ error: config.message });
+      }
+
+      return next();
+    } catch (err) {
+      console.error('[ipLimiter] Redis error:', err);
+      return next();
+    }
+  };
+}
+
 // Route-specific headers
 
 // /api/application/create — triggers 3 LLM calls + DB writes, most expensive
@@ -85,4 +111,19 @@ export const globalLimiter = limiter({
   max: 250,
   message: 'Too many requests. Please try again later.',
   keyPrefix: 'global',
+});
+
+// Ip headers
+export const webhookLimiter = ipLimiter({
+  windowMinutes: 1,
+  max: 60,
+  message: 'Too many webhook requests.',
+  keyPrefix: 'webhook',
+});
+
+export const earlyLimiter = ipLimiter({
+  windowMinutes: 1,
+  max: 300,
+  message: 'Too many requests.',
+  keyPrefix: 'early',
 });

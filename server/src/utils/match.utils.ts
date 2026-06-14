@@ -13,11 +13,9 @@ export function normalizeSkill(s: string): string {
     .toLowerCase()
     .trim()
     .replace(/[\s.\-_/]+/g, '') // collapse repeats properly
-    .replace(/js$/, 'js') // keeps nodejs/reactjs stable
     .replace(/typescript/, 'ts')
     .replace(/javascript/, 'js');
 }
-
 /**
  * Normalises an array of skills.
  * Removes duplicates after normalisation.
