@@ -1,0 +1,50 @@
+# CodeRabbit configuration
+# Docs: https://docs.coderabbit.ai/guides/repository-settings/
+
+language: 'en-US'
+
+early_access: false
+
+reviews:
+  profile: 'chill' # "chill" or "assertive" — controls how nitpicky reviews are
+
+  # Auto-review every PR, including drafts
+  auto_review:
+    enabled: true
+    drafts: false
+
+  # High-level PR summary comment
+  high_level_summary: true
+
+  # Inline walkthrough of changes
+  poem: false # disables the fun poem CodeRabbit adds to summaries
+
+  # Auto-generate / update PR title and description
+  commit_status: true
+  collapse_walkthrough: true
+
+  path_filters:
+    - '!**/dist/**'
+    - '!**/build/**'
+    - '!**/node_modules/**'
+    - '!**/*.lock'
+    - '!**/package-lock.json'
+    - '!**/pnpm-lock.yaml'
+    - '!**/yarn.lock'
+    - '!**/*.min.js'
+    - '!**/*.svg'
+
+  # Tools CodeRabbit can use during review (enable as needed)
+  tools:
+    github-checks:
+      enabled: true
+
+chat:
+  auto_reply: true
+
+# Optional: instructions CodeRabbit follows when reviewing, in plain English
+# Uncomment and customize as needed:
+# reviews:
+#   path_instructions:
+#     - path: "**/*.ts"
+#       instructions: "Ensure functions have explicit return types and avoid 'any'."
