@@ -1,7 +1,7 @@
 import '@clerk/express';
 import 'multer';
 
-import type { Identity } from './identity.js';
+import { Identity } from '../middleware/global/identity.ts';
 
 declare global {
   namespace Express {

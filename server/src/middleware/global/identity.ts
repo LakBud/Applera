@@ -11,11 +11,17 @@ import { auditLog } from '../log/audit.logger.js';
 // Identity Schema (single source of truth)
 // ─────────────────────────────────────────────
 
-export const IdentitySchema = z.object({
-  type: z.enum(['user', 'guest']),
-  id: z.string(),
-  plan: z.enum(['guest', 'free', 'pro', 'enterprise', 'admin']),
-});
+export const IdentitySchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('guest'),
+    id: z.string(),
+  }),
+  z.object({
+    type: z.literal('user'),
+    id: z.string(),
+    plan: z.enum(['free', 'pro', 'enterprise', 'admin']).catch('free'),
+  }),
+]);
 
 export type Identity = z.infer<typeof IdentitySchema>;
 
@@ -105,7 +111,6 @@ export async function attachIdentity(req: Request, res: Response, next: NextFunc
     const identity = IdentitySchema.parse({
       type: 'guest',
       id: guestId,
-      plan: 'guest',
     });
 
     req.identity = identity;
