@@ -17,7 +17,8 @@ export type AuditEvent =
   | 'APPLICATION_DELETED'
   | 'JOB_DELETED'
   | 'JOB_CREATED'
-  | 'CV_PINNED';
+  | 'CV_PINNED'
+  | 'RATE_LIMIT_HIT_IP';
 
 export interface AuditLog {
   event: AuditEvent;
