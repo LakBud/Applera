@@ -37,7 +37,7 @@ export default function Nav({ isSignedIn, isLoaded }: { isSignedIn: boolean; isL
 
           {/* RIGHT: Actions */}
           <div className="flex items-center gap-2 sm:gap-4 ml-auto">
-            <GithubStarButton className="hidden sm:flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border border-border text-tx-muted hover:text-tx-body hover:bg-muted/40 transition-colors" />
+            <GithubStarButton className="hidden lg:flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-md border border-border text-tx-muted hover:text-tx-body hover:bg-muted/40 transition-colors" />
 
             <NavAuthActions isLoaded={isLoaded} isSignedIn={isSignedIn} />
 

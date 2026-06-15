@@ -167,7 +167,7 @@ export default function Uploader<T>({
       {mode === 'text' && (
         <div className="space-y-3">
           {isSelected ? (
-            <div className="border border-green-600 bg-green-50 rounded-xl p-6 text-center min-h-44 md:h-80 flex flex-col items-center justify-center">
+            <div className="border border-green-600 bg-green-50 rounded-xl p-6 text-center min-h-50 md:h-80 flex flex-col items-center justify-center">
               <UploadSuccess label={label} onClear={handleClear} />
             </div>
           ) : (
@@ -176,9 +176,16 @@ export default function Uploader<T>({
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder={placeholder}
-                rows={6}
                 disabled={isUploading}
-                className="w-full min-h-40 md:min-h-80 h-80 resize-none bg-bg border border-border rounded-xl p-4 text-sm text-body focus:outline-none focus:ring-green-800/40  disabled:opacity-60 transition"
+                className="
+                    w-full
+                    h-[35vh] sm:h-[40vh] md:h-[34vh] lg:h-[34vh]
+                    resize-none
+                    bg-bg border border-border rounded-xl p-4
+                    text-sm text-body
+                    focus:outline-none focus:ring-green-800/40
+                    disabled:opacity-60 transition
+                  "
               />
               <Button
                 type="button"
