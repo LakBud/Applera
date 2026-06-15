@@ -10,8 +10,10 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # IMPORTANT: include full workspace (recommended)
 COPY . .
 
-WORKDIR /app/apps/client
+# install all workspace dependencies
+RUN pnpm install --frozen-lockfile
 
+WORKDIR /app/apps/client
 
 RUN pnpm build
 

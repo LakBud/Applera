@@ -8,7 +8,9 @@ services:
     env_file:
       - apps/server/.env.development
     volumes:
-      - ./apps/server:/app/server
+      - .:/workspaces/Applera
+      - /workspaces/Applera/node_modules
+      - /workspaces/Applera/apps/server/node_modules
     command: pnpm dev
 
   client:
@@ -20,4 +22,8 @@ services:
     env_file:
       - apps/client/.env.development
     depends_on:
-      - apps/server
+      - server
+    volumes:
+      - .:/workspaces/Applera
+      - /workspaces/Applera/node_modules
+      - /workspaces/Applera/apps/client/node_modules

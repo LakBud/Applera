@@ -7,8 +7,11 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 # workspace files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# IMPORTANT: copy full monorepo 
+# IMPORTANT: copy full monorepo
 COPY . .
+
+# install all workspace dependencies
+RUN pnpm install --frozen-lockfile
 
 WORKDIR /app/apps/server
 
