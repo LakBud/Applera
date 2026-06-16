@@ -1,4 +1,8 @@
 User-agent: *
-Allow: /
+Disallow: /auth
+Disallow: /cvs
+Disallow: /applications
+Disallow: /auth/sign-up
+Disallow: /auth/sign-in
 
 Sitemap: https://applera.site/sitemap.xml
