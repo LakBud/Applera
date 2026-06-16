@@ -17,8 +17,8 @@ Express + TypeScript REST API powering the Applera job application platform.
 
 ### Prerequisites
 
-- Node.js 18+
-- pnpm
+- Node.js 20+
+- pnpm 10.20.0
 - MongoDB Atlas account
 - Clerk account
 - Groq API key
@@ -27,17 +27,26 @@ Express + TypeScript REST API powering the Applera job application platform.
 
 ### Installation
 
+From the repo root:
+
 ```bash
-cd server
+pnpm install
+```
+
+Or from this directory:
+
+```bash
+cd apps/server
 pnpm install
 ```
 
 ### Environment Variables
 
-Copy `.env.example` to `.env` and fill in the values:
+Copy `.env.example` to `.env.development` and `.env.production` and fill in the values:
 
 ```bash
-cp .env.example .env
+cp .env.example .env.development
+cp .env.example .env.production
 ```
 
 | Variable                   | Required | Description                                            |
@@ -51,7 +60,6 @@ cp .env.example .env
 | `CLERK_SECRET_KEY`         | Yes      | Clerk secret key                                       |
 | `CLERK_PUBLISHABLE_KEY`    | Yes      | Clerk publishable key                                  |
 | `CLERK_WEBHOOK_SECRET`     | Yes      | Clerk webhook signing secret                           |
-| `GUEST_SECRET`             | Yes      | Secret for guest session tokens                        |
 | `COOKIE_SECRET`            | Yes      | Secret for cookie signing                              |
 | `UPSTASH_REDIS_REST_URL`   | Yes      | Upstash Redis REST URL                                 |
 | `UPSTASH_REDIS_REST_TOKEN` | Yes      | Upstash Redis REST token                               |
@@ -60,6 +68,14 @@ cp .env.example .env
 | `CLOUDINARY_API_SECRET`    | Yes      | Cloudinary API secret                                  |
 
 ### Development
+
+From the repo root:
+
+```bash
+pnpm dev:server
+```
+
+Or from this directory:
 
 ```bash
 pnpm dev
@@ -72,6 +88,26 @@ Starts the server with `tsx watch` for hot reloading on `http://localhost:5005`.
 ```bash
 pnpm build  # compiles TypeScript to dist/
 pnpm start  # runs dist/server.js
+```
+
+## Project Structure
+
+```
+src/
+├── config/       # App configuration and env validation
+├── controllers/  # Route handler logic
+├── db/           # MongoDB connection
+├── integrations/ # Third-party service clients (Groq, Cloudinary, Redis)
+├── lib/          # Internal utilities and helpers
+├── middleware/   # Express middleware (auth, CSRF, rate limiting, etc.)
+├── models/       # Mongoose schemas and models
+├── prompts/      # AI prompt templates
+├── routes/       # Express route definitions
+├── services/     # Business logic
+├── types/        # Shared TypeScript types
+├── utils/        # General utility functions
+├── workers/      # Background tasks
+└── server.ts     # App entry point
 ```
 
 ## API Routes
@@ -107,7 +143,7 @@ When a user deletes their account via Clerk, a `user.deleted` webhook fires and 
 
 ## Deployment
 
-Deployed on [Render](https://render.com) free tier.
+Deployed on [Render](https://render.com).
 
 - **Build command**: `pnpm install && pnpm run build`
 - **Start command**: `pnpm start`

@@ -55,7 +55,7 @@ export function PrivacyPage() {
                 items={[
                   'Clerk — authentication and user management',
                   'Cloudinary — secure file storage',
-                  'Anthropic — AI model for generating application content',
+                  'Groq — AI model for generating application content',
                   'MongoDB — database storage',
                   'Redis — caching',
                   'Vercel — deployment & analytics',

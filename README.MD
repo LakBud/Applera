@@ -4,13 +4,13 @@ An AI-powered job application platform that streamlines the job search process w
 
 ## Overview
 
-Applera is a full-stack TypeScript application designed to help job seekers manage applications efficiently. The platform leverages AI (Groq) to parse CVs, generate tailored applications, and provide interview prep guidance.
+Applera is a full-stack TypeScript monorepo designed to help job seekers manage applications efficiently. The platform leverages AI (Groq) to parse CVs, generate tailored applications, and provide interview prep guidance.
 
 ## Architecture
 
-The project is organized as a **monorepo** with two main components:
+The project is organized as a **pnpm workspace monorepo** with two apps:
 
-### [`client/`](apps/client) — Frontend
+### [`apps/client/`](apps/client) — Frontend
 
 A modern **React 19 + TypeScript** single-page application built with:
 
@@ -21,7 +21,7 @@ A modern **React 19 + TypeScript** single-page application built with:
 - **Tailwind CSS v4** + **shadcn/ui** for styling and components
 - **Deployed on Vercel**
 
-### [`server/`](apps/server) — Backend
+### [`apps/server/`](apps/server) — Backend
 
 A **Node.js + Express** REST API built with:
 
@@ -37,45 +37,43 @@ A **Node.js + Express** REST API built with:
 
 ### Prerequisites
 
-- **Node.js 18+**
-- **pnpm** (or npm/yarn)
+- **Node.js 20+**
+- **pnpm 10.20.0** (`npm install -g pnpm@10.20.0`)
 
 ### Setup
 
 ```bash
-# Install dependencies for both client and server
-pnpm install --recursive
-
-# Or install individually
-cd client && pnpm install
-cd server && pnpm install
+# Install all dependencies from the root
+pnpm install
 ```
 
 ### Environment Setup
 
-Each subdirectory requires a `.env` file. See the respective READMEs for details:
+Each app requires its own `.env` file. See the respective READMEs for details:
 
-- **Client**: [`client/README.md`](./client/README.md#environment-variables)
-- **Server**: [`server/README.md`](./server/README.md#environment-variables)
+- **Client**: [`apps/client/README.md`](./apps/client/README.md#environment-variables)
+- **Server**: [`apps/server/README.md`](./apps/server/README.md#environment-variables)
 
 ### Development
 
-In one terminal, start the backend:
-
 ```bash
-cd server
+# Start both client and server concurrently
 pnpm dev
+
+# Or start individually
+pnpm dev:client   # http://localhost:5173
+pnpm dev:server   # http://localhost:5005
 ```
 
-In another terminal, start the frontend:
+### Docker
 
 ```bash
-cd client
-pnpm dev
-```
+# Development
+pnpm dev:docker
 
-- **Frontend**: http://localhost:5173
-- **Backend**: http://localhost:5005
+# Production
+pnpm docker:prod
+```
 
 ## Key Features
 
@@ -126,31 +124,27 @@ pnpm dev
 │   │   │   └── hooks/       # Custom React hooks
 │   │   └── package.json
 │   │
-│   ├── server/              # Express backend (REST API)
-│   │   ├── src/
-│   │   │   ├── routes/      # API route handlers
-│   │   │   ├── models/      # Mongoose schemas
-│   │   │   ├── middleware/  # Express middleware
-│   │   │   ├── services/    # Business logic
-│   │   │   └── server.ts    # App entry point
-│   │   └── package.json
-│
-├── packages/                # (optional but recommended)
-│   └── shared/              # shared types/utils between client & server
+│   └── server/              # Express backend (REST API)
 │       ├── src/
+│       │   ├── routes/      # API route handlers
+│       │   ├── models/      # Mongoose schemas
+│       │   ├── middleware/  # Express middleware
+│       │   ├── services/    # Business logic
+│       │   └── server.ts    # App entry point
 │       └── package.json
 │
-├── pnpm-workspace.yaml      # workspace config
-├── package.json             # root workspace config
-├── tsconfig.json            # root TS config
-├── .gitignore
+├── docker-compose.dev.yml
+├── docker-compose.prod.yml
+├── pnpm-workspace.yaml      # Workspace config
+├── package.json             # Root workspace config
+├── tsconfig.json            # Root TS config
 └── README.md
 ```
 
 ## Documentation
 
-- **Frontend**: See [`client/README.md`](./client/README.md) for React setup, routing, and deployment details
-- **Backend**: See [`server/README.md`](./server/README.md) for API routes, database setup, and deployment details
+- **Frontend**: See [`apps/client/README.md`](./apps/client/README.md) for React setup, routing, and deployment details
+- **Backend**: See [`apps/server/README.md`](./apps/server/README.md) for API routes, database setup, and deployment details
 
 ## Deployment
 
@@ -158,7 +152,8 @@ pnpm dev
 
 - **Build command**: `vite build`
 - **Output directory**: `dist`
-- **Root directory**: `client`
+- **Root directory**: `apps/client`
+- **Environment variables**: Set in Vercel
 
 ### Backend (Render)
 
@@ -182,10 +177,10 @@ pnpm dev
 
 ---
 
-**Questions?** See the individual README files for each component:
+**Questions?** See the individual README files for each app:
 
-- [`client/README.md`](./client/README.md)
-- [`server/README.md`](./server/README.md)
+- [`apps/client/README.md`](./apps/client/README.md)
+- [`apps/server/README.md`](./apps/server/README.md)
 
 ---
 
