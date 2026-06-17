@@ -1,10 +1,11 @@
+import type { CVDocument } from '@/api/cv/cv.schemas';
+
 import { useState } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
 import { FileText, Pin } from 'lucide-react';
 
 import { useDeleteCV } from '../../api';
-import type { CVDocument } from '../../api/schemas';
 import { DeleteModal } from '../common/DeleteModal';
 import { Button } from '../ui/button';
 import {

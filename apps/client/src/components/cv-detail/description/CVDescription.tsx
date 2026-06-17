@@ -1,4 +1,5 @@
-import type { CVParsed } from '../../../api';
+import type { CVParsed } from '@/api/cv/cv.schemas';
+
 import { EducationSection } from './sections/EducationSection';
 import { ExperienceSection } from './sections/ExperienceSection';
 import { ProjectsSection } from './sections/ProjectsSection';

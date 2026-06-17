@@ -1,4 +1,4 @@
-import { redis } from '../integrations/redis.js';
+import { redis } from '../config/redis.js';
 
 // ─────────────────────────────────────────────
 // GET CACHE

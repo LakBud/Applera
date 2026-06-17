@@ -1,3 +1,5 @@
+import { ALLOWED_SENIORITY } from '../../types/seniority.types.js';
+
 export const EXTRACT_CV_PROMPT = `
 You are a strict CV parsing engine.
 
@@ -119,6 +121,15 @@ Only include paid work, internships, or formal roles.
 EDUCATION RULE
 ────────────────────────────────────────
 Only include formal schooling.
+
+────────────────────────────────────────
+SENIORITY RULE
+────────────────────────────────────────
+"seniority_level" MUST be EXACTLY one of:
+${ALLOWED_SENIORITY.map((v) => `"${v}"`).join(' | ')}
+
+- Do NOT use variations like "mid-level", "senior engineer", "entry-level"
+- If unsure → use "unknown"
 
 ────────────────────────────────────────
 FINAL VALIDATION CHECK (BEFORE OUTPUT)

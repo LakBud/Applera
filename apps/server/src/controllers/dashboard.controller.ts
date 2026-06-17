@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import Application from '../models/Application.js';
 import CV from '../models/CV.js';
-import { getParam } from '../utils/req.js';
+import { getParam } from '../utils/shared/param.utils.js';
 
 // ─────────────────────────────────────────────
 // Route params

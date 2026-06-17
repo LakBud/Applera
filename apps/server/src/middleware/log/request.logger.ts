@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import { NextFunction, Request, Response } from 'express';
 
+import { maskIp } from '../../utils/shared/sanitize.utils.js';
+
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
   const requestId = crypto.randomUUID();
   req.requestId = requestId;
@@ -18,7 +20,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
       path: req.originalUrl.split('?')[0],
       status,
       duration_ms: duration,
-      ip: req.ip?.replace(/\.\d+$/, '.xxx'),
+      ip: req.ip ? maskIp(req.ip) : '',
       userAgent: req.headers['user-agent'],
     };
 

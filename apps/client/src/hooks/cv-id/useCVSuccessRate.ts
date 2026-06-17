@@ -1,8 +1,10 @@
+import type { DashboardCV } from '@/api/cv/cv.schemas';
+
 import { useMemo } from 'react';
 
-import { type Dashboard, type SuccessStatus, SuccessStatusSchema } from '../../api/schemas';
+import { type SuccessStatus, SuccessStatusSchema } from '../../api/schemas';
 
-export function useCVSuccessRate(dashboard?: Dashboard) {
+export function useCVSuccessRate(dashboard?: DashboardCV) {
   return useMemo(() => {
     if (!dashboard) {
       return { successRate: 0, successCount: 0 };

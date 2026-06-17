@@ -1,4 +1,4 @@
-import type { CVDocument } from '../../../../api/schemas';
+import type { CVDocument } from '@/api/cv/cv.schemas';
 
 export function CvListItem({
   cv,

@@ -3,15 +3,15 @@ import { Request, Response } from 'express';
 
 import { cloudinary } from '../config/cloudinary.js';
 import { deleteCache, getCache, setCache } from '../lib/cache.js';
-import { uploadImage } from '../lib/cloudinary.upload.js';
-import { hash } from '../lib/hash.js';
+import { uploadImage } from '../lib/cloudinary/cloudinary.upload.js';
 import { extractTextFromPdf } from '../lib/pdfParser.js';
-import { auditLog } from '../middleware/log/audit.logger.js';
 import Application from '../models/Application.js';
 import CVModel from '../models/CV.js';
+import { auditLog } from '../services/audit/audit.service.js';
 import { extractCVData } from '../services/extractors.service.js';
-import { normalizeParsedCV } from '../utils/cv.normalize.utils.js';
-import { getParam } from '../utils/req.js';
+import { normalizeParsedCV } from '../utils/cv/cv.normalize.utils.js';
+import { hash } from '../utils/shared/hash.utils.js';
+import { getParam } from '../utils/shared/param.utils.js';
 
 const cvHashKey = (userId: string, hash: string) => `cv:hash:${userId}:${hash}`;
 const cvListKey = (userId: string, type: string) => `cvs:${userId}:${type}`;

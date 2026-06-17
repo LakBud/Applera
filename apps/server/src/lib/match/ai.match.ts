@@ -1,10 +1,10 @@
-import { CVSchemaData, JobSchemaData } from '../../controllers/interviewPrep.controller.js';
+import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { buildMatchEnrichPrompt } from '../../prompts/matchEnrichPrompt.js';
 import { cachedLLM, callLLM } from '../../services/llm/llm.service.js';
-import { MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
-import { CACHE_VERSIONS } from '../../utils/cache.versions.js';
-import { extractAllText } from '../../utils/match.utils.js';
-import { hash } from '../hash.js';
+import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
+import { CVSchemaData, JobSchemaData } from '../../types/schemas/schema.js';
+import { extractAllText } from '../../utils/match/match.utils.js';
+import { hash } from '../../utils/shared/hash.utils.js';
 
 // ── AI pass ───────────────────────────────────────────────────────────────────
 

@@ -27,7 +27,7 @@ const FAQ = [
   },
   {
     q: 'Is there a free plan?',
-    a: 'Yes. You can get started for free with core features included. No credit card required.',
+    a: 'Yes. You can get started with 25 LLM calls for free, with core features included with an account. No credit card required.',
   },
 ];
 

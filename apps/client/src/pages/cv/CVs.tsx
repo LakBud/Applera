@@ -1,7 +1,7 @@
-import type { CVDocument } from '@/api/schemas';
+import type { CVDocument } from '@/api/cv/cv.schemas';
 
 import { useCVs } from '../../api';
-import { usePinCV } from '../../api/hooks/useCV';
+import { usePinCV } from '../../api/cv/cv.hooks';
 import { CVCard } from '../../components/cvs/CVCard';
 import { CVCardSkeleton } from '../../components/cvs/CVCardSkeleton';
 

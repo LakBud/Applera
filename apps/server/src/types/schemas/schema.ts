@@ -1,15 +1,19 @@
 import { z } from 'zod';
 
+import { ALLOWED_SENIORITY } from '../seniority.types.js';
+
 export const JobSchema = z.object({
   title: z.string().default(''),
   company: z.string().default(''),
   location: z.string().default(''),
   required_skills: z.array(z.string()).default([]),
   responsibilities: z.array(z.string()).default([]),
-  seniority: z
-    .enum(['executive', 'intern', 'junior', 'mid', 'senior', 'lead', 'unknown'])
-    .default('unknown'),
+  seniority: z.enum(ALLOWED_SENIORITY).default('unknown'),
   raw_description: z.string().default(''),
+});
+
+export const JobExtractionSchema = JobSchema.extend({
+  seniority: z.string().default('unknown'),
 });
 
 export const CVSchema = z.object({
@@ -18,7 +22,7 @@ export const CVSchema = z.object({
   phone: z.string(),
   github: z.string(),
   summary: z.string(),
-  seniority_level: z.string(),
+  seniority_level: z.enum(ALLOWED_SENIORITY).default('unknown'),
   skills: z.array(z.string()).default([]),
 
   experience: z
@@ -54,6 +58,10 @@ export const CVSchema = z.object({
   pdfUrl: z.string().optional(),
   previewUrl: z.string().optional(),
   cloudinaryPublicId: z.string().optional(),
+});
+
+export const CVExtractionSchema = CVSchema.extend({
+  seniority_level: z.string().default('unknown'),
 });
 
 export type CVSchemaData = z.infer<typeof CVSchema>;

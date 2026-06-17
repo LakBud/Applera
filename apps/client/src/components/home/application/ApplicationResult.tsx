@@ -1,17 +1,17 @@
+import type { Application } from '@/api/application/application.schemas';
+
 import { useState } from 'react';
 
-import type { CreateApplicationResponse } from '../../../api/schemas';
 import { Tabs } from '../../ui/tabs';
 import { ApplicationScorePanel } from './ApplicationScorePanel';
 import { ApplicationTabContent } from './ApplicationTabsContent';
 import { ApplicationTabsHeader } from './ApplicationTabsHeader';
 
 type Props = {
-  data: CreateApplicationResponse;
+  data: Application;
 };
 
-export default function ApplicationResult({ data }: Props) {
-  const { application } = data;
+export default function ApplicationResult({ data: application }: Props) {
   const [copied, setCopied] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'letter' | 'summary' | 'email'>('letter');
 

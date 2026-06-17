@@ -2,7 +2,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
 import { useApplication, useUpdateApplicationStatus } from '../../api';
-import { useDeleteApplication } from '../../api/hooks/useApplication';
+import { useDeleteApplication } from '../../api/application/application.hook';
 import { ApplicationActionSection } from '../../components/application-detail/ApplicationDetailAction';
 import { ApplicationDetailHeader } from '../../components/application-detail/ApplicationDetailHeader';
 import { InterviewPrepSection } from '../../components/application-detail/InterviewPrep';
@@ -70,7 +70,7 @@ export function ApplicationDetailPage() {
       />
 
       {/* Result */}
-      <ApplicationResult data={{ application }} />
+      <ApplicationResult data={application} />
 
       <div className="grid grid-cols-2 gap-4 items-start">
         <JobListingSection

@@ -1,6 +1,7 @@
+import type { CVDocument } from '@/api/cv/cv.schemas';
+
 import { ExternalLink } from 'lucide-react';
 
-import type { CVDocument } from '../../../../api/schemas';
 import { Card2 } from '../../../ui/card';
 import { SectionHeading } from '../../../ui/section';
 

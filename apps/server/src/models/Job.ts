@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+import { ALLOWED_SENIORITY } from '../types/seniority.types.js';
+
 const JobSchema = new mongoose.Schema(
   {
     ownerId: { type: String, required: true, index: true, trim: true },
@@ -13,7 +15,7 @@ const JobSchema = new mongoose.Schema(
       responsibilities: [{ type: String, trim: true }],
       seniority: {
         type: String,
-        enum: ['executive', 'intern', 'junior', 'mid', 'senior', 'lead', 'unknown'],
+        enum: ALLOWED_SENIORITY,
         default: 'unknown',
       },
       raw_description: { type: String, maxlength: 100000 },

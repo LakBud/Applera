@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 
 import { IS_PROD } from '../../config/env.js';
-import { model, openai } from '../../integrations/openai.js';
+import { model, openai } from '../../config/openai.js';
 import { getCache, setCache } from '../../lib/cache.js';
 import parseModelJson from '../../lib/parseModelJson.js';
 

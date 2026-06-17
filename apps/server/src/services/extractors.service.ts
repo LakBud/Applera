@@ -1,12 +1,17 @@
-import { hash } from '../lib/hash.js';
-import { EXTRACT_JOB_PROMPT } from '../prompts/application/extractJobPrompt.js';
+import { CACHE_VERSIONS } from '../config/cache.versions.js';
 import { EXTRACT_CV_PROMPT } from '../prompts/extract/extractCVPrompt.js';
-import { CVSchema, CVSchemaData, JobSchema, JobSchemaData } from '../types/schemas/schema.js';
-import { CACHE_VERSIONS } from '../utils/cache.versions.js';
-import { sanitise } from '../utils/extractors.utils.js';
+import { EXTRACT_JOB_PROMPT } from '../prompts/extract/extractJobPrompt.js';
+import {
+  CVExtractionSchema,
+  CVSchemaData,
+  JobExtractionSchema,
+  JobSchemaData,
+} from '../types/schemas/schema.js';
+import { hash } from '../utils/shared/hash.utils.js';
+import { sanitise } from '../utils/shared/sanitize.utils.js';
+import { repairCV } from './cv/cvRepair.service.js';
+import { repairJob } from './job/jobRepair.service.js';
 import { cachedLLM, callLLM } from './llm/llm.service.js';
-import { repairCV } from './repair/cvRepair.service.js';
-import { repairJob } from './repair/jobRepair.service.js';
 
 // ─────────────────────────────────────────────────────────────
 // CV extractor
@@ -34,7 +39,7 @@ export async function extractCVData(cvText: string): Promise<CVSchemaData> {
         temperature: 0.2,
       });
 
-      const parsed = CVSchema.safeParse(result);
+      const parsed = CVExtractionSchema.safeParse(result);
 
       if (!parsed.success) {
         console.error('[CV VALIDATION ERROR]', parsed.error.issues);
@@ -73,7 +78,7 @@ export async function extractJobData(jobText: string): Promise<JobSchemaData> {
         temperature: 0.2,
       });
 
-      const parsed = JobSchema.safeParse(result);
+      const parsed = JobExtractionSchema.safeParse(result);
 
       if (!parsed.success) {
         console.error('[JOB VALIDATION ERROR]', parsed.error.format());

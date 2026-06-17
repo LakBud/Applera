@@ -1,4 +1,5 @@
-import type { CVDocument } from '../../../../api/schemas';
+import type { CVDocument } from '@/api/cv/cv.schemas';
+
 import { Card2 } from '../../../ui/card';
 import { SectionHeading } from '../../../ui/section';
 

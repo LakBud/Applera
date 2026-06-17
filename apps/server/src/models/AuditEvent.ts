@@ -63,6 +63,7 @@ const AuditEventSchema = new mongoose.Schema(
 );
 
 // Performance indexes (important for debugging dashboards)
+AuditEventSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 90 }); // 90 days
 AuditEventSchema.index({ userId: 1, createdAt: -1 });
 AuditEventSchema.index({ requestId: 1 });
 AuditEventSchema.index({ event: 1, createdAt: -1 });

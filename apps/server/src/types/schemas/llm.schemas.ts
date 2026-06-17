@@ -18,3 +18,5 @@ export const ApplicationLLMSchema = z.object({
     body: z.string(),
   }),
 });
+
+export type ApplicationLLMOutput = z.infer<typeof ApplicationLLMSchema>;

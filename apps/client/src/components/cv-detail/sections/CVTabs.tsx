@@ -1,5 +1,5 @@
-import type { CVParsed } from '../../../api';
-import type { Dashboard } from '../../../api/schemas';
+import type { CVParsed, DashboardCV } from '@/api/cv/cv.schemas';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { CVApplications } from '../description/applications/CVApplications';
 import { CVDescription } from '../description/CVDescription';
@@ -8,7 +8,7 @@ import { CVDescription } from '../description/CVDescription';
 
 interface CVTabsSectionProps {
   cv: { parsed: CVParsed };
-  dashboard: Dashboard;
+  dashboard: DashboardCV;
   isLoading: boolean;
 }
 

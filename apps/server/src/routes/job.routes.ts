@@ -1,12 +1,17 @@
 import express from 'express';
 
 import { createJob, deleteJob, getJobById, getJobs } from '../controllers/job.controller.js';
-import { concurrencyLimit } from '../middleware/concurrency.js';
-import { parseJobPdf } from '../middleware/parsePdf.js';
-import { parseLimiter } from '../middleware/rateLimiter.js';
-import { aiTimeout } from '../middleware/timeout.js';
-import { handleUploadError, uploadJob, validatePdfMagic } from '../middleware/upload.js';
-import { validate } from '../middleware/validate.js';
+import { parseJobPdf } from '../middleware/pdf/parsePdf.middleware.js';
+import { concurrencyLimit } from '../middleware/rate/concurrency.middleware.js';
+import { parseLimiter } from '../middleware/rate/rateLimiter.middleware.js';
+import { usageLimiter } from '../middleware/rate/usageLimiter.middleware.js';
+import { aiTimeout } from '../middleware/request/timeout.middleware.js';
+import { validate } from '../middleware/request/validate/validate.middleware.js';
+import {
+  handleUploadError,
+  uploadJob,
+  validatePdfMagic,
+} from '../middleware/upload/upload.middleware.js';
 
 const router = express.Router();
 
@@ -16,22 +21,16 @@ const router = express.Router();
 // ─────────────────────────────────────────────
 router.post(
   '/',
-
-  concurrencyLimit(5), // 0. safety: concurrent control
-  parseLimiter, // 1. rate limit
-
-  uploadJob, // 2. multer upload
-  handleUploadError, // 3. MUST be immediately after upload
-
-  validatePdfMagic, // 4. file safety check
-
-  parseJobPdf, // 5. extract PDF text
-
-  validate('createJob'), // 6. validate FINAL merged input (IMPORTANT FIX)
-
-  aiTimeout(60_000), // 7. LLM timeout protection
-
-  createJob, // 8. controller
+  concurrencyLimit(5),
+  usageLimiter,
+  parseLimiter,
+  uploadJob,
+  handleUploadError,
+  validatePdfMagic,
+  parseJobPdf,
+  validate('createJob'),
+  aiTimeout(60_000),
+  createJob,
 );
 
 // ─────────────────────────────────────────────

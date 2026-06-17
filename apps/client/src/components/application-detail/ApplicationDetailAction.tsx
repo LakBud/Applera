@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
 
+import { STATUS_STYLES } from '@/utils/ui/statusStyles';
+
 import { cn } from '../../lib/utils';
-import { STATUS_STYLES } from '../../utils/statusStyles';
 import { DeleteModal } from '../common/DeleteModal';
 import { Loader } from '../common/Loader';
 import { Button } from '../ui/button';

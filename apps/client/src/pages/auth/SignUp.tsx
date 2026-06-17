@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 
 import { Loader } from '../../components/common/Loader';
 import { AuthLayout } from '../../components/ui/layout';
-import { clerkAuthAppearance } from '../../utils/clerkStyle';
+import { clerkAuthAppearance } from '../../utils/ui/clerkStyle';
 
 export function SignUpPage() {
   const { isLoaded } = useAuth();

@@ -1,6 +1,7 @@
+import type { CVDocument } from '@/api/cv/cv.schemas';
+
 import { useMemo } from 'react';
 
-import type { CVDocument } from '../../api/schemas';
 import { CV_COMPLETENESS_RULES } from '../../utils/cv-id/rules';
 
 type Result = {

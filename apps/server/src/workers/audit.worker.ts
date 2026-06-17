@@ -1,84 +1,120 @@
-import { redis } from '../integrations/redis.js';
-import auditevent from '../models/AuditEvent.js';
+import { redis } from '../config/redis.js';
+import AuditEvent from '../models/AuditEvent.js';
 
-const STREAM_KEY = 'audit:stream';
-const GROUP = 'audit-group';
-const CONSUMER = 'audit-consumer-1';
+interface AuditEventPayload {
+  event: string;
+  userId: string;
+  userType: 'user' | 'guest';
+  requestId?: string;
+  resourceId?: string;
+  ip?: string;
+  userAgent?: string;
+  metadata?: Record<string, unknown>;
+}
 
-const r = redis as unknown as { sendCommand: (args: string[]) => Promise<unknown> };
+const QUEUE_KEY = 'audit:queue';
+const DEAD_LETTER_KEY = 'audit:queue:dead';
+const POLL_INTERVAL = 2000;
 
-async function init() {
+// -----------------------------
+// Safe JSON parse helper
+// -----------------------------
+function safeParse<T>(raw: string): T | null {
   try {
-    await r.sendCommand(['XGROUP', 'CREATE', STREAM_KEY, GROUP, '0', 'MKSTREAM']);
-  } catch (err: unknown) {
-    if (err instanceof Error && !err.message.includes('BUSYGROUP')) {
-      console.error('[audit worker init error]', err);
-    }
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
   }
 }
 
-export async function startAuditWorker() {
-  await init();
+// -----------------------------
+// Process valid entry
+// -----------------------------
+async function processEntry(raw: unknown): Promise<void> {
+  if (typeof raw !== 'string') {
+    console.error('[audit worker] invalid raw type:', raw);
 
+    // push to dead letter queue
+    await redis.lpush(DEAD_LETTER_KEY, JSON.stringify({ raw, reason: 'not-string' }));
+    return;
+  }
+
+  const data = safeParse<AuditEventPayload>(raw);
+
+  if (!data) {
+    console.error('[audit worker] invalid JSON:', raw);
+
+    await redis.lpush(DEAD_LETTER_KEY, JSON.stringify({ raw, reason: 'invalid-json' }));
+    return;
+  }
+
+  // -----------------------------
+  // Normalize metadata safely
+  // -----------------------------
+  let metadata = data.metadata;
+
+  if (typeof metadata === 'string') {
+    const parsed = safeParse<Record<string, unknown>>(metadata);
+    metadata = parsed ?? undefined;
+  }
+
+  // -----------------------------
+  // Validate required fields (basic guard)
+  // -----------------------------
+  if (!data.event || !data.userId || !data.userType) {
+    console.error('[audit worker] missing required fields:', data);
+
+    await redis.lpush(DEAD_LETTER_KEY, JSON.stringify({ data, reason: 'missing-fields' }));
+    return;
+  }
+
+  if (!['user', 'guest'].includes(data.userType)) {
+    console.error('[audit worker] invalid userType:', data.userType);
+    await redis.lpush(DEAD_LETTER_KEY, JSON.stringify({ data, reason: 'invalid-userType' }));
+    return;
+  }
+
+  // -----------------------------
+  // Write to DB
+  // -----------------------------
+  try {
+    await AuditEvent.create({
+      event: data.event,
+      userId: data.userId,
+      userType: data.userType,
+      requestId: data.requestId || undefined,
+      resourceId: data.resourceId || undefined,
+      ip: data.ip || undefined,
+      userAgent: data.userAgent || undefined,
+      metadata,
+    });
+  } catch (err) {
+    console.error('[audit worker] DB error:', err);
+
+    await redis.lpush(DEAD_LETTER_KEY, JSON.stringify({ data, reason: 'db-error' }));
+  }
+}
+
+// -----------------------------
+// Worker loop
+// -----------------------------
+export async function startAuditWorker(): Promise<void> {
   console.log('[audit worker] started');
 
   while (true) {
     try {
-      const response = (await r.sendCommand([
-        'XREADGROUP',
-        'GROUP',
-        GROUP,
-        CONSUMER,
-        'COUNT',
-        '10',
-        'BLOCK',
-        '5000',
-        'STREAMS',
-        STREAM_KEY,
-        '>',
-      ])) as unknown[];
+      const raw = await redis.rpop(QUEUE_KEY);
 
-      if (!response) {
+      if (!raw) {
+        await new Promise((res) => setTimeout(res, POLL_INTERVAL));
         continue;
       }
 
-      for (const stream of response) {
-        for (const message of (stream as unknown[][])[1] as unknown[][]) {
-          const [id, fields] = message as [string, string[]];
-
-          const data = Object.fromEntries(
-            (fields as string[]).reduce(
-              (acc: [string, string][], val: string, i: number, arr: string[]) => {
-                if (i % 2 === 0) {
-                  acc.push([val, arr[i + 1]]);
-                }
-                return acc;
-              },
-              [],
-            ),
-          );
-
-          try {
-            await auditevent.create({
-              event: data.event,
-              userId: data.userId,
-              userType: data.userType as 'user' | 'guest',
-              requestId: data.requestId || undefined,
-              resourceId: data.resourceId || undefined,
-              ip: data.ip || undefined,
-              userAgent: data.userAgent || undefined,
-              metadata: data.metadata ? JSON.parse(data.metadata) : undefined,
-            });
-
-            await r.sendCommand(['XACK', STREAM_KEY, GROUP, id]);
-          } catch (err) {
-            console.error('[audit worker failed event]', err);
-          }
-        }
-      }
+      await processEntry(raw);
     } catch (err) {
-      console.error('[audit worker loop error]', err);
-      await new Promise((res) => setTimeout(res, 2000));
+      console.error('[audit worker] error', err);
+
+      await new Promise((res) => setTimeout(res, POLL_INTERVAL));
     }
   }
 }

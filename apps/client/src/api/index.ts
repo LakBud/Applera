@@ -11,7 +11,7 @@ export {
   useCV,
   useDeleteCV,
   useCVDashboard,
-} from './hooks/useCV';
+} from './cv/cv.hooks';
 
 export {
   useJobs,
@@ -19,35 +19,19 @@ export {
   useAnalyzeJobFile,
   useAnalyzeJobText,
   useDeleteJob,
-} from './hooks/useJob';
+} from './job/job.hooks';
 
 export {
   useApplicationsByCv,
   useApplication,
   useUpdateApplicationStatus,
   useCreateApplication,
-} from './hooks/useApplication';
+} from './application/application.hook';
 
-export { useInterviewPrep, useGenerateInterviewPrep } from './hooks/useInterviewPrep';
+export { useInterviewPrep, useGenerateInterviewPrep } from './interview/interviewPrep.hooks';
 
 // ── Domain APIs (optional but clean) ────────────────────
-export * as applicationApi from './application.api';
-export * as cvApi from './cv.api';
-export * as jobApi from './job.api';
-export * as trackerApi from './tracker.api';
-export * as dashboardApi from './dashboard.api';
-export * as interviewPrepApi from './interviewPrep.api';
-
-// ── Types ───────────────────────────────────────────────
-export type {
-  ApiError,
-  CVParsed,
-  CVDocument,
-  JobParsed,
-  JobDocument,
-  AnalyzeJobResponse,
-  MatchResult,
-  ApplicationDocument,
-  CreateApplicationRequest,
-  CreateApplicationResponse,
-} from './types';
+export * as applicationApi from './application/application.api';
+export * as cvApi from './cv/cv.api';
+export * as jobApi from './job/job.api';
+export * as interviewPrepApi from './interview/interviewPrep.api';
