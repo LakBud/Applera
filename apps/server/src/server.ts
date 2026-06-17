@@ -29,10 +29,7 @@ const app: express.Application = express();
 const PORT: number = Number(process.env.PORT) || 5005;
 const IS_PROD: boolean = process.env.NODE_ENV === 'production';
 
-// ─────────────────────────────────────────────
 // Core security middleware
-// ─────────────────────────────────────────────
-
 if (IS_PROD) app.set('trust proxy', 1);
 
 // Strict CSP via Helmet
@@ -55,7 +52,7 @@ app.use(
   }),
 );
 
-// 1. Request ID FIRST
+// Request ID FIRST
 // Also writes X-Request-ID to the response
 app.use((req: Request, res: Response, next: NextFunction) => {
   const id = crypto.randomUUID();
@@ -65,7 +62,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// 2. CORS
+// CORS
 app.use(
   cors({
     origin: (origin, callback) => {

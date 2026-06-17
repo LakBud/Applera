@@ -30,7 +30,7 @@ export async function generateApplication(
 
   const cleaned = scrubPlaceholders(raw);
 
-  // ── ZOD VALIDATION (source of truth) ─────────────────────────────
+  // ZOD VALIDATION
   const parsed = ApplicationLLMSchema.safeParse(cleaned);
 
   if (!parsed.success) {

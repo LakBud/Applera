@@ -8,6 +8,3 @@ export const openai = new OpenAI({
 });
 
 export const model: string = GROQ_MODEL;
-
-// ── Usage ─────────────────────────────────────────────────────────────────────
-// import { openai, model, isOllama } from "../lib/aiClient.js";
