@@ -70,7 +70,7 @@ export function ApplicationDetailPage() {
       />
 
       {/* Result */}
-      <ApplicationResult data={{ application }} />
+      <ApplicationResult data={application} />
 
       <div className="grid grid-cols-2 gap-4 items-start">
         <JobListingSection

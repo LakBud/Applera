@@ -1,4 +1,4 @@
-import type { CreateApplicationResponse } from '@/api/application/application.schemas';
+import type { Application } from '@/api/application/application.schemas';
 
 import { useState } from 'react';
 
@@ -13,7 +13,7 @@ import {
 export function useHomeState() {
   const [cvId, setCvId] = useState<string | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
-  const [result, setResult] = useState<CreateApplicationResponse | null>(null);
+  const [result, setResult] = useState<Application | null>(null);
 
   const uploadCVFile = useUploadCVFile();
   const uploadCVText = useUploadCVText();

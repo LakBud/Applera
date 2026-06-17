@@ -67,14 +67,9 @@ export async function deleteApplication(id: string): Promise<void> {
 }
 
 // GET /tracker/application/:id
-export async function getApplication(id: string) {
+export async function getApplication(id: string): Promise<Application> {
   const res = await client.get(`/api/tracker/application/${id}`);
-
-  return z
-    .object({
-      application: ApplicationSchema,
-    })
-    .parse(res.data);
+  return z.object({ application: ApplicationSchema }).parse(res.data).application;
 }
 
 export async function updateApplicationStatus(
