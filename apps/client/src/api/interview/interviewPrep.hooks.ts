@@ -1,6 +1,5 @@
 import { useAuth } from '@clerk/clerk-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { toast } from 'sonner';
 
 import { client } from '../client';
@@ -17,13 +16,14 @@ export function useInterviewPrep(applicationId: string) {
       try {
         const res = await client.get(`/api/interview/${applicationId}`);
         return InterviewPrepSchema.parse(res.data.prep);
-      } catch (err: unknown) {
-        if (axios.isAxiosError(err) && err.response?.status === 404) return null;
-        throw err;
+      } catch (error: unknown) {
+        if ((error as ClientError).code === 'NOT_FOUND') {
+          return null;
+        }
+        throw error;
       }
     },
     enabled: !!isSignedIn && !!applicationId,
-    retry: false,
   });
 }
 

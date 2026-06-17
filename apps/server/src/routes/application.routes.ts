@@ -23,12 +23,11 @@ router.post(
   '/',
   validate('createApplication'),
   idempotency,
-  usageLimiter,
   applicationLimiter,
+  usageLimiter,
   aiTimeout(60_000),
   createApplication,
 );
-
 // ─────────────────────────────────────────────
 // GET /api/application
 // List applications

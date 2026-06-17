@@ -35,13 +35,13 @@ router.get('/', getCVs);
 router.post(
   '/',
   concurrencyLimit(5),
-  usageLimiter,
   parseLimiter,
   uploadCV,
-  validatePdfMagic,
-  validate('uploadCV'),
-  parseCvPdf,
   handleUploadError,
+  validatePdfMagic,
+  parseCvPdf,
+  validate('uploadCV'),
+  usageLimiter,
   aiTimeout(60_000),
   createCV,
 );

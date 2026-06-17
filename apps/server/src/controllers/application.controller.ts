@@ -132,7 +132,9 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
       {
         new: true,
       },
-    );
+    )
+      .populate('cv', 'parsed applicationsCount lastUsedAt')
+      .populate('job', 'parsed company location');
 
     if (!updated) {
       return res.status(404).json({

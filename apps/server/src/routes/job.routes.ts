@@ -21,23 +21,16 @@ const router = express.Router();
 // ─────────────────────────────────────────────
 router.post(
   '/',
-
-  concurrencyLimit(5), // 0. safety: concurrent control
+  concurrencyLimit(5),
+  parseLimiter,
+  uploadJob,
+  handleUploadError,
+  validatePdfMagic,
+  parseJobPdf,
+  validate('createJob'),
   usageLimiter,
-  parseLimiter, // 1. rate limit
-
-  uploadJob, // 2. multer upload
-  handleUploadError, // 3. MUST be immediately after upload
-
-  validatePdfMagic, // 4. file safety check
-
-  parseJobPdf, // 5. extract PDF text
-
-  validate('createJob'), // 6. validate FINAL merged input (IMPORTANT FIX)
-
-  aiTimeout(60_000), // 7. LLM timeout protection
-
-  createJob, // 8. controller
+  aiTimeout(60_000),
+  createJob,
 );
 
 // ─────────────────────────────────────────────

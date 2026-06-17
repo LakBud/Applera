@@ -12,8 +12,8 @@ const router = express.Router();
 router.post(
   '/:applicationId',
   idempotency,
-  usageLimiter,
   interviewPrepLimiter,
+  usageLimiter,
   aiTimeout(60_000),
   generatePrep,
 );
