@@ -1,5 +1,5 @@
-import { CVSchemaData, JobSchemaData } from '../../controllers/interviewPrep.controller.js';
-import { MatchReport } from '../../types/match.types.js';
+import { MatchReport } from '../../types/schemas/match.schemas.js';
+import { CVSchemaData, JobSchemaData } from '../../types/schemas/schema.js';
 
 export function buildApplicationPrompt(
   cv: CVSchemaData,

@@ -16,7 +16,7 @@ export type ClientErrorCode =
   | 'USAGE_LIMIT_REACHED'
   | 'UNKNOWN';
 
-export interface ClientError {
+export interface ClientError extends Error {
   code: ClientErrorCode;
   message: string;
   meta?: {
