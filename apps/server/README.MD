@@ -10,7 +10,7 @@ Express + TypeScript REST API powering the Applera job application platform.
 - **Auth**: Clerk
 - **AI**: Groq (llama-3.3-70b-versatile)
 - **File storage**: Cloudinary
-- **Rate limiting**: Upstash Redis
+- **Cache / Rate limiting**: Upstash Redis
 - **Validation**: Zod
 
 ## Getting Started
@@ -94,44 +94,80 @@ pnpm start  # runs dist/server.js
 
 ```
 src/
-├── config/       # App configuration and env validation
-├── controllers/  # Route handler logic
-├── db/           # MongoDB connection
-├── integrations/ # Third-party service clients (Groq, Cloudinary, Redis)
-├── lib/          # Internal utilities and helpers
-├── middleware/   # Express middleware (auth, CSRF, rate limiting, etc.)
-├── models/       # Mongoose schemas and models
-├── prompts/      # AI prompt templates
-├── routes/       # Express route definitions
-├── services/     # Business logic
-├── types/        # Shared TypeScript types
-├── utils/        # General utility functions
-├── workers/      # Background tasks
-└── server.ts     # App entry point
+├── config/
+├── controllers/
+├── lib/
+├── middleware/
+│ ├── auth/
+│ ├── pdf/
+│ ├── rate/
+│ ├── request/
+│ └── upload/
+├── models/
+├── prompts/
+│ └── application/
+├── routes/
+├── services/
+│ ├── application/
+│ ├── audit/
+│ ├── match/
+│ └── pipeline/
+├── types/
+│ └── schemas/
+├── utils/
+│ ├── match/
+│ └── shared/
+├── workers/
+└── server.ts
 ```
 
 ## API Routes
 
-| Method | Path                  | Description                         |
-| ------ | --------------------- | ----------------------------------- |
-| GET    | `/health`             | Health check                        |
-| POST   | `/api/webhooks/clerk` | Clerk webhook handler               |
-| `*`    | `/api/cv`             | CV upload, parsing, management      |
-| `*`    | `/api/job`            | Job listing management              |
-| `*`    | `/api/application`    | Application generation and tracking |
-| `*`    | `/api/interview`      | Interview prep generation           |
-| `*`    | `/api/tracker`        | Application status tracker          |
-| `*`    | `/api/dashboard`      | Dashboard stats                     |
+| Method | Path                  | Description                     |
+| ------ | --------------------- | ------------------------------- |
+| GET    | `/health`             | Health check                    |
+| POST   | `/api/webhooks/clerk` | Clerk webhook handler           |
+| `*`    | `/api/cv`             | CV upload, parsing, management  |
+| `*`    | `/api/job`            | Job listing management          |
+| `*`    | `/api/application`    | Application generation          |
+| `*`    | `/api/interview`      | Interview prep generation       |
+| `*`    | `/api/tracker`        | Application status and tracking |
+| `*`    | `/api/dashboard`      | Dashboard stats                 |
+
+## Middleware
+
+Each route applies middleware in a deliberate order:
+
+1. **Concurrency** — limits parallel requests per route
+2. **Rate limiting** — per-route limiters (parse, application, interview prep) + global fallback
+3. **Upload** — multer + magic byte file validation
+4. **PDF parsing** — extracts and validates text from uploaded PDFs
+5. **Validation** — Zod schema validation against request body
+6. **Usage limiter** — deducts AI quota only after all validation passes
+7. **Timeout** — LLM timeout protection
+8. **Controller** — business logic
 
 ## Security
 
 - Helmet for HTTP security headers
 - CORS restricted to frontend domain
 - CSRF protection via double-submit cookie pattern
-- Rate limiting via Upstash Redis
+- Rate limiting via Upstash Redis (global, per-route, and usage-based)
+- MongoDB query filter sanitization via `mongoose.set('sanitizeFilter', true)`
 - Input sanitization (HPP, object stripping)
+- MongoDB ObjectId validation at request boundaries
 - Clerk JWT verification on all protected routes
 - Svix signature verification on webhook endpoint
+- IPv4 and IPv6 address masking in logs
+
+## AI Usage Limits
+
+LLM calls are metered per user with a weekly quota. The usage limiter runs after all validation middleware so invalid or rejected requests never consume quota. Routes with LLM calls:
+
+- `POST /api/cv` — CV extraction (1 call)
+- `POST /api/job` — Job extraction (1 call)
+- `POST /api/application` — Match scoring + application generation (3 calls)
+- `POST /api/interview/:id` — Interview prep generation (1 call)
 
 ## Account Deletion
 

@@ -10,7 +10,7 @@ React + TypeScript frontend for the Applera job application platform.
 - **Auth**: Clerk
 - **Styling**: Tailwind CSS v4
 - **UI Components**: shadcn/ui + Radix UI
-- **HTTP Client**: Axios
+- **HTTP Client**: Axios (modularised interceptors)
 - **Build tool**: Vite
 
 ## Getting Started
@@ -79,27 +79,52 @@ Outputs to `dist/`.
 
 ```
 src/
-├── api/          # Axios client and API functions
-├── components/   # Shared UI components
-│   ├── common/   # Layout, nav, logo, loaders
-│   └── ui/       # shadcn/ui primitives
-├── core/         # App bootstrap
-│   ├── App.tsx
-│   ├── queryClient.ts
-│   └── router.ts
-├── hooks/        # Custom React hooks
-├── lib/          # Utilities (cn, etc.)
-├── pages/        # Page components
-│   ├── auth/     # Sign in / Sign up
-│   ├── application/
-│   └── cv/
-├── routes/       # TanStack Router file-based routes
-├── utils/        # Helper functions
+├── api/
+│ ├── application/
+│ ├── cv/
+│ ├── interview/
+│ ├── job/
+│ ├── interceptors/
+│ ├── client.ts
+│ ├── queryKeys.ts
+│ └── types.ts
+├── components/
+│ ├── common/
+│ └── ui/
+├── core/
+│ ├── App.tsx
+│ ├── queryClient.ts
+│ └── router.ts
+├── hooks/
+├── lib/
+├── pages/
+│ ├── auth/
+│ ├── application/
+│ └── cv/
+├── routes/
+├── utils/
 ├── declarations.d.ts
-├── globals.css   # Global styles
-├── main.tsx      # Entry point
-└── routeTree.gen.ts  # Auto-generated — do not edit
+├── globals.css
+├── main.tsx
+└── routeTree.gen.ts
 ```
+
+## API Layer
+
+Each domain has three files:
+
+- `*.api.ts` — raw API functions (fetch, parse, return typed data)
+- `*.hooks.ts` — TanStack Query hooks (useQuery, useMutation)
+- `*.schemas.ts` — Zod schemas and inferred TypeScript types
+
+Hooks delegate to API functions — no inline fetch logic in hooks.
+
+## HTTP Client
+
+The Axios client (`api/client.ts`) uses two interceptors:
+
+- **Request** (`interceptors/request.interceptor.ts`) — attaches Bearer token and CSRF token with in-flight deduplication to prevent parallel token races
+- **Response** (`interceptors/response.interceptor.ts`) — normalises all errors to a typed `ClientError` shape with codes: `TIMEOUT`, `NETWORK_ERROR`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `RATE_LIMITED`, `USAGE_LIMIT_REACHED`, `UNKNOWN`
 
 ## Routing
 

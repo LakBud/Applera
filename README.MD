@@ -19,6 +19,7 @@ A modern **React 19 + TypeScript** single-page application built with:
 - **TanStack Query** for server state management
 - **Clerk** for authentication
 - **Tailwind CSS v4** + **shadcn/ui** for styling and components
+- **Axios** with modularised request/response interceptors
 - **Deployed on Vercel**
 
 ### [`apps/server/`](apps/server) — Backend
@@ -30,7 +31,7 @@ A **Node.js + Express** REST API built with:
 - **Clerk** for authentication (JWT verification)
 - **Groq API** (llama-3.3-70b-versatile) for AI-powered features
 - **Cloudinary** for PDF file storage
-- **Upstash Redis** for rate limiting
+- **Upstash Redis** for caching and rate limiting
 - **Deployed on Render**
 
 ## Quick Start
@@ -43,7 +44,6 @@ A **Node.js + Express** REST API built with:
 ### Setup
 
 ```bash
-# Install all dependencies from the root
 pnpm install
 ```
 
@@ -77,110 +77,118 @@ pnpm docker:prod
 
 ## Key Features
 
-### CV Management (`/api/cv`)
+### CV Management
 
-- Upload and parse resumes via AI
-- Extract structured data (skills, experience, education)
-- Store PDFs securely on Cloudinary
+Upload and parse resumes via AI, extract structured data (skills, experience, education), and store PDFs securely on Cloudinary.
 
-### Job Applications (`/api/application`)
+### Job Applications
 
-- Auto-generate tailored cover letters and applications
-- Track application status across multiple job boards
-- AI-powered content generation via Groq
+Auto-generate tailored cover letters and applications with AI-powered content generation via Groq. Track application status across multiple roles.
 
-### Interview Preparation (`/api/interview`)
+### Interview Preparation
 
-- Generate personalized interview prep guides
-- Question generation based on CV and job description
-- Mock interview resources
+Generate personalised interview prep guides and questions based on your CV and job description.
 
-### Application Tracking (`/api/tracker`)
+### Application Tracking
 
-- Monitor application status
-- Dashboard insights and analytics
-- Visualize job search progress
+Monitor application status, view dashboard insights, and visualise job search progress.
 
-### Security
+## Security
 
 - Helmet for HTTP security headers
 - CORS restricted to frontend domain
-- CSRF protection via double-submit cookie pattern
-- Input validation and sanitization
-- Clerk JWT verification on protected routes
-- Rate limiting via Upstash Redis
+- CSRF protection via double-submit cookie pattern with in-flight deduplication
+- MongoDB query filter sanitization via `mongoose.set('sanitizeFilter', true)`
+- MongoDB ObjectId validation at request boundaries
+- Input validation and sanitization (Zod, HPP, object stripping)
+- Clerk JWT verification on all protected routes
+- Svix signature verification on webhook endpoint
+- Per-route and global rate limiting via Upstash Redis
+- Usage-based AI quota limiting — quota only charged after validation passes
+- IPv4 and IPv6 address masking in logs
 
 ## Project Structure
 
 ```
 .
 ├── apps/
-│   ├── client/              # React frontend (Vite + TanStack Router)
-│   │   ├── src/
-│   │   │   ├── api/         # Axios client and API functions
-│   │   │   ├── components/  # UI components
-│   │   │   ├── pages/       # Page components
-│   │   │   ├── routes/      # File-based routes
-│   │   │   └── hooks/       # Custom React hooks
-│   │   └── package.json
-│   │
-│   └── server/              # Express backend (REST API)
-│       ├── src/
-│       │   ├── routes/      # API route handlers
-│       │   ├── models/      # Mongoose schemas
-│       │   ├── middleware/  # Express middleware
-│       │   ├── services/    # Business logic
-│       │   └── server.ts    # App entry point
-│       └── package.json
-│
+│   ├── client/
+│   │   └── src/
+│   │       ├── api/
+│   │       │   ├── application/
+│   │       │   ├── cv/
+│   │       │   ├── interview/
+│   │       │   ├── job/
+│   │       │   ├── interceptors/
+│   │       │   ├── client.ts
+│   │       │   ├── queryKeys.ts
+│   │       │   └── types.ts
+│   │       ├── components/
+│   │       ├── hooks/
+│   │       ├── pages/
+│   │       ├── routes/
+│   │       └── utils/
+│   └── server/
+│       └── src/
+│           ├── config/
+│           ├── controllers/
+│           ├── lib/
+│           ├── middleware/
+│           │   ├── auth/
+│           │   ├── pdf/
+│           │   ├── rate/
+│           │   ├── request/
+│           │   └── upload/
+│           ├── models/
+│           ├── prompts/
+│           ├── routes/
+│           ├── services/
+│           │   ├── application/
+│           │   ├── audit/
+│           │   ├── match/
+│           │   └── pipeline/
+│           ├── types/
+│           ├── utils/
+│           ├── workers/
+│           └── server.ts
 ├── docker-compose.dev.yml
 ├── docker-compose.prod.yml
-├── pnpm-workspace.yaml      # Workspace config
-├── package.json             # Root workspace config
-├── tsconfig.json            # Root TS config
-└── README.md
+├── pnpm-workspace.yaml
+├── package.json
+└── tsconfig.json
 ```
+
+## Tech Stack
+
+| Category         | Technology                                        |
+| ---------------- | ------------------------------------------------- |
+| **Frontend**     | React 19, TypeScript, Vite, TanStack Router/Query |
+| **Backend**      | Node.js, Express 5, TypeScript                    |
+| **Database**     | MongoDB Atlas + Mongoose                          |
+| **Auth**         | Clerk (JWT-based)                                 |
+| **AI**           | Groq (llama-3.3-70b-versatile)                    |
+| **File Storage** | Cloudinary                                        |
+| **Cache**        | Upstash Redis                                     |
+| **Styling**      | Tailwind CSS v4, shadcn/ui                        |
+| **Validation**   | Zod                                               |
 
 ## Documentation
 
-- **Frontend**: See [`apps/client/README.md`](./apps/client/README.md) for React setup, routing, and deployment details
-- **Backend**: See [`apps/server/README.md`](./apps/server/README.md) for API routes, database setup, and deployment details
+- **Frontend**: [`apps/client/README.md`](./apps/client/README.md)
+- **Backend**: [`apps/server/README.md`](./apps/server/README.md)
 
 ## Deployment
 
-### Frontend (Vercel)
+### Frontend — Vercel
 
 - **Build command**: `vite build`
 - **Output directory**: `dist`
 - **Root directory**: `apps/client`
-- **Environment variables**: Set in Vercel
 
-### Backend (Render)
+### Backend — Render
 
 - **Build command**: `pnpm install && pnpm run build`
 - **Start command**: `pnpm start`
-- **Environment variables**: Set in Render dashboard
-
-## Tech Stack Summary
-
-| Category               | Technology                                        |
-| ---------------------- | ------------------------------------------------- |
-| **Frontend**           | React 19, TypeScript, Vite, TanStack Router/Query |
-| **Backend**            | Node.js, Express 5, TypeScript                    |
-| **Database**           | MongoDB (Atlas)                                   |
-| **Auth**               | Clerk (JWT-based)                                 |
-| **AI/ML**              | Groq (llama-3.3-70b-versatile)                    |
-| **File Storage**       | Cloudinary                                        |
-| **Caching/Rate Limit** | Upstash Redis                                     |
-| **Styling**            | Tailwind CSS v4, shadcn/ui                        |
-| **Validation**         | Zod                                               |
-
----
-
-**Questions?** See the individual README files for each app:
-
-- [`apps/client/README.md`](./apps/client/README.md)
-- [`apps/server/README.md`](./apps/server/README.md)
 
 ---
 
