@@ -1,6 +1,6 @@
-import { CVSchemaData, JobSchemaData } from '../controllers/interviewPrep.controller.js';
-import { MatchReport } from '../types/match.types.js';
-import { extractAllText } from '../utils/match.utils.js';
+import { MatchReport } from '../types/schemas/match.schemas.js';
+import { CVSchemaData, JobSchemaData } from '../types/schemas/schema.js';
+import { extractAllText } from '../utils/match/match.utils.js';
 
 export const buildMatchEnrichPrompt = (
   cv: CVSchemaData,

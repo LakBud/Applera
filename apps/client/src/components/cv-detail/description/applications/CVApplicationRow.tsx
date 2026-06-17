@@ -1,13 +1,15 @@
+import type { DashboardCV } from '@/api/cv/cv.schemas';
+
 import { useNavigate } from '@tanstack/react-router';
 import { formatDistanceToNow } from 'date-fns';
 import { MapPin, TrendingUp } from 'lucide-react';
 
-import type { Dashboard } from '../../../../api/schemas';
-import { STATUS_STYLES } from '../../../../utils/statusStyles';
+import { STATUS_STYLES } from '@/utils/ui/statusStyles';
+
 import { Badge } from '../../../ui/badge';
 import { RowBase } from '../../../ui/row';
 
-type DashboardApplication = Dashboard['applications'][number];
+type DashboardApplication = DashboardCV['applications'][number];
 
 export function CVApplicationRow({ application }: { application: DashboardApplication }) {
   const navigate = useNavigate();

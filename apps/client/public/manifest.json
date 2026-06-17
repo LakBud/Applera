@@ -1,0 +1,8 @@
+{
+  "name": "Applera",
+  "short_name": "Applera",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7fff5",
+  "theme_color": "#1fa028"
+}

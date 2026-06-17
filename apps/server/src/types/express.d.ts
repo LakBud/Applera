@@ -1,7 +1,7 @@
 import '@clerk/express';
 import 'multer';
 
-import { Identity } from '../middleware/global/identity.ts';
+import { Identity } from './schemas/identity.schemas.ts';
 
 declare global {
   namespace Express {

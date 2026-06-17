@@ -133,7 +133,7 @@ export default defineConfig([
       '@typescript-eslint/no-explicit-any': 'error',
 
       eqeqeq: 'error',
-      curly: ['error', 'all'],
+      curly: ['error', 'multi-line'],
       'no-duplicate-imports': 'error',
     },
   },

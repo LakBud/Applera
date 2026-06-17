@@ -1,14 +1,12 @@
 import { Request, Response } from 'express';
 
-import { auditLog } from '../middleware/log/audit.logger.js';
 import Application, { APPLICATION_STATUSES, ApplicationStatus } from '../models/Application.js';
 import CVModel from '../models/CV.js';
 import JobModel from '../models/Job.js';
-import { generateApplication } from '../services/application.service.js';
-import { matchCVToJob } from '../services/match.service.js';
-import { repairCV } from '../services/repair/cvRepair.service.js';
-import { repairJob } from '../services/repair/jobRepair.service.js';
-import { getParam } from '../utils/req.js';
+import { auditLog } from '../services/audit/audit.service.js';
+import { runApplicationPipelineFromParsed } from '../services/pipeline/pipeline.service.js';
+import { CVSchema, JobSchema } from '../types/schemas/schema.js';
+import { getParam } from '../utils/shared/param.utils.js';
 
 // ─────────────────────────────────────────────
 // GET /api/application
@@ -228,73 +226,62 @@ export const createApplication = async (req: Request, res: Response) => {
     const { cvId, jobId } = req.body;
 
     if (!cvId || !jobId) {
-      return res.status(400).json({
-        error: 'cvId and jobId are required',
-      });
+      return res.status(400).json({ error: 'cvId and jobId are required' });
     }
 
     if (typeof cvId !== 'string' || typeof jobId !== 'string') {
       return res.status(400).json({ error: 'cvId and jobId must be strings' });
     }
 
-    const cv = await CVModel.findOne({
-      _id: { $eq: cvId },
-      ownerId: { $eq: ownerId },
-      ownerType: { $eq: ownerType },
-    });
-    const job = await JobModel.findOne({
-      _id: { $eq: jobId },
-      ownerId: { $eq: ownerId },
-      ownerType: { $eq: ownerType },
-    });
+    // DB lookups
+    const [cv, job] = await Promise.all([
+      CVModel.findOne({
+        _id: { $eq: cvId },
+        ownerId: { $eq: ownerId },
+        ownerType: { $eq: ownerType },
+      }),
+      JobModel.findOne({
+        _id: { $eq: jobId },
+        ownerId: { $eq: ownerId },
+        ownerType: { $eq: ownerType },
+      }),
+    ]);
 
     if (!cv || !job) {
-      return res.status(404).json({
-        error: 'CV or Job not found',
-      });
+      return res.status(404).json({ error: 'CV or Job not found' });
     }
 
     if (!cv.parsed) {
-      return res.status(404).json({
-        error: 'CV not parsed',
-      });
+      return res.status(404).json({ error: 'CV not parsed' });
     }
 
-    // normalize inputs
-    const cleanCV = repairCV(cv.parsed);
-    const cleanJob = repairJob(job.parsed);
+    const parsedCV = CVSchema.parse(cv.parsed);
+    const parsedJob = JobSchema.parse(job.parsed);
 
-    // match
-    const match = await matchCVToJob(cleanCV, cleanJob);
+    // delegate all business logic to pipeline
+    const result = await runApplicationPipelineFromParsed(parsedCV, parsedJob);
 
-    // generate LLM output
-    const applicationOutput = await generateApplication(cleanCV, cleanJob, match);
-
+    // DB write
     const application = await Application.create({
       ownerId,
       ownerType,
       cv: cv._id,
       job: job._id,
-
-      cvNameSnapshot: cv.parsed?.name?.trim() || 'CV',
-      jobTitleSnapshot: job.parsed?.title?.trim() || 'Untitled Role',
-      companySnapshot: job.parsed?.company?.trim() || 'Unknown Company',
-      locationSnapshot: job.parsed?.location?.trim() || '',
-
-      match,
-
-      tailored_cv_summary: applicationOutput.cv_summary,
-
+      ...result.snapshot,
+      match: result.match,
+      tailored_cv_summary: result.application.cv_summary,
       cover_letter: [
-        applicationOutput.application_letter.introduction,
-        applicationOutput.application_letter.body,
-        applicationOutput.application_letter.closing,
+        result.application.application_letter.introduction,
+        result.application.application_letter.body,
+        result.application.application_letter.closing,
       ].join('\n\n'),
-
-      application_email: applicationOutput.email_template,
-
+      application_email: result.application.email_template,
       status: 'generated',
     });
+
+    // Match getApplications populate fields exactly
+    await application.populate('cv', 'parsed applicationsCount lastUsedAt');
+    await application.populate('job', 'parsed company location');
 
     await auditLog({
       event: 'APPLICATION_CREATED',
@@ -305,7 +292,13 @@ export const createApplication = async (req: Request, res: Response) => {
       ip: req.ip,
     });
 
-    return res.status(201).json({ application });
+    return res.status(201).json({
+      application: {
+        ...application.toObject(),
+        cv,
+        job,
+      },
+    });
   } catch (err) {
     console.error('[createApplication]', err);
     return res.status(500).json({ error: 'Failed to create application' });

@@ -1,6 +1,7 @@
+import type { CreateApplicationResponse } from '@/api/application/application.schemas';
+
 import { useState } from 'react';
 
-import type { CreateApplicationResponse } from '../../../api/schemas';
 import { Tabs } from '../../ui/tabs';
 import { ApplicationScorePanel } from './ApplicationScorePanel';
 import { ApplicationTabContent } from './ApplicationTabsContent';

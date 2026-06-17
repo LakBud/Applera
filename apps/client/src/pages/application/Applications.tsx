@@ -1,6 +1,6 @@
 import { Briefcase } from 'lucide-react';
 
-import { useApplications } from '../../api/hooks/useApplication';
+import { useApplications } from '../../api/application/application.hook';
 import { ApplicationRow } from '../../components/applications/ApplicationRow';
 import { ApplicationRowSkeleton } from '../../components/applications/ApplicationRowSkeleton';
 import { StatusSummary } from '../../components/applications/StatusSummary';

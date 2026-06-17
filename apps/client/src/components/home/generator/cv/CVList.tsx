@@ -1,7 +1,8 @@
+import type { CVDocument } from '@/api/cv/cv.schemas';
+
 import { useAuth } from '@clerk/clerk-react';
 
 import { useCVs } from '../../../../api';
-import type { CVDocument } from '../../../../api/schemas';
 import { CvListItem } from './CVListItem';
 
 export function CvList({

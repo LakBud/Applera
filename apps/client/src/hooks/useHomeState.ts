@@ -1,3 +1,5 @@
+import type { CreateApplicationResponse } from '@/api/application/application.schemas';
+
 import { useState } from 'react';
 
 import {
@@ -7,7 +9,6 @@ import {
   useUploadCVFile,
   useUploadCVText,
 } from '../api';
-import type { CreateApplicationResponse } from '../api/schemas';
 
 export function useHomeState() {
   const [cvId, setCvId] = useState<string | null>(null);

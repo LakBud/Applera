@@ -7,11 +7,11 @@ import {
   getApplications,
   updateApplicationStatus,
 } from '../controllers/application.controller.js';
-import { idempotency } from '../middleware/idempotency.js';
-import { applicationLimiter } from '../middleware/rateLimiter.js';
-import { aiTimeout } from '../middleware/timeout.js';
-import { usageLimiter } from '../middleware/usageLimiter.js';
-import { validate } from '../middleware/validate.js';
+import { applicationLimiter } from '../middleware/rate/rateLimiter.middleware.js';
+import { usageLimiter } from '../middleware/rate/usageLimiter.middleware.js';
+import { idempotency } from '../middleware/request/idempotency.middleware.js';
+import { aiTimeout } from '../middleware/request/timeout.middleware.js';
+import { validate } from '../middleware/request/validate/validate.middleware.js';
 
 const router = express.Router();
 

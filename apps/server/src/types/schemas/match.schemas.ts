@@ -19,4 +19,5 @@ export const MatchReportSchema = z.object({
     .nullable(),
 });
 
+export type ConfidenceLevel = z.infer<typeof MatchReportSchema>['confidence'];
 export type MatchReport = z.infer<typeof MatchReportSchema>;

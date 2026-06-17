@@ -1,0 +1,100 @@
+import { useAuth } from '@clerk/clerk-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { z } from 'zod';
+
+import { client } from '../client';
+import { queryKeys } from '../queryKeys';
+import type { ClientError } from '../types';
+import { handleMutationError } from '../utils/errors';
+import { ApplicationSchema, CreateApplicationResponseSchema } from './application.schemas';
+
+export function useApplications() {
+  const { isSignedIn } = useAuth();
+  return useQuery({
+    queryKey: queryKeys.application.all,
+    queryFn: async () => {
+      const res = await client.get('/api/application');
+      return z.array(ApplicationSchema).parse(res.data.applications);
+    },
+    enabled: !!isSignedIn,
+  });
+}
+
+export function useCreateApplication() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { cvId: string; jobId: string }) => {
+      const res = await client.post('/api/application', data);
+      return CreateApplicationResponseSchema.parse(res.data);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.application.all });
+      toast.success('Application created');
+    },
+    onError: (error: ClientError) =>
+      handleMutationError(error, 'Failed to create Application. Please try again later.'),
+  });
+}
+
+export function useDeleteApplication() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await client.delete(`/api/application/${id}`);
+    },
+    onSuccess: (_, id) => {
+      qc.invalidateQueries({ queryKey: queryKeys.application.all });
+      qc.removeQueries({ queryKey: queryKeys.application.detail(id) });
+      toast.success('Application deleted');
+    },
+    onError: () => {
+      toast.error('Failed to delete application. Please try again.');
+    },
+  });
+}
+
+export function useApplication(id: string) {
+  const { isSignedIn } = useAuth();
+  return useQuery({
+    queryKey: queryKeys.application.detail(id),
+    queryFn: async () => {
+      const res = await client.get(`/api/tracker/application/${id}`);
+      return ApplicationSchema.parse(res.data.application);
+    },
+    enabled: !!isSignedIn && !!id,
+  });
+}
+
+export function useApplicationsByCv(cvId: string) {
+  const { isSignedIn } = useAuth();
+  return useQuery({
+    queryKey: queryKeys.application.byCv(cvId),
+    queryFn: async () => {
+      const res = await client.get(`/api/tracker/${cvId}`);
+      return z.array(ApplicationSchema).parse(res.data.applications);
+    },
+    enabled: !!isSignedIn && !!cvId,
+  });
+}
+
+export function useUpdateApplicationStatus() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, status, notes }: { id: string; status: string; notes?: string }) => {
+      const res = await client.patch(`/api/tracker/application/${id}/status`, { status, notes });
+      return ApplicationSchema.parse(res.data.application);
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: queryKeys.application.detail(vars.id) });
+      qc.invalidateQueries({ queryKey: queryKeys.application.all });
+      toast.success('Status updated');
+    },
+    onError: () => {
+      toast.error('Failed to update status. Please try again.');
+    },
+  });
+}

@@ -4,12 +4,16 @@ import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 
+import { connectDB } from './config/db.js';
 import { CLIENT_URL } from './config/env.js';
-import { connectDB } from './db/db.js';
-import { attachIdentity, requireUser } from './middleware/global/identity.js';
-import { sanitizeHpp } from './middleware/global/sanitize.js';
+import { attachIdentity, requireUser } from './middleware/global/identity.middleware.js';
+import { sanitizeHpp } from './middleware/global/sanitize.middleware.js';
 import { requestLogger } from './middleware/log/request.logger.js';
-import { earlyLimiter, globalLimiter, webhookLimiter } from './middleware/rateLimiter.js';
+import {
+  earlyLimiter,
+  globalLimiter,
+  webhookLimiter,
+} from './middleware/rate/rateLimiter.middleware.js';
 import applicationRoutes from './routes/application.routes.js';
 import cvRoutes from './routes/cv.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
@@ -17,7 +21,8 @@ import interviewRoutes from './routes/interviewPrep.routes.js';
 import jobRoutes from './routes/job.routes.js';
 import trackerRoutes from './routes/tracker.routes.js';
 import webhookRoutes from './routes/webhook.routes.js';
-import { stripObject } from './utils/utils.js';
+import { stripObject } from './utils/shared/sanitize.utils.js';
+import './workers/audit.boot.js';
 
 const app: express.Application = express();
 
@@ -28,9 +33,7 @@ const IS_PROD: boolean = process.env.NODE_ENV === 'production';
 // Core security middleware
 // ─────────────────────────────────────────────
 
-if (IS_PROD) {
-  app.set('trust proxy', 1);
-}
+if (IS_PROD) app.set('trust proxy', 1);
 
 // Strict CSP via Helmet
 app.use(
@@ -160,9 +163,11 @@ publicRouter.get('/api/csrf-token', (req: Request, res: Response) => {
 // Input sanitisation
 // ─────────────────────────────────────────────
 
-app.use((req: Request, _res: Response, next: NextFunction) => {
+app.use((req, _res, next) => {
   stripObject(req.body);
   stripObject(req.params);
+  stripObject(req.query);
+
   next();
 });
 

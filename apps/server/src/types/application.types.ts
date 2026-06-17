@@ -1,19 +1,4 @@
-import type { MatchReport } from './match.types.js';
-
-export type ApplicationLLMOutput = {
-  cv_summary: string;
-
-  application_letter: {
-    introduction: string;
-    body: string;
-    closing: string;
-  };
-
-  email_template: {
-    subject: string;
-    body: string;
-  };
-};
+import { MatchReport } from './schemas/match.schemas.js';
 
 export type Application = {
   cv_id: string;

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
-import { auditLog } from '../middleware/log/audit.logger.js';
 import Application, { APPLICATION_STATUSES } from '../models/Application.js';
-import { getParam } from '../utils/req.js';
+import { auditLog } from '../services/audit/audit.service.js';
+import { getParam } from '../utils/shared/param.utils.js';
 
 // ─────────────────────────────────────────────
 // GET /api/tracker/:cvId
