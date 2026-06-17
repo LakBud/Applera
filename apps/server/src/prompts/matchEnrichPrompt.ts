@@ -1,4 +1,4 @@
-import { MatchReport } from '../types/schemas/match.schemas.js';
+import type { MatchReport } from '../types/schemas/match.schemas.js';
 import { CVSchemaData, JobSchemaData } from '../types/schemas/schema.js';
 import { extractAllText } from '../utils/match/match.utils.js';
 

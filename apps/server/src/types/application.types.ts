@@ -1,4 +1,4 @@
-import { MatchReport } from './schemas/match.schemas.js';
+import type { MatchReport } from './schemas/match.schemas.js';
 
 export type Application = {
   cv_id: string;

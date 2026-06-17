@@ -7,7 +7,7 @@ import InterviewPrep from '../models/InterviewPrep.js';
 import Job from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { generateInterviewPrep } from '../services/interview/interviewPrep.service.js';
-import { MatchReport } from '../types/schemas/match.schemas.js';
+import type { MatchReport } from '../types/schemas/match.schemas.js';
 import type { CVSchemaData, JobSchemaData } from '../types/schemas/schema.js';
 import { getParam } from '../utils/shared/param.utils.js';
 

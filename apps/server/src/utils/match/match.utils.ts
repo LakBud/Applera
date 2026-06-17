@@ -1,6 +1,6 @@
 // Pure utility functions for CV-to-job matching.
 // No side effects, no imports — easy to unit test in isolation.
-import { MatchReport } from '../../types/schemas/match.schemas.js';
+import type { MatchReport } from '../../types/schemas/match.schemas.js';
 
 /* ── Normalisation ────────────────────────────────────────────────────────── */
 

@@ -42,7 +42,7 @@ export async function uploadCVText(cvText: string): Promise<UploadCVResponse> {
 }
 
 // DELETE /api/cv/id
-export async function deleteCV(id: string): Promise<{ message: string }> {
+export async function deleteCVById(id: string): Promise<{ message: string }> {
   const response = await client.delete(`/api/cv/${id}`);
   return response.data;
 }
@@ -53,7 +53,7 @@ export async function pinCV(id: string): Promise<{ message: string }> {
   return response.data;
 }
 
-// ── GET dashboard for CV ────────────────────────────────────────
+// GET dashboard for CV
 export async function getCVDashboard(cvId: string): Promise<DashboardCV> {
   const res = await client.get<unknown>(`/api/dashboard/${cvId}`);
 

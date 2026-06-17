@@ -62,6 +62,10 @@ export async function getApplicationsByCv(cvId: string) {
     .parse(res.data);
 }
 
+export async function deleteApplication(id: string): Promise<void> {
+  await client.delete(`/api/application/${id}`);
+}
+
 // GET /tracker/application/:id
 export async function getApplication(id: string) {
   const res = await client.get(`/api/tracker/application/${id}`);
@@ -73,16 +77,14 @@ export async function getApplication(id: string) {
     .parse(res.data);
 }
 
-// PATCH /tracker/application/:id/status
-export async function updateApplicationStatus(id: string, status: string, notes?: string) {
-  const res = await client.patch(`/api/tracker/application/${id}/status`, {
-    status,
-    notes,
-  });
+export async function updateApplicationStatus(
+  id: string,
+  status: string,
+  notes?: string,
+): Promise<Application> {
+  const payload = UpdateApplicationStatusSchema.parse({ status, notes });
 
-  return z
-    .object({
-      application: ApplicationSchema,
-    })
-    .parse(res.data);
+  const res = await client.patch(`/api/tracker/application/${id}/status`, payload);
+
+  return z.object({ application: ApplicationSchema }).parse(res.data).application;
 }

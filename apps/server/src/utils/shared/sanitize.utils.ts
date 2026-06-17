@@ -71,5 +71,14 @@ export function stripObject(obj: unknown): void {
 }
 
 export function maskIp(ip: string): string {
+  // IPv6
+  if (ip.includes(':')) {
+    const parts = ip.split(':');
+    parts[parts.length - 1] = 'xxxx';
+    parts[parts.length - 2] = 'xxxx';
+    return parts.join(':');
+  }
+
+  // IPv4
   return ip.replace(/\.\d+$/, '.xxx');
 }

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
-import { ApplicationLLMOutput } from './llm.schemas.js';
-import { MatchReport } from './match.schemas.js';
+import { ApplicationLLMSchema } from './llm.schemas.js';
+import { MatchReportSchema } from './match.schemas.js';
 import { CVSchema, JobSchema } from './schema.js';
 
 const SnapshotSchema = z.object({
@@ -15,9 +15,8 @@ export const PipelineResultSchema = z.object({
   cv: CVSchema,
   job: JobSchema,
   snapshot: SnapshotSchema,
+  match: MatchReportSchema,
+  application: ApplicationLLMSchema,
 });
 
-export type PipelineResult = z.infer<typeof PipelineResultSchema> & {
-  match: MatchReport;
-  application: ApplicationLLMOutput;
-};
+export type PipelineResult = z.infer<typeof PipelineResultSchema>;

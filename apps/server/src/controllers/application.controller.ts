@@ -253,9 +253,9 @@ export const createApplication = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'CV or Job not found' });
     }
 
-    if (!cv.parsed) {
-      return res.status(404).json({ error: 'CV not parsed' });
-    }
+    if (!cv.parsed) return res.status(404).json({ error: 'CV not parsed' });
+
+    if (!job.parsed) return res.status(404).json({ error: 'Job not parsed' });
 
     const parsedCV = CVSchema.parse(cv.parsed);
     const parsedJob = JobSchema.parse(job.parsed);
@@ -295,11 +295,7 @@ export const createApplication = async (req: Request, res: Response) => {
     });
 
     return res.status(201).json({
-      application: {
-        ...application.toObject(),
-        cv,
-        job,
-      },
+      application: application.toObject(),
     });
   } catch (err) {
     console.error('[createApplication]', err);

@@ -24,8 +24,15 @@ function parsePdf(label: 'cv' | 'job') {
           return;
         }
 
-        if (label === 'cv') req.pdfText = cleaned;
-        else req.jobPdfText = cleaned;
+        if (label === 'cv') {
+          req.pdfText = cleaned;
+          req.body ??= {};
+          req.body.cvText ??= cleaned;
+        } else {
+          req.jobPdfText = cleaned;
+          req.body ??= {};
+          req.body.jobText ??= cleaned;
+        }
 
         next();
       })

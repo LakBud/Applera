@@ -8,10 +8,13 @@ const textField = (label: string, max = 20_000, min = 10) =>
     .min(min, { message: `${label} is too short.` })
     .max(max, { message: `${label} exceeds limit.` });
 
-export const schemas = {
+const objectId = (label: string) =>
+  z.string().regex(/^[a-f\d]{24}$/i, { message: `${label} must be a valid MongoDB ObjectId.` });
+
+export const requestSchemas = {
   createApplication: z.object({
-    cvId: z.string().min(1),
-    jobId: z.string().min(1),
+    cvId: objectId('cvId'),
+    jobId: objectId('jobId'),
   }),
   createJob: z.object({
     jobText: textField('jobText').optional(),
@@ -21,4 +24,4 @@ export const schemas = {
   }),
 } as const;
 
-export type SchemaName = keyof typeof schemas;
+export type requestSchemaName = keyof typeof requestSchemas;

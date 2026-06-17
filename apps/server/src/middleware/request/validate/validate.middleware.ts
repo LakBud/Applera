@@ -1,9 +1,9 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import { SchemaName, schemas } from './validate.schemas.js';
+import { requestSchemaName, requestSchemas } from './validate.schemas.js';
 
-export function validate<T extends SchemaName>(schemaName: T) {
-  const schema = schemas[schemaName];
+export function validate<T extends requestSchemaName>(schemaName: T) {
+  const schema = requestSchemas[schemaName];
   return (req: Request, res: Response, next: NextFunction) => {
     const result = schema.safeParse(req.body ?? {});
     if (!result.success) {

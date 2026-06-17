@@ -2,6 +2,7 @@ import { Seniority } from '../../types/seniority.types.js';
 
 export function normalizeSeniority(input: unknown): Seniority {
   const v = String(input).toLowerCase().trim();
+  const words = v.split(/\s+/);
 
   const map: Array<[Seniority, string[]]> = [
     ['intern', ['intern']],
@@ -13,7 +14,7 @@ export function normalizeSeniority(input: unknown): Seniority {
   ];
 
   for (const [level, keywords] of map) {
-    if (keywords.some((kw) => v.includes(kw))) {
+    if (keywords.some((kw) => words.includes(kw))) {
       return level;
     }
   }

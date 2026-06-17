@@ -2,7 +2,7 @@ import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { APP_GEN_PROMPT } from '../../prompts/application/applicationGen.system.js';
 import { buildApplicationPrompt } from '../../prompts/application/applicationGen.user.js';
 import { ApplicationLLMOutput, ApplicationLLMSchema } from '../../types/schemas/llm.schemas.js';
-import { MatchReport } from '../../types/schemas/match.schemas.js';
+import type { MatchReport } from '../../types/schemas/match.schemas.js';
 import type { CVSchemaData, JobSchemaData } from '../../types/schemas/schema.js';
 import { buildCacheKey, scrubPlaceholders } from '../../utils/application/application.utils.js';
 import { cachedLLM, callLLM } from '../llm/llm.service.js';

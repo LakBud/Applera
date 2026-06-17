@@ -16,7 +16,8 @@ export async function connectDB(): Promise<void> {
   try {
     validateMongoUri(MONGO_URI!);
 
-    const conn = await mongoose.connect(MONGO_URI!, { sanitizeFilter: true });
+    mongoose.set('sanitizeFilter', true);
+    const conn = await mongoose.connect(MONGO_URI!);
 
     console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (err: unknown) {

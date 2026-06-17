@@ -1,7 +1,7 @@
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { runAIEnrichment } from '../../lib/match/ai.match.js';
 import { runMathMatch } from '../../lib/match/math.match.js';
-import { MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
+import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
 import { CVSchemaData, JobSchemaData } from '../../types/schemas/schema.js';
 import { extractAllText } from '../../utils/match/match.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';

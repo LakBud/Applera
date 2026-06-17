@@ -13,3 +13,7 @@ export const handleMutationError = (error: ClientError, fallback: string) => {
   }
   toast.error(fallback);
 };
+
+export function isClientError(error: unknown): error is ClientError {
+  return typeof error === 'object' && error !== null && 'code' in error;
+}

@@ -22,13 +22,13 @@ const router = express.Router();
 router.post(
   '/',
   concurrencyLimit(5),
+  usageLimiter,
   parseLimiter,
   uploadJob,
   handleUploadError,
   validatePdfMagic,
   parseJobPdf,
   validate('createJob'),
-  usageLimiter,
   aiTimeout(60_000),
   createJob,
 );

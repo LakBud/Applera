@@ -1,22 +1,17 @@
 import { useAuth } from '@clerk/clerk-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { z } from 'zod';
 
-import { client } from '../client';
 import { queryKeys } from '../queryKeys';
 import type { ClientError } from '../types';
 import { handleMutationError } from '../utils/errors';
-import { CreateJobResponseSchema, JobDocumentSchema } from './job.schemas';
+import { createJobFile, createJobText, deleteJob, getJobById, getJobs } from './job.api';
 
 export function useJobs() {
   const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.job.list(),
-    queryFn: async () => {
-      const res = await client.get('/api/job');
-      return z.array(JobDocumentSchema).parse(res.data);
-    },
+    queryFn: () => getJobs(),
     enabled: !!isSignedIn,
   });
 }
@@ -25,10 +20,7 @@ export function useJob(jobId: string) {
   const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.job.detail(jobId),
-    queryFn: async () => {
-      const res = await client.get(`/api/job/${jobId}`);
-      return JobDocumentSchema.parse(res.data);
-    },
+    queryFn: () => getJobById(jobId),
     enabled: !!isSignedIn && !!jobId,
   });
 }
@@ -37,10 +29,7 @@ export function useDeleteJob() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async (jobId: string) => {
-      const res = await client.delete(`/api/job/${jobId}`);
-      return res.data;
-    },
+    mutationFn: (jobId: string) => deleteJob(jobId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.job.all });
       toast.success('Job deleted');
@@ -55,18 +44,11 @@ export function useAnalyzeJobFile() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async (file: File) => {
-      const form = new FormData();
-      form.append('job', file);
-
-      const res = await client.post('/api/job', form);
-      return CreateJobResponseSchema.parse(res.data);
-    },
+    mutationFn: (file: File) => createJobFile(file),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.job.all });
       toast.success('Job analyzed successfully');
     },
-
     onError: (error: ClientError) =>
       handleMutationError(error, 'Failed to analyze job file. Please try again.'),
   });
@@ -76,15 +58,11 @@ export function useAnalyzeJobText() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async (jobText: string) => {
-      const res = await client.post('/api/job', { jobText });
-      return CreateJobResponseSchema.parse(res.data);
-    },
+    mutationFn: (jobText: string) => createJobText(jobText),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.job.all });
       toast.success('Job analyzed successfully');
     },
-
     onError: (error: ClientError) =>
       handleMutationError(error, 'Failed to analyze job text. Please try again.'),
   });
