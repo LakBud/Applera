@@ -5,13 +5,14 @@ import { Card2 } from '../../../ui/card';
 import { SectionHeading } from '../../../ui/section';
 
 function normalizeUrl(url?: string) {
-  if (!url) return '';
+  const value = url?.trim();
+  if (!value) return '';
 
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
+  if (/^https?:\/\//i.test(value)) {
+    return value;
   }
 
-  return `https://${url}`;
+  return `https://${value}`;
 }
 
 type Project = CVDocument['parsed']['projects'][number];

@@ -5,6 +5,7 @@
     "moduleResolution": "NodeNext",
 
     "rootDir": "./src",
+    "rootDirs": ["./src", "../../packages/schemas/src"],
     "outDir": "./dist",
 
     "strict": true,
