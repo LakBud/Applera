@@ -1,14 +1,7 @@
-import { ApplicationStatusSchema, CVDocumentSchema } from '@repo/schemas';
 import { z } from 'zod';
 
-import { ConfidenceSchema } from '../schemas';
-
-export const UploadCVResponseSchema = z.object({
-  message: z.string(),
-  cv: CVDocumentSchema,
-});
-
-export type UploadCVResponse = z.infer<typeof UploadCVResponseSchema>;
+import { ConfidenceSchema } from '../common/confidence.schema.js';
+import { ApplicationStatusSchema } from '../common/status.schema.js';
 
 export const DashboardCVSchema = z.object({
   cv_id: z.string(),
@@ -19,8 +12,8 @@ export const DashboardCVSchema = z.object({
 
   best_match_id: z.string().nullable(),
 
-  status_breakdown: z.partialRecord(ApplicationStatusSchema, z.number()),
-  confidence_breakdown: z.partialRecord(ConfidenceSchema, z.number()),
+  status_breakdown: z.record(ApplicationStatusSchema, z.number()),
+  confidence_breakdown: z.record(ConfidenceSchema, z.number()),
 
   applications: z.array(
     z.object({

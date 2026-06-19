@@ -1,4 +1,4 @@
-import type { Application } from '@/api/application/application.schemas';
+import type { Application } from '@repo/schemas';
 
 type Props = {
   activeTab: 'letter' | 'summary' | 'email';

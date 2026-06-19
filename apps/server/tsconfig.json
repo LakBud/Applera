@@ -15,8 +15,7 @@
     "resolveJsonModule": true,
 
     "paths": {
-      "@/*": ["./src/*"],
-      "@repo/schemas": ["../../packages/schemas/src"]
+      "@repo/schemas": ["../../packages/schemas/src/index.ts"]
     },
 
     "types": ["node", "express"]

@@ -1,4 +1,4 @@
-import type { CVParsed } from '@/api/cv/cv.schemas';
+import type { CVParsed } from '@repo/schemas';
 
 import { EducationSection } from './sections/EducationSection';
 import { ExperienceSection } from './sections/ExperienceSection';

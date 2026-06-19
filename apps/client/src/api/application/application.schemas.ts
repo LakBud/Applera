@@ -1,5 +1,4 @@
-import { ApplicationStatusSchema } from '@repo/schemas';
-import { ApplicationSchema } from '@repo/schemas';
+import { ApplicationSchema, ApplicationStatusSchema } from '@repo/schemas';
 import { z } from 'zod';
 
 // Requests

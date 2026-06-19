@@ -3,13 +3,13 @@ import { z } from 'zod';
 import { ALLOWED_SENIORITY } from '../types/seniority.types.js';
 
 export const JobParsedSchema = z.object({
-  title: z.string().default(''),
-  company: z.string().default(''),
-  location: z.string().default(''),
+  title: z.string(),
+  company: z.string(),
+  location: z.string().optional(),
   required_skills: z.array(z.string()).default([]),
   responsibilities: z.array(z.string()).default([]),
   seniority: z.enum(ALLOWED_SENIORITY).default('unknown'),
-  raw_description: z.string().default(''),
+  raw_description: z.string().optional(),
 });
 
 export const JobDocumentSchema = z.object({

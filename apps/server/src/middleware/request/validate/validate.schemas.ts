@@ -17,17 +17,32 @@ export const requestSchemas = {
       cvId: objectId('cvId'),
       jobId: objectId('jobId'),
     }),
+    params: z.object({}),
+    query: z.object({}),
   }),
+
   createJob: z.object({
-    jobText: textField('jobText').optional(),
+    body: z.object({
+      jobText: textField('jobText').optional(),
+    }),
+    params: z.object({}),
+    query: z.object({}),
   }),
+
   uploadCV: z.object({
-    cvText: textField('cvText').optional(),
+    body: z.object({
+      cvText: textField('cvText').optional(),
+    }),
+    params: z.object({}),
+    query: z.object({}),
   }),
+
   generatePrep: z.object({
+    body: z.object({}),
     params: z.object({
       applicationId: objectId('applicationId'),
     }),
+    query: z.object({}),
   }),
 } as const;
 
