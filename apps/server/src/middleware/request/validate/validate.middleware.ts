@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import { requestSchemaName, requestSchemas } from './validate.schemas.js';
+import { type requestSchemaName, requestSchemas } from './validate.schemas.js';
 
 export function validate<T extends requestSchemaName>(schemaName: T) {
   const schema = requestSchemas[schemaName];

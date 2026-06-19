@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import { redis } from '../../config/redis.js';
 import { hashRequest } from '../../utils/shared/hash.utils.js';

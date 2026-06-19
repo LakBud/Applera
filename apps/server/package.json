@@ -20,6 +20,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@repo/schemas": "workspace:*",
     "@clerk/express": "^2.1.15",
     "@upstash/redis": "^1.38.0",
     "@upstash/vector": "^1.2.3",

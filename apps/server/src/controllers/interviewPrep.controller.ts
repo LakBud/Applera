@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import type { CVParsed } from '@repo/schemas';
+import type { Request, Response } from 'express';
 
 import { deleteCache } from '../lib/cache.js';
 import Application from '../models/Application.js';
@@ -8,7 +9,7 @@ import Job from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { generateInterviewPrep } from '../services/interview/interviewPrep.service.js';
 import type { MatchReport } from '../types/schemas/match.schemas.js';
-import type { CVSchemaData, JobSchemaData } from '../types/schemas/schema.js';
+import type { JobSchemaData } from '../types/schemas/schema.js';
 import { getParam } from '../utils/shared/param.utils.js';
 
 // ─────────────────────────────────────────────
@@ -73,7 +74,7 @@ export const generatePrep = async (req: Request, res: Response) => {
     await deleteCache(`interview:${applicationId}`);
 
     const prep = await generateInterviewPrep(
-      cv as CVSchemaData,
+      cv as CVParsed,
       job as JobSchemaData,
       match,
       applicationId,

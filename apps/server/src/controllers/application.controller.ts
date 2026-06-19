@@ -1,11 +1,15 @@
-import { Request, Response } from 'express';
+import { CVParsedSchema } from '@repo/schemas';
+import type { Request, Response } from 'express';
 
-import Application, { APPLICATION_STATUSES, ApplicationStatus } from '../models/Application.js';
+import Application, {
+  APPLICATION_STATUSES,
+  type ApplicationStatus,
+} from '../models/Application.js';
 import CVModel from '../models/CV.js';
 import JobModel from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { runApplicationPipelineFromParsed } from '../services/pipeline/pipeline.service.js';
-import { CVSchema, JobSchema } from '../types/schemas/schema.js';
+import { JobSchema } from '../types/schemas/schema.js';
 import { getParam } from '../utils/shared/param.utils.js';
 
 // ─────────────────────────────────────────────
@@ -257,7 +261,7 @@ export const createApplication = async (req: Request, res: Response) => {
 
     if (!job.parsed) return res.status(404).json({ error: 'Job not parsed' });
 
-    const parsedCV = CVSchema.parse(cv.parsed);
+    const parsedCV = CVParsedSchema.parse(cv.parsed);
     const parsedJob = JobSchema.parse(job.parsed);
 
     // delegate all business logic to pipeline

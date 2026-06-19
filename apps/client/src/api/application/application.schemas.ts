@@ -1,3 +1,4 @@
+import { CVParsedSchema } from '@repo/schemas';
 import { z } from 'zod';
 
 import { JobDocumentSchema } from '../job/job.schemas';
@@ -30,67 +31,67 @@ export const MatchSchema = z.object({
 /**
  * CV reference (prevents circular imports)
  */
-export const CVRefParsedSchema = z.object({
-  name: z.string().optional(),
-  email: z.string().optional(),
-  phone: z.string().optional(),
-  github: z.string().optional(),
-  summary: z.string().optional(),
-  seniority_level: z.string().optional(),
-  location: z.string().optional(),
+// export const CVRefParsedSchema = z.object({
+//   name: z.string().optional(),
+//   email: z.string().optional(),
+//   phone: z.string().optional(),
+//   github: z.string().optional(),
+//   summary: z.string().optional(),
+//   seniority_level: z.string().optional(),
+//   location: z.string().optional(),
 
-  skills: z.array(z.string()),
+//   skills: z.array(z.string()),
 
-  experience: z.array(
-    z.object({
-      title: z.string().optional(),
-      company: z.string().optional(),
-      highlights: z.array(z.string()),
-    }),
-  ),
+//   experience: z.array(
+//     z.object({
+//       title: z.string().optional(),
+//       company: z.string().optional(),
+//       highlights: z.array(z.string()),
+//     }),
+//   ),
 
-  education: z.array(
-    z.object({
-      title: z.string().optional(),
-      school: z.string().optional(),
-    }),
-  ),
+//   education: z.array(
+//     z.object({
+//       title: z.string().optional(),
+//       school: z.string().optional(),
+//     }),
+//   ),
 
-  projects: z
-    .array(
-      z.object({
-        name: z.string().optional(),
-        description: z.string().optional(),
-        url: z.string().optional(),
-        tech: z.array(z.string()).default([]),
-      }),
-    )
-    .default([]),
-});
+//   projects: z
+//     .array(
+//       z.object({
+//         name: z.string().optional(),
+//         description: z.string().optional(),
+//         url: z.string().optional(),
+//         tech: z.array(z.string()).default([]),
+//       }),
+//     )
+//     .default([]),
+// });
 
-export const CVRefSchema = z.object({
-  _id: z.string(),
-  rawText: z.string().optional(),
-  parsed: CVRefParsedSchema,
+// export const CVRefSchema = z.object({
+//   _id: z.string(),
+//   rawText: z.string().optional(),
+//   parsed: CVRefParsedSchema,
 
-  applicationsCount: z.number().optional(),
-  lastUsedAt: z.string().optional(),
-  pinned: z.boolean().default(false),
+//   applicationsCount: z.number().optional(),
+//   lastUsedAt: z.string().optional(),
+//   pinned: z.boolean().default(false),
 
-  pdfUrl: z.string().optional(),
-  previewUrl: z.string().optional(),
-  cloudinaryPublicId: z.string().optional(),
+//   pdfUrl: z.string().optional(),
+//   previewUrl: z.string().optional(),
+//   cloudinaryPublicId: z.string().optional(),
 
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
-});
+//   createdAt: z.string().optional(),
+//   updatedAt: z.string().optional(),
+// });
 
 // Application
 
 export const ApplicationSchema = z.object({
   _id: z.string(),
 
-  cv: CVRefSchema.nullable(),
+  cv: CVParsedSchema.nullable(),
   job: JobDocumentSchema.nullable(),
 
   match: MatchSchema,

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { cloudinary } from '../config/cloudinary.js';
 import { deleteCache, getCache, setCache } from '../lib/cache.js';

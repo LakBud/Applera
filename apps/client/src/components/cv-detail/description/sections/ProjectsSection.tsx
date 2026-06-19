@@ -1,5 +1,4 @@
-import type { CVDocument } from '@/api/cv/cv.schemas';
-
+import type { CVDocument } from '@repo/schemas';
 import { ExternalLink } from 'lucide-react';
 
 import { Card2 } from '../../../ui/card';

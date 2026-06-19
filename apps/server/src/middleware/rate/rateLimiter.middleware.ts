@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import { redis } from '../../config/redis.js';
 import { auditLog } from '../../services/audit/audit.service.js';

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import Application from '../models/Application.js';
 import CV from '../models/CV.js';

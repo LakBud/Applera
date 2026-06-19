@@ -1,8 +1,10 @@
+import type { CVParsed } from '@repo/schemas';
+
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
-import type { CVSchemaData, JobSchemaData } from '../../types/schemas/schema.js';
+import type { JobSchemaData } from '../../types/schemas/schema.js';
 
 export function buildApplicationPrompt(
-  cv: CVSchemaData,
+  cv: CVParsed,
   job: JobSchemaData,
   match: MatchReport,
 ): string {

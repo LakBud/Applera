@@ -1,5 +1,7 @@
-import { PipelineResult } from '../../types/schemas/pipeline.schemas.js';
-import { CVSchemaData, JobSchemaData } from '../../types/schemas/schema.js';
+import type { CVParsed } from '@repo/schemas';
+
+import { type PipelineResult } from '../../types/schemas/pipeline.schemas.js';
+import { type JobSchemaData } from '../../types/schemas/schema.js';
 import { generateApplication } from '../application/application.service.js';
 import { repairCV } from '../cv/cvRepair.service.js';
 import { repairJob } from '../job/jobRepair.service.js';
@@ -16,7 +18,7 @@ export type Input = Buffer | string;
  * Used when data is already in DB (e.g. from controller).
  */
 export async function runApplicationPipelineFromParsed(
-  cv: CVSchemaData,
+  cv: CVParsed,
   job: JobSchemaData,
 ): Promise<PipelineResult> {
   // Step 1: repair/normalize

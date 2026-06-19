@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import { COOKIE_NAME, sign } from '../../lib/cookie.js';
 import User from '../../models/User.js';

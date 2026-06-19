@@ -1,5 +1,5 @@
 import type { WebhookEvent } from '@clerk/express';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { Webhook } from 'svix';
 
 import { cloudinary } from '../config/cloudinary.js';

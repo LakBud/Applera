@@ -1,6 +1,7 @@
 packages:
   - 'apps/client'
   - 'apps/server'
+  - 'packages/*'
 allowBuilds:
   '@clerk/shared': true
   esbuild: true

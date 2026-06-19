@@ -1,7 +1,7 @@
 import { clerkMiddleware } from '@clerk/express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import express, { NextFunction, Request, Response } from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import helmet from 'helmet';
 
 import { connectDB } from './config/db.js';

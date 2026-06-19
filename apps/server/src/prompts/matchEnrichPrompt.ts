@@ -1,9 +1,11 @@
+import type { CVParsed } from '@repo/schemas';
+
 import type { MatchReport } from '../types/schemas/match.schemas.js';
-import { CVSchemaData, JobSchemaData } from '../types/schemas/schema.js';
+import { type JobSchemaData } from '../types/schemas/schema.js';
 import { extractAllText } from '../utils/match/match.utils.js';
 
 export const buildMatchEnrichPrompt = (
-  cv: CVSchemaData,
+  cv: CVParsed,
   job: JobSchemaData,
   mathResult: Omit<MatchReport, 'ai_insights'>,
 ): { systemPrompt: string; userContent: string } => {
