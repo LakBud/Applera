@@ -13,7 +13,12 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
 
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "verbatimModuleSyntax": true,
+
+    "composite": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
 }

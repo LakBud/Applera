@@ -4,10 +4,6 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
 
-    "rootDir": "./src",
-    "rootDirs": ["./src", "../../packages/schemas/src"],
-    "outDir": "./dist",
-
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -15,13 +11,17 @@
     "sourceMap": true,
     "resolveJsonModule": true,
 
-    "paths": {
-      "@repo/schemas": ["../../packages/schemas/src/index.ts"],
-      "@/*": ["./*"]
-    },
+    "verbatimModuleSyntax": true,
 
-    "types": ["node", "express"]
+    "types": ["node", "express"],
+
+    "paths": {
+      "@/*": ["./src/*"],
+      "@repo/schemas": ["../../packages/schemas/src/index.ts"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+
+  "include": ["src"],
+
   "exclude": ["node_modules", "dist"]
 }
