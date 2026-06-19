@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 import { maskIp } from '../../utils/shared/sanitize.utils.js';
 

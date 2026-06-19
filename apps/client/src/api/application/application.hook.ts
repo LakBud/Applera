@@ -1,4 +1,5 @@
 import { useAuth } from '@clerk/clerk-react';
+import type { ApplicationStatus } from '@repo/schemas';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -75,8 +76,19 @@ export function useUpdateApplicationStatus() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, status, notes }: { id: string; status: string; notes?: string }) =>
-      updateApplicationStatus(id, status, notes),
+    mutationFn: ({
+      id,
+      status,
+      notes,
+    }: {
+      id: string;
+      status: ApplicationStatus;
+      notes?: string;
+    }) =>
+      updateApplicationStatus(id, {
+        status,
+        notes,
+      }),
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: queryKeys.application.detail(vars.id) });
       qc.invalidateQueries({ queryKey: queryKeys.application.all });

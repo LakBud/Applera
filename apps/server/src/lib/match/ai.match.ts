@@ -1,16 +1,17 @@
+import type { CVParsed, JobParsed } from '@repo/schemas';
+
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { buildMatchEnrichPrompt } from '../../prompts/matchEnrichPrompt.js';
 import { cachedLLM, callLLM } from '../../services/llm/llm.service.js';
 import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
-import { CVSchemaData, JobSchemaData } from '../../types/schemas/schema.js';
 import { extractAllText } from '../../utils/match/match.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
 
 // ── AI pass ───────────────────────────────────────────────────────────────────
 
 export async function runAIEnrichment(
-  cv: CVSchemaData,
-  job: JobSchemaData,
+  cv: CVParsed,
+  job: JobParsed,
   mathResult: Omit<MatchReport, 'ai_insights'>,
 ): Promise<MatchReport['ai_insights']> {
   const cacheKey = `match:ai:${CACHE_VERSIONS.match}:${hash(

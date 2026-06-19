@@ -13,9 +13,8 @@ COPY . .
 # install all workspace dependencies
 RUN pnpm install --frozen-lockfile
 
-WORKDIR /app/apps/client
-
-RUN pnpm build
+# build client and its workspace dependencies (e.g. @repo/schemas) in order
+RUN pnpm --filter client... build
 
 
 # production stage

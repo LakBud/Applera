@@ -1,3 +1,4 @@
+import type { ApplicationStatus } from '@repo/schemas';
 import { useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
@@ -24,7 +25,7 @@ export function ApplicationDetailPage() {
     });
   };
 
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = (status: ApplicationStatus) => {
     updateStatus({ id: applicationId, status });
   };
 

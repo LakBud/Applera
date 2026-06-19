@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import Application, { APPLICATION_STATUSES } from '../models/Application.js';
 import { auditLog } from '../services/audit/audit.service.js';

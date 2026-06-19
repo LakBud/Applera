@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 export function concurrencyLimit(max: number) {
   if (max < 1) {

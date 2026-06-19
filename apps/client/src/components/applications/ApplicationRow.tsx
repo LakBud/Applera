@@ -1,5 +1,4 @@
-import type { Application } from '@/api/application/application.schemas';
-
+import type { Application } from '@repo/schemas';
 import { useNavigate } from '@tanstack/react-router';
 import { formatDistanceToNow } from 'date-fns';
 import { FileText, MapPin, TrendingUp } from 'lucide-react';

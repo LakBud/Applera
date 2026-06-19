@@ -17,7 +17,8 @@
 
     /* Paths */
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@repo/schemas": ["../../packages/schemas/src"]
     },
 
     /* Linting */

@@ -1,6 +1,5 @@
-import type { CVDocument } from '@/api/cv/cv.schemas';
-
 import { useAuth } from '@clerk/clerk-react';
+import type { CVDocument } from '@repo/schemas';
 
 import { useCVs } from '../../../../api';
 import { CvListItem } from './CVListItem';

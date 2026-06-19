@@ -1,67 +1,14 @@
+import { ApplicationStatusSchema, CVDocumentSchema } from '@repo/schemas';
 import { z } from 'zod';
 
-import { ApplicationStatusSchema } from '../application/application.schemas';
 import { ConfidenceSchema } from '../schemas';
-
-export const CVParsedSchema = z.object({
-  name: z.string().optional(),
-  email: z.string().optional(),
-  phone: z.string().optional(),
-  github: z.string().optional(),
-  summary: z.string().optional(),
-  seniority_level: z.string().optional(),
-  location: z.string().optional(),
-
-  skills: z.array(z.string()),
-
-  experience: z.array(
-    z.object({
-      title: z.string().optional(),
-      company: z.string().optional(),
-      highlights: z.array(z.string()),
-    }),
-  ),
-
-  education: z.array(
-    z.object({
-      title: z.string().optional(),
-      school: z.string().optional(),
-    }),
-  ),
-
-  projects: z
-    .array(
-      z.object({
-        name: z.string().optional(),
-        description: z.string().optional(),
-        url: z.string().optional(),
-        tech: z.array(z.string()).default([]),
-      }),
-    )
-    .default([]),
-});
-
-export const CVDocumentSchema = z.object({
-  _id: z.string(),
-  rawText: z.string().optional(),
-  parsed: CVParsedSchema,
-
-  applicationsCount: z.number().optional(),
-  lastUsedAt: z.string().optional(),
-  pinned: z.boolean().default(false),
-
-  pdfUrl: z.string().optional(),
-  previewUrl: z.string().optional(),
-  cloudinaryPublicId: z.string().optional(),
-
-  createdAt: z.string().optional(),
-  updatedAt: z.string().optional(),
-});
 
 export const UploadCVResponseSchema = z.object({
   message: z.string(),
   cv: CVDocumentSchema,
 });
+
+export type UploadCVResponse = z.infer<typeof UploadCVResponseSchema>;
 
 export const DashboardCVSchema = z.object({
   cv_id: z.string(),
@@ -72,8 +19,8 @@ export const DashboardCVSchema = z.object({
 
   best_match_id: z.string().nullable(),
 
-  status_breakdown: z.record(z.string(), z.number()),
-  confidence_breakdown: z.record(z.string(), z.number()),
+  status_breakdown: z.partialRecord(ApplicationStatusSchema, z.number()),
+  confidence_breakdown: z.partialRecord(ConfidenceSchema, z.number()),
 
   applications: z.array(
     z.object({
@@ -89,9 +36,5 @@ export const DashboardCVSchema = z.object({
     }),
   ),
 });
-
-export type UploadCVResponse = z.infer<typeof UploadCVResponseSchema>;
-export type CVDocument = z.infer<typeof CVDocumentSchema>;
-export type CVParsed = z.infer<typeof CVParsedSchema>;
 
 export type DashboardCV = z.infer<typeof DashboardCVSchema>;

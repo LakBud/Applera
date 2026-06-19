@@ -1,6 +1,6 @@
-import type { Application } from '@/api/application/application.schemas';
-
 import { useState } from 'react';
+
+import type { Application } from '@repo/schemas';
 
 import {
   useAnalyzeJobFile,

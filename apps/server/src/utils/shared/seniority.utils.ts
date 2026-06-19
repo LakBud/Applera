@@ -1,4 +1,4 @@
-import { Seniority } from '../../types/seniority.types.js';
+import type { Seniority } from '../../types/seniority.types.js';
 
 export function normalizeSeniority(input: unknown): Seniority {
   const v = String(input).toLowerCase().trim();

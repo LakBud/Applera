@@ -1,9 +1,8 @@
+import { type CVDocument, CVDocumentSchema } from '@repo/schemas';
 import { z } from 'zod';
 
 import { client } from '../client';
 import {
-  type CVDocument,
-  CVDocumentSchema,
   type DashboardCV,
   DashboardCVSchema,
   type UploadCVResponse,

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import type { ApplicationStatus } from '@repo/schemas';
 import { Link } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
 
@@ -13,10 +14,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 type Props = {
   jobTitle?: string;
-  status: string;
+  status: ApplicationStatus;
   isUpdatingStatus: boolean;
   isDeleting: boolean;
-  onStatusChange: (status: string) => void;
+  onStatusChange: (status: ApplicationStatus) => void;
   onDelete: () => void;
 };
 

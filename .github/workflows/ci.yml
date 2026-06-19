@@ -13,35 +13,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # Install pnpm
+      # Setup pnpm
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 11.8.0
 
-      # setup Node
+      # Setup Node
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22.17.0
           cache: pnpm
 
-      # Install deps
+      # Install dependencies
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      #  build shared packages first
+      - name: Build shared packages
+        run: pnpm --filter @repo/schemas build
 
       # Lint
       - name: Lint
         run: pnpm -r lint
 
-      # Typecheck
+      # Typecheck (after shared build)
       - name: Typecheck
         run: pnpm -r typecheck
 
-      # Build (parallel)
-      - name: Build
+      # Build apps
+      - name: Build apps
         run: |
           pnpm --filter server build &
           pnpm --filter client build &

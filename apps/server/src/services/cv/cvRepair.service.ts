@@ -1,4 +1,5 @@
-import { CVSchemaData } from '../../types/schemas/schema.js';
+import type { CVParsed } from '@repo/schemas';
+
 import { dedupe, normalizeArray, normalizeString } from '../../utils/shared/repair.utils.js';
 import { normalizeSeniority } from '../../utils/shared/seniority.utils.js';
 
@@ -16,7 +17,7 @@ function toRawArray(value: unknown): Raw[] {
 // Main Repair Function
 // ─────────────────────────────────────────────
 
-export function repairCV(cv: unknown): CVSchemaData {
+export function repairCV(cv: unknown): CVParsed {
   if (!cv || typeof cv !== 'object') {
     throw new TypeError('[cvRepair] CV must be a valid object');
   }

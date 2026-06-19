@@ -1,11 +1,8 @@
-import type { MatchReport } from '../../types/schemas/match.schemas.js';
-import type { CVSchemaData, JobSchemaData } from '../../types/schemas/schema.js';
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
-export function buildApplicationPrompt(
-  cv: CVSchemaData,
-  job: JobSchemaData,
-  match: MatchReport,
-): string {
+import type { MatchReport } from '../../types/schemas/match.schemas.js';
+
+export function buildApplicationPrompt(cv: CVParsed, job: JobParsed, match: MatchReport): string {
   return `
   LANGUAGE: Detect from raw_description above and write ALL output in that language.
   

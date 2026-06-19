@@ -1,13 +1,14 @@
-import { JobSchemaData } from '../../types/schemas/schema.js';
+import type { JobParsed } from '@repo/schemas';
+
 import { dedupe, normalizeArray, normalizeString } from '../../utils/shared/repair.utils.js';
 import { normalizeSeniority } from '../../utils/shared/seniority.utils.js';
 
-export function repairJob(job: unknown, rawText?: string): JobSchemaData {
+export function repairJob(job: unknown, rawText?: string): JobParsed {
   if (!job || typeof job !== 'object') {
     throw new TypeError('[jobRepair] Job must be a valid object');
   }
 
-  const data = job as JobSchemaData;
+  const data = job as JobParsed;
 
   return {
     title: normalizeString(data.title),

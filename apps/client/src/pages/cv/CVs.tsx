@@ -1,4 +1,4 @@
-import type { CVDocument } from '@/api/cv/cv.schemas';
+import type { CVDocument } from '@repo/schemas';
 
 import { useCVs } from '../../api';
 import { usePinCV } from '../../api/cv/cv.hooks';
