@@ -1,4 +1,4 @@
-import { type CVParsed, JobParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 import { CACHE_VERSIONS } from '../config/cache.versions.js';
 import { EXTRACT_CV_PROMPT } from '../prompts/extract/extractCVPrompt.js';

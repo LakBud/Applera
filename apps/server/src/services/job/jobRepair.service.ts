@@ -1,4 +1,4 @@
-import { JobParsed } from '@repo/schemas';
+import type { JobParsed } from '@repo/schemas';
 
 import { dedupe, normalizeArray, normalizeString } from '../../utils/shared/repair.utils.js';
 import { normalizeSeniority } from '../../utils/shared/seniority.utils.js';

@@ -18,10 +18,11 @@
     "paths": {
       "@/*": ["./src/*"],
       "@repo/schemas": ["../../packages/schemas/src/index.ts"]
-    }
+    },
+
+    "noEmit": true
   },
 
   "include": ["src"],
-
   "exclude": ["node_modules", "dist"]
 }
