@@ -1,9 +1,9 @@
-import { CVExtractionSchema, type CVParsed } from '@repo/schemas';
+import { type CVParsed, JobParsed } from '@repo/schemas';
 
 import { CACHE_VERSIONS } from '../config/cache.versions.js';
 import { EXTRACT_CV_PROMPT } from '../prompts/extract/extractCVPrompt.js';
 import { EXTRACT_JOB_PROMPT } from '../prompts/extract/extractJobPrompt.js';
-import { JobExtractionSchema, type JobSchemaData } from '../types/schemas/schema.js';
+import { CVExtractionSchema, JobExtractionSchema } from '../types/schemas/extractor.schemas.js';
 import { hash } from '../utils/shared/hash.utils.js';
 import { sanitise } from '../utils/shared/sanitize.utils.js';
 import { repairCV } from './cv/cvRepair.service.js';
@@ -61,10 +61,10 @@ export async function extractCVData(cvText: string): Promise<CVParsed> {
  * 4. Validate schema
  * 5. Repair/normalize structured output
  */
-export async function extractJobData(jobText: string): Promise<JobSchemaData> {
+export async function extractJobData(jobText: string): Promise<JobParsed> {
   const safeText = sanitise(jobText, 'jobText');
 
-  return cachedLLM<JobSchemaData>({
+  return cachedLLM<JobParsed>({
     cacheKey: `job:${CACHE_VERSIONS.job}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
 

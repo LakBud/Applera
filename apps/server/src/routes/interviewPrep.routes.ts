@@ -1,3 +1,5 @@
+import { validate } from '@/middleware/request/validate/validate.middleware.js';
+
 import express from 'express';
 
 import { generatePrep, getPrep } from '../controllers/interviewPrep.controller.js';
@@ -11,6 +13,7 @@ const router = express.Router();
 // POST /api/interview/:applicationId  — 1 LLM call, rate-limited
 router.post(
   '/:applicationId',
+  validate('generatePrep'),
   idempotency,
   interviewPrepLimiter,
   usageLimiter,

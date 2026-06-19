@@ -13,14 +13,21 @@ const objectId = (label: string) =>
 
 export const requestSchemas = {
   createApplication: z.object({
-    cvId: objectId('cvId'),
-    jobId: objectId('jobId'),
+    body: z.object({
+      cvId: objectId('cvId'),
+      jobId: objectId('jobId'),
+    }),
   }),
   createJob: z.object({
     jobText: textField('jobText').optional(),
   }),
   uploadCV: z.object({
     cvText: textField('cvText').optional(),
+  }),
+  generatePrep: z.object({
+    params: z.object({
+      applicationId: objectId('applicationId'),
+    }),
   }),
 } as const;
 

@@ -1,7 +1,6 @@
-import type { CVParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
-import { type JobSchemaData } from '../../types/schemas/schema.js';
 import {
   calculateScore,
   calculateTextOverlap,
@@ -17,7 +16,7 @@ import {
 
 // ── Math pass ─────────────────────────────────────────────────────────────────
 
-export function runMathMatch(cv: CVParsed, job: JobSchemaData): Omit<MatchReport, 'ai_insights'> {
+export function runMathMatch(cv: CVParsed, job: JobParsed): Omit<MatchReport, 'ai_insights'> {
   const cvSkills = normalizeSkills(cv.skills);
   const jobSkills = normalizeSkills(job.required_skills);
   const cvExpanded = expandSkills(cvSkills);

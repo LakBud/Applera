@@ -1,7 +1,6 @@
-import type { CVParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 import { type PipelineResult } from '../../types/schemas/pipeline.schemas.js';
-import { type JobSchemaData } from '../../types/schemas/schema.js';
 import { generateApplication } from '../application/application.service.js';
 import { repairCV } from '../cv/cvRepair.service.js';
 import { repairJob } from '../job/jobRepair.service.js';
@@ -19,7 +18,7 @@ export type Input = Buffer | string;
  */
 export async function runApplicationPipelineFromParsed(
   cv: CVParsed,
-  job: JobSchemaData,
+  job: JobParsed,
 ): Promise<PipelineResult> {
   // Step 1: repair/normalize
   const cleanCV = repairCV(cv);

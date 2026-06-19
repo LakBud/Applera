@@ -13,9 +13,10 @@ COPY . .
 # install all workspace dependencies
 RUN pnpm install --frozen-lockfile
 
-WORKDIR /app/apps/server
+# build server and its workspace dependencies (e.g. @repo/schemas) in order
+RUN pnpm --filter server... build
 
-RUN pnpm build
+WORKDIR /app/apps/server
 
 EXPOSE 5005
 

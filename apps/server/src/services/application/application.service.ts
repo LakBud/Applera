@@ -1,4 +1,4 @@
-import type { CVParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { APP_GEN_PROMPT } from '../../prompts/application/applicationGen.system.js';
@@ -8,13 +8,12 @@ import {
   ApplicationLLMSchema,
 } from '../../types/schemas/llm.schemas.js';
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
-import type { JobSchemaData } from '../../types/schemas/schema.js';
 import { buildCacheKey, scrubPlaceholders } from '../../utils/application/application.utils.js';
 import { cachedLLM, callLLM } from '../llm/llm.service.js';
 
 export async function generateApplication(
   cv: CVParsed,
-  job: JobSchemaData,
+  job: JobParsed,
   match: MatchReport,
 ): Promise<ApplicationLLMOutput> {
   const cacheKey = buildCacheKey(CACHE_VERSIONS.application, cv, job, match);
@@ -39,7 +38,7 @@ export async function generateApplication(
   const parsed = ApplicationLLMSchema.safeParse(cleaned);
 
   if (!parsed.success) {
-    console.error('[generateApplication INVALID OUTPUT]', parsed.error.flatten());
+    console.error('[generateApplication INVALID OUTPUT]', parsed.error);
     throw new Error('[generateApplication] Invalid LLM output schema');
   }
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ALLOWED_SENIORITY } from '../seniority.types.js';
+import { ALLOWED_SENIORITY } from '../types/seniority.types.js';
 
 export const CVParsedSchema = z.object({
   name: z.string().optional(),
@@ -61,15 +61,5 @@ export const CVDocumentSchema = z.object({
   updatedAt: z.string().optional(),
 });
 
-export const UploadCVResponseSchema = z.object({
-  message: z.string(),
-  cv: CVDocumentSchema,
-});
-
-export const CVExtractionSchema = CVParsedSchema.extend({
-  seniority_level: z.string().default('unknown'),
-});
-
 export type CVParsed = z.infer<typeof CVParsedSchema>;
 export type CVDocument = z.infer<typeof CVDocumentSchema>;
-export type UploadCVResponse = z.infer<typeof UploadCVResponseSchema>;

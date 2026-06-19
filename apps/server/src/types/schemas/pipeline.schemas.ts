@@ -1,9 +1,8 @@
-import { CVParsedSchema } from '@repo/schemas';
+import { CVParsedSchema, JobParsedSchema } from '@repo/schemas';
 import { z } from 'zod';
 
 import { ApplicationLLMSchema } from './llm.schemas.js';
 import { MatchReportSchema } from './match.schemas.js';
-import { JobSchema } from './schema.js';
 
 const SnapshotSchema = z.object({
   cvNameSnapshot: z.string(),
@@ -14,7 +13,7 @@ const SnapshotSchema = z.object({
 
 export const PipelineResultSchema = z.object({
   cv: CVParsedSchema,
-  job: JobSchema,
+  job: JobParsedSchema,
   snapshot: SnapshotSchema,
   match: MatchReportSchema,
   application: ApplicationLLMSchema,

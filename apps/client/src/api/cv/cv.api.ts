@@ -1,14 +1,13 @@
+import { type CVDocument, CVDocumentSchema } from '@repo/schemas';
+import { z } from 'zod';
+
+import { client } from '../client';
 import {
-  type CVDocument,
-  CVDocumentSchema,
   type DashboardCV,
   DashboardCVSchema,
   type UploadCVResponse,
   UploadCVResponseSchema,
-} from '@repo/schemas';
-import { z } from 'zod';
-
-import { client } from '../client';
+} from './cv.schemas';
 
 // GET /api/cv
 export async function getCVs(): Promise<CVDocument[]> {

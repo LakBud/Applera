@@ -1,12 +1,9 @@
+import type { JobDocument } from '@repo/schemas';
+import { JobDocumentSchema } from '@repo/schemas';
 import { z } from 'zod';
 
 import { client } from '../client';
-import {
-  type CreateJobResponse,
-  CreateJobResponseSchema,
-  type JobDocument,
-  JobDocumentSchema,
-} from './job.schemas';
+import { type CreateJobResponse, CreateJobResponseSchema } from './job.schemas';
 
 // GET /api/job
 export async function getJobs(): Promise<JobDocument[]> {
