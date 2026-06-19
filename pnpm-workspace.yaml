@@ -1,3 +1,8 @@
 packages:
   - 'apps/client'
   - 'apps/server'
+allowBuilds:
+  '@clerk/shared': true
+  esbuild: true
+  mongodb-memory-server: true
+  msw: true

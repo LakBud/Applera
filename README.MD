@@ -39,7 +39,7 @@ A **Node.js + Express** REST API built with:
 ### Prerequisites
 
 - **Node.js 20+**
-- **pnpm 10.20.0** (`npm install -g pnpm@10.20.0`)
+- **pnpm 11.8.0** (`npm install -g pnpm@11.8.0`)
 
 ### Setup
 

@@ -12,15 +12,25 @@
     "build:client": "pnpm --filter client build",
     "start:server": "pnpm --filter server start",
     "docker:prod": "docker compose -f docker-compose.prod.yml up --build",
-    "lint": "eslint . --no-cache --ext .ts,.tsx,.js",
-    "lint:fix": "eslint . --fix --ext .ts,.tsx,.js",
+    "lint": "eslint apps --no-cache --ext .ts,.tsx,.js",
+    "lint:fix": "eslint apps --fix --ext .ts,.tsx,.js",
     "typecheck": "tsc -b",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
+    "test": "pnpm -r test",
+    "test:unit": "pnpm -r test:unit",
+    "test:integration": "pnpm -r test:integration",
+    "test:coverage": "pnpm -r test:coverage",
+    "test:server": "pnpm --filter server test",
+    "test:server:unit": "pnpm --filter server test:unit",
+    "test:server:integration": "pnpm --filter server test:integration",
+    "test:client": "pnpm --filter client test",
+    "test:client:unit": "pnpm --filter client test:unit",
+    "test:client:integration": "pnpm --filter client test:integration",
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx,js}": [
+    "apps/**/*.{ts,tsx,js}": [
       "eslint --fix",
       "prettier --write"
     ]
@@ -28,6 +38,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@vitest/ui": "^4.1.9",
     "cross-env": "^10.1.0",
     "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
@@ -38,7 +49,8 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.8.4",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.61.0"
+    "typescript-eslint": "^8.61.0",
+    "vitest": "^4.1.9"
   },
-  "packageManager": "pnpm@10.20.0"
+  "packageManager": "pnpm@11.8.0"
 }

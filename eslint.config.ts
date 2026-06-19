@@ -9,34 +9,21 @@ import tseslint from 'typescript-eslint';
 const root = import.meta.dirname;
 
 export default defineConfig([
-  // 1. IGNORES
   {
     ignores: [
       '**/node_modules/**',
       '**/dist/**',
       '**/build/**',
       '**/.turbo/**',
-      '**apps/client/dist/**',
-      '**apps/server/dist/**',
-      '**apps/client/routeTree.gen.ts',
+      '**/routeTree.gen.ts',
     ],
-  },
-
-  {
-    languageOptions: {
-      globals: {
-        ...globals.node,
-        Express: 'readonly',
-      },
-    },
   },
 
   js.configs.recommended,
   prettier,
 
-  // 2. CLIENT
   {
-    files: ['apps/client/src/**/*.{ts,tsx}'],
+    files: ['apps/client/**/*.{ts,tsx}'],
 
     languageOptions: {
       parser: tseslint.parser,
@@ -51,7 +38,6 @@ export default defineConfig([
 
     plugins: {
       '@typescript-eslint': tseslint.plugin,
-      'react-refresh': reactRefresh,
     },
 
     rules: {
@@ -60,20 +46,41 @@ export default defineConfig([
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-
       'no-console': 'off',
       'no-debugger': 'warn',
-
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/ban-ts-comment': 'warn',
-
       eqeqeq: 'error',
       curly: ['error', 'all'],
       'no-duplicate-imports': 'error',
     },
   },
 
-  // 3. SHADCN UI
+  {
+    files: ['apps/client/src/**/*.{ts,tsx}'],
+
+    plugins: {
+      'react-refresh': reactRefresh,
+    },
+
+    rules: {
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    },
+  },
+
+  {
+    files: [
+      'apps/client/test/**/*',
+      'apps/client/**/*.{test,spec}.{ts,tsx}',
+      'apps/client/test-utils.{ts,tsx}',
+      'apps/client/**/*.test-utils.{ts,tsx}',
+    ],
+
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
+
   {
     files: ['apps/client/src/components/ui/**/*.{ts,tsx}'],
     rules: {
@@ -81,35 +88,13 @@ export default defineConfig([
     },
   },
 
-  // 4. APP LAYER (FAST REFRESH ENABLED)
   {
-    files: [
-      'apps/client/src/pages/**/*.{ts,tsx}',
-      'apps/client/src/routes/**/*.{ts,tsx}',
-      'apps/client/src/features/**/*.{ts,tsx}',
-      'apps/client/src/main.tsx',
-    ],
-    rules: {
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-    },
-  },
-
-  // 5. SHARED CLIENT CODE
-  {
-    files: ['apps/client/src/{lib,utils}/**/*.{ts,tsx}'],
-    rules: {
-      'react-refresh/only-export-components': 'off',
-    },
-  },
-
-  // 6. SERVER
-  {
-    files: ['apps/server/src/**/*.ts'],
+    files: ['apps/server/**/*.{ts,tsx}'],
 
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: [path.join(root, 'apps/server/tsconfig.json')],
+        project: [path.join(root, 'apps/server/tsconfig.eslint.json')],
         tsconfigRootDir: path.join(root, 'apps/server'),
       },
       globals: {
@@ -122,16 +107,14 @@ export default defineConfig([
     },
 
     rules: {
+      'no-undef': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-
       'no-console': 'off',
-
       '@typescript-eslint/no-explicit-any': 'error',
-
       eqeqeq: 'error',
       curly: ['error', 'multi-line'],
       'no-duplicate-imports': 'error',

@@ -1,9 +1,5 @@
 import { z } from 'zod';
 
-// ─────────────────────────────────────────────
-// Application LLM schema
-// ─────────────────────────────────────────────
-
 export const ApplicationLLMSchema = z.object({
   cv_summary: z.string(),
 

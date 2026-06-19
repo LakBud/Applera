@@ -28,3 +28,7 @@ server/node_modules/
 
 # TypeScript
 **/*.tsbuildinfo
+
+# test
+coverage/
+*.tsbuildinfo
