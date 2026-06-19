@@ -30,7 +30,7 @@ jobs:
 
       # Install deps
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       # Lint
       - name: Lint

@@ -4,7 +4,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
 
-    "rootDir": "./src",
+    "rootDir": "../../",
     "outDir": "./dist",
 
     "strict": true,
@@ -15,10 +15,12 @@
     "resolveJsonModule": true,
 
     "paths": {
-      "@repo/schemas": ["../../packages/schemas/src/index.ts"]
+      "@repo/schemas": ["packages/schemas/src/index.ts"],
+      "@/*": ["apps/server/src/*"]
     },
 
     "types": ["node", "express"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"]
+  "include": ["apps/server/src/**/*.ts", "apps/server/src/**/*.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }
