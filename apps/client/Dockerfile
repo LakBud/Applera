@@ -22,6 +22,12 @@ FROM nginx:alpine
 
 COPY --from=builder /app/apps/client/dist /usr/share/nginx/html
 
+# allow nginx user to write cache/run files
+RUN chown -R nginx:nginx /var/cache/nginx /var/run /usr/share/nginx/html && \
+    touch /var/run/nginx.pid && \
+    chown nginx:nginx /var/run/nginx.pid
+
 EXPOSE 80
 
+USER nginx
 CMD ["nginx", "-g", "daemon off;"]

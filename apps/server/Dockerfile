@@ -20,4 +20,5 @@ WORKDIR /app/apps/server
 
 EXPOSE 5005
 
+USER node
 CMD ["pnpm", "start"]
