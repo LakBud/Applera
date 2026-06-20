@@ -87,7 +87,7 @@ Starts the server with `tsx watch` for hot reloading on `http://localhost:5005`.
 
 ```bash
 pnpm build  # compiles TypeScript to dist/
-pnpm start  # runs dist/server.js
+pnpm start  # runs dist/server.mjs
 ```
 
 ## Project Structure
