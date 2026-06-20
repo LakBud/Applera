@@ -15,7 +15,7 @@ export default defineConfig([
       '**/dist/**',
       '**/build/**',
       '**/routeTree.gen.ts',
-      'tsup.config.ts',
+      'tsdown.config.ts',
     ],
   },
 
