@@ -10,7 +10,13 @@ const root = import.meta.dirname;
 
 export default defineConfig([
   {
-    ignores: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/routeTree.gen.ts'],
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/routeTree.gen.ts',
+      'tsup.config.ts',
+    ],
   },
 
   js.configs.recommended,
