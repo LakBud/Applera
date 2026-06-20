@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
@@ -20,4 +20,5 @@ WORKDIR /app/apps/server
 
 EXPOSE 5005
 
+USER node
 CMD ["pnpm", "start"]

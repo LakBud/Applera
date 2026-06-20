@@ -4,8 +4,8 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/server.js",
+    "build": "tsdown",
+    "start": "node dist/server.mjs",
     "dev": "tsx watch src/server.ts",
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",

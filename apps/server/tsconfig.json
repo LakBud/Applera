@@ -3,26 +3,18 @@
     "target": "ES2020",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-
     "sourceMap": true,
     "resolveJsonModule": true,
-
     "verbatimModuleSyntax": true,
-
     "types": ["node", "express"],
-
     "paths": {
-      "@/*": ["./src/*"],
-      "@repo/schemas": ["../../packages/schemas/src/index.ts"]
+      "@/*": ["./src/*"]
     },
-
     "noEmit": true
   },
-
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
