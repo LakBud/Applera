@@ -4,6 +4,6 @@ export default defineConfig({
   entry: ['src/server.ts'],
   format: ['esm'],
   clean: true,
-  target: 'node22',
+  target: 'node24',
   sourcemap: true,
 });
