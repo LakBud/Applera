@@ -1,11 +1,12 @@
 import { randomUUID } from 'crypto';
-import type { NextFunction, Request, Response } from 'express';
 
 import { COOKIE_NAME, sign } from '../../lib/cookie.js';
 import User from '../../models/User.js';
 import { auditLog } from '../../services/audit/audit.service.js';
 import { IdentitySchema } from '../../types/schemas/identity.schemas.js';
 import { getAuthenticatedUserId, getValidGuestId } from '../../utils/user/getUserId.utils.js';
+
+import type { NextFunction, Request, Response } from 'express';
 
 export async function attachIdentity(req: Request, res: Response, next: NextFunction) {
   try {

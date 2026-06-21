@@ -3,9 +3,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { queryKeys } from '../queryKeys';
-import type { ClientError } from '../types';
 import { handleMutationError, isClientError } from '../utils/errors';
 import { generateInterviewPrep, getInterviewPrep } from './interviewPrep.api';
+
+import type { ClientError } from '../types';
 
 export function useInterviewPrep(applicationId: string) {
   const { isSignedIn } = useAuth();

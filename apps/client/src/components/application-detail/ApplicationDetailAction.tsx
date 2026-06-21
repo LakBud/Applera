@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import type { ApplicationStatus } from '@repo/schemas';
 import { Link } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
 
@@ -11,6 +10,8 @@ import { DeleteModal } from '../common/DeleteModal';
 import { Loader } from '../common/Loader';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+
+import type { ApplicationStatus } from '@repo/schemas';
 
 type Props = {
   jobTitle?: string;

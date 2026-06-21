@@ -1,7 +1,7 @@
-import type { CVParsed, JobParsed } from '@repo/schemas';
+import { extractAllText } from '../utils/match/match.utils.js';
 
 import type { MatchReport } from '../types/schemas/match.schemas.js';
-import { extractAllText } from '../utils/match/match.utils.js';
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 export const buildMatchEnrichPrompt = (
   cv: CVParsed,

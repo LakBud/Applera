@@ -1,5 +1,4 @@
 import axios from 'axios';
-import type { Request, Response } from 'express';
 
 import { cloudinary } from '../config/cloudinary.js';
 import { deleteCache, getCache, setCache } from '../lib/cache.js';
@@ -12,6 +11,8 @@ import { extractCVData } from '../services/extractors.service.js';
 import { normalizeParsedCV } from '../utils/cv/cv.normalize.utils.js';
 import { hash } from '../utils/shared/hash.utils.js';
 import { getParam } from '../utils/shared/param.utils.js';
+
+import type { Request, Response } from 'express';
 
 const cvHashKey = (userId: string, hash: string) => `cv:hash:${userId}:${hash}`;
 const cvListKey = (userId: string, type: string) => `cvs:${userId}:${type}`;

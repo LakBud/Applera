@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import type { CVDocument } from '@repo/schemas';
 import { useNavigate } from '@tanstack/react-router';
 import { FileText, Pin } from 'lucide-react';
 
@@ -16,6 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from '../ui/card';
+
+import type { CVDocument } from '@repo/schemas';
 
 type CVCardProps = {
   cv: CVDocument;

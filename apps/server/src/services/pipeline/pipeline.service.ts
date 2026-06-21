@@ -1,10 +1,10 @@
-import type { CVParsed, JobParsed } from '@repo/schemas';
-
 import { type PipelineResult } from '../../types/schemas/pipeline.schemas.js';
 import { generateApplication } from '../application/application.service.js';
 import { repairCV } from '../cv/cvRepair.service.js';
 import { repairJob } from '../job/jobRepair.service.js';
 import { matchCVToJob } from '../match/match.service.js';
+
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 export type Input = Buffer | string;
 

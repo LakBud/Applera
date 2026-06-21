@@ -1,5 +1,4 @@
 import { useAuth } from '@clerk/clerk-react';
-import type { QueryClient } from '@tanstack/react-query';
 import { createRootRouteWithContext } from '@tanstack/react-router';
 
 import { GlobalError } from '@/components/common/global/GlobalError';
@@ -7,6 +6,8 @@ import { GlobalPending } from '@/components/common/global/GlobalPending';
 import { RootLayout } from '@/components/layout/RootLayout';
 
 import { NotFoundPage } from '../pages/NotFound';
+
+import type { QueryClient } from '@tanstack/react-query';
 
 interface RouterContext {
   queryClient: QueryClient;

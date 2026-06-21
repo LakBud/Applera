@@ -1,11 +1,11 @@
-import type { DashboardCV } from '@/api/cv/cv.schemas';
-
 import { Link } from '@tanstack/react-router';
 
 import { StatusSummary } from '../../../applications/StatusSummary';
 import { Button } from '../../../ui/button';
 import { CVApplicationRow } from './CVApplicationRow';
 import { CVApplicationRowSkeleton } from './CVApplicationRowSkeleton';
+
+import type { DashboardCV } from '@/api/cv/cv.schemas';
 
 type DashboardApplication = DashboardCV['applications'][number];
 interface CVApplicationsProps {

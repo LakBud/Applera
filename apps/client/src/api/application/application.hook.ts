@@ -1,10 +1,8 @@
 import { useAuth } from '@clerk/clerk-react';
-import type { ApplicationStatus } from '@repo/schemas';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { queryKeys } from '../queryKeys';
-import type { ClientError } from '../types';
 import { handleMutationError } from '../utils/errors';
 import {
   createApplication,
@@ -14,6 +12,9 @@ import {
   getApplicationsByCv,
   updateApplicationStatus,
 } from './application.api';
+
+import type { ClientError } from '../types';
+import type { ApplicationStatus } from '@repo/schemas';
 
 export function useApplications() {
   const { isSignedIn } = useAuth();

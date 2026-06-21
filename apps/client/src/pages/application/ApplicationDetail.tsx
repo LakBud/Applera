@@ -1,4 +1,3 @@
-import type { ApplicationStatus } from '@repo/schemas';
 import { useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
@@ -11,6 +10,8 @@ import { JobListingSection } from '../../components/application-detail/JobListin
 import { Loader } from '../../components/common/Loader';
 import ApplicationResult from '../../components/home/application/ApplicationResult';
 import { Route } from '../../routes/__protected/applications/$applicationId';
+
+import type { ApplicationStatus } from '@repo/schemas';
 
 export function ApplicationDetailPage() {
   const { applicationId } = Route.useParams();

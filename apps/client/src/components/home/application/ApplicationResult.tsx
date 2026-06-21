@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
-import type { Application } from '@repo/schemas';
-
 import { Tabs } from '../../ui/tabs';
 import { ApplicationScorePanel } from './ApplicationScorePanel';
 import { ApplicationTabContent } from './ApplicationTabsContent';
 import { ApplicationTabsHeader } from './ApplicationTabsHeader';
+
+import type { Application } from '@repo/schemas';
 
 type Props = {
   data: Application;

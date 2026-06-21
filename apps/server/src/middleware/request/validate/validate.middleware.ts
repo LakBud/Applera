@@ -1,6 +1,6 @@
-import type { NextFunction, Request, Response } from 'express';
-
 import { type requestSchemaName, requestSchemas } from './validate.schemas.js';
+
+import type { NextFunction, Request, Response } from 'express';
 
 export function validate<T extends requestSchemaName>(schemaName: T) {
   const schema = requestSchemas[schemaName];
@@ -11,10 +11,12 @@ export function validate<T extends requestSchemaName>(schemaName: T) {
       query: req.query ?? {},
     });
     if (!result.success) {
+      const { error } = result;
+
       return res.status(400).json({
         error: 'Validation failed',
-        message: result.error.issues[0].message,
-        issues: result.error.issues,
+        message: error.issues[0]?.message ?? 'Invalid request',
+        issues: error.issues,
       });
     }
     req.validated = result.data;

@@ -1,7 +1,7 @@
-import type { NextFunction, Request, Response } from 'express';
-
 import { redis } from '../../config/redis.js';
 import { auditLog } from '../../services/audit/audit.service.js';
+
+import type { NextFunction, Request, Response } from 'express';
 
 // Tiered rate limits — stricter on expensive AI routes, looser on cheap ones.
 // Each failed LLM call still costs tokens, so we limit at the HTTP layer first.

@@ -1,5 +1,3 @@
-import type { WebhookEvent } from '@clerk/express';
-import type { Request, Response } from 'express';
 import { Webhook } from 'svix';
 
 import { cloudinary } from '../config/cloudinary.js';
@@ -9,6 +7,9 @@ import Application from '../models/Application.js';
 import CV from '../models/CV.js';
 import InterviewPrep from '../models/InterviewPrep.js';
 import User from '../models/User.js';
+
+import type { WebhookEvent } from '@clerk/express';
+import type { Request, Response } from 'express';
 
 export async function handleClerkWebhook(req: Request, res: Response) {
   const wh = new Webhook(CLERK_WEBHOOK_SECRET);

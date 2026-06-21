@@ -1,8 +1,9 @@
-import type { CVDocument } from '@repo/schemas';
 import { ExternalLink } from 'lucide-react';
 
 import { Card2 } from '../../../ui/card';
 import { SectionHeading } from '../../../ui/section';
+
+import type { CVDocument } from '@repo/schemas';
 
 function normalizeUrl(url?: string) {
   const value = url?.trim();

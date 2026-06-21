@@ -1,6 +1,5 @@
-import type { CVParsed, JobParsed } from '@repo/schemas';
-
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 export function buildApplicationPrompt(cv: CVParsed, job: JobParsed, match: MatchReport): string {
   return `

@@ -1,7 +1,8 @@
 import { type AxiosError } from 'axios';
 
-import type { ApiError } from '../types';
 import { resetCsrfToken } from './request.interceptor';
+
+import type { ApiError } from '../types';
 
 export async function responseErrorInterceptor(error: unknown) {
   const axiosError = error as AxiosError<ApiError>;

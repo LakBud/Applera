@@ -1,5 +1,4 @@
 import { CVParsedSchema, JobParsedSchema } from '@repo/schemas';
-import type { Request, Response } from 'express';
 
 import { deleteCache } from '../lib/cache.js';
 import Application from '../models/Application.js';
@@ -8,8 +7,10 @@ import InterviewPrep from '../models/InterviewPrep.js';
 import Job from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { generateInterviewPrep } from '../services/interview/interviewPrep.service.js';
-import type { MatchReport } from '../types/schemas/match.schemas.js';
 import { getParam } from '../utils/shared/param.utils.js';
+
+import type { MatchReport } from '../types/schemas/match.schemas.js';
+import type { Request, Response } from 'express';
 
 // ─────────────────────────────────────────────
 // POST /api/interview/:applicationId

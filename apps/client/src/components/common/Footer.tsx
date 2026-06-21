@@ -1,6 +1,5 @@
-import { FaGithub } from 'react-icons/fa';
-
 import { Link } from '@tanstack/react-router';
+import { FaGithub } from 'react-icons/fa';
 
 import { Logo } from './Logo';
 

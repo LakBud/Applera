@@ -1,8 +1,9 @@
 import { useAuth } from '@clerk/clerk-react';
-import type { CVDocument } from '@repo/schemas';
 
 import { useCVs } from '../../../../api';
 import { CvListItem } from './CVListItem';
+
+import type { CVDocument } from '@repo/schemas';
 
 export function CvList({
   onSelectCv,

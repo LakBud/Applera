@@ -3,9 +3,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { queryKeys } from '../queryKeys';
-import type { ClientError } from '../types';
 import { handleMutationError } from '../utils/errors';
 import { createJobFile, createJobText, deleteJob, getJobById, getJobs } from './job.api';
+
+import type { ClientError } from '../types';
 
 export function useJobs() {
   const { isSignedIn } = useAuth();

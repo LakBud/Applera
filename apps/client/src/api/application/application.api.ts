@@ -1,5 +1,3 @@
-import type { Application } from '@repo/schemas';
-
 import { client } from '../client';
 import {
   ApplicationResponseSchema,
@@ -9,6 +7,8 @@ import {
   type UpdateApplicationStatusRequest,
   UpdateApplicationStatusRequestSchema,
 } from './application.schemas';
+
+import type { Application } from '@repo/schemas';
 
 /**
  * Create application

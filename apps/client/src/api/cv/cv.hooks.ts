@@ -1,10 +1,8 @@
 import { useAuth } from '@clerk/clerk-react';
-import type { CVDocument } from '@repo/schemas';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { queryKeys } from '../queryKeys';
-import type { ClientError } from '../types';
 import { handleMutationError } from '../utils/errors';
 import {
   deleteCVById,
@@ -15,6 +13,9 @@ import {
   uploadCVFile,
   uploadCVText,
 } from './cv.api';
+
+import type { ClientError } from '../types';
+import type { CVDocument } from '@repo/schemas';
 
 export function useCVs(options?: { enabled?: boolean }) {
   const { isSignedIn } = useAuth();

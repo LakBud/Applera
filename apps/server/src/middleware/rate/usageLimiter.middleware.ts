@@ -1,8 +1,8 @@
-import type { NextFunction, Request, Response } from 'express';
-
 import { redis } from '../../config/redis.js';
 import { getUsageLimit } from '../../utils/user/getUsageLimit.utils.js';
 import { getUserId } from '../../utils/user/getUserId.utils.js';
+
+import type { NextFunction, Request, Response } from 'express';
 
 export async function usageLimiter(req: Request, res: Response, next: NextFunction) {
   const userId = getUserId(req);

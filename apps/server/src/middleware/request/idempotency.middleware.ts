@@ -1,7 +1,7 @@
-import type { NextFunction, Request, Response } from 'express';
-
 import { redis } from '../../config/redis.js';
 import { hashRequest } from '../../utils/shared/hash.utils.js';
+
+import type { NextFunction, Request, Response } from 'express';
 
 const TTL_SECONDS = 60;
 
@@ -19,7 +19,7 @@ export async function idempotency(req: Request, res: Response, next: NextFunctio
 
     const path = normalizePath(req.originalUrl);
 
-    if (!IDEMPOTENT_ROUTES.has(path)) {
+    if (!path || !IDEMPOTENT_ROUTES.has(path)) {
       return next();
     }
 

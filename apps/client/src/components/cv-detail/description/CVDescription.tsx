@@ -1,10 +1,10 @@
-import type { CVParsed } from '@repo/schemas';
-
 import { EducationSection } from './sections/EducationSection';
 import { ExperienceSection } from './sections/ExperienceSection';
 import { ProjectsSection } from './sections/ProjectsSection';
 import { SkillsSection } from './sections/SkillsSection';
 import { SummarySection } from './sections/SummarySection';
+
+import type { CVParsed } from '@repo/schemas';
 
 export function CVDescription({ parsed }: { parsed: CVParsed }) {
   const skills = parsed.skills ?? [];

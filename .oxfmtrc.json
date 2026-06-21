@@ -24,5 +24,13 @@
     ]
   },
   "sortPackageJson": false,
-  "ignorePatterns": ["node_modules", "dist", "build", "coverage", "apps/client/dist", "apps/server/dist", "pnpm-lock.yaml"]
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "apps/client/dist",
+    "apps/server/dist",
+    "pnpm-lock.yaml"
+  ]
 }

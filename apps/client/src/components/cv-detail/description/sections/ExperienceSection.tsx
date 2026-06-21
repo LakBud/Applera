@@ -1,7 +1,7 @@
-import type { CVDocument } from '@repo/schemas';
-
 import { Card2 } from '../../../ui/card';
 import { SectionHeading } from '../../../ui/section';
+
+import type { CVDocument } from '@repo/schemas';
 
 type Experience = CVDocument['parsed']['experience'][number];
 

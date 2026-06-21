@@ -1,7 +1,8 @@
 import { getAuth } from '@clerk/express';
-import type { Request } from 'express';
 
 import { COOKIE_NAME, verify } from '../../lib/cookie.js';
+
+import type { Request } from 'express';
 
 export function getUserId(req: Request): string | null {
   if (req.identity?.type === 'user') {

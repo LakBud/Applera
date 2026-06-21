@@ -1,6 +1,6 @@
-import type { CVParsed } from '@repo/schemas';
-
 import { normalizeSeniority } from '../shared/seniority.utils.js';
+
+import type { CVParsed } from '@repo/schemas';
 
 export function normalizeParsedCV(parsedRaw: CVParsed): CVParsed {
   return {

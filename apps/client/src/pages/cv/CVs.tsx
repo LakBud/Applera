@@ -1,9 +1,9 @@
-import type { CVDocument } from '@repo/schemas';
-
 import { useCVs } from '../../api';
 import { usePinCV } from '../../api/cv/cv.hooks';
 import { CVCard } from '../../components/cvs/CVCard';
 import { CVCardSkeleton } from '../../components/cvs/CVCardSkeleton';
+
+import type { CVDocument } from '@repo/schemas';
 
 export function CVsPage() {
   const { data: cvs, isLoading } = useCVs();

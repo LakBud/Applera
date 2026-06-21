@@ -7,7 +7,8 @@ export default function parseModelJson<T = unknown>(raw: string): T {
 
   // ── fenced block ───────────────────────────────
   const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  if (fenceMatch) {
+
+  if (fenceMatch?.[1]) {
     return tryParse<T>(fenceMatch[1].trim(), 'fenced block');
   }
 

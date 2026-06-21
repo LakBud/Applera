@@ -1,5 +1,3 @@
-import type { DashboardCV } from '@/api/cv/cv.schemas';
-
 import { useNavigate } from '@tanstack/react-router';
 import { formatDistanceToNow } from 'date-fns';
 import { MapPin, TrendingUp } from 'lucide-react';
@@ -8,6 +6,8 @@ import { STATUS_STYLES } from '@/utils/ui/statusStyles';
 
 import { Badge } from '../../../ui/badge';
 import { RowBase } from '../../../ui/row';
+
+import type { DashboardCV } from '@/api/cv/cv.schemas';
 
 type DashboardApplication = DashboardCV['applications'][number];
 

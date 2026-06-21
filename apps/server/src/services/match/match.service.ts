@@ -1,5 +1,3 @@
-import type { CVParsed, JobParsed } from '@repo/schemas';
-
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { runAIEnrichment } from '../../lib/match/ai.match.js';
 import { runMathMatch } from '../../lib/match/math.match.js';
@@ -7,6 +5,8 @@ import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.s
 import { extractAllText } from '../../utils/match/match.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
 import { cachedLLM } from '../llm/llm.service.js';
+
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 // ── Public API ─────────────────────────────────────────────────────────────────
 

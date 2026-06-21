@@ -1,8 +1,8 @@
-import type { DashboardCV } from '@/api/cv/cv.schemas';
-
 import { useMemo } from 'react';
 
 import { type SuccessStatus, SuccessStatusSchema } from '../../api/schemas';
+
+import type { DashboardCV } from '@/api/cv/cv.schemas';
 
 export function useCVSuccessRate(dashboard?: DashboardCV) {
   return useMemo(() => {

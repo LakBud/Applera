@@ -1,6 +1,6 @@
-import type { NextFunction, Request, Response } from 'express';
-
 import { extractTextFromPdf } from '../../lib/pdfParser.js';
+
+import type { NextFunction, Request, Response } from 'express';
 
 const MIN_LENGTH = 50;
 

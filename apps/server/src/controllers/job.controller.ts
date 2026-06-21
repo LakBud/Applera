@@ -1,10 +1,10 @@
-import type { Request, Response } from 'express';
-
 import { extractTextFromPdf } from '../lib/pdfParser.js';
 import Job from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { extractJobData } from '../services/extractors.service.js';
 import { getParam } from '../utils/shared/param.utils.js';
+
+import type { Request, Response } from 'express';
 
 type UploadedFile = Express.Multer.File;
 

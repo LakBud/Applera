@@ -1,6 +1,3 @@
-import type { CVParsed, JobParsed } from '@repo/schemas';
-
-import type { MatchReport } from '../../types/schemas/match.schemas.js';
 import {
   calculateScore,
   calculateTextOverlap,
@@ -13,6 +10,9 @@ import {
   normalizeSkill,
   normalizeSkills,
 } from '../../utils/match/match.utils.js';
+
+import type { MatchReport } from '../../types/schemas/match.schemas.js';
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 // ── Math pass ─────────────────────────────────────────────────────────────────
 

@@ -1,7 +1,7 @@
-import type { CVParsed } from '@repo/schemas';
-
 import { dedupe, normalizeArray, normalizeString } from '../../utils/shared/repair.utils.js';
 import { normalizeSeniority } from '../../utils/shared/seniority.utils.js';
+
+import type { CVParsed } from '@repo/schemas';
 
 type Raw = Record<string, unknown>;
 

@@ -1,7 +1,7 @@
-import type { JobParsed } from '@repo/schemas';
-
 import { dedupe, normalizeArray, normalizeString } from '../../utils/shared/repair.utils.js';
 import { normalizeSeniority } from '../../utils/shared/seniority.utils.js';
+
+import type { JobParsed } from '@repo/schemas';
 
 export function repairJob(job: unknown, rawText?: string): JobParsed {
   if (!job || typeof job !== 'object') {

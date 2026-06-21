@@ -1,5 +1,3 @@
-import type { CVParsed, JobParsed } from '@repo/schemas';
-
 import { CACHE_VERSIONS } from '../config/cache.versions.js';
 import { EXTRACT_CV_PROMPT } from '../prompts/extract/extractCVPrompt.js';
 import { EXTRACT_JOB_PROMPT } from '../prompts/extract/extractJobPrompt.js';
@@ -9,6 +7,8 @@ import { sanitise } from '../utils/shared/sanitize.utils.js';
 import { repairCV } from './cv/cvRepair.service.js';
 import { repairJob } from './job/jobRepair.service.js';
 import { cachedLLM, callLLM } from './llm/llm.service.js';
+
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 // ─────────────────────────────────────────────────────────────
 // CV extractor

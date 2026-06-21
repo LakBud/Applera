@@ -1,10 +1,9 @@
-import type { DashboardCV } from '@/api/cv/cv.schemas';
-
-import type { CVParsed } from '@repo/schemas';
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import { CVApplications } from '../description/applications/CVApplications';
 import { CVDescription } from '../description/CVDescription';
+
+import type { DashboardCV } from '@/api/cv/cv.schemas';
+import type { CVParsed } from '@repo/schemas';
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 

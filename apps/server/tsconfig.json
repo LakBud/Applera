@@ -1,20 +1,21 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2020",
+
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+
     "strict": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
+
     "sourceMap": true,
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
-    "types": ["node", "express"],
-    "paths": {
-      "@/*": ["./src/*"]
-    },
+
+    "types": ["node"],
+
     "noEmit": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"]
 }

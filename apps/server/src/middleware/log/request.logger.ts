@@ -1,7 +1,8 @@
 import crypto from 'crypto';
-import type { NextFunction, Request, Response } from 'express';
 
 import { maskIp } from '../../utils/shared/sanitize.utils.js';
+
+import type { NextFunction, Request, Response } from 'express';
 
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
   const requestId = crypto.randomUUID();

@@ -1,11 +1,11 @@
-import type { CVParsed, JobParsed } from '@repo/schemas';
-
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { buildMatchEnrichPrompt } from '../../prompts/matchEnrichPrompt.js';
 import { cachedLLM, callLLM } from '../../services/llm/llm.service.js';
 import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
 import { extractAllText } from '../../utils/match/match.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
+
+import type { CVParsed, JobParsed } from '@repo/schemas';
 
 // ── AI pass ───────────────────────────────────────────────────────────────────
 

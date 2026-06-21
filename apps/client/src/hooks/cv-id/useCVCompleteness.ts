@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 
-import type { CVDocument } from '@repo/schemas';
-
 import { CV_COMPLETENESS_RULES } from '../../utils/cv-id/rules';
+
+import type { CVDocument } from '@repo/schemas';
 
 type Result = {
   completeness: number;

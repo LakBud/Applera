@@ -1,7 +1,5 @@
 import { useState } from 'react';
 
-import type { Application } from '@repo/schemas';
-
 import {
   useAnalyzeJobFile,
   useAnalyzeJobText,
@@ -9,6 +7,8 @@ import {
   useUploadCVFile,
   useUploadCVText,
 } from '../api';
+
+import type { Application } from '@repo/schemas';
 
 export function useHomeState() {
   const [cvId, setCvId] = useState<string | null>(null);

@@ -1,6 +1,5 @@
 import '@clerk/express';
 import 'multer';
-
 import { Identity } from './schemas/identity.schemas.js';
 
 declare global {

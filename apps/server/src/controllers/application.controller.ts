@@ -1,5 +1,4 @@
 import { CVParsedSchema, JobParsedSchema } from '@repo/schemas';
-import type { Request, Response } from 'express';
 
 import Application, {
   APPLICATION_STATUSES,
@@ -10,6 +9,8 @@ import JobModel from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { runApplicationPipelineFromParsed } from '../services/pipeline/pipeline.service.js';
 import { getParam } from '../utils/shared/param.utils.js';
+
+import type { Request, Response } from 'express';
 
 // ─────────────────────────────────────────────
 // GET /api/application
