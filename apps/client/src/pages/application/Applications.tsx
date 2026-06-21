@@ -1,5 +1,7 @@
 import { Briefcase } from 'lucide-react';
 
+import { EmptyState } from '@/components/common/emptyState';
+
 import { useApplications } from '../../api/application/application.hook';
 import { ApplicationRow } from '../../components/applications/ApplicationRow';
 import { ApplicationRowSkeleton } from '../../components/applications/ApplicationRowSkeleton';
@@ -31,11 +33,11 @@ export function ApplicationsPage() {
       )}
 
       {applications && applications.length === 0 && (
-        <div className="border border-border px-4 py-20 text-center text-muted-foreground">
-          <Briefcase className="w-7 h-7 mx-auto mb-3 opacity-40" />
-          <p className="text-sm">No applications yet.</p>
-          <p className="text-xs mt-1">Create one by matching a CV to a job.</p>
-        </div>
+        <EmptyState
+          icon={<Briefcase className="w-7 h-7" />}
+          title="No applications yet"
+          description="Create one by matching a CV to a job"
+        />
       )}
 
       {applications && applications.length > 0 && (

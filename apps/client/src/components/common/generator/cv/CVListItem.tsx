@@ -21,7 +21,7 @@ export function CvListItem({
       {cv.previewUrl ? (
         <>
           <img src={cv.previewUrl} alt="CV preview" className="w-full h-full object-cover" />
-          <div className="absolute bottom-0 left-0 right-0 bg-black/50 px-1 py-0.5">
+          <div className="absolute bottom-0 left-0 right-0 bg-green-950/50 px-1 py-0.5">
             <p className="text-[9px] text-white truncate leading-tight">{cv.parsed?.name}</p>
           </div>
         </>

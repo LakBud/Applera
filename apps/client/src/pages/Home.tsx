@@ -8,7 +8,7 @@ import FAQSection from '../components/home/sections/FAQ';
 import FeatureSection from '../components/home/sections/Feature';
 import GeneratorSection from '../components/home/sections/Generator';
 import PreviewSection from '../components/home/sections/Preview';
-import { useHomeState } from '../hooks/useHomeState';
+import { useHomeState } from '../hooks/home/useHomeState';
 import { FEATURES, HOW_IT_WORKS, WHAT_YOU_GET } from '../utils/home/features';
 
 export default function HomePage() {

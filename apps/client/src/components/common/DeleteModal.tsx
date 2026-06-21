@@ -51,12 +51,20 @@ export function DeleteModal({ open, onOpenChange, type, name, onConfirm }: Delet
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:gap-2">
-          <Button variant="outline" className="text-green-700" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            className="text-green-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenChange(false);
+            }}
+          >
             Cancel
           </Button>
           <Button
             variant="destructive"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               onConfirm();
               onOpenChange(false);
             }}

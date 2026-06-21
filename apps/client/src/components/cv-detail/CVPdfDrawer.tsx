@@ -14,7 +14,7 @@ interface CVPdfDrawerProps {
 export function CVPdfDrawer({ open, onClose, pdfUrl, previewUrl, isLoading }: CVPdfDrawerProps) {
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-3xl max-h-[92vh] flex flex-col bg-[#f7fff5]">
+      <DialogContent className="sm:max-w-3xl max-h-[92vh] flex flex-col bg-[#f7fff5] ring-green-100">
         {/* header */}
         <DialogHeader className="flex items-center justify-between border-b-2 border-border pb-3">
           <div className="flex items-center gap-2">
@@ -27,7 +27,7 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewUrl, isLoading }: CV
               onClick={isLoading ? (e) => e.preventDefault() : undefined}
               target="_blank"
               rel="noopener noreferrer"
-              className={`text-xs underline underline-offset-2 transition ${
+              className={`text-sm pb-0.5 underline underline-offset-2 transition ${
                 isLoading
                   ? 'text-tx-muted opacity-50 pointer-events-none'
                   : 'text-tx-muted hover:text-tx-body'

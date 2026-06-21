@@ -39,11 +39,7 @@ export function CvList({
     return (
       <div className="pt-2 border-t border-border">
         <p className="text-xs text-muted-foreground">
-          No pinned CVs. Pin up to 5 CVs from your{' '}
-          <a href="/cvs" className="underline">
-            CV library
-          </a>
-          .
+          No pinned CVs. Pin up to 5 CVs from your saved CVs.
         </p>
       </div>
     );

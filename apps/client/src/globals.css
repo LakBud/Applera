@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Monda:wght@400;700&display=swap');
-@import '@fontsource-variable/geist';
-@import 'tailwindcss';
-@import 'tw-animate-css';
-@import 'shadcn/tailwind.css';
+@import url("https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Monda:wght@400;700&display=swap");
+@import "@fontsource-variable/geist";
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -132,10 +132,10 @@
     --clr-info: #3b82f6;
 
     /* TYPOGRAPHY */
-    --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'DM Serif Display', Georgia, serif;
-    --font-mono: 'DM Mono', ui-monospace, monospace;
-    --font-monda: 'Monda', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "DM Serif Display", Georgia, serif;
+    --font-mono: "DM Mono", ui-monospace, monospace;
+    --font-monda: "Monda", ui-sans-serif, system-ui, sans-serif;
 
     /* SHADOWS */
     --shadow-sm: 0 1px 3px 0 rgb(30 45 34 / 0.07);
@@ -296,4 +296,30 @@
   .btn-glow:hover {
     box-shadow: var(--shadow-green);
   }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-fade-in {
+  animation: fade-in 0.15s ease-out;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.2s ease-out;
 }

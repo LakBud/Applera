@@ -12,7 +12,7 @@ export function RowBase({ left, middle, right, onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center bg-white/40 justify-between gap-4 px-4 py-3.5 border border-border hover:bg-muted/40 cursor-pointer transition-colors appearance-none w-full text-left"
+      className="flex items-center bg-white/40 justify-between gap-4 px-4 py-3.5 border border-border hover:bg-muted/40 cursor-pointer transition-colors appearance-none w-full text-left animate-fade-in-up"
     >
       {/* LEFT */}
       <div className="min-w-0 flex-1">{left}</div>

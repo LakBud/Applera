@@ -18,7 +18,7 @@ export function StatusSummary({ applications }: { applications: ApplicationStatu
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 rounded-sm divide-y sm:divide-y-0 sm:divide-x divide-border border border-border mb-6 bg-white/40">
+    <div className="grid grid-cols-2 sm:grid-cols-4 rounded-sm divide-x divide-y sm:divide-y-0 divide-border border border-border mb-6 bg-white/40 animate-fade-in">
       {stats.map((s) => (
         <div key={s.label} className="px-4 py-3 text-center">
           <p className="text-xl font-semibold">{s.value}</p>

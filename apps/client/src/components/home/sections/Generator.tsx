@@ -1,7 +1,8 @@
-import { useHomeState } from '../../../hooks/useHomeState';
+import Uploader from '@/components/common/generator/Uploader';
+
+import { useHomeState } from '../../../hooks/home/useHomeState';
 import { Loader } from '../../common/Loader';
 import { Button } from '../../ui/button';
-import Uploader from '../generator/Uploader';
 
 export type HomeState = ReturnType<typeof useHomeState>;
 

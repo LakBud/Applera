@@ -1,5 +1,7 @@
 import { Link } from '@tanstack/react-router';
 
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
+
 import { GithubStarButton } from './GithubStarButton';
 import { NavLink } from './NavLink';
 
@@ -11,21 +13,14 @@ type Props = {
 };
 
 export function MobileDrawer({ menuOpen, closeMenu, isLoaded, isSignedIn }: Props) {
-  if (!menuOpen) {
-    return null;
-  }
-
   return (
-    <div className="fixed inset-0 z-40 md:hidden">
-      {/* Backdrop */}
-      <div
-        role="presentation"
-        className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-        onClick={closeMenu}
-      />
+    <Sheet open={menuOpen} onOpenChange={(open) => !open && closeMenu()}>
+      <SheetContent
+        side="top"
+        className="md:hidden bg-[#f7fff5] border-b border-[#1fa028]/15 px-6 py-5 flex flex-col gap-5 top-14 h-auto"
+      >
+        <SheetTitle className="sr-only">Navigation menu</SheetTitle>
 
-      {/* Panel */}
-      <div className="absolute top-14 left-0 right-0 bg-[#f7fff5] border-b border-[#1fa028]/15 px-6 py-5 flex flex-col gap-5">
         {/* Nav links */}
         {isLoaded && (
           <div className="flex flex-col gap-4">
@@ -66,7 +61,7 @@ export function MobileDrawer({ menuOpen, closeMenu, isLoaded, isSignedIn }: Prop
             </Link>
           </div>
         )}
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }

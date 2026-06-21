@@ -45,7 +45,7 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
     <Card
       style={{ '--tw-ring-color': '#1fa028' } as React.CSSProperties}
       onClick={() => navigate({ to: '/cvs/$cvId', params: { cvId: cv._id } })}
-      className="w-full h-full hover:shadow-md transition cursor-pointer group bg-white/40 overflow-hidden flex flex-col ring-1"
+      className="w-full h-full hover:shadow-md transition cursor-pointer group bg-white/40 overflow-hidden flex flex-col ring-1 animate-fade-in-up"
     >
       {/* IMAGE */}
       <div className="w-full h-56 border-b overflow-hidden bg-muted flex items-center justify-center">
@@ -88,7 +88,10 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
                 ${canPin ? 'opacity-30 cursor-not-allowed' : ''}
               `}
             >
-              <Pin className="w-3.5 h-3.5" />
+              <Pin
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${cv.pinned ? 'scale-110' : 'scale-100'}`}
+                fill={cv.pinned ? 'currentColor' : 'none'}
+              />
             </Button>
           </div>
         </div>
