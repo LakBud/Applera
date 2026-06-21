@@ -1,6 +1,6 @@
-import { rawClient } from '@/api/rawClient';
-
 import { getToken } from '@clerk/react';
+
+import { rawClient } from '@/api/rawClient';
 
 export async function safeGetToken(): Promise<string | null> {
   try {
@@ -18,8 +18,9 @@ export async function getCsrfToken(csrfToken: string | null): Promise<string> {
   }
 
   const res = await rawClient.get('/api/csrf-token');
-  const token = res?.data?.csrfToken;
-  csrfToken = typeof token === 'string' && token.trim().length > 0 ? token : null;
+  const rawToken = res?.data?.csrfToken;
+  const token = typeof rawToken === 'string' ? rawToken.trim() : '';
+  csrfToken = token.length > 0 ? token : null;
 
   if (!csrfToken) {
     throw new Error('CSRF token failed to initialize');

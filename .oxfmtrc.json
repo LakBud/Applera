@@ -7,20 +7,22 @@
   "tabWidth": 2,
   "arrowParens": "always",
   "endOfLine": "lf",
-  "importOrder": ["^react(.*)$", "^@?\\w", "^@/components/(.*)$", "^@/utils/(.*)$", "^[./]"],
-  "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true,
-  "importOrderCaseInsensitive": true,
+  "sortImports": {
+    "newlinesBetween": true,
+    "customGroups": [
+      { "groupName": "react", "elementNamePattern": ["react", "react-**"] },
+      { "groupName": "components", "elementNamePattern": ["@/components/**"] },
+      { "groupName": "utils", "elementNamePattern": ["@/utils/**"] }
+    ],
+    "groups": [
+      "react",
+      ["value-builtin", "value-external"],
+      "components",
+      "utils",
+      ["value-parent", "value-sibling", "value-index"],
+      "unknown"
+    ]
+  },
   "sortPackageJson": false,
-  "ignorePatterns": [
-    "node_modules",
-    "dist",
-    "build",
-    "coverage",
-    "apps/client/dist",
-    "apps/server/dist",
-    "pnpm-lock.yaml",
-    "apps/client/dist",
-    "apps/server/dist"
-  ]
+  "ignorePatterns": ["node_modules", "dist", "build", "coverage", "apps/client/dist", "apps/server/dist", "pnpm-lock.yaml"]
 }
