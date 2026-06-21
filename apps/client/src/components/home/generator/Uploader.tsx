@@ -54,11 +54,14 @@ export default function Uploader<T>({
   async function handleFile(file: File) {
     onDeselectCv?.();
 
-    const res = await uploadFile.mutateAsync(file);
-    const id = getId(res);
-
-    setUploadedId(id ?? null);
-    onSuccess?.(id);
+    try {
+      const res = await uploadFile.mutateAsync(file);
+      const id = getId(res);
+      setUploadedId(id ?? null);
+      onSuccess?.(id);
+    } catch {
+      // mutation state already exposes error via onError callback
+    }
   }
 
   async function handleText() {
@@ -68,12 +71,15 @@ export default function Uploader<T>({
 
     onDeselectCv?.();
 
-    const res = await uploadText.mutateAsync(text);
-    const id = getId(res);
-
-    setUploadedId(id ?? null);
-    onSuccess?.(id);
-    setText('');
+    try {
+      const res = await uploadText.mutateAsync(text);
+      const id = getId(res);
+      setUploadedId(id ?? null);
+      onSuccess?.(id);
+      setText('');
+    } catch {
+      // mutation state already exposes error via onError callback
+    }
   }
 
   return (
@@ -114,6 +120,7 @@ export default function Uploader<T>({
             onClick={() => !isUploading && !isSelected && fileRef.current?.click()}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
                 if (!isUploading && !isSelected) {
                   fileRef.current?.click();
                 }

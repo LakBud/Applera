@@ -18,7 +18,8 @@ export async function getCsrfToken(csrfToken: string | null): Promise<string> {
   }
 
   const res = await rawClient.get('/api/csrf-token');
-  csrfToken = res.data.csrfToken;
+  const token = res?.data?.csrfToken;
+  csrfToken = typeof token === 'string' && token.trim().length > 0 ? token : null;
 
   if (!csrfToken) {
     throw new Error('CSRF token failed to initialize');

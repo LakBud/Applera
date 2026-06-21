@@ -126,9 +126,13 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
         {/* IMPORTANT: prevent navigation on delete */}
 
         <Button
+          type="button"
           variant="outline"
           className="text-green-900"
-          onClick={() => setShowDeleteModal(true)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowDeleteModal(true);
+          }}
         >
           Delete
         </Button>

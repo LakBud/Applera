@@ -32,7 +32,7 @@
   "lint-staged": {
     "apps/**/*.{ts,tsx,js}": [
       "oxlint --fix",
-      "oxfmt --write ."
+      "oxfmt --write"
     ]
   },
   "devDependencies": {
