@@ -4,7 +4,7 @@ An AI-powered job application platform that streamlines the job search process w
 
 ## Overview
 
-Applera is a full-stack TypeScript monorepo designed to help job seekers manage applications efficiently. The platform leverages AI (Groq) to parse CVs, generate tailored applications, and provide interview prep guidance.
+Applera is a full-stack TypeScript turborepo designed to help job seekers manage applications efficiently. The platform leverages AI (Groq) to parse CVs, generate tailored applications, and provide interview prep guidance.
 
 ## Architecture
 

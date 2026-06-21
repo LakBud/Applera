@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { useAuth } from '@clerk/clerk-react';
 import { Outlet, useLocation } from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import axios from 'axios';
 
 import Nav from '../common/nav/Nav';
@@ -31,6 +32,7 @@ export function RootLayout() {
       {!hideNav && <Nav isSignedIn={!!isSignedIn} isLoaded={isLoaded} />}
       <main className={hideNav ? '' : 'pt-14'}>
         <Outlet />
+        {import.meta.env.DEV && <TanStackRouterDevtools />}
       </main>
       <Toaster
         position="bottom-right"

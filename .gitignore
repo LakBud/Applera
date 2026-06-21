@@ -32,3 +32,6 @@ server/node_modules/
 # test
 coverage/
 *.tsbuildinfo
+
+# Turbo
+.turbo

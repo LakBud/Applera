@@ -1,14 +1,15 @@
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
 
 import { ClerkProvider } from '@clerk/clerk-react';
-import '@fontsource-variable/geist';
 import { QueryClientProvider } from '@tanstack/react-query';
+import '@fontsource-variable/geist';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Analytics } from '@vercel/analytics/react';
+import { createRoot } from 'react-dom/client';
 
 import { App } from './core/App';
-import { queryClient } from './core/queryClient';
 import './globals.css';
+import { queryClient } from './core/queryClient';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -23,6 +24,7 @@ createRoot(document.getElementById('root')!).render(
       <QueryClientProvider client={queryClient}>
         <App queryClient={queryClient} />
         <Analytics />
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </ClerkProvider>
   </StrictMode>,

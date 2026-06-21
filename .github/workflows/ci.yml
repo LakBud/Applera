@@ -12,6 +12,10 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,21 +37,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      #  build shared packages first
-      - name: Build shared packages
-        run: pnpm --filter @repo/schemas build
-
       # Lint
       - name: Lint
-        run: pnpm -r lint
+        run: pnpm lint
 
-      # Typecheck (after shared build)
+      # Typecheck
       - name: Typecheck
-        run: pnpm -r typecheck
+        run: pnpm typecheck
 
-      # Build apps
-      - name: Build apps
-        run: |
-          pnpm --filter server build &
-          pnpm --filter client build &
-          wait
+      # Build everything
+      - name: Build
+        run: pnpm build
+
+      # Test
+      - name: Test
+        run: pnpm test
