@@ -6,7 +6,9 @@ import { SectionHeading } from '../../../ui/section';
 type Education = CVDocument['parsed']['education'][number];
 
 export function EducationSection({ education }: { education: Education[] }) {
-  if (!education.length) return null;
+  if (!education.length) {
+    return null;
+  }
 
   return (
     <Card2 className="lg:col-span-4">

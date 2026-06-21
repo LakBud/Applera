@@ -81,7 +81,9 @@ export function usePinCV() {
     mutationFn: (id: string) => pinCV(id),
     onSuccess: (_, id) => {
       qc.setQueryData(queryKeys.cv.list(), (old: CVDocument[] | undefined) => {
-        if (!old) return old;
+        if (!old) {
+          return old;
+        }
         return old.map((cv) => (cv._id === id ? { ...cv, pinned: !cv.pinned } : cv));
       });
     },

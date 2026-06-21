@@ -1,4 +1,4 @@
-import { client } from '@/api/client';
+import { rawClient } from '@/api/rawClient';
 
 import { getToken } from '@clerk/react';
 
@@ -13,9 +13,11 @@ export async function safeGetToken(): Promise<string | null> {
 }
 
 export async function getCsrfToken(csrfToken: string | null): Promise<string> {
-  if (csrfToken) return csrfToken;
+  if (csrfToken) {
+    return csrfToken;
+  }
 
-  const res = await client.get('/api/csrf-token');
+  const res = await rawClient.get('/api/csrf-token');
   csrfToken = res.data.csrfToken;
 
   if (!csrfToken) {

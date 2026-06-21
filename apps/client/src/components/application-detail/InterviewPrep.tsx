@@ -53,7 +53,9 @@ export function InterviewPrepSection({ applicationId }: { applicationId: string 
     );
   }
 
-  if (!prep) return null;
+  if (!prep) {
+    return null;
+  }
 
   return (
     <ApplicationAccordion title="Interview preparation">

@@ -2,7 +2,9 @@ import { Card2 } from '../../../ui/card';
 import { SectionHeading } from '../../../ui/section';
 
 export function SkillsSection({ skills }: { skills: string[] }) {
-  if (!skills.length) return null;
+  if (!skills.length) {
+    return null;
+  }
 
   return (
     <Card2 className="lg:col-span-4">

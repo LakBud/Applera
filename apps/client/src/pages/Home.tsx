@@ -17,7 +17,7 @@ export default function HomePage() {
 
   return (
     <div id="top" className="min-h-screen bg-bg text-body">
-      {/* 
+      {/*
         GENERATOR
        */}
       <section id="generator" className="relative px-6 pt-10 pb-20 max-w-6xl mx-auto">
@@ -63,12 +63,12 @@ export default function HomePage() {
         <GeneratorSection state={homeState} />
       </section>
 
-      {/* 
+      {/*
           APPLICATION SECTION
        */}
       <ApplicationResultSection state={homeState} />
 
-      {/* 
+      {/*
           HOW IT WORKS
      */}
       <FeatureSection
@@ -90,12 +90,12 @@ export default function HomePage() {
         items={WHAT_YOU_GET}
       />
 
-      {/* 
+      {/*
           SECTION 4 — PREVIEW
      */}
       <PreviewSection />
 
-      {/* 
+      {/*
           SECTION 5 — FAQ
        */}
       <FAQSection />

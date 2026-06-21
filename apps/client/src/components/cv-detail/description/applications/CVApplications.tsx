@@ -19,7 +19,7 @@ export function CVApplications({ applications, isLoading }: CVApplicationsProps)
       <div className="text-center py-16 space-y-4">
         <p className="text-tx-muted text-sm">No applications yet with this CV.</p>
         <Link to="/">
-          <Button size="sm" className="text-xs font-semibold btn-glow">
+          <Button size="sm" className="text-xs font-semibold cursor-pointer">
             Create your first application →
           </Button>
         </Link>

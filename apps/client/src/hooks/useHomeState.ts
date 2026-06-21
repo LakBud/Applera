@@ -24,7 +24,9 @@ export function useHomeState() {
   const [resetKey, setResetKey] = useState(0);
 
   function handleGenerate() {
-    if (!cvId || !jobId) return;
+    if (!cvId || !jobId) {
+      return;
+    }
     mutate(
       { cvId, jobId },
       {

@@ -12,11 +12,11 @@
     "build:client": "pnpm --filter client build",
     "start:server": "pnpm --filter server start",
     "docker:prod": "docker compose -f docker-compose.prod.yml up --build",
-    "lint": "eslint apps --no-cache --ext .ts,.tsx,.js",
-    "lint:fix": "eslint apps --fix --ext .ts,.tsx,.js",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "typecheck": "tsc -b",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
     "test": "pnpm -r test",
     "test:unit": "pnpm -r test:unit",
     "test:integration": "pnpm -r test:integration",
@@ -31,8 +31,8 @@
   },
   "lint-staged": {
     "apps/**/*.{ts,tsx,js}": [
-      "eslint --fix",
-      "prettier --write"
+      "oxlint --fix",
+      "oxfmt --write ."
     ]
   },
   "devDependencies": {
@@ -47,6 +47,8 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7",
     "npm-run-all": "^4.1.5",
+    "oxfmt": "^0.55.0",
+    "oxlint": "^1.70.0",
     "prettier": "^3.8.4",
     "tsdown": "^0.22.3",
     "typescript": "^6.0.3",

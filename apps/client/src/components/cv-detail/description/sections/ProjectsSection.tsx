@@ -6,7 +6,9 @@ import { SectionHeading } from '../../../ui/section';
 
 function normalizeUrl(url?: string) {
   const value = url?.trim();
-  if (!value) return '';
+  if (!value) {
+    return '';
+  }
 
   if (/^https?:\/\//i.test(value)) {
     return value;
@@ -18,7 +20,9 @@ function normalizeUrl(url?: string) {
 type Project = CVDocument['parsed']['projects'][number];
 
 export function ProjectsSection({ projects }: { projects: Project[] }) {
-  if (!projects.length) return null;
+  if (!projects.length) {
+    return null;
+  }
 
   return (
     <Card2 className="lg:col-span-12">
