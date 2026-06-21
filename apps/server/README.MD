@@ -181,6 +181,6 @@ When a user deletes their account via Clerk, a `user.deleted` webhook fires and 
 
 Deployed on [Render](https://render.com).
 
-- **Build command**: `pnpm install && pnpm run build`
+- **Build command**: `pnpm install && pnpm -r build`
 - **Start command**: `pnpm start`
 - All environment variables are set in the Render dashboard
