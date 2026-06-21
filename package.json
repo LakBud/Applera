@@ -14,7 +14,7 @@
     "docker:prod": "docker compose -f docker-compose.prod.yml up --build",
     "lint": "turbo run lint",
     "lint:fix": "oxlint --fix",
-    "typecheck": "tsc -b",
+    "typecheck": "turbo run typecheck",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "test": "turbo run test",

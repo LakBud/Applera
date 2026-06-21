@@ -4,21 +4,22 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# workspace files
+# workspace metadata
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# IMPORTANT: copy full monorepo
+# copy full repo
 COPY . .
 
-# install all workspace dependencies
-RUN pnpm install --frozen-lockfile
-
-# build server and its workspace dependencies (e.g. @repo/schemas) in order
+# install dependencies in monorepo
 RUN pnpm --filter server... build
+
+# build server + dependencies
+RUN pnpm build --filter=server...
 
 WORKDIR /app/apps/server
 
 EXPOSE 5005
 
 USER node
+
 CMD ["pnpm", "start"]

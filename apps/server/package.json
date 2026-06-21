@@ -8,7 +8,7 @@
     "start": "node dist/server.mjs",
     "dev": "tsx watch src/server.ts",
     "lint": "oxlint .",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc --noEmit",
     "test": "cross-env NODE_ENV=test vitest run --passWithNoTests",
     "test:watch": "cross-env NODE_ENV=test vitest",
     "test:unit": "cross-env NODE_ENV=test vitest run --project unit --passWithNoTests",
