@@ -1,6 +1,6 @@
 import { Briefcase } from 'lucide-react';
 
-import { EmptyState } from '@/components/common/emptyState';
+import { EmptyState } from '@/components/common/EmptyState';
 
 import { useApplications } from '../../api/application/application.hook';
 import { ApplicationRow } from '../../components/applications/ApplicationRow';
