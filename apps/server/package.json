@@ -7,7 +7,7 @@
     "build": "tsdown",
     "start": "node dist/server.mjs",
     "dev": "tsx watch src/server.ts",
-    "lint": "eslint .",
+    "lint": "oxlint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "cross-env NODE_ENV=test vitest run --passWithNoTests",
     "test:watch": "cross-env NODE_ENV=test vitest",

@@ -6,7 +6,9 @@ import { SectionHeading } from '../../../ui/section';
 type Experience = CVDocument['parsed']['experience'][number];
 
 export function ExperienceSection({ experience }: { experience: Experience[] }) {
-  if (!experience.length) return null;
+  if (!experience.length) {
+    return null;
+  }
 
   return (
     <Card2 className="lg:col-span-8">

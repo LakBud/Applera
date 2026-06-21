@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import type { CVDocument } from '@repo/schemas';
 
 export function CvListItem({
@@ -10,9 +11,10 @@ export function CvListItem({
   onSelect: () => void;
 }) {
   return (
-    <div
+    <Button
+      type="button"
       onClick={onSelect}
-      className={`relative w-16 h-20 border rounded-lg cursor-pointer transition overflow-hidden shrink-0
+      className={`relative w-16 h-20 border rounded-lg cursor-pointer transition overflow-hidden shrink-0 appearance-none p-0
   ${selected ? 'border-2 border-green-600' : 'border-border hover:bg-muted/40'}`}
     >
       {cv.previewUrl ? (
@@ -29,6 +31,6 @@ export function CvListItem({
           </span>
         </div>
       )}
-    </div>
+    </Button>
   );
 }

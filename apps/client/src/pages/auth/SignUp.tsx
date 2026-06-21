@@ -8,7 +8,9 @@ import { clerkAuthAppearance } from '../../utils/ui/clerkStyle';
 export function SignUpPage() {
   const { isLoaded } = useAuth();
 
-  if (!isLoaded) return <Loader fullScreen text="Loading..." />;
+  if (!isLoaded) {
+    return <Loader fullScreen text="Loading..." />;
+  }
 
   return (
     <AuthLayout

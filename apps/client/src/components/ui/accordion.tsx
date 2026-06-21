@@ -1,9 +1,7 @@
 import * as React from 'react';
-import { useState } from 'react';
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronUpIcon, ChevronDownIcon } from 'lucide-react';
 import { Accordion as AccordionPrimitive } from 'radix-ui';
 
 import { cn } from '../../lib/utils';

@@ -11,12 +11,18 @@ type Props = {
 };
 
 export function MobileDrawer({ menuOpen, closeMenu, isLoaded, isSignedIn }: Props) {
-  if (!menuOpen) return null;
+  if (!menuOpen) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-40 md:hidden">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={closeMenu} />
+      <div
+        role="presentation"
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+        onClick={closeMenu}
+      />
 
       {/* Panel */}
       <div className="absolute top-14 left-0 right-0 bg-[#f7fff5] border-b border-[#1fa028]/15 px-6 py-5 flex flex-col gap-5">

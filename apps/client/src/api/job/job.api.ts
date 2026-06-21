@@ -1,5 +1,4 @@
-import type { JobDocument } from '@repo/schemas';
-import { JobDocumentSchema } from '@repo/schemas';
+import { type JobDocument, JobDocumentSchema } from '@repo/schemas';
 import { z } from 'zod';
 
 import { client } from '../client';

@@ -15,8 +15,12 @@ export function ProtectedLayout() {
     }
   }, [isLoaded, isSignedIn, navigate]);
 
-  if (!isLoaded) return <Loader size="lg" fullScreen text="Loading…" />;
-  if (!isSignedIn) return null;
+  if (!isLoaded) {
+    return <Loader size="lg" fullScreen text="Loading…" />;
+  }
+  if (!isSignedIn) {
+    return null;
+  }
 
   return <Outlet />;
 }

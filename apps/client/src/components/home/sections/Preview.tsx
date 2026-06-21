@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import PreviewMock from '../PreviewMock';
 
 export default function PreviewSection() {
@@ -18,12 +19,13 @@ export default function PreviewSection() {
             missing requirements are surfaced clearly.
           </p>
 
-          <a
-            href="#"
-            className="inline-block text-sm font-semibold text-secondary bg-primary hover:scale-98 duration-300 px-6 py-2.5 transition ease-out"
+          <Button
+            variant="link"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="inline-block text-sm font-semibold text-secondary bg-primary hover:scale-98 duration-300 px-6 py-2.5 transition ease-out cursor-pointer"
           >
             Try it yourself →
-          </a>
+          </Button>
         </div>
 
         <PreviewMock />

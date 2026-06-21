@@ -17,9 +17,11 @@ export function CvList({
   const { data: cvs, isLoading } = useCVs();
   const pinnedCvs = cvs?.filter((cv: CVDocument) => cv.pinned) ?? [];
 
-  if (!isSignedIn) return null;
+  if (!isSignedIn) {
+    return null;
+  }
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="space-y-2 pt-2 border-t border-border">
         <div className="h-3 w-32 bg-border/60 rounded animate-pulse" />
@@ -30,8 +32,9 @@ export function CvList({
         </div>
       </div>
     );
+  }
 
-  if (!pinnedCvs.length)
+  if (!pinnedCvs.length) {
     return (
       <div className="pt-2 border-t border-border">
         <p className="text-xs text-muted-foreground">
@@ -43,6 +46,7 @@ export function CvList({
         </p>
       </div>
     );
+  }
 
   return (
     <div className="space-y-2 pt-2 border-t border-border">

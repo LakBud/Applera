@@ -23,7 +23,9 @@ export async function requestInterceptor(config: InternalAxiosRequestConfig) {
   config.headers ??= new axios.AxiosHeaders();
 
   const token = await safeGetToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
   if (!CSRF_SAFE.has(config.method?.toUpperCase() ?? '')) {
     config.headers['x-csrf-token'] = await getOrFetchCsrfToken();

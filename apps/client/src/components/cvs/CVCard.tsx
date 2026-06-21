@@ -74,26 +74,21 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
                 {cv.parsed.seniority_level}
               </span>
             )}
-            <div
+
+            <Button
               onClick={(e) => {
                 e.stopPropagation();
+                onPin?.();
               }}
-            >
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onPin?.();
-                }}
-                disabled={isPinning || canPin}
-                title={canPin ? 'Unpin a CV first' : cv.pinned ? 'Unpin' : 'Pin'}
-                className={`p-1.5 rounded-md transition
+              disabled={isPinning || canPin}
+              title={canPin ? 'Unpin a CV first' : cv.pinned ? 'Unpin' : 'Pin'}
+              className={`p-1.5 rounded-md transition
                 ${cv.pinned ? 'text-green-600 bg-green-50' : 'text-muted-foreground hover:text-foreground'}
                 ${canPin ? 'opacity-30 cursor-not-allowed' : ''}
               `}
-              >
-                <Pin className="w-3.5 h-3.5" />
-              </Button>
-            </div>
+            >
+              <Pin className="w-3.5 h-3.5" />
+            </Button>
           </div>
         </div>
       </CardHeader>
@@ -129,23 +124,26 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
       {/* FOOTER */}
       <CardFooter className="flex justify-between">
         {/* IMPORTANT: prevent navigation on delete */}
-        <div onClick={(e) => e.stopPropagation()}>
-          <Button
-            variant="outline"
-            className="text-green-900"
-            onClick={() => setShowDeleteModal(true)}
-          >
-            Delete
-          </Button>
 
-          <DeleteModal
-            open={showDeleteModal}
-            onOpenChange={setShowDeleteModal}
-            type="cv"
-            name={cv.parsed?.name}
-            onConfirm={() => del.mutate(cv._id)}
-          />
-        </div>
+        <Button
+          type="button"
+          variant="outline"
+          className="text-green-900"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowDeleteModal(true);
+          }}
+        >
+          Delete
+        </Button>
+
+        <DeleteModal
+          open={showDeleteModal}
+          onOpenChange={setShowDeleteModal}
+          type="cv"
+          name={cv.parsed?.name}
+          onConfirm={() => del.mutate(cv._id)}
+        />
 
         <CardAction className="pt-1">
           <span style={{ color: '#1fa028', opacity: 1 }} className="text-xs">

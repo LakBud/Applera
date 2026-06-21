@@ -52,28 +52,33 @@ export default function Uploader<T>({
   }
 
   async function handleFile(file: File) {
+    onDeselectCv?.();
+
     try {
-      onDeselectCv?.();
       const res = await uploadFile.mutateAsync(file);
       const id = getId(res);
       setUploadedId(id ?? null);
       onSuccess?.(id);
-    } catch (err) {
-      console.error('File upload failed:', err);
+    } catch {
+      // mutation state already exposes error via onError callback
     }
   }
 
   async function handleText() {
-    if (!text.trim()) return;
+    if (!text.trim()) {
+      return;
+    }
+
+    onDeselectCv?.();
+
     try {
-      onDeselectCv?.();
       const res = await uploadText.mutateAsync(text);
       const id = getId(res);
       setUploadedId(id ?? null);
       onSuccess?.(id);
       setText('');
-    } catch (err) {
-      console.error('Text upload failed:', err);
+    } catch {
+      // mutation state already exposes error via onError callback
     }
   }
 
@@ -109,12 +114,25 @@ export default function Uploader<T>({
       {mode === 'file' && (
         <div className="space-y-4">
           <div
+            // eslint-disable-next-line jsx-a11y/prefer-tag-over-role
+            role="button"
+            tabIndex={0}
             onClick={() => !isUploading && !isSelected && fileRef.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (!isUploading && !isSelected) {
+                  fileRef.current?.click();
+                }
+              }
+            }}
+            aria-disabled={isUploading || isSelected}
             className={`
-              border min-h-44 md:h-64 p-6 md:p-10 border-dashed rounded-xl text-center transition
-              ${isUploading ? 'opacity-60 cursor-not-allowed' : ''}
-              ${isSelected ? 'border-green-600 bg-green-50 cursor-default' : 'border-border cursor-pointer hover:bg-surface-muted'}
-            `}
+        border min-h-44 md:h-64 p-6 md:p-10 border-dashed rounded-xl text-center transition w-full
+        flex flex-col justify-start
+        ${isUploading ? 'opacity-60 cursor-not-allowed' : ''}
+        ${isSelected ? 'border-green-600 bg-green-50 cursor-default' : 'border-border cursor-pointer hover:bg-surface-muted'}
+      `}
           >
             <Input
               ref={fileRef}
@@ -123,10 +141,13 @@ export default function Uploader<T>({
               className="hidden"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) handleFile(file);
+                if (file) {
+                  handleFile(file);
+                }
                 e.target.value = '';
               }}
             />
+
             {isSelected ? (
               <UploadSuccess
                 label={label}
@@ -138,16 +159,18 @@ export default function Uploader<T>({
               />
             ) : (
               <>
-                <p className="text-body">
-                  {uploadFile.isPending
-                    ? 'Uploading...'
-                    : `Drop your ${label.toLowerCase()} or click to upload`}
-                </p>
-                <p className="text-caption text-xs mt-1">PDF supported</p>
+                <div className="flex flex-col items-center justify-start pt-4 md:pt-8 -translate-y-2">
+                  <p className="text-body">
+                    {uploadFile.isPending
+                      ? 'Uploading...'
+                      : `Drop your ${label.toLowerCase()} or click to upload`}
+                  </p>
+
+                  <p className="text-caption text-xs mt-1">PDF supported</p>
+                </div>
               </>
             )}
           </div>
-
           <div className="mt-4 md:mt-0">
             {showCvList && (
               <CvList
