@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "cross-env NODE_ENV=development turbo run dev",
+    "dev:clean": "pnpm store prune && rm -rf node_modules **/node_modules **/dist && pnpm install",
     "dev:server": "turbo run dev --filter=server",
     "dev:client": "turbo run dev --filter=client",
     "dev:docker": "docker compose -f docker-compose.dev.yml up --build",
