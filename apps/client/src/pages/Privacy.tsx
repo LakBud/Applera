@@ -61,7 +61,7 @@ export function PrivacyPage() {
                   'Vercel — deployment & analytics',
                 ]}
               />
-              <p>
+              <p className="mt-3">
                 We do not sell your data to any third party. Data shared with the above services is
                 limited to what is necessary to provide the service.
               </p>

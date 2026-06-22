@@ -1,4 +1,5 @@
 import { useAuth } from '@clerk/clerk-react';
+import { PinOff } from 'lucide-react';
 
 import { useCVs } from '../../../../api';
 import { CvListItem } from './CVListItem';
@@ -37,9 +38,11 @@ export function CvList({
 
   if (!pinnedCvs.length) {
     return (
-      <div className="pt-2 border-t border-border">
-        <p className="text-xs text-muted-foreground">
-          No pinned CVs. Pin up to 5 CVs from your saved CVs.
+      <div className="pt-6 p-2 border-t md:pb-2 border-border flex flex-col items-center text-center">
+        <PinOff className="h-4 w-4 text-muted-foreground mb-2 text-green-800" />
+        <p className="text-xs font-medium">No pinned CVs</p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Pin up to 5 CVs from your saved collection to access them quickly.
         </p>
       </div>
     );

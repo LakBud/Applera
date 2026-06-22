@@ -4,7 +4,7 @@ import { Card, CardContent } from '../../ui/card';
 
 function OutputCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
   return (
-    <Card className="group transition transition-shadow-200 hover:shadow-xl bg-white">
+    <Card className="group transition transition-shadow-200 hover:shadow-xl bg-white ring-green-900">
       <CardContent className="p-5 flex gap-4">
         <div className="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-green-700 ">
           {icon}
@@ -21,7 +21,7 @@ function OutputCard({ icon, title, desc }: { icon: React.ReactNode; title: strin
 
 function StepCard({ n, title, desc }: { n: string; title: string; desc: string }) {
   return (
-    <Card className="relative overflow-hidden hover:shadow-xl bg-white">
+    <Card className="relative overflow-hidden hover:shadow-xl bg-white ring-green-900">
       <CardContent className="p-6 flex flex-col gap-3">
         <span className="font-display text-5xl text-primary/10 leading-none select-none absolute top-4 right-5">
           {n}
@@ -62,7 +62,7 @@ export default function FeatureSection({
   return (
     <section
       id={id}
-      className={`px-6 py-20 border-t border-border ${variant === 'steps' ? 'bg-surface-muted' : ''}`}
+      className={`px-6 py-15 border-t border-border ${variant === 'steps' ? 'bg-surface-muted' : ''}`}
     >
       <div className="max-w-5xl mx-auto">
         {/* Header */}

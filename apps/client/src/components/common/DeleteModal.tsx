@@ -38,7 +38,7 @@ export function DeleteModal({ open, onOpenChange, type, name, onConfirm }: Delet
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-[#f7fff5] ring-[#c8dece]">
+      <DialogContent className="sm:max-w-md bg-white/80 ring-[#c8dece]">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-1 bg-[f7fff5]">
             <div className="flex items-center justify-center w-9 h-9 rounded-md border bg-black/5">

@@ -40,7 +40,7 @@ export default function FAQSection() {
           <h2 className="font-display text-3xl md:text-4xl text-h2">FAQ</h2>
         </div>
 
-        <div className="bg-surface border border-border rounded-2xl px-6 bg-white/70">
+        <div className="bg-surface border border-border rounded-2xl  bg-white/70">
           <Accordion type="single" collapsible className="w-full">
             {FAQ.map((item) => (
               <AccordionItem key={item.q} value={item.q}>

@@ -54,23 +54,14 @@ export default function HomePage() {
               </span>
             ))}
           </div>
-          <p className="text-xs text-caption py-2">
-            Used by students, juniors, and career switchers
-          </p>
         </div>
 
         {/* ───────────── INPUT STATE ───────────── */}
         <GeneratorSection state={homeState} />
       </section>
 
-      {/*
-          APPLICATION SECTION
-       */}
       <ApplicationResultSection state={homeState} />
 
-      {/*
-          HOW IT WORKS
-     */}
       <FeatureSection
         id="how"
         variant="steps"
@@ -80,7 +71,6 @@ export default function HomePage() {
         items={HOW_IT_WORKS}
       />
 
-      {/* WHAT YOU GET*/}
       <FeatureSection
         id="outputs"
         variant="cards"
@@ -90,17 +80,10 @@ export default function HomePage() {
         items={WHAT_YOU_GET}
       />
 
-      {/*
-          SECTION 4 — PREVIEW
-     */}
       <PreviewSection />
 
-      {/*
-          SECTION 5 — FAQ
-       */}
       <FAQSection />
 
-      {/* ── Footer ── */}
       <Footer />
     </div>
   );

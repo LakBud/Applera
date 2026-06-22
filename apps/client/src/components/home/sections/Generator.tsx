@@ -31,12 +31,13 @@ export default function GeneratorSection({ state }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* INPUTS (locked when result exists) */}
       <div
-        className={`grid md:grid-cols-2 gap-6 transition-all ${isLocked ? 'grayscale opacity-50 pointer-events-none' : ''}`}
+        className={`grid md:grid-cols-2 gap-6 transition-all duration-300 ${
+          isLocked ? 'grayscale opacity-40 pointer-events-none select-none' : ''
+        }`}
       >
         {/* CV */}
-        <div className="space-y-2">
+        <div className="space-y-2 ">
           <Uploader
             key={`cv-${resetKey}`}
             label="CV"
@@ -67,22 +68,30 @@ export default function GeneratorSection({ state }: Props) {
       </div>
 
       {/* BUTTON */}
-      <div className="flex justify-center pt-2">
+      <div className="flex flex-col items-center gap-2 pt-2">
         {!isLocked ? (
-          <Button
-            type="button"
-            onClick={handleGenerate}
-            disabled={!canGenerate}
-            className="px-6 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {isPending ? <Loader size="sm" text="Generating…" /> : 'Generate application'}
-          </Button>
+          <>
+            <Button
+              type="button"
+              onClick={handleGenerate}
+              disabled={!canGenerate}
+              className="px-8 py-6 text-sm font-semibold btn-primary border-border text-white/70 hover:bg-[#1fa028]/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {isPending ? <Loader size="sm" text="Generating…" /> : 'Generate application'}
+            </Button>
+            {/* Explains the disabled state instead of leaving the user guessing */}
+            {!canGenerate && !isPending && (
+              <span className="text-xs text-caption pt-2">
+                Upload or paste both a CV and job listing to continue
+              </span>
+            )}
+          </>
         ) : (
           <Button
             type="button"
             onClick={state.handleReset}
             variant="outline"
-            className="px-6 py-6 text-sm font-semibold border-border btn-primary text-white hover:bg-primary-hover transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className="px-8 py-6 cursor-pointer bg-white/70 text-sm font-semibold border-border text-green-800 hover:bg-[#1fa028]/5 transition-all"
           >
             New application
           </Button>

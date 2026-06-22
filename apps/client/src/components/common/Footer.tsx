@@ -9,7 +9,7 @@ const PRODUCT_LINKS = [
   { label: 'CVs', to: '/cvs' },
 ];
 
-const COMPANY_LINKS = [
+const LEGAL_LINKS = [
   { label: 'Privacy', to: '/privacy' },
   { label: 'Terms', to: '/terms' },
 ];
@@ -62,11 +62,11 @@ export function Footer() {
           </ul>
         </div>
 
-        {/* Company */}
+        {/* Info */}
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-tx-muted">Company</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-tx-muted">Legal</p>
           <ul className="space-y-2">
-            {COMPANY_LINKS.map(({ label, to }) => (
+            {LEGAL_LINKS.map(({ label, to }) => (
               <li key={label}>
                 <Link
                   to={to}
