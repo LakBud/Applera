@@ -85,10 +85,10 @@ app.use(
   }),
 );
 
-// 3. Webhooks (must be before body parsing)
+// Webhooks (must be before body parsing)
 app.use('/api/webhooks', webhookLimiter, webhookRoutes);
 
-// 4. Body parsing
+// zBody parsing
 app.use(express.json({ limit: '50kb' }));
 app.use(express.urlencoded({ extended: true, limit: '50kb' }));
 app.use(cookieParser());
