@@ -2,10 +2,12 @@ name: Typecheck
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 concurrency:
-  group: typecheck-${{ github.ref }}
+  group: typecheck-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -19,6 +21,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: pnpm/action-setup@v4
         with:
           version: 11.8.0

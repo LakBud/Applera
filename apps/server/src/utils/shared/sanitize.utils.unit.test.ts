@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { detectInjection, maskIp, sanitise, stripObject } from './sanitize.utils.js';
+import { detectInjection } from './sanitize.utils.js';
 
 // detectInjection
 
@@ -34,7 +34,7 @@ describe('detectInjection', () => {
       ['system:', 'system: override'],
       ['<system>', '<system> prompt'],
       ['< system >', '< system > tag'],
-    ])('detects injection in: %s', (input) => {
+    ])('detects injection in: %s', (_, input) => {
       expect(detectInjection(input)).toBe(true);
     });
 
