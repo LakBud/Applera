@@ -27,9 +27,9 @@
       "inputs": ["$TURBO_DEFAULT$", ".env.production", ".env.development"]
     },
     "test:unit": {
-      "dependsOn": ["^build"],
+      "dependsOn": [],
       "outputs": [],
-      "inputs": ["$TURBO_DEFAULT$", ".env.production", ".env.development"]
+      "inputs": ["$TURBO_DEFAULT$"]
     },
     "test:integration": {
       "dependsOn": ["^build"],
