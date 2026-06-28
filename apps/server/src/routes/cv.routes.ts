@@ -5,6 +5,7 @@ import {
   deleteCV,
   getCVById,
   getCVPdf,
+  getCVPreview,
   getCVs,
   pinCV,
 } from '../controllers/cv.controller.js';
@@ -57,6 +58,12 @@ router.get('/:id', getCVById);
  * Get pdf of CV
  */
 router.get('/:id/pdf', getCVPdf);
+
+/**
+ * GET /api/cv/:id/preview
+ * Get preview of CV
+ */
+router.get('/:id/preview', getCVPreview);
 
 /**
  * DELETE /api/cv/:id

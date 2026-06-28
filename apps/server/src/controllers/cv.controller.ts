@@ -199,13 +199,7 @@ export const getCVs = async (req: Request, res: Response) => {
     const enriched = cvs.map((cv) => ({
       ...cv,
       applicationsCount: countMap.get(cv._id.toString()) ?? 0,
-      previewUrl: cv.cloudinaryPublicId
-        ? cloudinary.url(cv.cloudinaryPublicId, {
-            resource_type: 'image',
-            secure: true,
-            format: 'jpg',
-          })
-        : null,
+      previewUrl: cv.cloudinaryPublicId ? `/api/cv/${cv._id}/preview` : null,
     }));
 
     await setCache(key, enriched, 60 * 10);
@@ -245,13 +239,7 @@ export const getCVById = async (req: Request, res: Response) => {
       ownerType: req.identity.type,
     });
 
-    const previewUrl = cv.cloudinaryPublicId
-      ? cloudinary.url(cv.cloudinaryPublicId, {
-          resource_type: 'image',
-          secure: true,
-          format: 'jpg',
-        })
-      : null;
+    const previewUrl = cv.cloudinaryPublicId ? `/api/cv/${cv._id}/preview` : null;
 
     return res.json({
       ...cv,
@@ -364,6 +352,44 @@ export const pinCV = async (req: Request, res: Response) => {
   }
 };
 
+// GET /api/cv/:id/preview
+export const getCVPreview = async (req: Request, res: Response) => {
+  try {
+    if (!req.identity) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const cv = await CVModel.findOne({
+      _id: req.params.id,
+      ownerId: req.identity.id,
+      ownerType: req.identity.type,
+    });
+
+    if (!cv || !cv.cloudinaryPublicId) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    const url = cloudinary.url(cv.cloudinaryPublicId, {
+      resource_type: 'image',
+      secure: true,
+      format: 'jpg',
+      sign_url: true,
+      type: 'authenticated',
+    });
+
+    const response = await axios.get(url, { responseType: 'stream' });
+
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.setHeader('Cache-Control', 'private, max-age=3600'); // browser caches for 1hr
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+
+    response.data.pipe(res);
+  } catch (err) {
+    console.error('[getCVPreview]', err);
+    res.status(500).json({ error: 'Failed to fetch preview' });
+  }
+};
+
 // GET /api/cv/:id/pdf
 export const getCVPdf = async (req: Request, res: Response) => {
   try {
@@ -384,6 +410,9 @@ export const getCVPdf = async (req: Request, res: Response) => {
     const url = cloudinary.url(cv.cloudinaryPublicId, {
       resource_type: 'image',
       secure: true,
+      sign_url: true,
+      type: 'authenticated',
+      expires_at: Math.floor(Date.now() / 1000) + 60 * 60,
     });
 
     const response = await axios.get(url, { responseType: 'stream' });

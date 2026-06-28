@@ -11,6 +11,8 @@ import { useCVSuccessRate } from '../../hooks/cv-id/useCVSuccessRate';
 import { Route } from '../../routes/__protected/cvs/$cvId';
 import { getCVPdfUrl } from '../../utils/cv-id/url';
 
+import { useAuthenticatedImage } from '@/hooks/useAuthenticatedImage';
+
 export function CVDetailPage() {
   const { cvId } = Route.useParams();
   const [pdfOpen, setPdfOpen] = useState(false);
@@ -20,6 +22,7 @@ export function CVDetailPage() {
 
   const { completeness, missing } = useCVCompleteness(cv);
   const { successRate } = useCVSuccessRate(dashboard);
+  const previewSrc = useAuthenticatedImage(cv?.previewUrl ?? null);
 
   const loading = cvLoading || dashLoading;
 
@@ -36,7 +39,7 @@ export function CVDetailPage() {
   }
 
   const pdfUrl = getCVPdfUrl(cv._id);
-  const previewUrl = cv.previewUrl;
+
   const openPdf = () => setPdfOpen(true);
 
   const formatDate = (d: string) =>
@@ -73,7 +76,7 @@ export function CVDetailPage() {
         open={pdfOpen}
         onClose={() => setPdfOpen(false)}
         pdfUrl={pdfUrl}
-        previewUrl={previewUrl}
+        previewSrc={previewSrc}
         isLoading={loading}
       />
     </div>

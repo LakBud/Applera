@@ -1,42 +1,66 @@
-// ─────────────────────────────────────────────────────────────
 // Injection detection
-// ─────────────────────────────────────────────────────────────
 
 const INJECTION_PATTERNS = [
-  // English
-  /ignore (all |previous |the |above )?instructions?/i,
-  /disregard (all |previous |the |above )?instructions?/i,
+  // English - ignore/disregard variants
+  /ign[o0]re (all |previous |the |above |any )*inst?r[uo]ctions?/i,
+  /disregard (all |previous |the |above |any )*inst?r[uo]ctions?/i,
+  /do not follow (your |any |the |previous )?inst?r[uo]ctions?/i,
+  /override (your |all |previous )?inst?r[uo]ctions?/i,
+
+  // Identity/role hijacking
   /you are now/i,
-  /new persona/i,
-  /forget (everything|all|your instructions)/i,
+  /you will now (act|behave|pretend|respond)/i,
+  /act as (a |an |if )?/i,
+  /pretend (you are|to be)/i,
+  /new (persona|role|identity|mode)/i,
+  /your (new |true )?role is/i,
+  /from now on/i,
+
+  // Forgetting
+  /forget (everything|all|your (instructions?|training|rules|guidelines))/i,
+  /reset (your )?(instructions?|context|memory|training)/i,
+
+  // System prompt leaking/override
   /system\s*:/i,
   /<\s*system\s*>/i,
+  /reveal (your )?(system |initial |original )?(prompt|instructions?)/i,
+  /what (are|were) your (original |system |initial )?instructions?/i,
+  /repeat (your )?(system |initial |original )?(prompt|instructions?)/i,
+
+  // DAN / jailbreak patterns
+  /do anything now/i,
+  /jailbreak/i,
+  /developer\s*mode/i,
+  /(enable|activate|switch to) (unrestricted|unlimited|unsafe|unfiltered) mode/i,
+  /no (restrictions?|limits?|filters?|guidelines?|rules?)/i,
 
   // Norwegian
   /se bort fra/i,
-  /ignorer (alle |tidligere |instruksjonene)/i,
-  /glem (alt|instruksjonene|hva du ble fortalt)/i,
+  /ignorer (alle |tidligere |instruksjonene|reglene)*/i,
+  /glem (alt|instruksjonene|hva du ble fortalt|reglene)/i,
   /du er n(å|a) en/i,
-  /ny (assistent|persona|rolle)/i,
+  /ny (assistent|persona|rolle|identitet)/i,
+  /fra n(å|a) av/i,
+  /late som (du er|om)/i,
 
   // Structural injection
-  /```\s*(system|instructions?)/i,
+  /```\s*(system|instructions?|prompt|override)/i,
   /\[INST\]/i,
   /<\|system\|>/i,
+  /<\|im_start\|>/i, // ChatML format
+  /###\s*instruction/i, // Alpaca format
+  /human\s*:/i, // conversation format spoofing
+  /assistant\s*:/i,
 ];
 
 export function detectInjection(text: string): boolean {
   return INJECTION_PATTERNS.some((pattern) => pattern.test(text));
 }
 
-// ─────────────────────────────────────────────────────────────
 // Input sanitization
-// ─────────────────────────────────────────────────────────────
 
-const MAX_INPUT_LENGTH = 20_000;
-
-export function sanitise(text: string, label: string): string {
-  if (typeof text !== 'string' || !text.trim()) {
+export function sanitise(text: string, label: string, MAX_INPUT_LENGTH: number = 20_000): string {
+  if (!text.trim()) {
     throw new TypeError(`[extractors] "${label}" must be non-empty`);
   }
 

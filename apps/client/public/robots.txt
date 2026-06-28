@@ -4,5 +4,7 @@ Disallow: /cvs
 Disallow: /applications
 Disallow: /auth/sign-up
 Disallow: /auth/sign-in
+Disallow: /terms
+Disallow: /privacy
 
 Sitemap: https://applera.site/sitemap.xml
