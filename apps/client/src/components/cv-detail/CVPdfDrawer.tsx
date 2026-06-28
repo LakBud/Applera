@@ -1,12 +1,13 @@
 import { useState } from 'react';
 
 import { getToken } from '@clerk/react';
-import axios from 'axios';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 
 import { Loader } from '../common/Loader';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+
+import { getCVPreview } from '@/api/cv/cv.api';
 
 interface CVPdfDrawerProps {
   open: boolean;
@@ -23,15 +24,21 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewSrc, isLoading }: CV
     if (!pdfUrl) {
       return;
     }
+
+    const popup = window.open('', '_blank');
+    if (!popup) {
+      return;
+    }
+
     setIsOpening(true);
     try {
       const token = await getToken();
-      const res = await axios.get(pdfUrl, {
-        headers: { Authorization: `Bearer ${token}` },
-        responseType: 'blob',
-      });
-      const url = URL.createObjectURL(res.data);
-      window.open(url, '_blank');
+      const res = await getCVPreview(pdfUrl, token);
+      const url = URL.createObjectURL(res);
+      popup.location.href = url;
+    } catch (error) {
+      popup.close();
+      throw error;
     } finally {
       setIsOpening(false);
     }

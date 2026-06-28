@@ -1,34 +1,42 @@
 import { useEffect, useState } from 'react';
 
 import { useAuth } from '@clerk/clerk-react';
-import axios from 'axios';
+
+import { getCVPreview } from '@/api/cv/cv.api';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '';
 
-export function useAuthenticatedImage(url: string | null) {
+export function useAuthenticatedCVImage(url: string | null) {
   const { getToken } = useAuth();
   const [src, setSrc] = useState<string | null>(null);
 
   const fullUrl = url ? (url.startsWith('http') ? url : `${API_URL}${url}`) : null;
 
   useEffect(() => {
+    setSrc(null);
     if (!fullUrl) {
       return;
     }
 
-    let objectUrl: string;
+    let objectUrl: string | null = null;
     let isMounted = true;
 
     (async () => {
-      const token = await getToken();
-      const res = await axios.get(fullUrl, {
-        headers: { Authorization: `Bearer ${token}` },
-        responseType: 'blob',
-      });
+      try {
+        const token = await getToken();
+        const res = await getCVPreview(fullUrl, token);
+        objectUrl = URL.createObjectURL(res);
 
-      objectUrl = URL.createObjectURL(res.data);
-      if (isMounted) {
+        if (!isMounted) {
+          URL.revokeObjectURL(objectUrl);
+          return;
+        }
+
         setSrc(objectUrl);
+      } catch {
+        if (isMounted) {
+          setSrc(null);
+        }
       }
     })();
 

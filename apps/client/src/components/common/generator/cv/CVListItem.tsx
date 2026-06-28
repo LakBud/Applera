@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 
+import { useAuthenticatedCVImage } from '@/hooks/useAuthenticatedCVImage';
 import type { CVDocument } from '@repo/schemas';
 
 export function CvListItem({
@@ -11,6 +12,7 @@ export function CvListItem({
   selected: boolean;
   onSelect: () => void;
 }) {
+  const previewSrc = useAuthenticatedCVImage(cv.previewUrl ?? null);
   return (
     <Button
       type="button"
@@ -18,9 +20,9 @@ export function CvListItem({
       className={`relative w-16 h-20 border rounded-lg cursor-pointer transition overflow-hidden shrink-0 appearance-none p-0
   ${selected ? 'border-2 border-green-600' : 'border-border hover:bg-muted/40'}`}
     >
-      {cv.previewUrl ? (
+      {previewSrc ? (
         <>
-          <img src={cv.previewUrl} alt="CV preview" className="w-full h-full object-cover" />
+          <img src={previewSrc} alt="CV preview" className="w-full h-full object-cover" />
           <div className="absolute bottom-0 left-0 right-0 bg-green-950/50 px-1 py-0.5">
             <p className="text-[9px] text-white truncate leading-tight">{cv.parsed?.name}</p>
           </div>

@@ -359,8 +359,10 @@ export const getCVPreview = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    const id = getParam(req.params.id);
+
     const cv = await CVModel.findOne({
-      _id: req.params.id,
+      _id: id,
       ownerId: req.identity.id,
       ownerType: req.identity.type,
     });
@@ -377,7 +379,7 @@ export const getCVPreview = async (req: Request, res: Response) => {
       type: 'authenticated',
     });
 
-    const response = await axios.get(url, { responseType: 'stream' });
+    const response = await axios.get(url, { responseType: 'stream', timeout: 10_000 });
 
     res.setHeader('Content-Type', 'image/jpeg');
     res.setHeader('Cache-Control', 'private, max-age=3600'); // browser caches for 1hr
@@ -397,8 +399,10 @@ export const getCVPdf = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    const id = getParam(req.params.id);
+
     const cv = await CVModel.findOne({
-      _id: req.params.id,
+      _id: id,
       ownerId: req.identity.id,
       ownerType: req.identity.type,
     });
@@ -415,7 +419,7 @@ export const getCVPdf = async (req: Request, res: Response) => {
       expires_at: Math.floor(Date.now() / 1000) + 60 * 60,
     });
 
-    const response = await axios.get(url, { responseType: 'stream' });
+    const response = await axios.get(url, { responseType: 'stream', timeout: 10_000 });
 
     const allowedHeaders = ['content-type', 'content-length'];
     Object.keys(response.headers).forEach((key) => {

@@ -58,3 +58,12 @@ export async function getCVDashboard(cvId: string): Promise<DashboardCV> {
 
   return DashboardCVSchema.parse(res.data);
 }
+
+// GET /api/cv/:id/preview
+export async function getCVPreview(url: string, token: string | null): Promise<Blob> {
+  const response = await client.get(url, {
+    headers: { Authorization: `Bearer ${token}` },
+    responseType: 'blob',
+  });
+  return response.data;
+}

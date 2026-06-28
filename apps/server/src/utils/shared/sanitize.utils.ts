@@ -10,7 +10,7 @@ const INJECTION_PATTERNS = [
   // Identity/role hijacking
   /you are now/i,
   /you will now (act|behave|pretend|respond)/i,
-  /act as (a |an |if )?/i,
+  /\bact as (a |an )?(different |new )?(ai|assistant|model|persona|character|chatbot)\b/i,
   /pretend (you are|to be)/i,
   /new (persona|role|identity|mode)/i,
   /your (new |true )?role is/i,
@@ -36,7 +36,7 @@ const INJECTION_PATTERNS = [
 
   // Norwegian
   /se bort fra/i,
-  /ignorer (alle |tidligere |instruksjonene|reglene)*/i,
+  /ignorer (alle |tidligere |instruksjonene|reglene)+/i,
   /glem (alt|instruksjonene|hva du ble fortalt|reglene)/i,
   /du er n(å|a) en/i,
   /ny (assistent|persona|rolle|identitet)/i,
@@ -49,8 +49,8 @@ const INJECTION_PATTERNS = [
   /<\|system\|>/i,
   /<\|im_start\|>/i, // ChatML format
   /###\s*instruction/i, // Alpaca format
-  /human\s*:/i, // conversation format spoofing
-  /assistant\s*:/i,
+  /^\s*human\s*:/im, // conversation format spoofing
+  /^\s*assistant\s*:/im,
 ];
 
 export function detectInjection(text: string): boolean {

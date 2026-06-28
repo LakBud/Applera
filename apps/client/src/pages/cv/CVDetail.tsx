@@ -11,7 +11,7 @@ import { useCVSuccessRate } from '../../hooks/cv-id/useCVSuccessRate';
 import { Route } from '../../routes/__protected/cvs/$cvId';
 import { getCVPdfUrl } from '../../utils/cv-id/url';
 
-import { useAuthenticatedImage } from '@/hooks/useAuthenticatedImage';
+import { useAuthenticatedCVImage } from '@/hooks/useAuthenticatedCVImage';
 
 export function CVDetailPage() {
   const { cvId } = Route.useParams();
@@ -22,7 +22,7 @@ export function CVDetailPage() {
 
   const { completeness, missing } = useCVCompleteness(cv);
   const { successRate } = useCVSuccessRate(dashboard);
-  const previewSrc = useAuthenticatedImage(cv?.previewUrl ?? null);
+  const previewSrc = useAuthenticatedCVImage(cv?.previewUrl ?? null);
 
   const loading = cvLoading || dashLoading;
 
