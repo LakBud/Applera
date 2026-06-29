@@ -4,7 +4,6 @@ import { useUploaderHandlers, useUploaderState } from '../context/UploaderContex
 import { FileModePanel } from '../file/FileModePanel';
 import { TextModePanel } from '../text/TextModePanel';
 
-// UploaderShell.tsx
 export function UploaderShell({
   label,
   placeholder,

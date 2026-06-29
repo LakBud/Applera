@@ -20,6 +20,7 @@ export function TextModePanel({ label, placeholder }: { label: string; placehold
       <Textarea
         value={text}
         onChange={(e) => onTextChange(e.target.value)}
+        aria-label={label}
         placeholder={placeholder}
         disabled={isUploading}
         className="w-full h-[28vh] sm:h-[25vh] md:h-[34vh] resize-none bg-bg border border-border rounded-xl p-4 text-sm text-body focus:outline-none focus:ring-green-800/40 disabled:opacity-60 transition"

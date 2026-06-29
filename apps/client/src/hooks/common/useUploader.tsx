@@ -36,7 +36,13 @@ export function useUploader<T>({
   const isSelected = !!uploadedId || !!selectedCvId;
 
   function validateAndHandleFile(file: File) {
-    if (file.type !== 'application/pdf') {
+    const isPdf =
+      file.type === 'application/pdf' ||
+      // file.type can be empty for drag-and-drop on some browsers/OSes;
+      // fall back to extension check in that case only.
+      (!file.type && file.name.toLowerCase().endsWith('.pdf'));
+
+    if (!isPdf) {
       setError('Only PDFs are supported');
       return;
     }

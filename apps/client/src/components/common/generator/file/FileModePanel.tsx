@@ -8,7 +8,6 @@ export function FileModePanel({
   showCvList,
   selectedCvId,
   onSelectCv,
-  onDeselectCv,
 }: {
   label: string;
   fileRef: React.RefObject<HTMLInputElement | null>;
@@ -17,7 +16,7 @@ export function FileModePanel({
   onSelectCv?: (id: string) => void;
   onDeselectCv?: () => void;
 }) {
-  const { onCvSelect } = useUploaderHandlers();
+  const { onCvSelect, onClear } = useUploaderHandlers();
 
   return (
     <div className="space-y-4">
@@ -27,7 +26,7 @@ export function FileModePanel({
         <div className="mt-4 md:mt-0">
           <CvList
             onSelectCv={(id) => onCvSelect(id, onSelectCv)}
-            onDeselectCv={onDeselectCv}
+            onDeselectCv={onClear}
             selectedCvId={selectedCvId}
           />
         </div>

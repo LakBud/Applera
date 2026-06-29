@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Monda:wght@400;700&display=swap');
+@import 'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Monda:wght@400;700&display=swap';
 @import '@fontsource-variable/geist';
 @import 'tailwindcss';
 @import 'tw-animate-css';
@@ -133,7 +133,7 @@
 
     /* TYPOGRAPHY */
     --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-display: 'DM Serif Display', georgia, serif;
     --font-mono: 'DM Mono', ui-monospace, monospace;
     --font-monda: 'Monda', ui-sans-serif, system-ui, sans-serif;
 
