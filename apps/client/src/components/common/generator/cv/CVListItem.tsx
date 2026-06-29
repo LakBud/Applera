@@ -1,3 +1,5 @@
+import { FileText } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 
 import { useAuthenticatedCVImage } from '@/hooks/useAuthenticatedCVImage';
@@ -28,9 +30,10 @@ export function CvListItem({
           </div>
         </>
       ) : (
-        <div className="w-full h-full flex items-center justify-center bg-muted p-2">
-          <span className="text-xs text-muted-foreground text-center warp-break-words leading-tight">
-            {cv.parsed?.name || 'Untitled CV'}
+        <div className="w-full h-full flex flex-col items-center justify-center gap-1 bg-muted text-muted-foreground">
+          <FileText className="w-5 h-5 opacity-30" />
+          <span className="text-[9px] opacity-50 px-1 leading-tight truncate w-full text-center">
+            {cv.parsed?.name || 'No preview'}
           </span>
         </div>
       )}
