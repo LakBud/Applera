@@ -11,7 +11,7 @@ import { useCVSuccessRate } from '../../hooks/cv-id/useCVSuccessRate';
 import { Route } from '../../routes/__protected/cvs/$cvId';
 import { getCVPdfUrl } from '../../utils/cv-id/url';
 
-import { useAuthenticatedCVImage } from '@/hooks/useAuthenticatedCVImage';
+import { useAuthenticatedCVImage } from '@/hooks/common/useAuthenticatedCVImage';
 
 export function CVDetailPage() {
   const { cvId } = Route.useParams();

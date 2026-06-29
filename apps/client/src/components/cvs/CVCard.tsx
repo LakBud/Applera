@@ -16,7 +16,7 @@ import {
   CardTitle,
 } from '../ui/card';
 
-import { useAuthenticatedCVImage } from '@/hooks/useAuthenticatedCVImage';
+import { useAuthenticatedCVImage } from '@/hooks/common/useAuthenticatedCVImage';
 import type { CVDocument } from '@repo/schemas';
 
 type CVCardProps = {

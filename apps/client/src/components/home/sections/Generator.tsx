@@ -75,7 +75,7 @@ export default function GeneratorSection({ state }: Props) {
               type="button"
               onClick={handleGenerate}
               disabled={!canGenerate}
-              className="px-8 py-6 text-sm font-semibold btn-primary border-border text-white/70 hover:bg-[#1fa028]/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="px-8 py-6 text-sm font-semibold btn-primary text-white/70 hover:bg-[#1fa028]/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               {isPending ? <Loader size="sm" text="Generating…" /> : 'Generate application'}
             </Button>
