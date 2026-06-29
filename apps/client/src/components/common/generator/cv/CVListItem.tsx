@@ -2,7 +2,7 @@ import { FileText } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
-import { useAuthenticatedCVImage } from '@/hooks/useAuthenticatedCVImage';
+import { useAuthenticatedCVImage } from '@/hooks/common/useAuthenticatedCVImage';
 import type { CVDocument } from '@repo/schemas';
 
 export function CvListItem({
