@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from '../ui/card';
 
+import { useAuthenticatedCVImage } from '@/hooks/useAuthenticatedCVImage';
 import type { CVDocument } from '@repo/schemas';
 
 type CVCardProps = {
@@ -40,6 +41,7 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
   const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : '');
 
   const showSeniority = cv.parsed.seniority_level && cv.parsed.seniority_level !== 'unknown';
+  const previewSrc = useAuthenticatedCVImage(cv.previewUrl ?? null);
 
   return (
     <Card
@@ -49,8 +51,12 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
     >
       {/* IMAGE */}
       <div className="w-full h-56 border-b overflow-hidden bg-muted flex items-center justify-center">
-        {cv.previewUrl ? (
-          <img src={cv.previewUrl} alt="CV preview" className="w-full h-full object-cover" />
+        {previewSrc ? (
+          <img
+            src={previewSrc}
+            alt="CV preview"
+            className="w-full h-full object-cover object-top block"
+          />
         ) : (
           <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
             <FileText className="w-10 h-10 opacity-30" />

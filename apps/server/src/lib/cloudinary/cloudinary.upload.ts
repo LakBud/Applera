@@ -7,5 +7,6 @@ export async function uploadImage(buffer: Buffer, userId: string) {
     public_id: `cv_${Date.now()}`,
     overwrite: true,
     invalidate: true,
+    type: 'authenticated',
   });
 }
