@@ -29,21 +29,24 @@ export function UploaderShell({
 
   return (
     <div className="bg-surface border border-border rounded-2xl p-4 md:p-6 flex flex-col gap-4 md:gap-5 md:h-122 bg-white/70 animate-fade-in">
+      {/* Mode toggle */}
       <div className="flex items-center justify-between">
         <span className="text-overline text-green-800">{label}</span>
-        <ToggleGroup
-          type="single"
-          value={mode}
-          onValueChange={(v) => v && onModeChange(v as 'file' | 'text')}
-          className="bg-[#1fa028]/20 rounded-full p-1 flex gap-1 w-full md:w-auto"
-        >
-          <ToggleGroupItem value="file" className={toggleItemClass}>
-            Upload
-          </ToggleGroupItem>
-          <ToggleGroupItem value="text" className={toggleItemClass}>
-            Paste
-          </ToggleGroupItem>
-        </ToggleGroup>
+        <div className="flex gap-2 text-xs">
+          <ToggleGroup
+            type="single"
+            value={mode}
+            onValueChange={(v) => v && onModeChange(v as 'file' | 'text')}
+            className="bg-[#1fa028]/20 rounded-full p-1 flex gap-1 w-full md:w-auto"
+          >
+            <ToggleGroupItem value="file" className={toggleItemClass}>
+              Upload
+            </ToggleGroupItem>
+            <ToggleGroupItem value="text" className={toggleItemClass}>
+              Paste
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
       </div>
 
       <div key={mode} className="animate-fade-in">
