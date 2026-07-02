@@ -14,7 +14,7 @@ The project is organized as a **pnpm workspace monorepo** with two main apps and
 - `apps/server/` — Backend REST API
 - `packages/schemas/` — Shared TypeScript schemas and type definitions
 
-### `apps/client/` — Frontend
+### [`apps/client/`](apps/client) — Frontend
 
 A modern **React 19 + TypeScript** single-page application built with:
 
@@ -25,7 +25,7 @@ A modern **React 19 + TypeScript** single-page application built with:
 - **Tailwind CSS v4** + **shadcn/ui** for styling and UI components
 - **Axios** with modular request/response interceptors
 
-### `apps/server/` — Backend
+### [`apps/server/`](apps/server) — Backend
 
 A **Node.js + Express 5** REST API built with:
 
