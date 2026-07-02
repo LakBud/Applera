@@ -46,7 +46,6 @@ export default function ApplicationResult({ data: application }: Props) {
         <div className="w-2.5 h-2.5 rounded-full bg-error/60" />
         <div className="w-2.5 h-2.5 rounded-full bg-warning/60" />
         <div className="w-2.5 h-2.5 rounded-full bg-success/60" />
-        <span className="ml-2 text-xs text-caption">Application result</span>
       </div>
 
       <div className="flex flex-col md:grid md:grid-cols-[300px_1fr]">
