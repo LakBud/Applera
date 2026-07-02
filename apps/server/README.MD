@@ -18,7 +18,7 @@ Express + TypeScript REST API powering the Applera job application platform.
 ### Prerequisites
 
 - Node.js 20+
-- pnpm 10.20.0
+- pnpm@11.8.0
 - MongoDB Atlas account
 - Clerk account
 - Groq API key

@@ -1,16 +1,20 @@
 # Applera
 
-An AI-powered job application platform that streamlines the job search process with automated CV parsing, application generation, and interview preparation.
+Applera is an AI-powered job application platform that simplifies job search workflows with automated CV parsing, tailored application generation, and interview preparation.
 
 ## Overview
 
-Applera is a full-stack TypeScript turborepo designed to help job seekers manage applications efficiently. The platform leverages AI (Groq) to parse CVs, generate tailored applications, and provide interview prep guidance.
+This repository is a **TypeScript monorepo** powered by **pnpm** and **Turborepo**. It contains a React frontend, an Express backend, and shared schema packages for consistent types across the stack.
 
 ## Architecture
 
-The project is organized as a **pnpm workspace monorepo** with two apps:
+The project is organized as a **pnpm workspace monorepo** with two main apps and one shared package:
 
-### [`apps/client/`](apps/client) — Frontend
+- `apps/client/` — Frontend web app
+- `apps/server/` — Backend REST API
+- `packages/schemas/` — Shared TypeScript schemas and type definitions
+
+### `apps/client/` — Frontend
 
 A modern **React 19 + TypeScript** single-page application built with:
 
@@ -18,21 +22,53 @@ A modern **React 19 + TypeScript** single-page application built with:
 - **TanStack Router** for file-based routing
 - **TanStack Query** for server state management
 - **Clerk** for authentication
-- **Tailwind CSS v4** + **shadcn/ui** for styling and components
-- **Axios** with modularised request/response interceptors
-- **Deployed on Vercel**
+- **Tailwind CSS v4** + **shadcn/ui** for styling and UI components
+- **Axios** with modular request/response interceptors
 
-### [`apps/server/`](apps/server) — Backend
+### `apps/server/` — Backend
 
-A **Node.js + Express** REST API built with:
+A **Node.js + Express 5** REST API built with:
 
 - **Express 5** for HTTP handling
-- **MongoDB + Mongoose** for data persistence
-- **Clerk** for authentication (JWT verification)
-- **Groq API** (llama-3.3-70b-versatile) for AI-powered features
-- **Cloudinary** for PDF file storage
+- **MongoDB + Mongoose** for persistence
+- **Clerk** for auth and webhook handling
+- **Groq** for AI-powered CV parsing, application generation, and interview prep
+- **Cloudinary** for PDF storage
 - **Upstash Redis** for caching and rate limiting
-- **Deployed on Render**
+
+## Userflow
+```
+   ┌────────────────────────┐    ┌────────────────┐   ┌───────────────┐
+   │        CV Stats        │ <- │   CV upload    │ + │  Job upload   │
+   │ GET /api/tracker/:cvId │    │  POST /api/cv  │   │ POST /api/job │
+   └──────-─────────────────┘    └───────┬────────┘   └──────┬────────┘
+                                         │                   │
+                                         │                   │
+                                         ▼                   ▼
+                                    ┌──────────────────────────────┐
+                                    │ Generate application         │
+                                    │ POST /api/application        │
+                                    └──────────────────────────────┘
+                                                    │
+                                                    ▼
+                                    ┌──────────────────────────────┐
+                                    │ Application result           │
+                                    │ GET /api/application         │ 
+                                    └──────────────────────────────┘
+                                                    │
+                                                    ▼
+                                    ┌──────────────────────────────┐
+                                    │ Interview prep               │
+                                    │ POST /api/interview/:id      │
+                                    └──────────────────────────────┘
+```
+
+- The frontend collects a CV and a job listing on the homepage generator.
+- `POST /api/cv` uploads the CV and creates a tracker record at `GET /api/tracker/:cvId`.
+- `POST /api/job` uploads the job listing and stores it alongside the CV data.
+- `POST /api/application` generates a tailored job application from the saved CV and job details.
+- `GET /api/application` returns the generated application result.
+- `POST /api/interview/:id` generates interview prep for the saved application.
 
 ## Quick Start
 
@@ -41,15 +77,15 @@ A **Node.js + Express** REST API built with:
 - **Node.js 20+**
 - **pnpm 11.8.0** (`npm install -g pnpm@11.8.0`)
 
-### Setup
+### Install dependencies
 
 ```bash
 pnpm install
 ```
 
-### Environment Setup
+### Environment setup
 
-Each app requires its own `.env` file. See the respective READMEs for details:
+Each app has its own environment configuration. See the app READMEs for details:
 
 - **Client**: [`apps/client/README.md`](./apps/client/README.md#environment-variables)
 - **Server**: [`apps/server/README.md`](./apps/server/README.md#environment-variables)
@@ -60,10 +96,15 @@ Each app requires its own `.env` file. See the respective READMEs for details:
 # Start both client and server concurrently
 pnpm dev
 
-# Or start individually
-pnpm dev:client   # http://localhost:5173
-pnpm dev:server   # http://localhost:5005
+# Start only the client
+pnpm dev:client
+
+# Start only the server
+pnpm dev:server
 ```
+
+- Client: `http://localhost:5173`
+- Server: `http://localhost:5005`
 
 ### Docker
 
@@ -75,121 +116,137 @@ pnpm dev:docker
 pnpm docker:prod
 ```
 
+## Scripts
+
+Useful root-level scripts:
+
+| Command | Description |
+| ------- | ----------- |
+| `pnpm dev` | Start both apps in development |
+| `pnpm dev:client` | Start the frontend |
+| `pnpm dev:server` | Start the backend |
+| `pnpm dev:docker` | Run development Docker compose |
+| `pnpm build` | Build both apps |
+| `pnpm build:client` | Build frontend only |
+| `pnpm build:server` | Build backend only |
+| `pnpm start:server` | Start backend from build output |
+| `pnpm docker:prod` | Run production Docker compose |
+| `pnpm lint` | Run workspace lint rules |
+| `pnpm lint:fix` | Fix lint issues |
+| `pnpm typecheck` | Run workspace type checks |
+| `pnpm format` | Format code |
+| `pnpm format:check` | Check formatting without writing |
+| `pnpm test` | Run workspace tests |
+| `pnpm test:unit` | Run all unit tests |
+| `pnpm test:integration` | Run all integration tests |
+| `pnpm test:coverage` | Run test coverage |
+| `pnpm test:server` | Test backend only |
+| `pnpm test:server:unit` | Run backend unit tests |
+| `pnpm test:server:integration` | Run backend integration tests |
+| `pnpm test:client` | Test frontend only |
+| `pnpm test:client:unit` | Run frontend unit tests |
+| `pnpm test:client:integration` | Run frontend integration tests |
+| `pnpm prepare` | Install Git hooks via Husky |
+
+
 ## Key Features
 
-### CV Management
+- AI-powered CV ingestion and parsing
+- Tailored application and cover letter generation
+- Interview preparation with custom question guides
+- Application tracking and status dashboards
+- Secure PDF storage and user account lifecycle cleanup
+- Centralised shared schemas for frontend/backend consistency
 
-Upload and parse resumes via AI, extract structured data (skills, experience, education), and store PDFs securely on Cloudinary.
-
-### Job Applications
-
-Auto-generate tailored cover letters and applications with AI-powered content generation via Groq. Track application status across multiple roles.
-
-### Interview Preparation
-
-Generate personalised interview prep guides and questions based on your CV and job description.
-
-### Application Tracking
-
-Monitor application status, view dashboard insights, and visualise job search progress.
-
-## Security
+## Security highlights
 
 - Helmet for HTTP security headers
 - CORS restricted to frontend domain
-- CSRF protection via double-submit cookie pattern with in-flight deduplication
-- MongoDB query filter sanitization via `mongoose.set('sanitizeFilter', true)`
-- MongoDB ObjectId validation at request boundaries
-- Input validation and sanitization (Zod, HPP, object stripping)
-- Clerk JWT verification on all protected routes
-- Svix signature verification on webhook endpoint
-- Per-route and global rate limiting via Upstash Redis
-- Usage-based AI quota limiting — quota only charged after validation passes
-- IPv4 and IPv6 address masking in logs
+- CSRF protection using double-submit cookie pattern
+- Rate limiting via Upstash Redis
+- Input validation and sanitization with Zod and HPP
+- MongoDB query sanitization via `mongoose.set('sanitizeFilter', true)`
+- Clerk JWT authentication on protected routes
+- Svix signature verification for webhook events
+- Usage-based AI quota management
 
-## Project Structure
+## Repository structure
 
 ```
-.
+Applera
 ├── apps/
 │   ├── client/
-│   │   └── src/
-│   │       ├── api/
-│   │       │   ├── application/
-│   │       │   ├── cv/
-│   │       │   ├── interview/
-│   │       │   ├── job/
-│   │       │   ├── interceptors/
-│   │       │   ├── client.ts
-│   │       │   ├── queryKeys.ts
-│   │       │   └── types.ts
-│   │       ├── components/
-│   │       ├── hooks/
-│   │       ├── pages/
-│   │       ├── routes/
-│   │       └── utils/
-│   └── server/
-│       └── src/
-│           ├── config/
-│           ├── controllers/
-│           ├── lib/
-│           ├── middleware/
-│           │   ├── auth/
-│           │   ├── pdf/
-│           │   ├── rate/
-│           │   ├── request/
-│           │   └── upload/
-│           ├── models/
-│           ├── prompts/
-│           ├── routes/
-│           ├── services/
-│           │   ├── application/
-│           │   ├── audit/
-│           │   ├── match/
-│           │   └── pipeline/
-│           ├── types/
-│           ├── utils/
-│           ├── workers/
-│           └── server.ts
+│   │   ├── src/
+│   │   ├── Dockerfile
+│   │   ├── package.json
+│   │   └── README.md
+│   ├── server/
+│   │   ├── src/
+│   │   ├── Dockerfile
+│   │   ├── package.json
+│   │   └── README.md
+├── packages/
+│   └── schemas/
+│       ├── src/
+│       ├── package.json
+│       ├── tsconfig.json
+|       └── README.md
 ├── docker-compose.dev.yml
 ├── docker-compose.prod.yml
-├── pnpm-workspace.yaml
 ├── package.json
-└── tsconfig.json
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── tsconfig.base.json
+├── tsconfig.json
+├── turbo.json
+└── vercel.json
 ```
 
-## Tech Stack
+
+
+## Tech stack
 
 | Category         | Technology                                        |
 | ---------------- | ------------------------------------------------- |
-| **Frontend**     | React 19, TypeScript, Vite, TanStack Router/Query |
-| **Backend**      | Node.js, Express 5, TypeScript                    |
-| **Database**     | MongoDB Atlas + Mongoose                          |
-| **Auth**         | Clerk (JWT-based)                                 |
-| **AI**           | Groq (llama-3.3-70b-versatile)                    |
-| **File Storage** | Cloudinary                                        |
-| **Cache**        | Upstash Redis                                     |
-| **Styling**      | Tailwind CSS v4, shadcn/ui                        |
-| **Validation**   | Zod                                               |
+| Frontend         | React 19, TypeScript, Vite, TanStack Router, TanStack Query |
+| Backend          | Node.js, Express 5, TypeScript                    |
+| Database         | MongoDB Atlas, Mongoose                           |
+| Auth             | Clerk                                             |
+| AI               | Groq                                              |
+| Storage          | Cloudinary                                        |
+| Cache / rate limit | Upstash Redis                                  |
+| Styling          | Tailwind CSS v4, shadcn/ui                        |
+| Validation       | Zod                                               |
 
 ## Documentation
 
-- **Frontend**: [`apps/client/README.md`](./apps/client/README.md)
-- **Backend**: [`apps/server/README.md`](./apps/server/README.md)
+- Frontend docs: [`apps/client/README.md`](./apps/client/README.md)
+- Backend docs: [`apps/server/README.md`](./apps/server/README.md)
 
 ## Deployment
 
 ### Frontend — Vercel
 
-- **Build command**: `vite build`
-- **Output directory**: `dist`
-- **Root directory**: `apps/client`
+- Root directory: `apps/client`
+- Build command: `vite build`
+- Output directory: `dist`
 
 ### Backend — Render
 
-- **Build command**: `pnpm install && pnpm run build`
-- **Start command**: `pnpm start`
+- Build command: `pnpm install && pnpm run build`
+- Start command: `pnpm start`
 
----
+## Contributing
+
+Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before opening a pull request.
+
+## License
 
 Copyright (c) 2026 Applera. All rights reserved.
+
+This software is licensed under the PolyForm Noncommercial License 1.0.0.
+Personal and noncommercial use is permitted free of charge.
+Commercial use requires a separate paid license.
+
+Full license terms: [`LICENSE`](./LICENSE)
+
