@@ -88,16 +88,14 @@ app.use(
 // Webhooks (must be before body parsing)
 app.use('/api/webhooks', webhookLimiter, webhookRoutes);
 
-// zBody parsing
+// Body parsing
 app.use(express.json({ limit: '50kb' }));
 app.use(express.urlencoded({ extended: true, limit: '50kb' }));
 app.use(cookieParser());
 
 app.use(earlyLimiter);
 
-// ─────────────────────────────────────────────
 // Health check (public)
-// ─────────────────────────────────────────────
 
 const publicRouter = express.Router();
 

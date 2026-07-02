@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsdown",
+    "build": "tsx build.ts",
     "start": "node dist/server.mjs",
     "dev": "tsx watch src/server.ts",
     "lint": "oxlint .",
@@ -49,6 +49,7 @@
     "@types/supertest": "^7.2.0",
     "@vitest/coverage-v8": "^4.1.9",
     "cross-env": "^10.1.0",
+    "esbuild": "^0.28.1",
     "mongodb-memory-server": "^11.2.0",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2",
