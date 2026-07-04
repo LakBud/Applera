@@ -1,8 +1,6 @@
 import { useNavigate } from '@tanstack/react-router';
 import { ArrowRight, FileText, MapPin } from 'lucide-react';
 
-import { Button } from '../ui/button';
-
 type Props = {
   jobTitle?: string;
   cvId?: string;
@@ -36,7 +34,8 @@ export function ApplicationDetailHeader({
 
         {meta.map((item, i) => (
           <span key={i} className="flex items-center gap-1">
-            {(i > 0 || seniority) && <span className="text-tx-muted/40">·</span>}
+            {i > 0 && <span className="text-tx-muted/40">·</span>}
+
             {item === location && <MapPin className="w-3 h-3" />}
             {item}
           </span>
@@ -45,15 +44,15 @@ export function ApplicationDetailHeader({
         {cvId && (
           <>
             <span className="text-tx-muted/40">·</span>
-            <Button
+            <button
               type="button"
               onClick={() => navigate({ to: '/cvs/$cvId', params: { cvId } })}
-              className="flex items-center gap-1 hover:text-foreground cursor-pointer transition-colors appearance-none bg-transparent border-0 p-0"
+              className="flex items-center gap-1 hover:text-foreground cursor-pointer transition-colors appearance-none border-0 p-0 font-normal"
             >
               <FileText className="w-3 h-3" />
               {cvName ?? 'View CV'}
               <ArrowRight className="w-3 h-3" />
-            </Button>
+            </button>
           </>
         )}
       </div>

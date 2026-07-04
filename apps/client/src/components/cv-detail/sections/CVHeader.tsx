@@ -57,23 +57,8 @@ export function CVHeaderSection({ name, seniority, updatedAtLabel, showPdf, onOp
 
           {/* Meta row */}
           <div className="flex items-center gap-2 flex-wrap text-xs text-tx-muted">
-            {hasSeniority && (
-              <span
-                className="
-                  px-2.5 py-1
-                  rounded-md
-                  bg-primary/10
-                  text-primary
-                  border
-                  border-primary/20
-                  font-medium
-                  capitalize
-                "
-              >
-                {seniority}
-              </span>
-            )}
-
+            {hasSeniority && <span className="capitalize">{seniority}</span>}
+            {hasSeniority && <span className="text-tx-muted/40">·</span>}
             <span>{updatedAtLabel}</span>
           </div>
         </div>

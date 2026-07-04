@@ -126,11 +126,19 @@ The Axios client (`api/client.ts`) uses two interceptors:
 - **Request** (`interceptors/request.interceptor.ts`) — attaches Bearer token and CSRF token with in-flight deduplication to prevent parallel token races
 - **Response** (`interceptors/response.interceptor.ts`) — normalises all errors to a typed `ClientError` shape with codes: `TIMEOUT`, `NETWORK_ERROR`, `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `RATE_LIMITED`, `USAGE_LIMIT_REACHED`, `UNKNOWN`
 
-## Routing
+## Routes
 
-Routes are file-based via TanStack Router. `routeTree.gen.ts` is auto-generated on dev/build — do not edit it manually.
-
-Protected routes live under `routes/__protected/` and redirect unauthenticated users to sign-up.
+| URL                          | Description                             |
+| ---------------------------- | --------------------------------------- |
+| /                            | Home — CV & job generator               |
+| /privacy                     | Privacy policy                          |
+| /terms                       | Terms of service                        |
+| /auth/sign-in                | Sign in (Clerk)                         |
+| /auth/sign-up                | Sign up (Clerk)                         |
+| /cvs                         | CVs list (protected)                    |
+| /cvs/:cvId                   | CV detail / tracker (protected)         |
+| /applications                | Applications list (protected)           |
+| /applications/:applicationId | Application detail / result (protected) |
 
 ## Deployment
 

@@ -1,10 +1,18 @@
-# Applera
+<p align="center">
+  <img src="apps/client/public/images/og-header.jpg" alt="Applera logo" width="120">
+</p>
+
+---
 
 Applera is an AI-powered job application platform that simplifies job search workflows with automated CV parsing, tailored application generation, and interview preparation.
 
 ## Overview
 
 This repository is a **TypeScript monorepo** powered by **pnpm** and **Turborepo**. It contains a React frontend, an Express backend, and shared schema packages for consistent types across the stack.
+
+## Why I built it
+
+I wanted an easier way to tailor applications to each job instead of manually rewriting my cover letter every time
 
 ## Architecture
 

@@ -77,7 +77,7 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
           </div>
           <div className="flex items-center gap-1">
             {showSeniority && (
-              <span className="text-xs px-2 py-1 rounded-full bg-muted whitespace-nowrap">
+              <span className="text-xs px-2 py-1 rounded-full bg-muted whitespace-nowrap capitalize text-[#1fa028] font-normal">
                 {cv.parsed.seniority_level}
               </span>
             )}
@@ -120,14 +120,24 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
         )}
 
         {/* Stats */}
-        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-          {cv.applicationsCount !== undefined && (
-            <p className="text-green-900">Used in {cv.applicationsCount} applications</p>
-          )}
+        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground justify-between">
+          <div className="flex items-center gap-2">
+            {cv.applicationsCount !== undefined && (
+              <span className="flex items-center gap-2">
+                Used in {cv.applicationsCount} application
+                {cv.applicationsCount !== 1 ? 's' : ''}
+              </span>
+            )}
 
-          {latestExp && cv.parsed.experience.length > 1 && (
-            <p className="text-green-900">{cv.parsed.experience.length} experiences</p>
-          )}
+            {cv.applicationsCount !== undefined && latestExp && <span>·</span>}
+
+            {latestExp && cv.parsed.experience.length > 0 && (
+              <span className="flex items-center gap-2">
+                {cv.parsed.experience.length} experience
+                {cv.parsed.experience.length !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
         </div>
       </CardContent>
 

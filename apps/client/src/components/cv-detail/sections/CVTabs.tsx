@@ -5,8 +5,6 @@ import { CVDescription } from '../description/CVDescription';
 import type { DashboardCV } from '@/api/cv/cv.schemas';
 import type { CVParsed } from '@repo/schemas';
 
-// ─── Root ─────────────────────────────────────────────────────────────────────
-
 interface CVTabsSectionProps {
   cv: { parsed: CVParsed };
   dashboard: DashboardCV;
@@ -18,8 +16,7 @@ export default function CVTabsSection({ cv, dashboard, isLoading }: CVTabsSectio
     'relative rounded-lg text-xs font-medium px-4 py-2 transition-all duration-200 text-black hover:text-tx-body';
 
   return (
-    <Tabs defaultValue="content" className="w-full">
-      {/* ───────────── TAB LIST ───────────── */}
+    <Tabs defaultValue="content" className="w-full animate-fade-in">
       <TabsList
         className="
         w-full
@@ -61,7 +58,6 @@ export default function CVTabsSection({ cv, dashboard, isLoading }: CVTabsSectio
         </TabsTrigger>
       </TabsList>
 
-      {/* ───────────── CONTENT ───────────── */}
       <TabsContent value="content" className="mt-6 animate-fade-in">
         <CVDescription parsed={cv.parsed} />
       </TabsContent>
