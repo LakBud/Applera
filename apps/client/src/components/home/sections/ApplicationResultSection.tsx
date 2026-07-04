@@ -1,4 +1,5 @@
-import ApplicationResult from '../application/ApplicationResult';
+import ApplicationResult from '@/components/common/application/ApplicationResult';
+
 import PreviewMock from '../PreviewMock';
 
 import type { HomeState } from './Generator';

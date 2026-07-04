@@ -31,6 +31,7 @@
     "coverage",
     "apps/client/dist",
     "apps/server/dist",
-    "pnpm-lock.yaml"
+    "pnpm-lock.yaml",
+    "routeTree.gen.ts"
   ]
 }

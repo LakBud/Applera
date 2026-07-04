@@ -1,6 +1,8 @@
 import { useNavigate } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
+import ApplicationResult from '@/components/common/application/ApplicationResult';
+
 import { useApplication, useUpdateApplicationStatus } from '../../api';
 import { useDeleteApplication } from '../../api/application/application.hook';
 import { ApplicationActionSection } from '../../components/application-detail/ApplicationDetailAction';
@@ -8,7 +10,6 @@ import { ApplicationDetailHeader } from '../../components/application-detail/App
 import { InterviewPrepSection } from '../../components/application-detail/InterviewPrep';
 import { JobListingSection } from '../../components/application-detail/JobListing';
 import { Loader } from '../../components/common/Loader';
-import ApplicationResult from '../../components/home/application/ApplicationResult';
 import { Route } from '../../routes/__protected/applications/$applicationId';
 
 import type { ApplicationStatus } from '@repo/schemas';
