@@ -19,7 +19,7 @@ export function EducationSection({ education }: { education: Education[] }) {
       <div className="mt-3 space-y-3">
         {education.map((edu, i) => (
           <div key={i}>
-            <div className="text-sm font-medium text-tx-body">{edu.title}</div>
+            <div className="text-sm font-medium text-green-800">{edu.title}</div>
             {edu.school && <div className="text-xs text-tx-muted">{edu.school}</div>}
           </div>
         ))}

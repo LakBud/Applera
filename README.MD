@@ -2,9 +2,24 @@
   <img src="apps/client/public/images/og-header.jpg" alt="Applera logo" width="120">
 </p>
 
+
+<p align="center">
+  AI-powered job application platform that streamlines your job search with automated CV parsing, tailored application generation, and interview preparation.
+</p>
+
 ---
 
-Applera is an AI-powered job application platform that simplifies job search workflows with automated CV parsing, tailored application generation, and interview preparation.
+<p align="center">
+  <img src="apps/client/public/videos/applera-preview.gif" alt="Applera demo: upload a CV and job posting, then generate a tailored application" width="720">
+</p>
+
+<p align="center">
+  <em>Primary user flow: CV + job → generate application</em>
+</p>
+
+---
+
+
 
 ## Overview
 

@@ -12,7 +12,7 @@ export function SummarySection({ summary }: { summary?: string }) {
         <span className="text-primary">Summary</span>
       </SectionHeading>
 
-      <p className="text-sm text-green-800 leading-relaxed font-display">{summary}</p>
+      <p className="text-sm text-green-800 font-semibold">{summary}</p>
     </Card2>
   );
 }
