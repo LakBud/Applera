@@ -1,4 +1,4 @@
-import { extractAllText } from '../utils/match/match.utils.js';
+import { extractAllText } from '../utils/match/text.utils.js';
 
 import type { MatchReport } from '../types/schemas/match.schemas.js';
 import type { CVParsed, JobParsed } from '@repo/schemas';

@@ -1,12 +1,12 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsx build.ts",
     "start": "node dist/server.mjs",
     "dev": "tsx watch src/server.ts",
+    "data:build-skill-aliases": "tsx scripts/buildSkillAliases.ts",
     "lint": "oxlint .",
     "typecheck": "tsc --noEmit",
     "test": "cross-env NODE_ENV=test vitest run --passWithNoTests",
@@ -15,9 +15,6 @@
     "test:integration": "cross-env NODE_ENV=test vitest run --project integration --passWithNoTests",
     "test:coverage": "cross-env NODE_ENV=test vitest run --coverage --passWithNoTests"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "type": "module",
   "dependencies": {
     "@clerk/express": "^2.1.35",
@@ -27,6 +24,7 @@
     "cloudinary": "^2.10.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
+    "csv-parse": "^7.0.1",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-serve-static-core": "^0.1.1",
