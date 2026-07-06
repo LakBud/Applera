@@ -53,7 +53,7 @@
   }
 
   .border-primary {
-    border-color: (var(--primary));
+    border-color: var(--primary);
   }
 
   .scrollbar-hide::-webkit-scrollbar {

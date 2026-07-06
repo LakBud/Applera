@@ -1,6 +1,5 @@
+import { ALLOWED_SENIORITY } from '@repo/schemas';
 import mongoose from 'mongoose';
-
-import { ALLOWED_SENIORITY } from '../types/seniority.types.js';
 
 const CVSchema = new mongoose.Schema(
   {
@@ -39,7 +38,7 @@ const CVSchema = new mongoose.Schema(
 
       seniority_level: {
         type: String,
-        enum: ALLOWED_SENIORITY as unknown as string[],
+        enum: ALLOWED_SENIORITY,
         default: 'unknown',
       },
 

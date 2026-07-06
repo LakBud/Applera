@@ -4,7 +4,7 @@ export const MatchReportSchema = z.object({
   score: z.number().min(0).max(100),
   strengths: z.array(z.string()),
   missing_skills: z.array(z.string()),
-  seniority_fit: z.enum(['under', 'over', 'match']),
+  seniority_fit: z.enum(['under', 'over', 'match', 'unknown']),
   domain_mismatch: z.boolean(),
   confidence: z.enum(['low', 'medium', 'high']),
   text_overlap: z.number(),

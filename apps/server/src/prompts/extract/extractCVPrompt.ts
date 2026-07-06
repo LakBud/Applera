@@ -1,4 +1,4 @@
-import { ALLOWED_SENIORITY } from '../../types/seniority.types.js';
+import { ALLOWED_SENIORITY } from '@repo/schemas';
 
 export const EXTRACT_CV_PROMPT = `
 You are a strict CV parsing engine.

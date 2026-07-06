@@ -1,6 +1,5 @@
+import { ALLOWED_SENIORITY } from '@repo/schemas';
 import mongoose from 'mongoose';
-
-import { ALLOWED_SENIORITY } from '../types/seniority.types.js';
 
 const JobSchema = new mongoose.Schema(
   {

@@ -60,7 +60,6 @@ export function CVsPage() {
                 uploadText={cv.uploadCVText}
                 onSuccess={(id) => cv.setCvId(id ?? null)}
                 getId={(res) => res.cv?._id}
-                showCvList
                 selectedCvId={cv.cvId}
                 onSelectCv={(id) => cv.setCvId(id)}
                 onDeselectCv={() => cv.clearCvId()}

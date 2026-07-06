@@ -17,5 +17,10 @@
 
     "noEmit": true
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "scripts/buildSkillAliases.ts",
+    "scripts/data/output/stackoverflowNeedsReview.ts",
+    "scripts/data/output/stackoverflowAliases.ts"
+  ]
 }
