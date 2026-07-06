@@ -6,8 +6,8 @@ the application's normal build — they are not imported by anything in `src/`.
 ## buildSkillAliases.ts
 
 Converts Stack Overflow's tag-synonym data into the `SKILL_ALIASES` format
-used by `src/utils/match/skill_aliases.ts` for skill-equivalence matching
-(see `src/utils/match/skill.utils.ts`).
+used by `src/utils/match/skills/skills.aliases.ts` for skill-equivalence matching
+(see `src/utils/match/skills/skill.utils.ts`).
 
 ### Source data
 
@@ -19,7 +19,7 @@ SELECT SourceTagName, TargetTagName
 FROM TagSynonyms
 ```
 
-Export as CSV, save as `scripts/data/sources/stackoverflow-tag-synonyms-<date>.csv`
+Export as CSV, save as `scripts/data/input/stackoverflow-tag-synonyms-<date>.csv`
 (dated so old pulls aren't silently overwritten).
 
 Re-pull periodically — SO approves new tag synonyms over time — and re-run
@@ -69,12 +69,12 @@ the following safeguards are applied before anything is auto-accepted:
 On server root:
 
 ```bash
-pnpm data:build-so-aliases
+pnpm data:build-skill-aliases
 ```
 
 ### Merging into production
 
 `skillAliases.ts` is NOT imported directly by the application. After
 reviewing its contents, manually merge approved entries into
-`src/utils/match/skill/skill.aliases.ts`, which is the actual file consumed at
+`src/utils/match/skills/skills.aliases.ts`, which is the actual file consumed at
 runtime by `skill.utils.ts`.

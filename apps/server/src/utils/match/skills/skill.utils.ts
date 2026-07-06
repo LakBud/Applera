@@ -24,19 +24,44 @@ export function normalizeSkills(arr: unknown): string[] {
 }
 
 // Equivalence (same skill, different name)
-
 // built once at module load: every alias (and canonical) -> its canonical form.
 // Uses Map rather than a plain object — with 4k+ lines of alias data pulled
 // from an external source, an alias eventually colliding with an inherited
 // Object.prototype property name (constructor, toString, valueOf, ...) is a
 // real risk, not a theoretical one. Map has no prototype chain to collide
 // with, so lookups are always exact.
-const ALIAS_TO_CANONICAL = new Map<string, string>(
-  Object.entries(SKILL_ALIASES).flatMap(([canonical, aliases]) => [
-    [canonical, canonical] as [string, string],
-    ...aliases.map((alias): [string, string] => [alias, canonical]),
-  ]),
-);
+
+function buildAliasMap(skillAliases: Record<string, string[]>): Map<string, string> {
+  const map = new Map<string, string>();
+  const conflicts: string[] = [];
+
+  const tryAdd = (key: string, canonical: string, source: string) => {
+    const existing = map.get(key);
+    if (existing !== undefined && existing !== canonical) {
+      conflicts.push(`"${key}" (from ${source}) maps to both "${existing}" and "${canonical}"`);
+      return;
+    }
+    map.set(key, canonical);
+  };
+
+  for (const [canonical, aliases] of Object.entries(skillAliases)) {
+    tryAdd(canonical, canonical, 'canonical');
+    for (const alias of aliases) {
+      tryAdd(alias, canonical, `alias of "${canonical}"`);
+    }
+  }
+
+  if (conflicts.length > 0) {
+    throw new Error(
+      `SKILL_ALIASES has ${conflicts.length} alias collision(s):\n` +
+        conflicts.map((c) => `  - ${c}`).join('\n'),
+    );
+  }
+
+  return map;
+}
+
+const ALIAS_TO_CANONICAL = buildAliasMap(SKILL_ALIASES);
 
 export function resolveCanonical(skill: string): string {
   return ALIAS_TO_CANONICAL.get(skill) ?? skill;
@@ -53,6 +78,10 @@ export function isJobSkillCovered(cvCanonicalSet: Set<string>, jobSkill: string)
  */
 export function expandCanonicalSkills(skills: string[]): Set<string> {
   const expanded = new Set<string>();
+
+  if (!Array.isArray(skills)) {
+    return expanded;
+  }
 
   for (const raw of skills) {
     const normalized = normalizeSkill(raw);

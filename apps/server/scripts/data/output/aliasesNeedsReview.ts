@@ -1,5 +1,6 @@
 export const NEEDS_REVIEW: Record<string, string[]> = {
   userinterface: ['ui', 'gui'],
+  artificialintelligence: ['ai'],
   ifstatement: ['if'],
   operatingsystem: ['os'],
   windowsce: ['ce'],
@@ -24,11 +25,14 @@ export const NEEDS_REVIEW: Record<string, string[]> = {
   television: ['tv'],
   manpage: ['man'],
   integer: ['int'],
+  jaxws: ['javaws'],
+  pandasloc: ['loc'],
   terminology: ['wording'],
   standardscompliance: ['compliant'],
   programentrypoint: ['main'],
   optiontype: ['maybe', 'optional'],
   googlepublishertag: ['gpt'],
+  azuredevopsserver: ['tfs'],
   addition: ['add'],
   iostream: ['cin'],
 };

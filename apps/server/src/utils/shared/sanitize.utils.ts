@@ -6,8 +6,8 @@ const INTENT_PATTERNS: RegExp[] = [
   /\b(ignore|disregard|override)\b.*\b(instr[uo]ctions?|rules?|guidelines?)\b/i,
   /\bdo not follow\b.*\b(instr[uo]ctions?|rules?|guidelines?)\b/i,
 
-  // Role / behavior change (MUST be verb-driven)
-  /\bact as\b/i,
+  // Role / behavior change (MUST be verb-driven AND target an identity/system role)
+  /\bact as\b.*\b(an? )?(ai|assistant|chatbot|system|bot|language model|llm|gpt|dan)\b/i,
   /\bpretend (to be|you are)\b/i,
 
   /\b(assume|adopt|switch to|take on)\b.*\b(new )?(role|identity|persona|mode)\b/i,
@@ -18,7 +18,7 @@ const INTENT_PATTERNS: RegExp[] = [
   // Norwegian: ONLY directive forms (this fixes your failing tests)
   /\bfra nå av (skal|må|vil|må du)\b/i,
   /\bfra n[åa] av\b/i,
-  /\bdu (skal|må|vil) (nå )?(være|opptre som|fungere som)\b/i,
+  /\bdu (skal|må|vil) (nå )?(være|opptre som|fungere som)\s+(?:en\s+)?(?:ai|assistent|bot|chatbot|system|språkmodell|llm|gpt)\b/i,
   /\blate som (du er|om)\b/i,
   /\boppfør deg som\b/i,
 
@@ -69,7 +69,10 @@ function normalize(text: string): string {
 export function detectInjection(text: string): boolean {
   const input = normalize(text);
 
-  return INTENT_PATTERNS.some((p) => p.test(input)) || CONCEPT_PATTERNS.some((p) => p.test(input));
+  return (
+    INTENT_PATTERNS.some((pattern) => pattern.test(input)) ||
+    CONCEPT_PATTERNS.some((pattern) => pattern.test(input))
+  );
 }
 
 // Input sanitization
@@ -125,8 +128,13 @@ export function maskIp(ip: string): string {
     } else {
       parts = ip.split(':');
     }
-    parts[parts.length - 1] = 'xxxx';
-    parts[parts.length - 2] = 'xxxx';
+    // Mask the full 64-bit interface identifier (last four groups),
+    // SLAAC/EUI-64 and privacy-extension addresses can still
+    // be device-identifying if any part of the interface ID survives masking.
+    // Only the /64 network prefix (first four groups) is retained.
+    for (let i = 4; i < 8; i++) {
+      parts[i] = 'xxxx';
+    }
     return parts.join(':');
   }
 

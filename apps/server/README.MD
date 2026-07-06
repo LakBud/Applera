@@ -67,6 +67,10 @@ cp .env.example .env.production
 | `CLOUDINARY_API_KEY`       | Yes      | Cloudinary API key                                     |
 | `CLOUDINARY_API_SECRET`    | Yes      | Cloudinary API secret                                  |
 
+### Download Skill Aliases (or use the one currently on the repo)
+
+Follow steps here: [scripts/README.md](scripts/README.md).
+
 ### Development
 
 From the repo root:

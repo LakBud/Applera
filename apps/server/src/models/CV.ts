@@ -38,7 +38,7 @@ const CVSchema = new mongoose.Schema(
 
       seniority_level: {
         type: String,
-        enum: ALLOWED_SENIORITY as unknown as string[],
+        enum: ALLOWED_SENIORITY,
         default: 'unknown',
       },
 

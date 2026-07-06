@@ -119,6 +119,7 @@ const COMMON_WORD_BLOCKLIST = new Set([
   'compliant',
   'maybe',
   'optional',
+  'tfs',
 ]);
 
 /* ── Helpers ──────────────────────────────────────────────────────────────── */
@@ -134,6 +135,30 @@ function getOrCreate<T>(map: Map<string, T[]>, key: string): T[] {
 
 function pushUnique<T>(list: T[], value: T): void {
   if (!list.includes(value)) list.push(value);
+}
+
+// Tracks which canonical each alias has been assigned to so far, across the
+// entire run (both passes, all canonicals). If an alias is later assigned to
+// a DIFFERENT canonical, that's a cross-canonical collision — silently
+// accepting both would let the last write win, which is exactly the bug that
+// slipped 'tfs', 'javaws', and 'loc' into SKILL_ALIASES pointing at two
+// different targets each. Route collisions to review instead.
+const aliasOwner = new Map<string, string>();
+let skippedCollision = 0;
+
+/**
+ * Claims `alias` for `canonical`. Returns true if the claim succeeded (either
+ * first time seeing this alias, or same canonical as before). Returns false
+ * if `alias` is already owned by a DIFFERENT canonical — caller should route
+ * to review rather than accept.
+ */
+function claimAlias(alias: string, canonical: string): boolean {
+  const existingOwner = aliasOwner.get(alias);
+  if (existingOwner === undefined) {
+    aliasOwner.set(alias, canonical);
+    return true;
+  }
+  return existingOwner === canonical;
 }
 
 /* ── Parse ────────────────────────────────────────────────────────────────── */
@@ -190,8 +215,6 @@ for (const row of rows) {
 
   if (EXCLUDE_CANONICAL_PATTERNS.some((pattern) => pattern.test(canonical))) {
     skippedDoNotUsePattern++;
-    // Not routed to review — these are SO's own "not a real tag" placeholders,
-    // not a judgment call, so there's nothing for a human to weigh in on.
     continue;
   }
 
@@ -207,22 +230,33 @@ for (const row of rows) {
     continue;
   }
 
+  // Cross-canonical collision check — must happen last, after all the other
+  // exclusion checks, so a colliding alias still gets the most specific
+  // "why it's under review" categorization where possible. If it collides,
+  // it overrides everything: two different canonicals both want this exact
+  // alias, so a human needs to pick one.
+  if (!claimAlias(alias, canonical)) {
+    skippedCollision++;
+    pushUnique(getOrCreate(needsReview, canonical), alias);
+    continue;
+  }
+
   pushUnique(getOrCreate(SKILL_ALIASES, canonical), alias);
   acceptedCount++;
 }
 
 /* ── Second pass: auto-promote non-blocklisted review entries ───────────── */
-// Anything routed to needsReview above (short aliases, EXCLUDE_GENERIC_ALIASES
-// hits) gets re-examined here. Aliases NOT in COMMON_WORD_BLOCKLIST are
-// promoted into SKILL_ALIASES; only genuine common-English-word collisions
-// remain in the final review file.
 
 const finalNeedsReview = new Map<string, string[]>();
 let autoPromotedCount = 0;
 
 for (const [canonical, aliases] of needsReview) {
   for (const alias of aliases) {
-    if (COMMON_WORD_BLOCKLIST.has(alias)) {
+    if (
+      EXCLUDE_CANONICAL.has(canonical) ||
+      COMMON_WORD_BLOCKLIST.has(alias) ||
+      !claimAlias(alias, canonical)
+    ) {
       pushUnique(getOrCreate(finalNeedsReview, canonical), alias);
     } else {
       pushUnique(getOrCreate(SKILL_ALIASES, canonical), alias);
@@ -232,6 +266,26 @@ for (const [canonical, aliases] of needsReview) {
 }
 
 /* ── Write output ─────────────────────────────────────────────────────────── */
+
+function verifyNoAliasCollisions(aliasMap: Map<string, string[]>): void {
+  const owners = new Map<string, string>();
+
+  for (const [canonical, aliases] of aliasMap) {
+    for (const alias of aliases) {
+      const previous = owners.get(alias);
+
+      if (previous && previous !== canonical) {
+        throw new Error(
+          `Generated alias collision: "${alias}" belongs to both "${previous}" and "${canonical}"`,
+        );
+      }
+
+      owners.set(alias, canonical);
+    }
+  }
+}
+
+verifyNoAliasCollisions(SKILL_ALIASES);
 
 const skillAliasesObj = Object.fromEntries(SKILL_ALIASES);
 const needsReviewObj = Object.fromEntries(finalNeedsReview);
@@ -257,10 +311,11 @@ fs.writeFileSync(
 console.log(
   `Accepted (first pass): ${acceptedCount} aliases across ${SKILL_ALIASES.size} canonical skills\n` +
     `Auto-promoted (second pass, non-blocklisted): ${autoPromotedCount}\n` +
-    `Final needs review (blocklisted common words only): ${finalNeedsReview.size} canonical skills\n` +
+    `Final needs review (blocklisted/collision): ${finalNeedsReview.size} canonical skills\n` +
     `Skipped (empty/self-match): ${skippedEmpty}\n` +
     `Skipped (excluded canonical, routed to review): ${skippedExcludedCanonical}\n` +
     `Skipped (do-not-use SO placeholder, discarded): ${skippedDoNotUsePattern}\n` +
     `Skipped (alias < ${MIN_ALIAS_LENGTH} chars, routed to review): ${skippedShortAlias}\n` +
-    `Skipped (generic alias, routed to review): ${skippedGenericAlias}`,
+    `Skipped (generic alias, routed to review): ${skippedGenericAlias}\n` +
+    `Skipped (cross-canonical collision, routed to review): ${skippedCollision}`,
 );

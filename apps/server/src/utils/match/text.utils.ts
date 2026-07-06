@@ -30,12 +30,12 @@ export function extractAllText(obj: unknown): string {
   const o = obj as Record<string, unknown>;
 
   return [
-    o.summary ?? '',
+    flatten(o.summary),
     flatten(o.skills),
     flatten(o.experience),
     flatten(o.education),
     flatten(o.responsibilities),
-    o.raw_description ?? '',
+    flatten(o.raw_description),
   ]
     .join(' ')
     .replace(/\s+/g, ' ')
@@ -110,15 +110,15 @@ export function getConfidenceLevel({
 
   // penalties
   if (jobSkills.length < 4) {
-    confidence -= 10;
+    confidence -= 20;
   }
 
   if (cvSkills.length < 3) {
-    confidence -= 10;
+    confidence -= 20;
   }
 
   if (textScore < 15) {
-    confidence -= 15;
+    confidence -= 25;
   }
 
   if (jobSkills.length > 10) {
