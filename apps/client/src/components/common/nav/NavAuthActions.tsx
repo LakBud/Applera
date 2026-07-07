@@ -1,4 +1,4 @@
-import { UserButton } from '@clerk/clerk-react';
+import { UserButton } from '@clerk/react';
 import { Link } from '@tanstack/react-router';
 
 import { clerkUserButtonAppearance } from '../../../utils/ui/clerkStyle';

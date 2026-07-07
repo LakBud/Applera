@@ -3,7 +3,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 const FAQ = [
   {
     q: 'Is my data stored?',
-    a: 'Yes. Your CVs and generated applications are securely saved to your account so you can reuse them anytime from your dashboard. You can delete everything, including your account, at any time.',
+    a: 'Yes. Your CVs and generated applications are securely saved to your account so you can reuse them anytime from your dashboard. You can delete everything, including your account, at any time within your account settings.',
   },
   {
     q: 'What language is the application written in?',
@@ -23,11 +23,11 @@ const FAQ = [
   },
   {
     q: 'What AI model powers Applera?',
-    a: 'Applera uses a large language model via Groq for fast, high-quality generation of cover letters, application emails, and match analysis.',
+    a: 'Applera uses a large language model via Groq for fast quality generation of cover letters, application emails, and match analysis.',
   },
   {
     q: 'Is there a free plan?',
-    a: 'Yes. You can get started with 25 LLM calls for free, with core features included with an account. No credit card required.',
+    a: 'Yes. You can get started with 25 weekly AI response calls for free, with core features included with an account. No credit card required.',
   },
 ];
 

@@ -16,7 +16,6 @@
     "test:coverage": "vitest run --coverage --passWithNoTests"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.61.3",
     "@clerk/react": "^6.11.3",
     "@fontsource-variable/geist": "^5.2.8",
     "@repo/schemas": "workspace:*",

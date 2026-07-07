@@ -18,7 +18,7 @@ function AllProviders({ children }: { children: ReactNode }) {
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
 
-// Clerk: mock "@clerk/clerk-react" per test file rather than wrapping with
+// Clerk: mock "@clerk/react" per test file rather than wrapping with
 // the real ClerkProvider here.
 //
 // TanStack Router: for *.unit.test.tsx, mock the specific router hooks the

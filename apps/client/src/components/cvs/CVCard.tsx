@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
-import { FileText, Pin } from 'lucide-react';
+import { Pin } from 'lucide-react';
 
 import { useDeleteCV } from '../../api';
+import { CVPreviewFallback } from '../common/cv/CVPreviewFallback';
 import { DeleteModal } from '../common/DeleteModal';
 import { Button } from '../ui/button';
 import {
@@ -58,10 +59,7 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
             className="w-full h-full object-cover object-top block"
           />
         ) : (
-          <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
-            <FileText className="w-10 h-10 opacity-30" />
-            <span className="text-xs opacity-50">{cv.parsed?.name || 'No preview'}</span>
-          </div>
+          <CVPreviewFallback label={cv.parsed?.name || 'No preview available'} />
         )}
       </div>
 

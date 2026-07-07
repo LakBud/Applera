@@ -13,9 +13,18 @@
     "eqeqeq": "error",
     "no-duplicate-imports": "error",
     "import/no-cycle": "warn",
-    "typescript/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "typescript/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
     "typescript/no-explicit-any": "error",
-    "typescript/ban-ts-comment": "warn"
+    "typescript/ban-ts-comment": "warn",
+
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "overrides": [
     {

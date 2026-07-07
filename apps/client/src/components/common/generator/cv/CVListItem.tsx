@@ -1,6 +1,6 @@
-import { FileText } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
+
+import { CVPreviewFallback } from '../../cv/CVPreviewFallback';
 
 import { useAuthenticatedCVImage } from '@/hooks/common/useAuthenticatedCVImage';
 import type { CVDocument } from '@repo/schemas';
@@ -30,12 +30,7 @@ export function CvListItem({
           </div>
         </>
       ) : (
-        <div className="w-full h-full flex flex-col items-center justify-center gap-1 bg-muted text-muted-foreground">
-          <FileText className="w-5 h-5 opacity-30" />
-          <span className="text-[9px] opacity-50 px-1 leading-tight truncate w-full text-center">
-            {cv.parsed?.name || 'No preview'}
-          </span>
-        </div>
+        <CVPreviewFallback label={cv.parsed?.name || 'No preview'} size="compact" />
       )}
     </Button>
   );

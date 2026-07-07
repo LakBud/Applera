@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/react';
 
 import { getCVPreview } from '@/api/cv/cv.api';
 
@@ -34,9 +34,11 @@ export function useAuthenticatedCVImage(url: string | null) {
 
         setSrc(objectUrl);
       } catch {
-        if (isMounted) {
-          setSrc(null);
+        if (!isMounted) {
+          return;
         }
+
+        setSrc(null);
       }
     })();
 
