@@ -59,6 +59,27 @@ pnpm test:unit
 pnpm test:integration
 ```
 
+## CI/CD & Code Quality
+
+The project uses automated checks to maintain code quality and prevent regressions before changes are merged.
+
+### Continuous Integration
+
+Every pull request is validated through automated workflows that run:
+
+- **Type checking** — Ensures type safety across the monorepo
+- **Linting** — Enforces consistent code quality and style rules
+- **Testing** — Verifies application behavior
+- **Dependency and code analysis** — Detects potential issues before deployment
+
+### Pull Request Reviews
+
+- **CodeRabbit** is used for automated pull request reviews, providing AI-assisted feedback on:
+  - Code quality improvements
+  - Potential bugs
+  - Maintainability issues
+  - Best practice recommendations
+
 ## Commit hooks
 
 Husky is enabled via the `prepare` script and lint-staged runs on staged files.

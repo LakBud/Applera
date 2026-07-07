@@ -1,4 +1,21 @@
 /* ── Text extraction ──────────────────────────────────────────────────────── */
+const flatten = (val: unknown): string => {
+  if (!val) {
+    return '';
+  }
+  if (typeof val === 'string') {
+    return val;
+  }
+  if (Array.isArray(val)) {
+    return val.map(flatten).join(' ');
+  }
+  if (typeof val === 'object') {
+    return Object.values(val as Record<string, unknown>)
+      .map(flatten)
+      .join(' ');
+  }
+  return String(val);
+};
 
 /**
  * Flattens a structured CV or job object into a single plain-text string
@@ -8,24 +25,6 @@ export function extractAllText(obj: unknown): string {
   if (!obj || typeof obj !== 'object') {
     return '';
   }
-
-  const flatten = (val: unknown): string => {
-    if (!val) {
-      return '';
-    }
-    if (typeof val === 'string') {
-      return val;
-    }
-    if (Array.isArray(val)) {
-      return val.map(flatten).join(' ');
-    }
-    if (typeof val === 'object') {
-      return Object.values(val as Record<string, unknown>)
-        .map(flatten)
-        .join(' ');
-    }
-    return String(val);
-  };
 
   const o = obj as Record<string, unknown>;
 
@@ -82,13 +81,15 @@ function detectStopwords(text: string): Set<string> {
 }
 
 /**
- * Returns what percentage of job description words also appear in the CV
- * text, after stripping common stopwords for the job text's detected
- * language.
+ * Calculates literal word overlap between job text and CV text.
  *
- * Language is detected once, from the job text only — CV and job are
- * assumed to share a language, since mixed-language CV/job pairs are an
- * edge case rather than the common path.
+ * This is a weak contextual signal:
+ * - removes language-specific stopwords
+ * - normalizes casing
+ * - compares meaningful words only
+ *
+ * It intentionally does NOT understand synonyms or technologies.
+ * For semantic matching use calculateSemanticTextOverlap().
  *
  * Score range: 0–100.
  */
@@ -102,16 +103,19 @@ export function calculateTextOverlap(cvText: string, jobText: string): number {
   const tokenize = (text: string): string[] =>
     text
       .toLowerCase()
-      .split(/[^\p{L}\p{N}]+/gu)
+      .split(/[^\p{L}\p{N}#+]+/gu)
       .filter((w) => w.length > 2 && !stopwords.has(w));
 
   const cvWords = new Set(tokenize(cvText));
   const jobWords = tokenize(jobText);
 
-  if (jobWords.length === 0) return 0;
+  if (jobWords.length === 0) {
+    return 0;
+  }
 
   const matches = jobWords.filter((w) => cvWords.has(w)).length;
-  return Math.round(Math.min(100, (matches / jobWords.length) * 100));
+
+  return Math.round((matches / jobWords.length) * 100);
 }
 
 /* ── Confidence level ─────────────────────────────────────────────────────── */

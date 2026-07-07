@@ -92,3 +92,28 @@ export function expandCanonicalSkills(skills: string[]): Set<string> {
 
   return expanded;
 }
+
+export function expandCanonicalSkillsWithDisplay(skills: string[]): {
+  canonicalSet: Set<string>;
+  displayMap: Map<string, string>;
+} {
+  const canonicalSet = expandCanonicalSkills(skills);
+  const displayMap = new Map<string, string>();
+
+  if (!Array.isArray(skills)) {
+    return { canonicalSet, displayMap };
+  }
+
+  for (const raw of skills) {
+    const original = String(raw ?? '').trim();
+    if (!original) continue;
+
+    const canonical = resolveCanonical(normalizeSkill(original));
+
+    if (!displayMap.has(canonical)) {
+      displayMap.set(canonical, original);
+    }
+  }
+
+  return { canonicalSet, displayMap };
+}
