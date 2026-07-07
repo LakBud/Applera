@@ -1,4 +1,4 @@
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/react';
 import { createRootRouteWithContext } from '@tanstack/react-router';
 
 import { GlobalError } from '@/components/common/global/GlobalError';

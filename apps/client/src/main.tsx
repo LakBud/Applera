@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 
-import { ClerkProvider } from '@clerk/clerk-react';
+import { ClerkProvider } from '@clerk/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import '@fontsource-variable/geist';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';

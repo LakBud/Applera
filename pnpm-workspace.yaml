@@ -7,3 +7,5 @@ allowBuilds:
   esbuild: true
   mongodb-memory-server: true
   msw: true
+overrides:
+  'js-yaml': '>=3.15.0'

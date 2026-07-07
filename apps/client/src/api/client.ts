@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { requestInterceptor } from './interceptors/request.interceptor';
-import { responseErrorInterceptor } from './interceptors/response.interceptor';
+import { createResponseErrorInterceptor } from './interceptors/response.interceptor';
 
 export const client = axios.create({
   baseURL: (() => {
@@ -16,4 +16,4 @@ export const client = axios.create({
 });
 
 client.interceptors.request.use(requestInterceptor);
-client.interceptors.response.use((res) => res, responseErrorInterceptor);
+client.interceptors.response.use((res) => res, createResponseErrorInterceptor);

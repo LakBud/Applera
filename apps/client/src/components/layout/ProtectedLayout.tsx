@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/react';
 import { Outlet, useNavigate } from '@tanstack/react-router';
 
 import { Loader } from '../common/Loader';

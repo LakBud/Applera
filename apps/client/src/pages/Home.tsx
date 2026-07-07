@@ -1,4 +1,4 @@
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth } from '@clerk/react';
 import { Link } from '@tanstack/react-router';
 import { Check } from 'lucide-react';
 

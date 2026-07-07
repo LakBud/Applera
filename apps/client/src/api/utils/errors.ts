@@ -6,7 +6,7 @@ export const handleMutationError = (error: ClientError, fallback: string) => {
   if (error.code === 'USAGE_LIMIT_REACHED') {
     toast.error(
       error.meta?.limit
-        ? `You have reached your limit of ${error.meta.limit} AI calls.`
+        ? `You have reached your limit of ${error.meta.limit} weekly AI response calls.`
         : 'You have reached your usage limit.',
     );
     return;

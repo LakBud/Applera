@@ -1,4 +1,4 @@
-import { SignUp, useAuth } from '@clerk/clerk-react';
+import { SignUp, useAuth } from '@clerk/react';
 
 import { Loader } from '../../components/common/Loader';
 import { AuthLayout } from '../../components/ui/layout';
