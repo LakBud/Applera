@@ -16,4 +16,4 @@ export const client = axios.create({
 });
 
 client.interceptors.request.use(requestInterceptor);
-client.interceptors.response.use((res) => res, createResponseErrorInterceptor);
+client.interceptors.response.use((res) => res, createResponseErrorInterceptor(client));

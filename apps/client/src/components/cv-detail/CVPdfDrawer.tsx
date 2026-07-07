@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@clerk/react';
 import { ClerkOfflineError } from '@clerk/react/errors';
 import { ArrowRight, ExternalLink } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { CVPreviewFallback } from '../common/cv/CVPreviewFallback';
 import { Loader } from '../common/Loader';
@@ -42,7 +43,9 @@ export function CVPdfDrawer({ open, onClose, pdfUrl, previewSrc, isLoading }: CV
     } catch (error) {
       popup.close();
       if (!ClerkOfflineError.is(error)) {
-        throw error;
+        toast.error('Failed to open PDF. Please try again.');
+      } else {
+        toast.error('You appear to be offline. Please check your connection.');
       }
     } finally {
       setIsOpening(false);

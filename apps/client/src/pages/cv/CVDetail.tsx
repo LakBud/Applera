@@ -22,7 +22,7 @@ export function CVDetailPage() {
 
   const { completeness, missing } = useCVCompleteness(cv);
   const { successRate } = useCVSuccessRate(dashboard);
-  const { src: previewSrc } = useAuthenticatedCVImage(cv?.previewUrl ?? null);
+  const previewSrc = useAuthenticatedCVImage(cv?.previewUrl ?? null);
 
   const loading = cvLoading || dashLoading;
 

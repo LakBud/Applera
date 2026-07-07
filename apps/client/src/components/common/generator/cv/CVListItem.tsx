@@ -14,7 +14,7 @@ export function CvListItem({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const { src: previewSrc } = useAuthenticatedCVImage(cv.previewUrl ?? null);
+  const previewSrc = useAuthenticatedCVImage(cv.previewUrl ?? null);
   return (
     <Button
       type="button"

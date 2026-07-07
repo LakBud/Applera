@@ -174,6 +174,9 @@ Each route applies middleware in a deliberate order:
 
 The matching engine scores how well a candidate's CV fits a job posting using a **hybrid math + AI approach**, balancing speed/cost against nuance.
 
+Main pipeline: 
+[src/services/match/match.service.ts](src/services/match/match.service.ts)
+
 **1. Deterministic math pass (always runs)**
 - **Skill matching** — skills are normalized (casing, punctuation) and resolved through an alias map (e.g. `"Node.js"` and `"NodeJS"` → same canonical skill) so semantically identical skills match even when phrased differently. See [scripts/README.md](scripts/README.md) for how the alias map is built and curated.
 - **Text overlap** — CV and job text are flattened and compared for word overlap, with language auto-detected so stopwords are stripped correctly (not just English).

@@ -42,7 +42,7 @@ export function CVCard({ cv, onPin, isPinning, canPin }: CVCardProps) {
   const formatDate = (date?: string) => (date ? new Date(date).toLocaleDateString() : '');
 
   const showSeniority = cv.parsed.seniority_level && cv.parsed.seniority_level !== 'unknown';
-  const { src: previewSrc } = useAuthenticatedCVImage(cv.previewUrl ?? null);
+  const previewSrc = useAuthenticatedCVImage(cv.previewUrl ?? null);
 
   return (
     <Card

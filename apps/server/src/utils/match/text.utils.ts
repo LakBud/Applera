@@ -93,14 +93,16 @@ function detectStopwords(text: string): Set<string> {
  * Score range: 0–100.
  */
 export function calculateTextOverlap(cvText: string, jobText: string): number {
-  if (!cvText || !jobText) return 0;
+  if (!cvText || !jobText) {
+    return 0;
+  }
 
   const stopwords = detectStopwords(jobText);
 
   const tokenize = (text: string): string[] =>
     text
       .toLowerCase()
-      .split(/\W+/)
+      .split(/[^\p{L}\p{N}]+/gu)
       .filter((w) => w.length > 2 && !stopwords.has(w));
 
   const cvWords = new Set(tokenize(cvText));

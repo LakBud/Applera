@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import { useAuth } from '@clerk/react';
-import { ClerkOfflineError } from '@clerk/react/errors';
 
 import { getCVPreview } from '@/api/cv/cv.api';
 
@@ -10,13 +9,11 @@ const API_URL = import.meta.env.VITE_API_URL ?? '';
 export function useAuthenticatedCVImage(url: string | null) {
   const { getToken } = useAuth();
   const [src, setSrc] = useState<string | null>(null);
-  const [isOffline, setIsOffline] = useState(false);
 
   const fullUrl = url ? (url.startsWith('http') ? url : `${API_URL}${url}`) : null;
 
   useEffect(() => {
     setSrc(null);
-    setIsOffline(false);
     if (!fullUrl) {
       return;
     }
@@ -36,14 +33,11 @@ export function useAuthenticatedCVImage(url: string | null) {
         }
 
         setSrc(objectUrl);
-      } catch (error) {
+      } catch {
         if (!isMounted) {
           return;
         }
 
-        if (ClerkOfflineError.is(error)) {
-          setIsOffline(true);
-        }
         setSrc(null);
       }
     })();
@@ -56,5 +50,5 @@ export function useAuthenticatedCVImage(url: string | null) {
     };
   }, [fullUrl, getToken]);
 
-  return { src, isOffline };
+  return src;
 }

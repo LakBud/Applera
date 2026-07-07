@@ -8,8 +8,6 @@ import { cachedLLM } from '../llm/llm.service.js';
 
 import type { CVParsed, JobParsed } from '@repo/schemas';
 
-// ── Public API ─────────────────────────────────────────────────────────────────
-
 export async function matchCVToJob(
   cv: CVParsed,
   job: JobParsed,
