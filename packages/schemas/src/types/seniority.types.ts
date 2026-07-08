@@ -9,3 +9,5 @@ export const ALLOWED_SENIORITY = [
 ] as const;
 
 export type Seniority = (typeof ALLOWED_SENIORITY)[number];
+
+export const SENIORITY_FIT_VALUES = ['under', 'over', 'match', 'unknown'] as const;

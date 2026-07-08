@@ -1,15 +1,15 @@
 import { cn } from '../../lib/utils';
 
-type Tab = 'Cover letter' | 'CV summary' | 'Email draft';
+type Tab = 'Cover letter' | 'CV advice' | 'Email draft';
 
 interface PreviewMockProps {
   skeleton?: boolean;
   score?: number;
-  label?: string;
   strengths?: string[];
   gaps?: string[];
   activeTab?: Tab;
   content?: string;
+  recommendation?: string;
 }
 
 // Subcomponents
@@ -20,11 +20,11 @@ function SkeletonBlock({ className }: { className?: string }) {
 
 function ScoreRing({
   score,
-  label,
+  recommendation,
   skeleton,
 }: {
   score: number;
-  label: string;
+  recommendation: string;
   skeleton?: boolean;
 }) {
   return (
@@ -34,10 +34,12 @@ function ScoreRing({
           <div className="w-28 h-28 rounded-full bg-border/40 animate-pulse" />
         ) : (
           <>
-            <span className="text-4xl font-bold font-mono text-tx-h1">{score}</span>
-            <span className="absolute bottom-4 text-[10px] uppercase tracking-widest text-label">
+            <span className="text-4xl font-bold font-mono pb-3 text-tx-h1">{score}</span>
+
+            <span className="absolute bottom-6 text-[10px] uppercase tracking-widest text-label">
               match
             </span>
+
             <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
               <circle
                 cx="50"
@@ -48,6 +50,7 @@ function ScoreRing({
                 strokeWidth="4"
                 className="text-border"
               />
+
               <circle
                 cx="50"
                 cy="50"
@@ -64,15 +67,15 @@ function ScoreRing({
           </>
         )}
       </div>
+
       {skeleton ? (
-        <SkeletonBlock className="h-4 w-24" />
+        <SkeletonBlock className="h-4 w-32" />
       ) : (
-        <p className="text-sm font-medium text-h2">{label}</p>
+        <p className="text-sm font-medium text-h2 text-center">{recommendation}</p>
       )}
     </div>
   );
 }
-
 function TagList({
   items,
   variant,
@@ -105,13 +108,13 @@ function TagList({
 
 // Main Component
 
-const TABS: Tab[] = ['Cover letter', 'CV summary', 'Email draft'];
+const TABS: Tab[] = ['Cover letter', 'CV advice', 'Email draft'];
 
 export default function PreviewMock({
   skeleton = false,
   score = 87,
-  label = 'Strong match',
   strengths = ['React', 'TypeScript', 'API'],
+  recommendation = 'Strong match: Apply immediately',
   gaps = ['Testing', 'System design'],
   activeTab = 'Cover letter',
   content = `Dear Hiring Manager,\n\nI am excited to apply for this position.\n\nWith my experience in React and TypeScript,\nI believe I would be a strong fit for your team.`,
@@ -128,7 +131,7 @@ export default function PreviewMock({
       <div className="grid md:grid-cols-[300px_1fr]">
         {/* LEFT */}
         <div className="border-b md:border-b-0 md:border-r border-border p-4 sm:p-5 md:p-6 space-y-6">
-          <ScoreRing score={score} label={label} skeleton={skeleton} />
+          <ScoreRing score={score} recommendation={recommendation} skeleton={skeleton} />
 
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-widest text-label">Strengths</p>
@@ -138,6 +141,23 @@ export default function PreviewMock({
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-widest text-label">Gaps</p>
             <TagList items={gaps} variant="gap" skeleton={skeleton} />
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-widest text-label">Status</p>
+
+            {skeleton ? (
+              <div className="flex gap-5">
+                <SkeletonBlock className="h-4 w-32" />
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-green-500 shrink-0" />
+                  <span className="text-xs text-body">Perfect seniority match</span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5 pt-2">
@@ -154,6 +174,7 @@ export default function PreviewMock({
                 </>
               )}
             </div>
+
             <div className="h-1.5 bg-surface-muted rounded-full overflow-hidden">
               {skeleton ? (
                 <div className="h-full w-1/2 bg-border/60 rounded-full animate-pulse" />
@@ -169,7 +190,7 @@ export default function PreviewMock({
 
         {/* RIGHT */}
         <div className="flex flex-col">
-          <div className="flex border-b border-border overflow-x-auto">
+          <div className="flex border-b border-border overflow-x-auto overflow-y-hidden">
             {TABS.map((tab) => (
               <button
                 key={tab}

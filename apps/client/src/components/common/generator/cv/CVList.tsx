@@ -4,7 +4,7 @@ import { PinOff } from 'lucide-react';
 import { useCVs } from '../../../../api';
 import { CvListItem } from './CVListItem';
 
-import type { CVDocument } from '@repo/schemas';
+import type { CVDocument } from '@applera/schemas';
 
 export function CvList({
   onSelectCv,

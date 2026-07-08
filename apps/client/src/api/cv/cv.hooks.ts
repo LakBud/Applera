@@ -15,7 +15,7 @@ import {
 } from './cv.api';
 
 import type { ClientError } from '../types';
-import type { CVDocument } from '@repo/schemas';
+import type { CVDocument } from '@applera/schemas';
 
 export function useCVs(options?: { enabled?: boolean }) {
   const { isSignedIn } = useAuth();

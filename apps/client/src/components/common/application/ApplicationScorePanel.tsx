@@ -1,20 +1,39 @@
+import { cn } from '@/lib/utils';
+import type { SeniorityFit } from '@applera/schemas';
+
 type Props = {
   score: number;
   scoreColor: string;
   barColor: string;
-  scoreLabel: string;
   strengths?: string[];
   missingSkills?: string[];
+  recommendation: string;
+  seniorityFit: SeniorityFit;
+  domainMismatch: boolean;
 };
 
 export function ApplicationScorePanel({
   score,
   scoreColor,
   barColor,
-  scoreLabel,
   strengths,
   missingSkills,
+  recommendation,
+  seniorityFit,
+  domainMismatch,
 }: Props) {
+  const SENIORITY_FIT_LABELS = {
+    under: 'Role requires more seniority',
+    over: 'You exceed role seniority',
+    match: 'Perfect seniority match',
+  } as const;
+
+  const SENIORITY_FIT_STATUS_COLORS = {
+    under: 'bg-green-900',
+    over: 'bg-green-500',
+    match: 'bg-green-500',
+  } as const;
+
   return (
     <div className="border-b md:border-b-0 md:border-r border-border p-4 md:p-6 space-y-4 md:space-y-6">
       {/* Score ring */}
@@ -50,7 +69,7 @@ export function ApplicationScorePanel({
           </svg>
         </div>
 
-        <p className="text-sm font-medium text-h2">{scoreLabel}</p>
+        <p className="text-sm font-medium text-h2">{recommendation}</p>
       </div>
 
       {/* Strengths */}
@@ -90,6 +109,38 @@ export function ApplicationScorePanel({
           ) : (
             <span className="text-xs text-primary">Perfect match</span>
           )}
+        </div>
+      </div>
+
+      {/* Status */}
+      <div className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-widest text-label">Status</p>
+
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          {seniorityFit !== 'unknown' && (
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  'h-2.5 w-2.5 rounded-full shrink-0',
+                  SENIORITY_FIT_STATUS_COLORS[seniorityFit],
+                )}
+              />
+
+              <span className="text-xs text-body">{SENIORITY_FIT_LABELS[seniorityFit]}</span>
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                'h-2.5 w-2.5 rounded-full shrink-0',
+                domainMismatch ? 'bg-green-900' : 'bg-green-500',
+              )}
+            />
+
+            <span className="text-xs text-body">
+              {domainMismatch ? 'Domain mismatch' : 'Domain match'}
+            </span>
+          </div>
         </div>
       </div>
 

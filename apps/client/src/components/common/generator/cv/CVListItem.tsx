@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { CVPreviewFallback } from '../../cv/CVPreviewFallback';
 
 import { useAuthenticatedCVImage } from '@/hooks/common/useAuthenticatedCVImage';
-import type { CVDocument } from '@repo/schemas';
+import type { CVDocument } from '@applera/schemas';
 
 export function CvListItem({
   cv,

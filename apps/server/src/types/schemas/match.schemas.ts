@@ -1,23 +1,19 @@
+import { ConfidenceSchema, MatchSchema, SeniorityFitSchema } from '@applera/schemas';
 import { z } from 'zod';
 
-export const MatchReportSchema = z.object({
-  score: z.number().min(0).max(100),
-  strengths: z.array(z.string()),
-  missing_skills: z.array(z.string()),
-  seniority_fit: z.enum(['under', 'over', 'match', 'unknown']),
-  domain_mismatch: z.boolean(),
-  confidence: z.enum(['low', 'medium', 'high']),
+export const MatchReportSchema = MatchSchema.extend({
   text_overlap: z.number(),
-  recommendation: z.string(),
   ai_insights: z
     .object({
-      semantic_matches: z.array(z.string()), // skills math missed, AI found
-      implicit_skills: z.array(z.string()), // found in prose, not skill list
-      reasoning: z.string(), // why the AI scored it this way
+      semantic_matches: z.array(z.string()),
+      implicit_skills: z.array(z.string()),
+      reasoning: z.string(),
       adjusted_score: z.number().min(0).max(100),
+      seniority_fit: SeniorityFitSchema.nullable(),
+      domain_mismatch: z.boolean().nullable(),
+      confidence: ConfidenceSchema.nullable(),
     })
     .nullable(),
 });
 
-export type ConfidenceLevel = z.infer<typeof MatchReportSchema>['confidence'];
 export type MatchReport = z.infer<typeof MatchReportSchema>;

@@ -1,4 +1,4 @@
-import { ALLOWED_SENIORITY } from '@repo/schemas';
+import { ALLOWED_SENIORITY } from '@applera/schemas';
 
 export const EXTRACT_JOB_PROMPT: string = `
 You are a professional job description parser.

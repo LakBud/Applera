@@ -72,7 +72,7 @@ Do NOT expand or invent new skills.
 HARD JSON STRUCTURE
 ────────────────────────────────────────
 {
-  "cv_summary": "",
+  "tailoring_advice": ""
   "application_letter": {
     "introduction": "",
     "body": "",
@@ -91,15 +91,62 @@ LANGUAGE RULE
 - Keep technical terms unchanged (React, AWS, Docker, etc.)
 
 ────────────────────────────────────────
-CV SUMMARY RULES
+TAILORING ADVICE RULES
 ────────────────────────────────────────
-- 3–5 lines (50–90 words)
-- Must be strictly CV-based
-- Must include:
-  • technical strengths
-  • experience level
-  • domain focus (frontend/backend/cloud)
-- No exaggeration or inference
+Write 5–8 sentences (100–150 words) reviewing how the candidate should tailor
+their CV for this specific job.
+
+The advice MUST include all of the following:
+
+1. WHAT IS GOOD:
+- Identify existing CV content that already aligns well with the job.
+- Mention specific projects, experiences, education, or sections that are strong.
+- Explain why those parts are valuable for this role.
+
+2. WHAT CAN BE IMPROVED:
+- Recommend specific changes to presentation, structure, ordering, or detail.
+- Explain what existing content should be moved, expanded, shortened, or
+  clarified.
+- Focus on improving visibility and relevance of existing experience.
+
+3. MISSING REQUIREMENTS:
+- Identify important job requirements that are not clearly visible in the CV.
+- This includes:
+  • required education (e.g. bachelor's degree, master's degree)
+  • required certifications
+  • required technologies
+  • required experience areas
+- Clearly state that the requirement is not visible in the provided CV.
+- Do NOT assume the candidate does not have the requirement.
+- Frame it as missing CV information, not a candidate deficiency.
+
+The advice MUST:
+- Be based ONLY on information explicitly present in:
+  • CV
+  • Job description
+- Reference existing CV content only when explaining a recommendation.
+- Prioritize actionable feedback over summarizing skills.
+- Focus on how the CV is presented, not rewriting the CV.
+
+The advice MUST NOT:
+- Repeat the entire skills list.
+- Summarize the candidate's profile.
+- Restate the match score or match reasoning.
+- Invent missing skills, projects, experience, education, or achievements.
+- Suggest adding technologies not already present in the CV.
+- Claim the candidate lacks a qualification unless explicitly stated.
+
+Good example:
+"Your project is a strong part of the CV because it demonstrates
+full-stack development, API design, and production deployment experience that
+aligns with the role. The open source contribution also strengthens
+your profile by showing experience with real-world codebases. Consider moving
+these projects higher and expanding the technical decisions behind them. The
+job listing requires a bachelor's degree, but no formal education information
+is currently visible in the CV, so add this section if applicable."
+
+Poor example:
+"You do not have a bachelor's degree."
 
 ────────────────────────────────────────
 COVER LETTER RULES

@@ -1,16 +1,9 @@
 import { z } from 'zod';
 
-import { ConfidenceSchema } from '../common/confidence.schema.js';
 import { ApplicationStatusSchema } from '../common/status.schema.js';
 import { CVDocumentSchema } from '../cv/cv.schemas.js';
 import { JobDocumentSchema } from '../job/job.schemas.js';
-
-export const MatchSchema = z.object({
-  score: z.number(),
-  confidence: ConfidenceSchema,
-  strengths: z.array(z.string()),
-  missing_skills: z.array(z.string()),
-});
+import { MatchSchema } from './match.schemas.js';
 
 export const ApplicationSchema = z.object({
   _id: z.string(),
@@ -20,7 +13,7 @@ export const ApplicationSchema = z.object({
 
   match: MatchSchema,
 
-  tailored_cv_summary: z.string(),
+  tailoring_advice: z.string(),
   cover_letter: z.string(),
 
   jobTitleSnapshot: z.string().optional(),

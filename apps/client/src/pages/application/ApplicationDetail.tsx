@@ -12,7 +12,7 @@ import { JobListingSection } from '../../components/application-detail/JobListin
 import { Loader } from '../../components/common/Loader';
 import { Route } from '../../routes/__protected/applications/$applicationId';
 
-import type { ApplicationStatus } from '@repo/schemas';
+import type { ApplicationStatus } from '@applera/schemas';
 
 export function ApplicationDetailPage() {
   const { applicationId } = Route.useParams();

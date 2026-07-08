@@ -3,7 +3,7 @@ import { CVApplications } from '../description/applications/CVApplications';
 import { CVDescription } from '../description/CVDescription';
 
 import type { DashboardCV } from '@/api/cv/cv.schemas';
-import type { CVParsed } from '@repo/schemas';
+import type { CVParsed } from '@applera/schemas';
 
 interface CVTabsSectionProps {
   cv: { parsed: CVParsed };

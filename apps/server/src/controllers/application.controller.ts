@@ -1,9 +1,11 @@
-import { CVParsedSchema, JobParsedSchema } from '@repo/schemas';
-
-import Application, {
+import {
   APPLICATION_STATUSES,
+  CVParsedSchema,
+  JobParsedSchema,
   type ApplicationStatus,
-} from '../models/Application.js';
+} from '@applera/schemas';
+
+import Application from '../models/Application.js';
 import CVModel from '../models/CV.js';
 import JobModel from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
@@ -275,7 +277,7 @@ export const createApplication = async (req: Request, res: Response) => {
       job: job._id,
       ...result.snapshot,
       match: result.match,
-      tailored_cv_summary: result.application.cv_summary,
+      tailoring_advice: result.application.tailoring_advice,
       cover_letter: [
         result.application.application_letter.introduction,
         result.application.application_letter.body,

@@ -1,7 +1,7 @@
 import { normalizeSeniority } from '../shared/seniority.utils.js';
 
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
-import type { Seniority } from '@repo/schemas';
+import type { Seniority } from '@applera/schemas';
 
 const SENIORITY_RANK: Record<Seniority, number | undefined> = {
   intern: 0,

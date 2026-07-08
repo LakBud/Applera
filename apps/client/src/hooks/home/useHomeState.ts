@@ -4,7 +4,7 @@ import { useCreateApplication } from '../../api';
 import { useCVState } from '../cv/useCVState';
 import { useJobState } from '../job/useJobState';
 
-import type { Application } from '@repo/schemas';
+import type { Application } from '@applera/schemas';
 
 export function useHomeState() {
   const cv = useCVState();

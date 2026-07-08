@@ -17,7 +17,7 @@ import {
 } from '../../utils/match/text.utils.js';
 
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
-import type { CVParsed, JobParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@applera/schemas';
 
 export function runMathMatch(cv: CVParsed, job: JobParsed): Omit<MatchReport, 'ai_insights'> {
   const cvSkills = normalizeSkills(cv.skills);

@@ -9,7 +9,7 @@ import { CVCard } from '../../components/cvs/CVCard';
 import { CVCardSkeleton } from '../../components/cvs/CVCardSkeleton';
 
 import { useCVState } from '@/hooks/cv/useCVState';
-import type { CVDocument } from '@repo/schemas';
+import type { CVDocument } from '@applera/schemas';
 
 export function CVsPage() {
   const { data: cvs, isLoading } = useCVs();

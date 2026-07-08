@@ -1,7 +1,5 @@
-import { ApplicationStatusSchema, CVDocumentSchema } from '@repo/schemas';
+import { ApplicationStatusSchema, ConfidenceSchema, CVDocumentSchema } from '@applera/schemas';
 import { z } from 'zod';
-
-import { ConfidenceSchema } from '../schemas';
 
 export const UploadCVResponseSchema = z.object({
   message: z.string(),

@@ -1,4 +1,4 @@
-import { JobDocumentSchema } from '@repo/schemas';
+import { JobDocumentSchema } from '@applera/schemas';
 import { z } from 'zod';
 
 export const CreateJobResponseSchema = z.object({

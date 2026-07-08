@@ -1,15 +1,5 @@
+import { APPLICATION_STATUSES, CONFIDENCE_LEVELS, SENIORITY_FIT_VALUES } from '@applera/schemas';
 import mongoose from 'mongoose';
-
-export const APPLICATION_STATUSES = [
-  'generated',
-  'applied',
-  'interviewing',
-  'offered',
-  'rejected',
-  'withdrawn',
-] as const;
-
-export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
 const ApplicationSchema = new mongoose.Schema(
   {
@@ -54,14 +44,32 @@ const ApplicationSchema = new mongoose.Schema(
 
       confidence: {
         type: String,
+        enum: CONFIDENCE_LEVELS,
         trim: true,
       },
 
       strengths: [{ type: String, trim: true }],
       missing_skills: [{ type: String, trim: true }],
+
+      seniority_fit: {
+        type: String,
+        enum: SENIORITY_FIT_VALUES,
+        default: 'unknown',
+      },
+
+      domain_mismatch: {
+        type: Boolean,
+        default: false,
+      },
+
+      recommendation: {
+        type: String,
+        trim: true,
+        default: '',
+      },
     },
 
-    tailored_cv_summary: {
+    tailoring_advice: {
       type: String,
       maxlength: 10000,
     },

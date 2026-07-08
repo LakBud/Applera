@@ -1,4 +1,4 @@
-import { type CVDocument, CVDocumentSchema } from '@repo/schemas';
+import { type CVDocument, CVDocumentSchema } from '@applera/schemas';
 import { z } from 'zod';
 
 import { client } from '../client';

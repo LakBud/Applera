@@ -1,7 +1,7 @@
-import type { Application } from '@repo/schemas';
+import type { Application } from '@applera/schemas';
 
 type Props = {
-  activeTab: 'letter' | 'summary' | 'email';
+  activeTab: 'letter' | 'advice' | 'email';
   application: Application;
 };
 
@@ -13,9 +13,9 @@ export function ApplicationTabContent({ activeTab, application }: Props) {
       </pre>
     ),
 
-    summary: (
+    advice: (
       <pre className="whitespace-pre-wrap text-sm text-tx-body leading-relaxed">
-        {application.tailored_cv_summary}
+        {application.tailoring_advice}
       </pre>
     ),
 

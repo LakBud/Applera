@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const ApplicationLLMSchema = z.object({
-  cv_summary: z.string(),
+  tailoring_advice: z.string(),
 
   application_letter: z.object({
     introduction: z.string().optional(),

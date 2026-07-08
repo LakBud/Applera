@@ -11,7 +11,7 @@ import { Loader } from '../common/Loader';
 import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
-import type { ApplicationStatus } from '@repo/schemas';
+import type { ApplicationStatus } from '@applera/schemas';
 
 type Props = {
   jobTitle?: string;

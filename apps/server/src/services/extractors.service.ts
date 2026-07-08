@@ -8,7 +8,7 @@ import { repairCV } from './cv/cvRepair.service.js';
 import { repairJob } from './job/jobRepair.service.js';
 import { cachedLLM, callLLM } from './llm/llm.service.js';
 
-import type { CVParsed, JobParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@applera/schemas';
 
 // ─────────────────────────────────────────────────────────────
 // CV extractor

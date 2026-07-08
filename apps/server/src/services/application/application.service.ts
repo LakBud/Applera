@@ -9,7 +9,7 @@ import { buildCacheKey, scrubPlaceholders } from '../../utils/application/applic
 import { cachedLLM, callLLM } from '../llm/llm.service.js';
 
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
-import type { CVParsed, JobParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@applera/schemas';
 
 export async function generateApplication(
   cv: CVParsed,

@@ -1,8 +1,17 @@
 import { useMemo } from 'react';
 
-import { type SuccessStatus, SuccessStatusSchema } from '../../api/schemas';
+import { ApplicationStatusSchema } from '@applera/schemas';
+import { z } from 'zod';
 
 import type { DashboardCV } from '@/api/cv/cv.schemas';
+
+export const SuccessStatusSchema = ApplicationStatusSchema.extract([
+  'applied',
+  'interviewing',
+  'offered',
+]);
+
+export type SuccessStatus = z.infer<typeof SuccessStatusSchema>;
 
 export function useCVSuccessRate(dashboard?: DashboardCV) {
   return useMemo(() => {

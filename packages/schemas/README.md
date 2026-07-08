@@ -1,4 +1,4 @@
-# @repo/schemas
+# @applera/schemas
 
 This package contains shared TypeScript schemas and types used by the frontend and backend apps.
 
@@ -22,7 +22,7 @@ pnpm typecheck
 Import the shared schemas in other packages:
 
 ```ts
-import { cvSchema } from '@repo/schemas';
+import { CVDocumentSchema } from '@applera/schemas';
 ```
 
 ## Development
