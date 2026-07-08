@@ -93,27 +93,43 @@ export function expandCanonicalSkills(skills: string[]): Set<string> {
   return expanded;
 }
 
-export function expandCanonicalSkillsWithDisplay(skills: string[]): {
-  canonicalSet: Set<string>;
-  displayMap: Map<string, string>;
-} {
-  const canonicalSet = expandCanonicalSkills(skills);
+/**
+ * Builds a lookup from a normalized/canonical key back to the first
+ * original, human-readable label that produced it. Used to recover a
+ * display-friendly string after normalization has stripped
+ * whitespace/punctuation/casing for comparison purposes.
+ */
+function buildDisplayMap(
+  skills: unknown[],
+  keyFor: (original: string) => string,
+): Map<string, string> {
   const displayMap = new Map<string, string>();
 
   if (!Array.isArray(skills)) {
-    return { canonicalSet, displayMap };
+    return displayMap;
   }
 
   for (const raw of skills) {
     const original = String(raw ?? '').trim();
     if (!original) continue;
 
-    const canonical = resolveCanonical(normalizeSkill(original));
+    const key = keyFor(original);
+    if (!key) continue;
 
-    if (!displayMap.has(canonical)) {
-      displayMap.set(canonical, original);
+    if (!displayMap.has(key)) {
+      displayMap.set(key, original);
     }
   }
 
-  return { canonicalSet, displayMap };
+  return displayMap;
+}
+
+/**
+ * Lookup from each skill's NORMALIZED form (e.g. "frontendwebtechnologies")
+ * back to its original, human-readable label (e.g. "Frontend web
+ * technologies"). normalizeSkill() strips whitespace/punctuation purely for
+ * comparison; that stripped form should never be shown to the user.
+ */
+export function buildNormalizedToDisplayMap(skills: unknown[]): Map<string, string> {
+  return buildDisplayMap(skills, normalizeSkill);
 }

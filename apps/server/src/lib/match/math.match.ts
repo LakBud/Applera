@@ -6,9 +6,9 @@ import {
 import { getSeniorityFit } from '../../utils/match/seniority.utils.js';
 import {
   isJobSkillCovered,
-  normalizeSkill,
   normalizeSkills,
-  expandCanonicalSkillsWithDisplay,
+  expandCanonicalSkills,
+  buildNormalizedToDisplayMap,
 } from '../../utils/match/skills/skill.utils.js';
 import {
   calculateTextOverlap,
@@ -23,24 +23,10 @@ export function runMathMatch(cv: CVParsed, job: JobParsed): Omit<MatchReport, 'a
   const cvSkills = normalizeSkills(cv.skills);
   const jobSkills = normalizeSkills(job.required_skills);
 
-  const { canonicalSet: cvExpanded } = expandCanonicalSkillsWithDisplay(cv.skills ?? []);
+  const cvExpanded = expandCanonicalSkills(cv.skills ?? []);
 
-  // Build a lookup from each job skill's NORMALIZED form (e.g.
-  // "frontendwebtechnologies") back to its original, human-readable label
-  // (e.g. "Frontend web technologies") as written in the job posting.
-  // normalizeSkills() strips whitespace/punctuation purely for comparison;
-  // that stripped form should never be shown to the user.
-  const jobNormalizedToDisplay = new Map<string, string>();
-  for (const raw of job.required_skills ?? []) {
-    const original = String(raw ?? '').trim();
-    if (!original) continue;
-    const normalized = normalizeSkill(original);
-    if (!normalized) continue;
-    if (!jobNormalizedToDisplay.has(normalized)) {
-      jobNormalizedToDisplay.set(normalized, original);
-    }
-  }
-
+  // Map job skills back to their original display form (normalizeSkill's output isn't user-facing)
+  const jobNormalizedToDisplay = buildNormalizedToDisplayMap(job.required_skills ?? []);
   const toDisplay = (normalized: string): string =>
     jobNormalizedToDisplay.get(normalized) ?? normalized;
 
