@@ -2,6 +2,7 @@ import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { runAIEnrichment } from '../../lib/match/ai.match.js';
 import { runMathMatch } from '../../lib/match/math.match.js';
 import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
+import { normalizeSkill } from '../../utils/match/skills/skill.utils.js';
 import { extractAllText } from '../../utils/match/text.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
 import { cachedLLM } from '../llm/llm.service.js';
@@ -29,14 +30,28 @@ export async function matchCVToJob(
     fn: async () => {
       const mathResult = runMathMatch(cv, job);
 
-      // only call AI for ambiguous or low-confidence results
-      const needsAI =
-        !skipAI &&
-        (mathResult.confidence === 'low' || (mathResult.score >= 30 && mathResult.score <= 75));
+      const needsAI = !skipAI && (mathResult.confidence === 'low' || mathResult.score <= 75);
 
       const ai_insights = needsAI ? await runAIEnrichment(cv, job, mathResult) : null;
 
-      const result: MatchReport = { ...mathResult, ai_insights };
+      const coveredByAI = new Set(
+        [...(ai_insights?.semantic_matches ?? []), ...(ai_insights?.implicit_skills ?? [])].map(
+          normalizeSkill,
+        ),
+      );
+
+      const result: MatchReport = {
+        ...mathResult,
+        score: ai_insights?.adjusted_score ?? mathResult.score,
+        strengths: [
+          ...mathResult.strengths,
+          ...mathResult.missing_skills.filter((s) => coveredByAI.has(normalizeSkill(s))),
+        ],
+        missing_skills: mathResult.missing_skills.filter(
+          (s) => !coveredByAI.has(normalizeSkill(s)),
+        ),
+        ai_insights,
+      };
 
       return MatchReportSchema.parse(result); // validates the whole thing before caching
     },
