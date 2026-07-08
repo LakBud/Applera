@@ -148,7 +148,6 @@ export default function PreviewMock({
 
             {skeleton ? (
               <div className="flex gap-5">
-                <SkeletonBlock className="h-4 w-24" />
                 <SkeletonBlock className="h-4 w-32" />
               </div>
             ) : (
