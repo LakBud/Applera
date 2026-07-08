@@ -18,12 +18,12 @@ export function weightedSkillScore(cvSkills: string[], jobSkills: string[]): num
 }
 
 // Weighted blend:
-//   60% — skill overlap   (most important signal)
-//   40% — text overlap    (catches experience, domain language, responsibilities)
+//   85% — skill overlap   (most important signal)
+//   15% — text overlap    (catches experience, domain language, responsibilities)
 
 export function calculateScore(cvSkills: string[], jobSkills: string[], textScore: number): number {
   const skillScore = weightedSkillScore(cvSkills, jobSkills);
-  const raw = skillScore * 0.6 + textScore * 0.4;
+  const raw = skillScore * 0.85 + textScore * 0.15;
   return Math.round(Math.min(100, Math.max(0, raw)));
 }
 
@@ -50,6 +50,7 @@ export function detectDomainMismatch(cvSkills: unknown, jobSkills: unknown): boo
 
   return overlap / job.length < 0.25;
 }
+
 /* ── Recommendation ───────────────────────────────────────────────────────── */
 
 /**

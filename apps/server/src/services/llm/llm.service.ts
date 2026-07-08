@@ -7,10 +7,7 @@ import parseModelJson from '../../lib/parseModelJson.js';
 
 const BASE_DELAY_MS = 500;
 
-// ─────────────────────────────────────────────
 // Error class
-// ─────────────────────────────────────────────
-
 export class LLMError extends Error {
   constructor(
     message: string,
@@ -19,11 +16,7 @@ export class LLMError extends Error {
     super(message);
   }
 }
-
-// ─────────────────────────────────────────────
 // Timeout wrapper
-// ─────────────────────────────────────────────
-
 const MAX_RETRIES = 1; // 2 attempts max
 const TIMEOUT_MS = 25_000; // 25s per attempt → ~52s worst case, well under 90s
 
@@ -33,10 +26,7 @@ function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: number): Pr
   return fn(controller.signal).finally(() => clearTimeout(timeout));
 }
 
-// ─────────────────────────────────────────────
-// Debug logger (safe in dev only)
-// ─────────────────────────────────────────────
-
+// Debug logger (safe in dev only
 function debugLog(label: string, content: unknown, requestId: string): void {
   if (IS_PROD) {
     return;

@@ -14,6 +14,12 @@ that string comparison missed. Look for:
 - Skills listed differently ("Node" vs "backend development")
 - Skills implied by experience ("built Kubernetes cluster" → Kubernetes)
 - Transferable skills not in the skill list
+- Related/adjacent skills that reasonably cover a required skill (e.g. "GitHub Actions" experience covers "CI/CD")
+
+Focus specifically on the "Missing" list below — your job is to identify which of those
+missing skills are actually covered by the candidate's real experience, even if the exact
+keyword isn't present. Only include a skill in "semantic_matches" or "implicit_skills" if it
+appears (verbatim) in the "Missing" list.
 
 Respond ONLY with valid JSON matching this shape exactly:
 {

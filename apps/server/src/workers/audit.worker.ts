@@ -16,9 +16,7 @@ const QUEUE_KEY = 'audit:queue';
 const DEAD_LETTER_KEY = 'audit:queue:dead';
 const POLL_INTERVAL = 2000;
 
-// -----------------------------
 // Safe JSON parse helper
-// -----------------------------
 function safeParse<T>(raw: string): T | null {
   try {
     return JSON.parse(raw) as T;
@@ -27,43 +25,19 @@ function safeParse<T>(raw: string): T | null {
   }
 }
 
-// -----------------------------
 // Process valid entry
-// -----------------------------
-async function processEntry(raw: unknown): Promise<void> {
-  if (typeof raw !== 'string') {
-    console.error('[audit worker] invalid raw type:', raw);
-
-    // push to dead letter queue
-    await redis.lpush(DEAD_LETTER_KEY, JSON.stringify({ raw, reason: 'not-string' }));
-    return;
-  }
-
+async function processEntry(raw: string): Promise<void> {
   const data = safeParse<AuditEventPayload>(raw);
 
   if (!data) {
     console.error('[audit worker] invalid JSON:', raw);
-
     await redis.lpush(DEAD_LETTER_KEY, JSON.stringify({ raw, reason: 'invalid-json' }));
     return;
   }
 
-  // -----------------------------
-  // Normalize metadata safely
-  // -----------------------------
-  let metadata = data.metadata;
-
-  if (typeof metadata === 'string') {
-    const parsed = safeParse<Record<string, unknown>>(metadata);
-    metadata = parsed ?? undefined;
-  }
-
-  // -----------------------------
   // Validate required fields (basic guard)
-  // -----------------------------
   if (!data.event || !data.userId || !data.userType) {
     console.error('[audit worker] missing required fields:', data);
-
     await redis.lpush(DEAD_LETTER_KEY, JSON.stringify({ data, reason: 'missing-fields' }));
     return;
   }
@@ -74,9 +48,7 @@ async function processEntry(raw: unknown): Promise<void> {
     return;
   }
 
-  // -----------------------------
   // Write to DB
-  // -----------------------------
   try {
     await AuditEvent.create({
       event: data.event,
@@ -86,24 +58,21 @@ async function processEntry(raw: unknown): Promise<void> {
       resourceId: data.resourceId || undefined,
       ip: data.ip || undefined,
       userAgent: data.userAgent || undefined,
-      metadata,
+      metadata: data.metadata,
     });
   } catch (err) {
     console.error('[audit worker] DB error:', err);
-
     await redis.lpush(DEAD_LETTER_KEY, JSON.stringify({ data, reason: 'db-error' }));
   }
 }
 
-// -----------------------------
 // Worker loop
-// -----------------------------
 export async function startAuditWorker(): Promise<void> {
   console.log('[audit worker] started');
 
   while (true) {
     try {
-      const raw = await redis.rpop(QUEUE_KEY);
+      const raw = await redis.rpop<string>(QUEUE_KEY);
 
       if (!raw) {
         await new Promise((res) => setTimeout(res, POLL_INTERVAL));
@@ -113,7 +82,6 @@ export async function startAuditWorker(): Promise<void> {
       await processEntry(raw);
     } catch (err) {
       console.error('[audit worker] error', err);
-
       await new Promise((res) => setTimeout(res, POLL_INTERVAL));
     }
   }

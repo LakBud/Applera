@@ -1,9 +1,6 @@
 import { redis } from '../config/redis.js';
 
-// ─────────────────────────────────────────────
-// GET CACHE
-// ─────────────────────────────────────────────
-
+// Get Caches
 export async function getCache<T>(key: string): Promise<T | null> {
   const value = await redis.get<string | T>(key);
 
@@ -22,20 +19,14 @@ export async function getCache<T>(key: string): Promise<T | null> {
   return value as T;
 }
 
-// ─────────────────────────────────────────────
-// SET CACHE
-// ─────────────────────────────────────────────
-
+// Set Caches
 export async function setCache<T>(key: string, value: T, ttlSeconds = 60 * 60) {
   await redis.set(key, JSON.stringify(value), {
     ex: ttlSeconds,
   });
 }
 
-// ─────────────────────────────────────────────
-// DELETE CACHE
-// ─────────────────────────────────────────────
-
+// Delete Caches
 export async function deleteCache(key: string) {
   await redis.del(key);
 }

@@ -1,3 +1,5 @@
+import { ALLOWED_SENIORITY } from '@repo/schemas';
+
 export const EXTRACT_JOB_PROMPT: string = `
 You are a professional job description parser.
 
@@ -37,9 +39,64 @@ location:
 - If not stated, return ""
 
 required_skills:
-- Extract ALL technical skills, tools, frameworks, and technologies mentioned
-- Include both required and preferred/nice-to-have skills
-- Do NOT invent skills that are not explicitly mentioned
+- Extract ALL concrete technical skills, tools, frameworks, languages, libraries,
+  databases, platforms, and technologies mentioned.
+- Include both required and preferred/nice-to-have skills.
+- Extract ONLY atomic skills that can be matched independently.
+- Do NOT extract broad categories, umbrella terms, or descriptive phrases as skills.
+- If a category introduces a list of technologies, extract only the individual technologies.
+- Do NOT invent skills that are not explicitly mentioned.
+
+Examples:
+- "Frontend web technologies such as React, Angular, and TypeScript"
+  → ["React", "Angular", "TypeScript"]
+
+- "Experience with cloud technologies including AWS and Azure"
+  → ["AWS", "Azure"]
+
+- "Knowledge of databases like PostgreSQL and MongoDB"
+  → ["PostgreSQL", "MongoDB"]
+
+Do NOT extract:
+- "Frontend web technologies"
+- "Backend technologies"
+- "Cloud technologies"
+- "Database technologies"
+- "Programming languages"
+- "Frameworks"
+- "Libraries"
+- "Tools"
+- "Web development"
+- "Software engineering"
+
+If a generic phrase describes an area, extract the concrete technologies mentioned inside it.
+
+Example:
+"Experience with frontend state management using Zustand and TanStack Query"
+
+Extract:
+[
+  "Zustand",
+  "TanStack Query"
+]
+
+NOT:
+[
+  "frontend state management"
+]
+
+Example:
+"Experience with automated testing using Vitest"
+
+Extract:
+[
+  "Vitest"
+]
+
+NOT:
+[
+  "automated testing"
+]
 
 responsibilities:
 - Extract ALL tasks, duties, and expectations described in the job
@@ -49,7 +106,7 @@ responsibilities:
 
 seniority:
 - Must be EXACTLY one of:
-  "executive", "intern", "junior", "mid", "senior", "lead", "unknown"
+  ${ALLOWED_SENIORITY.map((v) => `"${v}"`).join(' | ')}
 - Infer from context when possible:
   - internship / student → "intern"
   - 0–2 years → "junior"

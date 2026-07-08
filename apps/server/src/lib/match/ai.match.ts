@@ -7,8 +7,6 @@ import { hash } from '../../utils/shared/hash.utils.js';
 
 import type { CVParsed, JobParsed } from '@repo/schemas';
 
-// ── AI pass ───────────────────────────────────────────────────────────────────
-
 export async function runAIEnrichment(
   cv: CVParsed,
   job: JobParsed,

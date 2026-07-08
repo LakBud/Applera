@@ -1,8 +1,6 @@
 import type { Request } from 'express';
 
-// ─────────────────────────────────────────────
 // Usage limits
-// ─────────────────────────────────────────────
 
 export function getUsageLimit(req: Request): number {
   const identity = req.identity;
