@@ -12,7 +12,7 @@ export function getUsageLimit(req: Request): number {
 
   // Logged-in free tier
   if (!identity.plan || identity.plan === 'free') {
-    return 25;
+    return 425;
   }
 
   // Paid tiers

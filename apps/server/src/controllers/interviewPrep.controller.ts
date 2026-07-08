@@ -1,4 +1,4 @@
-import { CVParsedSchema, JobParsedSchema } from '@repo/schemas';
+import { CVParsedSchema, JobParsedSchema } from '@applera/schemas';
 
 import { deleteCache } from '../lib/cache.js';
 import Application from '../models/Application.js';

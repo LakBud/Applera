@@ -1,5 +1,5 @@
 {
-  "name": "@repo/schemas",
+  "name": "@applera/schemas",
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.cjs",

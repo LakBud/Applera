@@ -4,7 +4,7 @@ import { repairCV } from '../cv/cvRepair.service.js';
 import { repairJob } from '../job/jobRepair.service.js';
 import { matchCVToJob } from '../match/match.service.js';
 
-import type { CVParsed, JobParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@applera/schemas';
 
 export type Input = Buffer | string;
 

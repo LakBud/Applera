@@ -7,7 +7,7 @@ import { STATUS_STYLES } from '@/utils/ui/statusStyles';
 import { Badge } from '../ui/badge';
 import { RowBase } from '../ui/row';
 
-import type { Application } from '@repo/schemas';
+import type { Application } from '@applera/schemas';
 
 export function ApplicationRow({ application }: { application: Application }) {
   const navigate = useNavigate();

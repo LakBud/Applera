@@ -1,12 +1,24 @@
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
-import type { CVParsed, JobParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@applera/schemas';
 
 export function buildApplicationPrompt(cv: CVParsed, job: JobParsed, match: MatchReport): string {
   return `
-  LANGUAGE: Detect from raw_description above and write ALL output in that language.
-  
+LANGUAGE: Detect from raw_description above and write ALL output in that language.
+
 CV:
-${JSON.stringify({ name: cv.name, summary: cv.summary, skills: cv.skills, experience: cv.experience, seniority_level: cv.seniority_level }, null, 2)}
+${JSON.stringify(
+  {
+    name: cv.name,
+    summary: cv.summary,
+    skills: cv.skills,
+    experience: cv.experience,
+    education: cv.education,
+    projects: cv.projects,
+    seniority_level: cv.seniority_level,
+  },
+  null,
+  2,
+)}
 
 JOB:
 ${JSON.stringify(
@@ -24,7 +36,17 @@ ${JSON.stringify(
 )}
 
 MATCH (DO NOT RECOMPUTE):
-${JSON.stringify({ score: match.score, strengths: match.strengths, missing_skills: match.missing_skills }, null, 2)}
+${JSON.stringify(
+  {
+    score: match.score,
+    strengths: match.strengths,
+    missing_skills: match.missing_skills,
+    seniority_fit: match.seniority_fit,
+    domain_mismatch: match.domain_mismatch,
+  },
+  null,
+  2,
+)}
 
 TASK:
 Generate a structured job application JSON strictly following the schema.

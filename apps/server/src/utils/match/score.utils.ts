@@ -58,13 +58,13 @@ export function detectDomainMismatch(cvSkills: unknown, jobSkills: unknown): boo
  */
 export function generateRecommendation(score: number): string {
   if (score >= 80) {
-    return 'Strong match — apply immediately';
+    return 'Strong match: Apply immediately';
   }
   if (score >= 60) {
-    return 'Good match — consider applying';
+    return 'Good match: Consider applying';
   }
   if (score >= 40) {
-    return 'Moderate match — improve CV first';
+    return 'Moderate match: Improve CV first';
   }
-  return 'Weak match — not recommended';
+  return 'Weak match: Not recommended';
 }

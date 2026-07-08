@@ -1,4 +1,6 @@
-import Application, { APPLICATION_STATUSES } from '../models/Application.js';
+import { APPLICATION_STATUSES } from '@applera/schemas';
+
+import Application from '../models/Application.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { getParam } from '../utils/shared/param.utils.js';
 

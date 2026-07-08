@@ -5,7 +5,7 @@ import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.s
 import { extractAllText } from '../../utils/match/text.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
 
-import type { CVParsed, JobParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@applera/schemas';
 
 export async function runAIEnrichment(
   cv: CVParsed,

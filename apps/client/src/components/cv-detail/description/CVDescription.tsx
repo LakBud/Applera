@@ -4,7 +4,7 @@ import { ProjectsSection } from './sections/ProjectsSection';
 import { SkillsSection } from './sections/SkillsSection';
 import { SummarySection } from './sections/SummarySection';
 
-import type { CVParsed } from '@repo/schemas';
+import type { CVParsed } from '@applera/schemas';
 
 export function CVDescription({ parsed }: { parsed: CVParsed }) {
   const skills = parsed.skills ?? [];

@@ -8,7 +8,7 @@ import {
   UpdateApplicationStatusRequestSchema,
 } from './application.schemas';
 
-import type { Application } from '@repo/schemas';
+import type { Application } from '@applera/schemas';
 
 /**
  * Create application

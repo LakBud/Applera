@@ -1,4 +1,4 @@
-import type { Seniority } from '@repo/schemas';
+import type { Seniority } from '@applera/schemas';
 
 export function normalizeSeniority(input: unknown): Seniority {
   const v = String(input).toLowerCase().trim();

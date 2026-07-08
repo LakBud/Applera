@@ -1,4 +1,4 @@
-import { CVParsedSchema, JobParsedSchema } from '@repo/schemas';
+import { CVParsedSchema, JobParsedSchema } from '@applera/schemas';
 import { z } from 'zod';
 
 import { ApplicationLLMSchema } from './llm.schemas.js';

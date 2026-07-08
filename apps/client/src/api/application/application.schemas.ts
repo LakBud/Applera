@@ -1,4 +1,4 @@
-import { ApplicationSchema, ApplicationStatusSchema } from '@repo/schemas';
+import { ApplicationSchema, ApplicationStatusSchema } from '@applera/schemas';
 import { z } from 'zod';
 
 // Requests

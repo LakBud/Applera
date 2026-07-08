@@ -89,10 +89,10 @@ function detectStopwords(text: string): Set<string> {
  * - compares meaningful words only
  *
  * It intentionally does NOT understand synonyms or technologies.
- * For semantic matching use calculateSemanticTextOverlap().
  *
  * Score range: 0–100.
  */
+
 export function calculateTextOverlap(cvText: string, jobText: string): number {
   if (!cvText || !jobText) {
     return 0;

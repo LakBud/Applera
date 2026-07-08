@@ -1,4 +1,4 @@
-import { ALLOWED_SENIORITY, CVParsedSchema, JobParsedSchema } from '@repo/schemas';
+import { ALLOWED_SENIORITY, CVParsedSchema, JobParsedSchema } from '@applera/schemas';
 import { z } from 'zod';
 
 const SenioritySchema = z.enum(ALLOWED_SENIORITY);

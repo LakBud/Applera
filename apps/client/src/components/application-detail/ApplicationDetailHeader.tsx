@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
-import { ArrowRight, FileText, MapPin } from 'lucide-react';
+import { ArrowRight, FileText } from 'lucide-react';
 
 type Props = {
   jobTitle?: string;
@@ -21,7 +21,6 @@ export function ApplicationDetailHeader({
   cvName,
 }: Props) {
   const navigate = useNavigate();
-  const meta = [company, location, createdAtLabel].filter(Boolean);
 
   return (
     <div className="space-y-2">
@@ -32,14 +31,22 @@ export function ApplicationDetailHeader({
       <div className="flex items-center gap-2 flex-wrap text-xs text-tx-muted">
         {seniority && seniority !== 'unknown' && <span className="capitalize">{seniority}</span>}
 
-        {meta.map((item, i) => (
-          <span key={i} className="flex items-center gap-1">
-            {i > 0 && <span className="text-tx-muted/40">·</span>}
+        {company && (
+          <>
+            <span className="text-tx-muted/40">·</span>
+            <span>{company}</span>
+          </>
+        )}
 
-            {item === location && <MapPin className="w-3 h-3" />}
-            {item}
-          </span>
-        ))}
+        {location && (
+          <>
+            <span className="text-tx-muted/40">·</span>
+            <span>{location}</span>
+          </>
+        )}
+
+        <span className="text-tx-muted/40">·</span>
+        <span>{createdAtLabel}</span>
 
         {cvId && (
           <>

@@ -2,8 +2,8 @@ import { Button } from '../../ui/button';
 import { TabsList, TabsTrigger } from '../../ui/tabs';
 
 type Props = {
-  activeTab: 'letter' | 'summary' | 'email';
-  setActiveTab: (v: 'letter' | 'summary' | 'email') => void;
+  activeTab: 'letter' | 'advice' | 'email';
+  setActiveTab: (v: 'letter' | 'advice' | 'email') => void;
   copy: (text: string, key: string) => void;
   copied: string | null;
   activeContent: string;
@@ -17,7 +17,7 @@ export function ApplicationTabsHeader({
   activeContent,
 }: Props) {
   return (
-    <div className="flex items-center border-b border-border px-0 overflow-x-auto">
+    <div className="flex items-center border-b border-border px-0 ">
       {/* Tabs */}
       <TabsList className="h-auto bg-transparent gap-0 p-0 flex">
         <TabsTrigger
@@ -29,11 +29,11 @@ export function ApplicationTabsHeader({
         </TabsTrigger>
 
         <TabsTrigger
-          value="summary"
-          onClick={() => setActiveTab('summary')}
+          value="advice"
+          onClick={() => setActiveTab('advice')}
           className="px-4 md:px-5 py-3.5 text-xs font-semibold tracking-wide rounded-none border-b-2 border-transparent data-[state=active]:border-b-green-800 data-[state=active]:text-green-800 data-[state=active]:shadow-none data-[state=active]:bg-transparent text-secondary hover:text-tx-h2 transition whitespace-nowrap"
         >
-          CV summary
+          CV advice
         </TabsTrigger>
 
         <TabsTrigger

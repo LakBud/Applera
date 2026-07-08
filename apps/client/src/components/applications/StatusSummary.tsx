@@ -1,4 +1,4 @@
-import type { Application } from '@repo/schemas';
+import type { Application } from '@applera/schemas';
 
 interface ApplicationStatusItem {
   status: Application['status'];

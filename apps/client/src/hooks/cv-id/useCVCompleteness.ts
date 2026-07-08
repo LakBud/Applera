@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { CV_COMPLETENESS_RULES } from '../../utils/cv-id/rules';
 
-import type { CVDocument } from '@repo/schemas';
+import type { CVDocument } from '@applera/schemas';
 
 type Result = {
   completeness: number;

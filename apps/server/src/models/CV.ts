@@ -1,4 +1,4 @@
-import { ALLOWED_SENIORITY } from '@repo/schemas';
+import { ALLOWED_SENIORITY } from '@applera/schemas';
 import mongoose from 'mongoose';
 
 const CVSchema = new mongoose.Schema(

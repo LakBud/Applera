@@ -1,4 +1,4 @@
-import { ALLOWED_SENIORITY } from '@repo/schemas';
+import { ALLOWED_SENIORITY } from '@applera/schemas';
 
 export const EXTRACT_CV_PROMPT = `
 You are a strict CV parsing engine.
@@ -211,6 +211,41 @@ Guidelines:
 If evidence is genuinely insufficient:
 - Use "unknown"
 - Do NOT leave the field empty
+
+────────────────────────────────────────
+SUMMARY EXTRACTION RULE (CRITICAL)
+────────────────────────────────────────
+The "summary" field MUST contain a concise professional profile of the candidate.
+
+If the CV already contains a professional summary/profile/about section:
+- Rewrite it into a polished summary instead of copying it verbatim.
+- Preserve the meaning without inventing information.
+
+If no summary exists:
+- Generate one from the entire CV using only information explicitly supported by the CV.
+
+The summary should:
+- Be 2–4 sentences.
+- Mention the candidate's primary profession or role when evident.
+- Highlight the most important technologies, domains, or areas of expertise.
+- Mention notable experience, responsibilities, or project types when supported.
+- Mention years of experience ONLY if explicitly stated or can be confidently inferred from dated professional experience.
+- Be written in a professional third-person style without using "I", "my", or first-person language.
+- Be factual and concise.
+- Include only information supported by the CV.
+
+Do NOT:
+- Invent achievements or certifications.
+- Mention soft skills unless explicitly supported by experience.
+- List every technology in the CV.
+- Copy bullet points directly.
+- Produce a generic sentence like "Highly motivated software developer."
+
+Good example:
+"Frontend developer specializing in React, TypeScript, and modern web technologies. Experienced building production-ready applications, REST APIs, and responsive user interfaces across personal and professional projects. Strong background in full-stack development with Node.js and PostgreSQL."
+
+Poor example:
+"Motivated developer looking for new opportunities."
 
 ────────────────────────────────────────
 FINAL VALIDATION CHECK (BEFORE OUTPUT)

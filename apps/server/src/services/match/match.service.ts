@@ -7,7 +7,7 @@ import { extractAllText } from '../../utils/match/text.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
 import { cachedLLM } from '../llm/llm.service.js';
 
-import type { CVParsed, JobParsed } from '@repo/schemas';
+import type { CVParsed, JobParsed } from '@applera/schemas';
 
 export async function matchCVToJob(
   cv: CVParsed,
@@ -43,6 +43,9 @@ export async function matchCVToJob(
       const result: MatchReport = {
         ...mathResult,
         score: ai_insights?.adjusted_score ?? mathResult.score,
+        seniority_fit: ai_insights?.seniority_fit ?? mathResult.seniority_fit,
+        domain_mismatch: ai_insights?.domain_mismatch ?? mathResult.domain_mismatch,
+        confidence: ai_insights?.confidence ?? mathResult.confidence,
         strengths: [
           ...mathResult.strengths,
           ...mathResult.missing_skills.filter((s) => coveredByAI.has(normalizeSkill(s))),

@@ -1,4 +1,4 @@
-import { type InterviewPrep } from '@repo/schemas';
+import { type InterviewPrep } from '@applera/schemas';
 
 import { client } from '../client';
 import { InterviewPrepResponseSchema } from './interviewPrep.schemas';

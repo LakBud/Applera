@@ -18,7 +18,7 @@ import {
 } from '../ui/card';
 
 import { useAuthenticatedCVImage } from '@/hooks/common/useAuthenticatedCVImage';
-import type { CVDocument } from '@repo/schemas';
+import type { CVDocument } from '@applera/schemas';
 
 type CVCardProps = {
   cv: CVDocument;

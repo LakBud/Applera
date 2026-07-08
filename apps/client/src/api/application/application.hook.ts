@@ -14,7 +14,7 @@ import {
 } from './application.api';
 
 import type { ClientError } from '../types';
-import type { ApplicationStatus } from '@repo/schemas';
+import type { ApplicationStatus } from '@applera/schemas';
 
 export function useApplications() {
   const { isSignedIn } = useAuth();
