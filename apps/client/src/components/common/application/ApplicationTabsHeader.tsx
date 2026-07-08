@@ -17,7 +17,7 @@ export function ApplicationTabsHeader({
   activeContent,
 }: Props) {
   return (
-    <div className="flex items-center border-b border-border px-0 ">
+    <div className="flex items-center border-b border-border px-0 overflow-x-auto overflow-y-hidden">
       {/* Tabs */}
       <TabsList className="h-auto bg-transparent gap-0 p-0 flex">
         <TabsTrigger

@@ -65,6 +65,7 @@ const ApplicationSchema = new mongoose.Schema(
       recommendation: {
         type: String,
         trim: true,
+        default: '',
       },
     },
 

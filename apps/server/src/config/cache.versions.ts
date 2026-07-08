@@ -1,5 +1,5 @@
 export const CACHE_VERSIONS = {
-  cv: 'v7',
+  cv: 'v8',
   job: 'v7',
   match: 'v7',
   application: 'v4',

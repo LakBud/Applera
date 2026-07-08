@@ -5,7 +5,6 @@ type Tab = 'Cover letter' | 'CV advice' | 'Email draft';
 interface PreviewMockProps {
   skeleton?: boolean;
   score?: number;
-  label?: string;
   strengths?: string[];
   gaps?: string[];
   activeTab?: Tab;
@@ -158,11 +157,6 @@ export default function PreviewMock({
                   <span className="h-2.5 w-2.5 rounded-full bg-green-500 shrink-0" />
                   <span className="text-xs text-body">Perfect seniority match</span>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-warning shrink-0" />
-                  <span className="text-xs text-body">Domain mismatch</span>
-                </div>
               </div>
             )}
           </div>
@@ -197,7 +191,7 @@ export default function PreviewMock({
 
         {/* RIGHT */}
         <div className="flex flex-col">
-          <div className="flex border-b border-border overflow-x-auto">
+          <div className="flex border-b border-border overflow-x-auto overflow-y-hidden">
             {TABS.map((tab) => (
               <button
                 key={tab}

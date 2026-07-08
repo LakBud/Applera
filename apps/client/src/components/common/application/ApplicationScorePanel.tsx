@@ -133,7 +133,7 @@ export function ApplicationScorePanel({
             <span
               className={cn(
                 'h-2.5 w-2.5 rounded-full shrink-0',
-                domainMismatch ? 'bg-warning' : 'bg-green-500',
+                domainMismatch ? 'bg-green-900' : 'bg-green-500',
               )}
             />
 

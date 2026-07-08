@@ -1,10 +1,15 @@
 import { useMemo } from 'react';
 
+import { ApplicationStatusSchema } from '@applera/schemas';
 import { z } from 'zod';
 
 import type { DashboardCV } from '@/api/cv/cv.schemas';
 
-export const SuccessStatusSchema = z.enum(['applied', 'interviewing', 'offered']);
+export const SuccessStatusSchema = ApplicationStatusSchema.extract([
+  'applied',
+  'interviewing',
+  'offered',
+]);
 
 export type SuccessStatus = z.infer<typeof SuccessStatusSchema>;
 
