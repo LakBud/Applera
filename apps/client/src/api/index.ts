@@ -22,8 +22,7 @@ export {
 } from './job/job.hooks';
 
 export {
-  useApplicationsByCv,
-  useApplication,
+  useApplicationById,
   useUpdateApplicationStatus,
   useCreateApplication,
 } from './application/application.hook';

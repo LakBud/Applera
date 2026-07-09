@@ -19,7 +19,6 @@ import cvRoutes from './routes/cv.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import interviewRoutes from './routes/interviewPrep.routes.js';
 import jobRoutes from './routes/job.routes.js';
-import trackerRoutes from './routes/tracker.routes.js';
 import webhookRoutes from './routes/webhook.routes.js';
 import { stripObject } from './utils/shared/sanitize.utils.js';
 import './workers/audit.boot.js';
@@ -178,7 +177,6 @@ app.use('/api/cv', requireUser, cvRoutes);
 app.use('/api/job', requireUser, jobRoutes);
 app.use('/api/application', requireUser, applicationRoutes);
 app.use('/api/interview', requireUser, interviewRoutes);
-app.use('/api/tracker', requireUser, trackerRoutes);
 app.use('/api/dashboard', requireUser, dashboardRoutes);
 
 // ─────────────────────────────────────────────

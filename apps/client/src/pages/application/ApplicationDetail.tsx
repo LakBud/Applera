@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 
 import ApplicationResult from '@/components/common/application/ApplicationResult';
 
-import { useApplication, useUpdateApplicationStatus } from '../../api';
+import { useApplicationById, useUpdateApplicationStatus } from '../../api';
 import { useDeleteApplication } from '../../api/application/application.hook';
 import { ApplicationActionSection } from '../../components/application-detail/ApplicationDetailAction';
 import { ApplicationDetailHeader } from '../../components/application-detail/ApplicationDetailHeader';
@@ -17,7 +17,7 @@ import type { ApplicationStatus } from '@applera/schemas';
 export function ApplicationDetailPage() {
   const { applicationId } = Route.useParams();
   const navigate = useNavigate();
-  const { data: application, isLoading, isError } = useApplication(applicationId);
+  const { data: application, isLoading, isError } = useApplicationById(applicationId);
   const { mutate: deleteApp, isPending: isDeleting } = useDeleteApplication();
   const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateApplicationStatus();
 
