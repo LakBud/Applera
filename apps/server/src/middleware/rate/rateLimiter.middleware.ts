@@ -1,3 +1,5 @@
+import { Ratelimit } from '@upstash/ratelimit';
+
 import { redis } from '../../config/redis.js';
 import { auditLog } from '../../services/audit/audit.service.js';
 
@@ -13,8 +15,26 @@ type LimiterConfig = {
   keyPrefix: string;
 };
 
+// cache ratelimit instances per config so it doesnt rebuild the sliding-window
+const limiterCache = new Map<string, Ratelimit>();
+
+function getRatelimit(config: LimiterConfig): Ratelimit {
+  const cached = limiterCache.get(config.keyPrefix);
+  if (cached) return cached;
+
+  const rl = new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(config.max, `${config.windowMinutes} m`),
+    prefix: `rl:${config.keyPrefix}`,
+    analytics: true, // optional — gives you a dashboard in Upstash console
+  });
+
+  limiterCache.set(config.keyPrefix, rl);
+  return rl;
+}
+
 export function limiter(config: LimiterConfig) {
-  const windowSeconds = config.windowMinutes * 60;
+  const rl = getRatelimit(config);
 
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -24,15 +44,13 @@ export function limiter(config: LimiterConfig) {
         return res.status(401).json({ error: 'Unauthorized' });
       }
 
-      const key = `rl:${config.keyPrefix}:user:${identity.id}`;
+      const { success, limit, remaining, reset } = await rl.limit(`user:${identity.id}`);
 
-      const current = await redis.incr(key);
+      res.setHeader('X-RateLimit-Limit', limit);
+      res.setHeader('X-RateLimit-Remaining', remaining);
+      res.setHeader('X-RateLimit-Reset', reset);
 
-      if (current === 1) {
-        await redis.expire(key, windowSeconds);
-      }
-
-      if (current > config.max) {
+      if (!success) {
         void auditLog({
           event: 'RATE_LIMIT_HIT',
           userId: identity.id,
@@ -43,13 +61,11 @@ export function limiter(config: LimiterConfig) {
           metadata: {
             path: req.path,
             method: req.method,
-            count: current,
+            limit,
           },
         }).catch(() => {});
 
-        return res.status(429).json({
-          error: config.message,
-        });
+        return res.status(429).json({ error: config.message });
       }
 
       return next();
@@ -63,19 +79,17 @@ export function limiter(config: LimiterConfig) {
 
 // For unauthenticated routes (webhooks) — key by IP instead of user identity
 export function ipLimiter(config: LimiterConfig) {
-  const windowSeconds = config.windowMinutes * 60;
+  const rl = getRatelimit(config);
 
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const key = `rl:${config.keyPrefix}:ip:${req.ip}`;
+      const { success, limit, remaining, reset } = await rl.limit(`ip:${req.ip}`);
 
-      const current = await redis.incr(key);
+      res.setHeader('X-RateLimit-Limit', limit);
+      res.setHeader('X-RateLimit-Remaining', remaining);
+      res.setHeader('X-RateLimit-Reset', reset);
 
-      if (current === 1) {
-        await redis.expire(key, windowSeconds);
-      }
-
-      if (current > config.max) {
+      if (!success) {
         void auditLog({
           event: 'RATE_LIMIT_HIT_IP',
           userId: 'anonymous',
@@ -86,7 +100,7 @@ export function ipLimiter(config: LimiterConfig) {
           metadata: {
             path: req.path,
             method: req.method,
-            count: current,
+            limit,
             keyPrefix: config.keyPrefix,
           },
         }).catch(() => {});
@@ -106,9 +120,9 @@ export function ipLimiter(config: LimiterConfig) {
 
 // /api/application/create — triggers 3 LLM calls + DB writes, most expensive
 export const applicationLimiter = limiter({
-  windowMinutes: 15,
-  max: 50,
-  message: 'Too many application requests. Please wait 15 minutes before trying again.',
+  windowMinutes: 60,
+  max: 15,
+  message: 'Too many application requests. Please wait before trying again.',
   keyPrefix: 'application',
 });
 
