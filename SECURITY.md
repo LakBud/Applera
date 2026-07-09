@@ -27,9 +27,7 @@ Il try to acknowledge reports within 48–72 hours if possible.
 
 - `apps/client` — frontend application
 - `apps/server` — backend API
-- Authentication, authorization, and session handling
-- File upload / PDF parsing pipeline
-- Rate limiting and quota enforcement bypasses
+- `packages/schemas` — shared zod schemas
 
 **Out of scope:**
 
