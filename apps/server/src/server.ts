@@ -71,7 +71,7 @@ app.use(
         'https://www.applera.site',
         'https://applera.site',
       ];
-      if (!origin || origin === 'null') {
+      if (!origin) {
         return callback(null, true);
       }
       if (allowed.includes(origin)) {
