@@ -60,35 +60,19 @@ export const getApplicationById = async (req: Request, res: Response) => {
       });
     }
 
-    const { id: ownerId, type: ownerType } = req.identity;
     const id = getParam(req.params.id);
 
     const application = await Application.findOne({
       _id: id,
-      ownerId,
-      ownerType,
+      ownerId: req.identity.id,
+      ownerType: req.identity.type,
     })
-      .select(
-        `
-    _id
-    jobTitleSnapshot
-    companySnapshot
-    locationSnapshot
-    cvNameSnapshot
-    match
-    status
-    createdAt
-    notes
-    tailored_cv_summary
-    cover_letter
-    application_email
-  `,
-      )
-      .lean();
+      .populate('cv')
+      .populate('job');
 
     if (!application) {
       return res.status(404).json({
-        error: 'Application not found',
+        error: 'Application not found.',
       });
     }
 

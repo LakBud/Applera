@@ -7,9 +7,8 @@ import { handleMutationError } from '../utils/errors';
 import {
   createApplication,
   deleteApplication,
-  getApplication,
+  getApplicationById,
   getApplications,
-  getApplicationsByCv,
   updateApplicationStatus,
 } from './application.api';
 
@@ -55,21 +54,12 @@ export function useDeleteApplication() {
   });
 }
 
-export function useApplication(id: string) {
+export function useApplicationById(id: string) {
   const { isSignedIn } = useAuth();
   return useQuery({
     queryKey: queryKeys.application.detail(id),
-    queryFn: () => getApplication(id),
+    queryFn: () => getApplicationById(id),
     enabled: !!isSignedIn && !!id,
-  });
-}
-
-export function useApplicationsByCv(cvId: string) {
-  const { isSignedIn } = useAuth();
-  return useQuery({
-    queryKey: queryKeys.application.byCv(cvId),
-    queryFn: () => getApplicationsByCv(cvId),
-    enabled: !!isSignedIn && !!cvId,
   });
 }
 

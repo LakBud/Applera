@@ -59,20 +59,3 @@ export async function updateApplicationStatus(
 export async function deleteApplication(id: string): Promise<void> {
   await client.delete(`/api/application/${id}`);
 }
-
-/**
- * Tracker: get by CV
- */
-export async function getApplicationsByCv(cvId: string): Promise<Application[]> {
-  const res = await client.get(`/api/tracker/${cvId}`);
-  return ApplicationsResponseSchema.parse(res.data).applications;
-}
-
-/**
- * Tracker: get single
- */
-export async function getApplication(id: string): Promise<Application> {
-  const res = await client.get(`/api/tracker/application/${id}`);
-
-  return ApplicationResponseSchema.parse(res.data).application;
-}
