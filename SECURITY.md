@@ -1,63 +1,59 @@
 # Security Policy
 
-Your privacy matters. This policy explains what data we collect, how we use it, and your rights.
+## Supported Versions
 
-## What We Collect
+Only the latest version deployed on `main` is actively maintained and receives security fixes.
 
-- Account information — your name and email via Clerk authentication
-- CV content — text and PDF files you upload to generate applications
-- Job listings — text you paste or upload for matching
-- Usage data — pages visited, features used, and request logs for debugging
-- IP address — for rate limiting and abuse prevention
+## Reporting a Vulnerability
 
-## How We Use Your Data
+If you discover a security vulnerability in Applera, please **do not** open a public GitHub issue.
 
-- To generate tailored cover letters, match scores, and email drafts
-- To store and retrieve your CVs and applications
-- To authenticate your account securely via Clerk
-- To enforce rate limits and prevent abuse
-- To improve the service based on aggregated usage patterns, using privacy-friendly analytics (Vercel Analytics)
+Instead, report it privately via:
 
-## Data Storage
+- GitHub's private vulnerability reporting (Security tab → "Report a vulnerability"), or
+- Email: [LBud@tuta.io] (The owners email)
 
-Your CVs and application data are stored securely in our database. PDF files are stored on Cloudinary and are only accessible through authenticated endpoints — your files are never publicly accessible by URL. We use Redis for temporary caching of AI-generated content.
+Please include:
 
-## Third Parties
+- A description of the vulnerability and its potential impact
+- Steps to reproduce (proof-of-concept if possible)
+- Any relevant logs, screenshots, or affected endpoints
 
-We use the following third-party services:
+Il try to acknowledge reports within 48–72 hours if possible.
 
-- Clerk — authentication and user management
-- Cloudinary — secure file storage
-- Groq — AI model for generating application content
-- MongoDB — database storage
-- Redis — caching
-- Vercel — deployment & analytics
+## Scope
 
-We do not sell your data to any third party. Data shared with the above services is limited to what is necessary to provide the service.
+**In scope:**
 
-## AI Processing
+- `apps/client` — frontend application
+- `apps/server` — backend API
+- Authentication, authorization, and session handling
+- File upload / PDF parsing pipeline
+- Rate limiting and quota enforcement bypasses
 
-Your CV and job listing content is sent to Groq's API to generate application output. This data is processed in accordance with Groq's privacy policy. We do not use your content to train AI models.
+**Out of scope:**
 
-## Data Retention
+- Vulnerabilities in third-party services we depend on (Clerk, Cloudinary, Groq, MongoDB Atlas, Upstash Redis) — please report those directly to the respective vendor
+- Issues requiring physical access to a user's device
+- Social engineering attacks against maintainers or users
+- Denial of service via brute-force volume alone (rate limiting is already in place, but confirmed bypasses are welcome)
 
-Your data is retained as long as your account is active. You can delete your CVs and applications at any time from the app. To fully delete your account and all associated data, do it within account settings.
+## Current Security Measures
 
-## Your Rights
+For transparency, Applera currently implements:
 
-- Access — you can view all your data within the app
-- Deletion — you can delete your CVs and applications at any time
-- Export — contact us to request a copy of your data
-- Correction — contact us to correct inaccurate data
+- Helmet for HTTP security headers
+- CORS restricted to the frontend origin
+- CSRF protection via double-submit cookie pattern
+- Rate limiting (global, per-route, and usage-based) via Upstash Redis
+- Input validation and sanitization with Zod and HPP
+- MongoDB query sanitization (`mongoose.set('sanitizeFilter', true)`)
+- ObjectId validation at request boundaries
+- Clerk JWT verification on all protected routes
+- Svix signature verification on webhook endpoints
+- Magic-byte file validation on uploads (not just extension/MIME trust)
+- IPv4/IPv6 masking in logs
 
-## Cookies
+## Disclosure Policy
 
-We use a session cookie to authenticate your account. We do not use tracking or advertising cookies.
-
-## Changes to This Policy
-
-We may update this policy from time to time. Continued use of the service after changes constitutes acceptance.
-
-## Contact
-
-For privacy-related questions or data requests, reach out via contacting the owner.
+I ask that you give us a reasonable amount of time to investigate and patch a reported issue before any public disclosure. I am happy to credit reporters (with permission) once a fix is released :)
