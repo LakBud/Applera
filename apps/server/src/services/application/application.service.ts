@@ -14,9 +14,10 @@ import type { CVParsed, JobParsed } from '@applera/schemas';
 export async function generateApplication(
   cv: CVParsed,
   job: JobParsed,
+  rawText: string,
   match: MatchReport,
 ): Promise<ApplicationLLMOutput> {
-  const cacheKey = buildCacheKey(CACHE_VERSIONS.application, cv, job, match);
+  const cacheKey = buildCacheKey(CACHE_VERSIONS.application, cv, job, rawText, match);
 
   const raw = await cachedLLM({
     cacheKey,
@@ -24,7 +25,7 @@ export async function generateApplication(
     fn: async () => {
       return callLLM({
         systemPrompt: APP_GEN_PROMPT,
-        userContent: buildApplicationPrompt(cv, job, match),
+        userContent: buildApplicationPrompt(cv, job, rawText, match),
         temperature: 0.3,
         jsonMode: true,
         maxTokens: 1500,

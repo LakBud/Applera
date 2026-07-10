@@ -9,12 +9,11 @@ export const JobParsedSchema = z.object({
   required_skills: z.array(z.string()).default([]),
   responsibilities: z.array(z.string()).default([]),
   seniority: z.enum(ALLOWED_SENIORITY).default('unknown'),
-  raw_description: z.string().optional(),
 });
 
 export const JobDocumentSchema = z.object({
   _id: z.string(),
-  rawText: z.string().optional(),
+  rawText: z.string().default(''),
   parsed: JobParsedSchema,
 
   createdAt: z.string().optional(),

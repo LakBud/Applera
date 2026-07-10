@@ -34,7 +34,7 @@ export function extractAllText(obj: unknown): string {
     flatten(o.experience),
     flatten(o.education),
     flatten(o.responsibilities),
-    flatten(o.raw_description),
+    flatten(o.raw_text),
   ]
     .join(' ')
     .replace(/\s+/g, ' ')

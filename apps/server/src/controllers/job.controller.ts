@@ -3,6 +3,7 @@ import Job from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { extractJobData } from '../services/extractors.service.js';
 import { getParam } from '../utils/shared/param.utils.js';
+import { normalizeString } from '../utils/shared/repair.utils.js';
 
 import type { Request, Response } from 'express';
 
@@ -26,7 +27,7 @@ export const createJob = async (req: Request, res: Response) => {
     if (file?.buffer) {
       rawText = await extractTextFromPdf(file.buffer);
     } else if (req.body?.jobText?.trim()) {
-      rawText = req.body.jobText.trim();
+      rawText = normalizeString(req.body.jobText);
     } else {
       return res.status(400).json({
         error: 'Provide a job listing as PDF or text',
