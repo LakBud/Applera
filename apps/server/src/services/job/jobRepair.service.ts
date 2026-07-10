@@ -3,7 +3,7 @@ import { normalizeSeniority } from '../../utils/shared/seniority.utils.js';
 
 import type { JobParsed } from '@applera/schemas';
 
-export function repairJob(job: unknown, rawText?: string): JobParsed {
+export function repairJob(job: unknown): JobParsed {
   if (!job || typeof job !== 'object') {
     throw new TypeError('[jobRepair] Job must be a valid object');
   }
@@ -17,6 +17,5 @@ export function repairJob(job: unknown, rawText?: string): JobParsed {
     required_skills: dedupe(normalizeArray(data.required_skills)),
     responsibilities: dedupe(normalizeArray(data.responsibilities)),
     seniority: normalizeSeniority(data.seniority),
-    raw_description: normalizeString(data.raw_description) || rawText || '',
   };
 }

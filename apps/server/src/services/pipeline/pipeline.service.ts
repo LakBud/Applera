@@ -19,6 +19,7 @@ export type Input = Buffer | string;
 export async function runApplicationPipelineFromParsed(
   cv: CVParsed,
   job: JobParsed,
+  rawText: string,
 ): Promise<PipelineResult> {
   // Step 1: repair/normalize
   const cleanCV = repairCV(cv);
@@ -28,7 +29,7 @@ export async function runApplicationPipelineFromParsed(
   const match = await matchCVToJob(cleanCV, cleanJob);
 
   // Step 3: application generation
-  const application = await generateApplication(cleanCV, cleanJob, match);
+  const application = await generateApplication(cleanCV, cleanJob, rawText, match);
   const applicationLetter = application.application_letter ?? {};
 
   return {

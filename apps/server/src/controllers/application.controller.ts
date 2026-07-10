@@ -251,7 +251,7 @@ export const createApplication = async (req: Request, res: Response) => {
     const parsedJob = JobParsedSchema.parse(job.parsed);
 
     // delegate all business logic to pipeline
-    const result = await runApplicationPipelineFromParsed(parsedCV, parsedJob);
+    const result = await runApplicationPipelineFromParsed(parsedCV, parsedJob, job.rawText ?? '');
 
     // DB write
     const application = await Application.create({

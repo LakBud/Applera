@@ -17,7 +17,6 @@ const JobSchema = new mongoose.Schema(
         enum: ALLOWED_SENIORITY,
         default: 'unknown',
       },
-      raw_description: { type: String, maxlength: 100000 },
     },
     deletedAt: Date,
   },

@@ -1,9 +1,14 @@
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
 import type { CVParsed, JobParsed } from '@applera/schemas';
 
-export function buildApplicationPrompt(cv: CVParsed, job: JobParsed, match: MatchReport): string {
+export function buildApplicationPrompt(
+  cv: CVParsed,
+  job: JobParsed,
+  rawText: string,
+  match: MatchReport,
+): string {
+  const langSample = rawText?.trim().slice(0, 300) || '[none provided — default to English]';
   return `
-LANGUAGE: Detect from raw_description above and write ALL output in that language.
 
 CV:
 ${JSON.stringify(
@@ -29,7 +34,6 @@ ${JSON.stringify(
     required_skills: job.required_skills,
     responsibilities: job.responsibilities,
     seniority: job.seniority,
-    raw_description: job.raw_description,
   },
   null,
   2,
@@ -47,6 +51,9 @@ ${JSON.stringify(
   null,
   2,
 )}
+
+LANGUAGE:
+Detect the language ONLY from this reference text: "${langSample}"
 
 TASK:
 Generate a structured job application JSON strictly following the schema.
