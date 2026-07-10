@@ -7,7 +7,7 @@ export function buildApplicationPrompt(
   rawText: string,
   match: MatchReport,
 ): string {
-  const langSample = rawText?.trim().slice(0, 300) || '[none provided — default to English]';
+  const langSample = rawText?.trim().slice(0, 300) || '[none provided]';
   return `
 
 CV:

@@ -17,7 +17,7 @@ export async function generateApplication(
   rawText: string,
   match: MatchReport,
 ): Promise<ApplicationLLMOutput> {
-  const cacheKey = buildCacheKey(CACHE_VERSIONS.application, cv, job, match);
+  const cacheKey = buildCacheKey(CACHE_VERSIONS.application, cv, job, rawText, match);
 
   const raw = await cachedLLM({
     cacheKey,
