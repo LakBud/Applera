@@ -12,7 +12,7 @@
     "build:server": "turbo run build --filter=server",
     "build:client": "turbo run build --filter=client",
     "start:server:dev": "cross-env NODE_ENV=development turbo run start --filter=server",
-    "start:server:prod": "cross-env NODE_ENV=production turbo run start --filter=server",
+    "start:server:prod": "pnpm --filter server start",
     "docker:prod": "docker compose -f docker-compose.prod.yml up --build",
     "lint": "turbo run lint",
     "lint:fix": "oxlint --fix",
