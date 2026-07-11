@@ -222,7 +222,6 @@ Applera
 ├── tsconfig.base.json
 ├── tsconfig.json
 ├── turbo.json
-└── vercel.json
 ```
 
 
@@ -248,11 +247,11 @@ Applera
 
 ## Deployment
 
-### Frontend — Vercel
+### Frontend — Cloudflare Pages
 
 - Root directory: `apps/client`
-- Build command: `vite build`
-- Output directory: `dist`
+- Build command: `pnpm build:client`
+- Output directory: `dist/apps/client`
 
 ### Backend — Render
 

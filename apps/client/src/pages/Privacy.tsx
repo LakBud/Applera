@@ -30,7 +30,7 @@ export function PrivacyPage() {
                 'To store and retrieve your CVs and applications',
                 'To authenticate your account securely via Clerk',
                 'To enforce rate limits and prevent abuse',
-                'To improve the service based on aggregated usage patterns, using privacy-friendly analytics (Vercel Analytics)',
+                'To improve the service based on aggregated usage patterns, using privacy-friendly analytics (Cloudflare Analytics)',
               ]}
             />
           ),
@@ -58,7 +58,7 @@ export function PrivacyPage() {
                   'Groq — AI model for generating application content',
                   'MongoDB — database storage',
                   'Redis — caching',
-                  'Vercel — deployment & analytics',
+                  'Cloudflare Pages — deployment & analytics',
                 ]}
               />
               <p className="mt-3">

@@ -142,10 +142,10 @@ The Axios client (`api/client.ts`) uses two interceptors:
 
 ## Deployment
 
-Deployed on [Vercel](https://vercel.com).
+Deployed on [Cloudflare Pages](https://pages.cloudflare.com/).
 
-- **Build command**: `vite build`
-- **Output directory**: `dist`
+- **Build command**: `pnpm build:client`
+- **Output directory**: `dist/apps/client`
 - **Root directory**: `apps/client`
 
-Environment variables are set in the Vercel dashboard.
+Environment variables are set in the Cloudflare Pages dashboard.
