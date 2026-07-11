@@ -41,7 +41,7 @@ Create a `.env.development` or `.env.production` file in `apps/client/` (see `.e
 
 ```bash
 VITE_CLERK_PUBLISHABLE_KEY=pk_live_...
-VITE_API_URL=https://api.applera.site
+VITE_API_URL=https://api....
 ```
 
 | Variable                     | Required | Description           |

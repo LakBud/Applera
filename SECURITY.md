@@ -11,7 +11,7 @@ If you discover a security vulnerability in Applera, please **do not** open a pu
 Instead, report it privately via:
 
 - GitHub's private vulnerability reporting (Security tab → "Report a vulnerability"), or
-- Email: [LBud@tuta.io] (The owners email)
+- Email: [support@applera.site]
 
 Please include:
 
