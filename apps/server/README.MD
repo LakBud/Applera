@@ -51,7 +51,7 @@ cp .env.example .env.production
 
 | Variable                   | Required | Description                                            |
 | -------------------------- | -------- | ------------------------------------------------------ |
-| `NODE_ENV`                 | No       | `development` or `production`                          |
+| `NODE_ENV`                 | Yes      | `development` or `production` if deployment (render)   |
 | `PORT`                     | No       | Server port (default: 5005)                            |
 | `CLIENT_URL`               | No       | Frontend URL for CORS (default: http://localhost:5173) |
 | `MONGO_URI`                | Yes      | MongoDB Atlas connection string                        |
@@ -170,14 +170,15 @@ Each route applies middleware in a deliberate order:
 - Svix signature verification on webhook endpoint
 - IPv4 and IPv6 address masking in logs
 
-## CV & Job Match Algorithm 
+## CV & Job Match Algorithm
 
 The matching engine scores how well a candidate's CV fits a job posting using a **hybrid math + AI approach**, balancing speed/cost against nuance.
 
-Main pipeline: 
+Main pipeline:
 [src/services/match/match.service.ts](src/services/match/match.service.ts)
 
 **1. Deterministic math pass (always runs)**
+
 - **Skill matching** — skills are normalized (casing, punctuation) and resolved through an alias map (e.g. `"Node.js"` and `"NodeJS"` → same canonical skill) so semantically identical skills match even when phrased differently. See [scripts/README.md](scripts/README.md) for how the alias map is built and curated.
 - **Text overlap** — CV and job text are flattened and compared for word overlap, with language auto-detected so stopwords are stripped correctly (not just English).
 - These combine into a weighted score: **60% skill match, 40% text overlap**, plus seniority fit, domain mismatch detection, and a confidence rating based on data quality.
@@ -209,6 +210,6 @@ When a user deletes their account via Clerk, a `user.deleted` webhook fires and 
 
 Deployed on [Render](https://render.com).
 
-- **Build command**: `pnpm install && pnpm -r build`
-- **Start command**: `pnpm start`
+- **Build command**: `pnpm install && pnpm build:server`
+- **Start command**: `pnpm start:server:prod`
 - All environment variables are set in the Render dashboard

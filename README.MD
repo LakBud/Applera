@@ -255,8 +255,8 @@ Applera
 
 ### Backend — Render
 
-- Build command: `pnpm install && pnpm run build`
-- Start command: `pnpm start`
+- Build command: `pnpm install && pnpm build:server`
+- Start command: `pnpm start:server:prod`
 
 ## Contributing
 
