@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/turbo/schema.json",
+  "globalEnv": ["NODE_ENV"],
   "tasks": {
     "typecheck": {
       "dependsOn": ["^build"]
