@@ -1,5 +1,6 @@
 import { redis } from '../config/redis.js';
 import AuditEvent from '../models/AuditEvent.js';
+import { maskIp } from '../utils/shared/sanitize.utils.js';
 
 interface AuditEventPayload {
   event: string;
@@ -56,7 +57,7 @@ async function processEntry(raw: string): Promise<void> {
       userType: data.userType,
       requestId: data.requestId || undefined,
       resourceId: data.resourceId || undefined,
-      ip: data.ip || undefined,
+      ip: data.ip ? maskIp(data.ip) : undefined,
       userAgent: data.userAgent || undefined,
       metadata: data.metadata,
     });

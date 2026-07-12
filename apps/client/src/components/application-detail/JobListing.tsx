@@ -106,9 +106,12 @@ export function JobListingSection({ company, location, rawText, parsed, createdA
 
             <ul className="space-y-2">
               {parsed?.responsibilities?.map((r, i) => (
-                <li key={i} className="text-xs sm:text-sm text-tx-muted flex gap-2 leading-relaxed">
-                  <span className="mt-1 shrink-0 text-tx-caption">•</span>
-                  <span className="wrap-break-words">{r}</span>
+                <li
+                  key={i}
+                  className="text-xs sm:text-sm text-tx-muted flex items-start gap-2 leading-relaxed"
+                >
+                  <span className="shrink-0 text-tx-caption">•</span>
+                  <span className="wrap-break-word">{r}</span>
                 </li>
               ))}
             </ul>

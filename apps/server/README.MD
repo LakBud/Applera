@@ -1,4 +1,4 @@
-# Applera — Backend
+# Applera: Backend
 
 Express + TypeScript REST API powering the Applera job application platform.
 
@@ -7,7 +7,7 @@ Express + TypeScript REST API powering the Applera job application platform.
 - **Runtime**: Node.js + TypeScript
 - **Framework**: Express 5
 - **Database**: MongoDB via Mongoose
-- **Auth**: Clerk
+- **Auth**: Clerk (JWT, header-based) + signed guest-session cookie for anonymous requests
 - **AI**: Groq (llama-3.3-70b-versatile)
 - **File storage**: Cloudinary
 - **Cache / Rate limiting**: Upstash Redis
@@ -157,18 +157,36 @@ Each route applies middleware in a deliberate order:
 7. **Timeout** — LLM timeout protection
 8. **Controller** — business logic
 
+## Identity & Sessions
+
+- Authenticated requests are verified via **Clerk JWT**, sent as a Bearer token in the
+  `Authorization` header — Clerk does not set its own session cookie in this app.
+- Unauthenticated requests are assigned a **signed guest-session cookie** (30-day expiry,
+  `httpOnly`), so rate limits can be applied per visitor rather than per shared IP. Guest
+  sessions are never merged into an account if the visitor later signs up.
+- `requireUser` blocks all protected routes for guest identities; guest identity currently
+  exists solely to support fair per-visitor rate limiting, not to grant access to any
+  functionality.
+
 ## Security
 
 - Helmet for HTTP security headers
 - CORS restricted to frontend domain
-- CSRF protection via double-submit cookie pattern
-- Rate limiting via Upstash Redis (global, per-route, and usage-based)
+- CSRF protection via double-submit cookie pattern, covering the cookie-based fallback path
+  (Clerk's header-based JWT auth is CSRF-safe by default)
+- Rate limiting via Upstash Redis — keyed by user/guest identity on most routes, and by IP
+  address on unauthenticated routes such as webhooks
 - MongoDB query filter sanitization via `mongoose.set('sanitizeFilter', true)`
 - Input sanitization (HPP, object stripping)
 - MongoDB ObjectId validation at request boundaries
 - Clerk JWT verification on all protected routes
 - Svix signature verification on webhook endpoint
-- IPv4 and IPv6 address masking in logs
+- IPv4 and IPv6 address masking in logs and audit records
+- **Audit logging** — key account/application events (sign-ins, CV/job/application changes,
+  rate-limit hits, guest session creation) are pushed to a Redis queue, consumed by a
+  background worker, and persisted to MongoDB with a masked IP and a 90-day retention window,
+  for abuse detection and investigation. Failed or malformed entries are routed to a dead-letter
+  queue rather than dropped.
 
 ## CV & Job Match Algorithm
 
@@ -191,12 +209,21 @@ Both passes are cached by content hash (CV + job + version), so identical CV/job
 
 ## AI Usage Limits
 
-LLM calls are metered per user with a weekly quota. The usage limiter runs after all validation middleware so invalid or rejected requests never consume quota. Routes with LLM calls:
+LLM-backed routes are protected by per-route, sliding-window rate limits (via Upstash Redis),
+keyed by account or guest identity. The usage limiter runs after all validation middleware so
+invalid or rejected requests never consume a request against the limit. Current limits:
 
-- `POST /api/cv` — CV extraction (1 call)
-- `POST /api/job` — Job extraction (1 call)
-- `POST /api/application` — Match scoring + application generation (3 calls)
-- `POST /api/interview/:id` — Interview prep generation (1 call)
+- `POST /api/cv` — CV extraction (1 LLM call); parse limiter: 20 requests / 10 minutes
+- `POST /api/job` — Job extraction (1 LLM call); parse limiter: 20 requests / 10 minutes
+- `POST /api/application` — Match scoring + application generation (up to 3 LLM calls);
+  application limiter: 15 requests / hour
+- `POST /api/interview/:id` — Interview prep generation (1 LLM call); interview prep limiter:
+  10 requests / hour
+
+A global fallback limiter (300 requests / 15 minutes per identity) applies across all routes.
+
+> Note: the `plan` field on the `User` model is reserved for a possible future paid tier and is not
+> currently used to gate access or adjust limits.
 
 ## Account Deletion
 
@@ -205,6 +232,9 @@ When a user deletes their account via Clerk, a `user.deleted` webhook fires and 
 1. Deletes all Cloudinary PDF assets
 2. Deletes all CVs, Applications, and InterviewPreps from MongoDB
 3. Deletes the user record
+
+Audit log entries associated with the account are **not** deleted as part of this flow — they
+are retained for up to 90 days for security purposes, independent of account or record deletion.
 
 ## Deployment
 

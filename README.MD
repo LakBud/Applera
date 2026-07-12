@@ -4,7 +4,7 @@
 
 
 <p align="center">
-  AI-powered job application platform that streamlines your job search with automated CV parsing, tailored application generation, and interview preparation.
+  AI-powered job application platform that streamlines your job search with CV & Application Management, tailored application generation with CV advice and interview preparation.
 </p>
 
 ---
@@ -141,8 +141,6 @@ pnpm docker:prod
 
 ## Scripts
 
-Useful root-level scripts:
-
 | Command | Description |
 | ------- | ----------- |
 | `pnpm dev` | Start both apps in development |
@@ -152,7 +150,8 @@ Useful root-level scripts:
 | `pnpm build` | Build both apps |
 | `pnpm build:client` | Build frontend only |
 | `pnpm build:server` | Build backend only |
-| `pnpm start:server` | Start backend from build output |
+| `pnpm start:server:dev` | Start development backend from build output |
+| `pnpm start:server:prod` | Start production backend from build output |
 | `pnpm docker:prod` | Run production Docker compose |
 | `pnpm lint` | Run workspace lint rules |
 | `pnpm lint:fix` | Fix lint issues |
@@ -191,7 +190,7 @@ Useful root-level scripts:
 - MongoDB query sanitization via `mongoose.set('sanitizeFilter', true)`
 - Clerk JWT authentication on protected routes
 - Svix signature verification for webhook events
-- Usage-based AI quota management
+- Per-route rate limiting on AI-backed endpoints
 
 ## Repository structure
 
