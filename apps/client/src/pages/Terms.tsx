@@ -90,10 +90,10 @@ export function TermsPage() {
           title: 'Generated Content',
           content: (
             <p>
-              As between you and Applera, you own the cover letters, match scores, CV summaries,
-              email drafts, and interview preparation materials generated for your account, and you
-              are free to use, edit, and share them as you wish. Because this content is
-              AI-generated, we make no representation that it is original, accurate, or free of
+              As between you and Applera, you own the cover letters, match scores, CV tailor advice,
+              email drafts, CV extraction data and interview preparation materials generated for
+              your account, and you are free to use and share them as you wish. Because this content
+              is AI-generated, we make no representation that it is original, accurate, or free of
               errors, and we are not responsible for how you use it.
             </p>
           ),
