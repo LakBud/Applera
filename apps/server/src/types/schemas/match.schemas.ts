@@ -8,7 +8,7 @@ export const MatchReportSchema = MatchSchema.extend({
       semantic_matches: z.array(z.string()),
       implicit_skills: z.array(z.string()),
       reasoning: z.string(),
-      adjusted_score: z.number().min(0).max(100),
+      adjusted_score: z.number().int().min(0).max(100),
       seniority_fit: SeniorityFitSchema.nullable(),
       domain_mismatch: z.boolean().nullable(),
       confidence: ConfidenceSchema.nullable(),

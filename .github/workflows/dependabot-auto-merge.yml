@@ -12,15 +12,36 @@ jobs:
   dependabot:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
+
     steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # Blocks auto-merge until dependencies satisfy pnpm minimumReleaseAge
+      - name: Verify pnpm release age policy
+        run: pnpm install --frozen-lockfile
+
       - name: Fetch Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: '${{ secrets.GITHUB_TOKEN }}'
 
-      # Auto-approve and enable auto-merge ONLY for patch and minor updates.
-      # Major version bumps are left for manual review.
+      # Auto-approve and enable auto-merge ONLY for patch/minor updates
+      # and only after pnpm minimumReleaseAge validation passed.
       - name: Enable auto-merge for patch/minor
         if: steps.metadata.outputs.update-type != 'version-update:semver-major'
         run: gh pr merge --auto --squash "$PR_URL"
@@ -30,7 +51,7 @@ jobs:
 
       - name: Comment on major version updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-major'
-        run: gh pr comment "$PR_URL" --body " This is a **major** version update and requires manual review before merging."
+        run: gh pr comment "$PR_URL" --body "This is a **major** version update and requires manual review before merging."
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

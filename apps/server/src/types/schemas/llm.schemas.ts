@@ -4,9 +4,9 @@ export const ApplicationLLMSchema = z.object({
   tailoring_advice: z.string(),
 
   application_letter: z.object({
-    introduction: z.string().optional(),
-    body: z.string().optional(),
-    closing: z.string().optional(),
+    introduction: z.string(),
+    body: z.string(),
+    closing: z.string(),
   }),
 
   email_template: z.object({

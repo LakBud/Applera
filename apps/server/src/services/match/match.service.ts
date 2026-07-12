@@ -40,9 +40,15 @@ export async function matchCVToJob(
         ),
       );
 
+      const adjustedScore =
+        ai_insights?.adjusted_score !== undefined &&
+        Math.abs(ai_insights.adjusted_score - mathResult.score) <= 40
+          ? ai_insights.adjusted_score
+          : mathResult.score;
+
       const result: MatchReport = {
         ...mathResult,
-        score: ai_insights?.adjusted_score ?? mathResult.score,
+        score: adjustedScore,
         seniority_fit: ai_insights?.seniority_fit ?? mathResult.seniority_fit,
         domain_mismatch: ai_insights?.domain_mismatch ?? mathResult.domain_mismatch,
         confidence: ai_insights?.confidence ?? mathResult.confidence,
