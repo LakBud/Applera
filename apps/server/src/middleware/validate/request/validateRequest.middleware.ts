@@ -20,7 +20,6 @@ export function validateRequest<T extends requestSchemaName>(schemaName: T) {
       });
     }
 
-    req.validated = result.data;
     next();
   };
 }

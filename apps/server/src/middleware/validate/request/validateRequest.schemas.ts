@@ -15,6 +15,15 @@ const textField = (label: string, max = 20_000, min = 10) =>
 const objectId = (label: string) =>
   z.string().regex(/^[a-f\d]{24}$/i, { message: `${label} must be a valid MongoDB ObjectId.` });
 
+const idParamOnly = (key: string) =>
+  z.object({
+    body: z.object({}),
+    params: z.object({
+      [key]: objectId(key),
+    }),
+    query: z.object({}),
+  });
+
 export const requestSchemas = {
   createApplication: z.object({
     body: CreateApplicationRequestSchema,
@@ -38,58 +47,22 @@ export const requestSchemas = {
     query: z.object({}),
   }),
 
-  generatePrep: z.object({
-    body: z.object({}),
-    params: z.object({
-      applicationId: objectId('applicationId'),
-    }),
-    query: z.object({}),
-  }),
+  generatePrep: idParamOnly('applicationId'),
 
   // --- Non-POST routes ---
   // Note: getCVs, getApplications, getJobs are intentionally omitted here —
   // they take no params/query/body, so validate(...) is skipped on those
   // routes entirely and validateResponse(...) is relied on instead.
 
-  getCVById: z.object({
-    body: z.object({}),
-    params: z.object({
-      id: objectId('id'),
-    }),
-    query: z.object({}),
-  }),
+  getCVById: idParamOnly('id'),
 
-  deleteCVById: z.object({
-    body: z.object({}),
-    params: z.object({
-      id: objectId('id'),
-    }),
-    query: z.object({}),
-  }),
+  deleteCVById: idParamOnly('id'),
 
-  pinCV: z.object({
-    body: z.object({}),
-    params: z.object({
-      id: objectId('id'),
-    }),
-    query: z.object({}),
-  }),
+  pinCV: idParamOnly('id'),
 
-  getCVDashboard: z.object({
-    body: z.object({}),
-    params: z.object({
-      cvId: objectId('cvId'),
-    }),
-    query: z.object({}),
-  }),
+  getCVDashboard: idParamOnly('cvId'),
 
-  getApplicationById: z.object({
-    body: z.object({}),
-    params: z.object({
-      id: objectId('id'),
-    }),
-    query: z.object({}),
-  }),
+  getApplicationById: idParamOnly('id'),
 
   updateApplicationStatus: z.object({
     body: UpdateApplicationStatusRequestSchema,
@@ -99,37 +72,13 @@ export const requestSchemas = {
     query: z.object({}),
   }),
 
-  deleteApplication: z.object({
-    body: z.object({}),
-    params: z.object({
-      id: objectId('id'),
-    }),
-    query: z.object({}),
-  }),
+  deleteApplication: idParamOnly('id'),
 
-  getInterviewPrep: z.object({
-    body: z.object({}),
-    params: z.object({
-      applicationId: objectId('applicationId'),
-    }),
-    query: z.object({}),
-  }),
+  getInterviewPrep: idParamOnly('applicationId'),
 
-  getJobById: z.object({
-    body: z.object({}),
-    params: z.object({
-      id: objectId('id'),
-    }),
-    query: z.object({}),
-  }),
+  getJobById: idParamOnly('id'),
 
-  deleteJobById: z.object({
-    body: z.object({}),
-    params: z.object({
-      id: objectId('id'),
-    }),
-    query: z.object({}),
-  }),
+  deleteJobById: idParamOnly('id'),
 } as const;
 
 export type requestSchemaName = keyof typeof requestSchemas;

@@ -1,8 +1,6 @@
-// =======================================================
 // PUBLIC API SURFACE
-// =======================================================
 
-// ── Hooks ───────────────────────────────────────────────
+// Hooks
 
 export {
   useUploadCVFile,
@@ -29,7 +27,7 @@ export {
 
 export { useInterviewPrep, useGenerateInterviewPrep } from './interview/interviewPrep.hooks';
 
-// ── Domain APIs (optional but clean) ────────────────────
+// Domain APIs
 export * as applicationApi from './application/application.api';
 export * as cvApi from './cv/cv.api';
 export * as jobApi from './job/job.api';

@@ -23,9 +23,17 @@ export function validateResponse<T extends responseSchemaName>(schemaName: T) {
         console.error(`[validateResponse] ${schemaName} failed:`, result.error.issues);
 
         if (process.env.NODE_ENV !== 'production') {
-          throw new Error(
-            `Response validation failed for ${schemaName}: ${result.error.issues[0]?.message ?? 'Invalid response'}`,
-          );
+          const error = new Error(`Response validation failed for ${schemaName}`);
+          error.name = 'ResponseValidationError';
+
+          Object.assign(error, {
+            schemaName,
+            issues: result.error.issues,
+          });
+
+          next(error);
+
+          return res;
         }
       }
 

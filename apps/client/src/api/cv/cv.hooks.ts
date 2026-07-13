@@ -15,7 +15,7 @@ import {
 } from './cv.api';
 
 import type { ClientError } from '../types';
-import type { CVDocument } from '@applera/schemas';
+import type { CVListResponse } from '@applera/schemas';
 
 export function useCVs(options?: { enabled?: boolean }) {
   const { isSignedIn } = useAuth();
@@ -80,12 +80,12 @@ export function usePinCV() {
 
   return useMutation({
     mutationFn: (id: string) => pinCV(id),
-    onSuccess: (_, id) => {
-      qc.setQueryData(queryKeys.cv.list(), (old: CVDocument[] | undefined) => {
+    onSuccess: (data, id) => {
+      qc.setQueryData(queryKeys.cv.list(), (old: CVListResponse | undefined) => {
         if (!old) {
           return old;
         }
-        return old.map((cv) => (cv._id === id ? { ...cv, pinned: !cv.pinned } : cv));
+        return old.map((cv) => (cv._id === id ? { ...cv, pinned: data.pinned } : cv));
       });
     },
     onError: () => {

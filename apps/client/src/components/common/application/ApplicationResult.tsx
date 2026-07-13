@@ -67,9 +67,7 @@ export default function ApplicationResult({ data: application }: Props) {
           domainMismatch={application.match?.domain_mismatch}
         />
 
-        {/* ══════════════════════════════════
-            RIGHT PANEL — TABS
-        ══════════════════════════════════ */}
+        {/* RIGHT PANEL — TABS */}
         <Tabs
           value={activeTab}
           onValueChange={(v) => setActiveTab(v as typeof activeTab)}
