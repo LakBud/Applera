@@ -2,9 +2,11 @@ import {
   ApplicationListResponseSchema,
   ApplicationResponseSchema,
   CreateApplicationRequestSchema,
+  MessageResponseSchema,
   UpdateApplicationStatusRequestSchema,
   type Application,
   type CreateApplicationRequest,
+  type MessageResponse,
   type UpdateApplicationStatusRequest,
 } from '@applera/schemas';
 
@@ -56,6 +58,8 @@ export async function updateApplicationStatus(
 /**
  * Delete application
  */
-export async function deleteApplication(id: string): Promise<void> {
-  await client.delete(`/api/application/${id}`);
+export async function deleteApplication(id: string): Promise<MessageResponse> {
+  const response = await client.delete(`/api/application/${id}`);
+
+  return MessageResponseSchema.parse(response.data);
 }
