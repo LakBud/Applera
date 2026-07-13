@@ -1,12 +1,7 @@
-import { ApplicationStatusSchema, ConfidenceSchema, CVDocumentSchema } from '@applera/schemas';
 import { z } from 'zod';
 
-export const UploadCVResponseSchema = z.object({
-  message: z.string(),
-  cv: CVDocumentSchema,
-});
-
-export type UploadCVResponse = z.infer<typeof UploadCVResponseSchema>;
+import { ConfidenceSchema } from '../common/confidence.schemas';
+import { ApplicationStatusSchema } from '../common/status.schemas';
 
 export const DashboardCVSchema = z.object({
   cv_id: z.string(),

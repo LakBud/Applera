@@ -1,14 +1,21 @@
-import { type JobDocument, JobDocumentSchema } from '@applera/schemas';
-import { z } from 'zod';
+import {
+  type CreateJobResponse,
+  CreateJobResponseSchema,
+  type JobDocument,
+  JobDocumentSchema,
+  type JobListResponse,
+  JobListResponseSchema,
+  type MessageResponse,
+  MessageResponseSchema,
+} from '@applera/schemas';
 
 import { client } from '../client';
-import { type CreateJobResponse, CreateJobResponseSchema } from './job.schemas';
 
 // GET /api/job
-export async function getJobs(): Promise<JobDocument[]> {
+export async function getJobs(): Promise<JobListResponse> {
   const response = await client.get('/api/job');
 
-  return z.array(JobDocumentSchema).parse(response.data);
+  return JobListResponseSchema.parse(response.data);
 }
 
 // GET /api/job/:id
@@ -36,8 +43,8 @@ export async function createJobText(jobText: string): Promise<CreateJobResponse>
 }
 
 // DELETE /api/job/:id
-export async function deleteJob(id: string): Promise<{ message: string }> {
+export async function deleteJobById(id: string): Promise<MessageResponse> {
   const response = await client.delete(`/api/job/${id}`);
 
-  return z.object({ message: z.string() }).parse(response.data);
+  return MessageResponseSchema.parse(response.data);
 }

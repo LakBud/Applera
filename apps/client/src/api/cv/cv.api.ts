@@ -1,18 +1,22 @@
-import { type CVDocument, CVDocumentSchema } from '@applera/schemas';
-import { z } from 'zod';
-
-import { client } from '../client';
 import {
+  type CVDocument,
+  CVDocumentSchema,
+  type CVListResponse,
+  CVListResponseSchema,
   type DashboardCV,
   DashboardCVSchema,
+  type MessageResponse,
+  MessageResponseSchema,
   type UploadCVResponse,
   UploadCVResponseSchema,
-} from './cv.schemas';
+} from '@applera/schemas';
+
+import { client } from '../client';
 
 // GET /api/cv
-export async function getCVs(): Promise<CVDocument[]> {
+export async function getCVs(): Promise<CVListResponse> {
   const response = await client.get('/api/cv');
-  return z.array(CVDocumentSchema).parse(response.data);
+  return CVListResponseSchema.parse(response.data);
 }
 
 // GET /api/cv/:id
@@ -41,15 +45,17 @@ export async function uploadCVText(cvText: string): Promise<UploadCVResponse> {
 }
 
 // DELETE /api/cv/id
-export async function deleteCVById(id: string): Promise<{ message: string }> {
+export async function deleteCVById(id: string): Promise<MessageResponse> {
   const response = await client.delete(`/api/cv/${id}`);
-  return response.data;
+
+  return MessageResponseSchema.parse(response.data);
 }
 
 // PATCH /api/cv/id/pin
-export async function pinCV(id: string): Promise<{ message: string }> {
+export async function pinCV(id: string): Promise<MessageResponse> {
   const response = await client.patch(`/api/cv/${id}/pin`);
-  return response.data;
+
+  return MessageResponseSchema.parse(response.data);
 }
 
 // GET dashboard for CV

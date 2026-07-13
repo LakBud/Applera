@@ -1,14 +1,14 @@
-import { client } from '../client';
 import {
+  ApplicationListResponseSchema,
   ApplicationResponseSchema,
-  ApplicationsResponseSchema,
-  type CreateApplicationRequest,
   CreateApplicationRequestSchema,
-  type UpdateApplicationStatusRequest,
   UpdateApplicationStatusRequestSchema,
-} from './application.schemas';
+  type Application,
+  type CreateApplicationRequest,
+  type UpdateApplicationStatusRequest,
+} from '@applera/schemas';
 
-import type { Application } from '@applera/schemas';
+import { client } from '../client';
 
 /**
  * Create application
@@ -36,7 +36,7 @@ export async function getApplicationById(id: string): Promise<Application> {
 export async function getApplications(): Promise<Application[]> {
   const response = await client.get('/api/application');
 
-  return ApplicationsResponseSchema.parse(response.data).applications;
+  return ApplicationListResponseSchema.parse(response.data).applications;
 }
 
 /**

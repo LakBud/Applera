@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ApplicationStatusSchema } from '../common/status.schema.js';
+import { ApplicationStatusSchema } from '../common/status.schemas.js';
 import { CVDocumentSchema } from '../cv/cv.schemas.js';
 import { JobDocumentSchema } from '../job/job.schemas.js';
 import { MatchSchema } from './match.schemas.js';
@@ -27,7 +27,6 @@ export const ApplicationSchema = z.object({
   }),
 
   status: ApplicationStatusSchema,
-  notes: z.string().optional(),
 
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
