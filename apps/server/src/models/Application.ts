@@ -1,6 +1,8 @@
 import { APPLICATION_STATUSES, CONFIDENCE_LEVELS, SENIORITY_FIT_VALUES } from '@applera/schemas';
 import mongoose from 'mongoose';
 
+import { serializeTimestamps } from '../utils/shared/serializeTimestamps.utils.js';
+
 const ApplicationSchema = new mongoose.Schema(
   {
     ownerId: {
@@ -106,6 +108,9 @@ const ApplicationSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
+    toJSON: {
+      transform: serializeTimestamps(['createdAt', 'updatedAt', 'statusUpdatedAt', 'deletedAt']),
+    },
   },
 );
 

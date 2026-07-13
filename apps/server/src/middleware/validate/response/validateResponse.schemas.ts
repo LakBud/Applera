@@ -12,6 +12,7 @@ import {
   JobListResponseSchema,
   JobDocumentSchema,
   MessageResponseSchema,
+  PinCVResponseSchema,
 } from '@applera/schemas';
 
 export const responseSchemas = {
@@ -24,6 +25,7 @@ export const responseSchemas = {
   cvListResponse: CVListResponseSchema,
   cvDocument: CVDocumentSchema,
   uploadCVResponse: UploadCVResponseSchema,
+  pinCVResponse: PinCVResponseSchema,
   dashboardCV: DashboardCVSchema,
 
   // interview

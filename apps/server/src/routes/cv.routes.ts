@@ -62,6 +62,6 @@ router.delete(
 );
 
 // PATCH /api/cv/:id/pin
-router.patch('/:id/pin', validateRequest('pinCV'), validateResponse('messageResponse'), pinCV);
+router.patch('/:id/pin', validateRequest('pinCV'), validateResponse('pinCVResponse'), pinCV);
 
 export default router;

@@ -7,6 +7,8 @@ import {
   DashboardCVSchema,
   type MessageResponse,
   MessageResponseSchema,
+  type PinCVResponse,
+  PinCVResponseSchema,
   type UploadCVResponse,
   UploadCVResponseSchema,
 } from '@applera/schemas';
@@ -52,10 +54,9 @@ export async function deleteCVById(id: string): Promise<MessageResponse> {
 }
 
 // PATCH /api/cv/id/pin
-export async function pinCV(id: string): Promise<MessageResponse> {
+export async function pinCV(id: string): Promise<PinCVResponse> {
   const response = await client.patch(`/api/cv/${id}/pin`);
-
-  return MessageResponseSchema.parse(response.data);
+  return PinCVResponseSchema.parse(response.data);
 }
 
 // GET dashboard for CV
