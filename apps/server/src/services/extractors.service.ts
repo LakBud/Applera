@@ -34,6 +34,7 @@ export async function extractCVData(cvText: string): Promise<CVParsed> {
         systemPrompt: EXTRACT_CV_PROMPT,
         userContent: safeText,
         temperature: 0.2,
+        maxTokens: 800,
       });
 
       const parsed = CVExtractionSchema.safeParse(result);
@@ -73,6 +74,7 @@ export async function extractJobData(jobText: string): Promise<JobParsed> {
         systemPrompt: EXTRACT_JOB_PROMPT,
         userContent: safeText,
         temperature: 0.2,
+        maxTokens: 800,
       });
 
       const parsed = JobExtractionSchema.safeParse(result);

@@ -42,6 +42,14 @@ correct rule-based judgment just to seem thorough.
 - confidence: one of ${confidenceOptions} — your confidence in this overall match assessment,
   considering both the rule-based signals and what you found in the free text.
 
+  Rules for adjusted_score:
+- Start from the rule-based score provided by the math pass.
+- Increase the score when you find genuine semantic or implicit matches that reduce the impact of missing skills.
+- Decrease the score only if the CV text clearly reveals a stronger mismatch than the rule-based analysis (for example major domain mismatch or obvious lack of required experience).
+- Do not adjust the score by more than ±40 points.
+- Return an integer between 0 and 100.
+- If you find no meaningful new evidence, return the original score unchanged.
+
 Respond ONLY with valid JSON matching this shape exactly:
 {
   "semantic_matches": string[],

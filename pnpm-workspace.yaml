@@ -9,3 +9,4 @@ allowBuilds:
   msw: true
 overrides:
   'js-yaml': '>=3.15.0'
+minimumReleaseAge: 1440

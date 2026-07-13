@@ -19,7 +19,7 @@ OUTPUT FORMAT (MUST MATCH EXACTLY):
   "location": "",
   "required_skills": [],
   "responsibilities": [],
-  "seniority": "",
+  "seniority": ""
 }
 
 FIELD RULES:
