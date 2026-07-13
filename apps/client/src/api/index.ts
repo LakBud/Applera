@@ -34,8 +34,3 @@ export * as applicationApi from './application/application.api';
 export * as cvApi from './cv/cv.api';
 export * as jobApi from './job/job.api';
 export * as interviewPrepApi from './interview/interviewPrep.api';
-
-// ── Schemas ─────────────────────────────────────────────
-export * from './cv/cv.schemas';
-export * from './job/job.schemas';
-export * from './interview/interviewPrep.schemas';
