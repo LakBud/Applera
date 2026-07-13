@@ -67,18 +67,9 @@ export function useUpdateApplicationStatus() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      id,
-      status,
-      notes,
-    }: {
-      id: string;
-      status: ApplicationStatus;
-      notes?: string;
-    }) =>
+    mutationFn: ({ id, status }: { id: string; status: ApplicationStatus }) =>
       updateApplicationStatus(id, {
         status,
-        notes,
       }),
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: queryKeys.application.detail(vars.id) });

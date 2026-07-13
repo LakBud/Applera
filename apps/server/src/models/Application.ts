@@ -101,11 +101,6 @@ const ApplicationSchema = new mongoose.Schema(
       default: Date.now,
     },
 
-    notes: {
-      type: String,
-      maxlength: 5000,
-    },
-
     deletedAt: Date,
   },
   {

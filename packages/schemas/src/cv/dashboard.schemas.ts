@@ -24,7 +24,6 @@ export const DashboardCVSchema = z.object({
       score: z.number(),
       confidence: ConfidenceSchema,
       status: ApplicationStatusSchema,
-      notes: z.string().optional(),
       createdAt: z.string(),
     }),
   ),
