@@ -13,14 +13,15 @@ const router = express.Router();
 // POST /api/interview/:applicationId
 router.post(
   '/:applicationId',
-  idempotency,
   aiTimeout(60_000),
+  idempotency,
   validateRequest('generatePrep'),
   interviewPrepLimiter,
   usageLimiter,
   validateResponse('interviewPrepResponse'),
   generatePrep,
 );
+
 // GET /api/interview/:applicationId
 router.get(
   '/:applicationId',

@@ -77,5 +77,6 @@ export async function extractTextFromPdf(
     return finalText;
   } finally {
     signal?.removeEventListener('abort', abortHandler);
+    await loadingTask.destroy().catch(() => {});
   }
 }

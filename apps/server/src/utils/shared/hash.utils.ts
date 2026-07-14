@@ -15,5 +15,5 @@ export function hashBuffer(buffer: Buffer): string {
 }
 
 export function hashRequest(input: unknown): string {
-  return hash(input);
+  return hash(JSON.stringify(input));
 }

@@ -25,11 +25,11 @@ router.post(
   parseLimiter,
   uploadJob,
   handleUploadError,
-  validatePdfMagic,
+  aiTimeout(60_000),
   idempotency,
+  validatePdfMagic,
   parseJobPdf,
   validateRequest('createJob'),
-  aiTimeout(60_000),
   validateResponse('createJobResponse'),
   createJob,
 );

@@ -24,7 +24,7 @@ const TIMEOUT_MS = 25_000; // 25s per attempt → ~52s worst case, well under 90
  * Combines the caller's external signal (request-level deadline) with a
  * per-attempt timeout, so whichever fires first cancels the call.
  */
-function withTimeout<T>(
+async function withTimeout<T>(
   fn: (signal: AbortSignal) => Promise<T>,
   ms: number,
   externalSignal?: AbortSignal,
@@ -36,7 +36,11 @@ function withTimeout<T>(
     ? AbortSignal.any([externalSignal, timeoutController.signal])
     : timeoutController.signal;
 
-  return fn(signal).finally(() => clearTimeout(timeout));
+  try {
+    return await fn(signal);
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 // Debug logger (safe in dev only
@@ -88,7 +92,17 @@ export async function callLLM({
 
         console.warn(`[llm:${requestId}] retry ${attempt}/${MAX_RETRIES} in ${delay}ms`);
 
-        await new Promise((r) => setTimeout(r, delay));
+        await new Promise<void>((resolve) => {
+          const timer = setTimeout(resolve, delay);
+          signal?.addEventListener(
+            'abort',
+            () => {
+              clearTimeout(timer);
+              resolve();
+            },
+            { once: true },
+          );
+        });
       }
 
       const response = await withTimeout(

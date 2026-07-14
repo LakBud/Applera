@@ -12,7 +12,6 @@ import JobModel from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { runApplicationPipelineFromParsed } from '../services/pipeline/pipeline.service.js';
 import { getParam } from '../utils/shared/param.utils.js';
-import { maskIp } from '../utils/shared/sanitize.utils.js';
 
 import type { Request, Response } from 'express';
 
@@ -140,7 +139,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
       userType: ownerType,
       resourceId: id,
       requestId: req.requestId,
-      ip: req.ip ? maskIp(req.ip) : '',
+      ip: req.ip,
       metadata: {
         status,
       },
@@ -191,7 +190,7 @@ export const deleteApplication = async (req: Request, res: Response) => {
       userType: ownerType,
       resourceId: id,
       requestId: req.requestId,
-      ip: req.ip ? maskIp(req.ip) : '',
+      ip: req.ip,
     });
 
     return res.json({
@@ -211,6 +210,8 @@ export const deleteApplication = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 
 export const createApplication = async (req: Request, res: Response) => {
+  const signal = getAbortSignal(res);
+
   try {
     if (!req.identity) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -250,9 +251,8 @@ export const createApplication = async (req: Request, res: Response) => {
     const parsedCV = CVParsedSchema.parse(cv.parsed);
     const parsedJob = JobParsedSchema.parse(job.parsed);
 
-    // only this needs the signal — it's the only slow, cancellable part
     const result = await runApplicationPipelineFromParsed(parsedCV, parsedJob, job.rawText ?? '', {
-      signal: getAbortSignal(res),
+      signal,
     });
 
     const application = await Application.create({
@@ -281,14 +281,14 @@ export const createApplication = async (req: Request, res: Response) => {
       userType: ownerType,
       resourceId: String(application._id),
       requestId: req.requestId,
-      ip: req.ip ? maskIp(req.ip) : '',
+      ip: req.ip,
     });
 
     return res.status(201).json({
       application: application.toObject(),
     });
   } catch (err) {
-    if (err instanceof Error && err.name === 'AbortError') {
+    if (signal.aborted || (err instanceof Error && err.name === 'AbortError')) {
       console.warn('[createApplication] aborted (timeout or disconnect)', {
         requestId: req.requestId,
       });

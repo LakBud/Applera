@@ -3,7 +3,7 @@ import { hashBuffer, hashRequest } from '../utils/shared/hash.utils.js';
 
 import type { NextFunction, Request, Response } from 'express';
 
-const TTL_SECONDS = 60;
+const TTL_SECONDS = 90;
 
 const IDEMPOTENT_ROUTE_PREFIXES = ['/api/application', '/api/interview', '/api/cv', '/api/job'];
 
@@ -12,7 +12,7 @@ function normalizePath(path: string) {
 }
 
 function isIdempotentRoute(path: string) {
-  return IDEMPOTENT_ROUTE_PREFIXES.some((route) => path.startsWith(route));
+  return IDEMPOTENT_ROUTE_PREFIXES.some((route) => path === route || path.startsWith(`${route}/`));
 }
 
 export async function idempotency(req: Request, res: Response, next: NextFunction) {
@@ -69,9 +69,13 @@ export async function idempotency(req: Request, res: Response, next: NextFunctio
       });
     }
 
+    let settled = false;
+
     const originalJson = res.json.bind(res);
 
     res.json = ((body: unknown) => {
+      settled = true;
+
       if (res.statusCode >= 200 && res.statusCode < 300) {
         redis
           .set(
@@ -92,6 +96,16 @@ export async function idempotency(req: Request, res: Response, next: NextFunctio
 
       return originalJson(body);
     }) as typeof res.json;
+
+    res.on('close', () => {
+      if (settled) {
+        return;
+      }
+
+      // Dont leave the caller stuck behind an IN_PROGRESS
+      // lock until TTL expiry; let them retry immediately.
+      redis.del(redisKey).catch(() => {});
+    });
 
     return next();
   } catch (err) {

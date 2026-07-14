@@ -19,8 +19,8 @@ const router = express.Router();
 // POST /api/application
 router.post(
   '/',
-  idempotency,
   aiTimeout(60_000),
+  idempotency,
   validateRequest('createApplication'),
   applicationLimiter,
   usageLimiter,
