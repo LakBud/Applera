@@ -146,16 +146,18 @@ src/
 
 ## Middleware
 
-Each route applies middleware in a deliberate order:
+Routes apply middleware in a deliberate order depending on their requirements. Common stages include:
 
-1. **Concurrency** — limits parallel requests per route
-2. **Rate limiting** — per-route limiters (parse, application, interview prep) + global fallback
-3. **Upload** — multer + magic byte file validation
-4. **PDF parsing** — extracts and validates text from uploaded PDFs
-5. **Validation** — Zod schema validation against request body
-6. **Usage limiter** — deducts AI quota only after all validation passes
-7. **Timeout** — LLM timeout protection
-8. **Controller** — business logic
+1. **Concurrency control** — limits parallel in-flight requests for expensive operations
+2. **Rate limiting** — applies route-specific limits (for example parse, application, or interview preparation flows)
+3. **Uploads** — handles multipart uploads and validates file input (such as multer and magic byte checks)
+4. **Parsing** — extracts and normalizes uploaded content (for example PDF text extraction)
+5. **Request validation** — Zod validates and sanitizes request body, params, and query data
+6. **Idempotency** — prevents duplicate processing where required
+7. **Usage limiting** — checks and consumes AI quota after request validation succeeds
+8. **Timeout** — enforces a request deadline for long-running operations, including AI calls
+9. **Response validation hook** — validates and sanitizes successful responses before they are sent
+10. **Controller** — executes route-specific business logic
 
 ## Identity & Sessions
 
