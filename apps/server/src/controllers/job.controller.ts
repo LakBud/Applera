@@ -1,4 +1,5 @@
 import { extractTextFromPdf } from '../lib/pdfParser.js';
+import { getAbortSignal } from '../middleware/timeout.middleware.js';
 import Job from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { extractJobData } from '../services/extractors.service.js';
@@ -14,6 +15,8 @@ type UploadedFile = Express.Multer.File;
 // ─────────────────────────────────────────────
 
 export const createJob = async (req: Request, res: Response) => {
+  const signal = getAbortSignal(res);
+
   try {
     const identity = req.identity;
 
@@ -21,11 +24,13 @@ export const createJob = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    signal.throwIfAborted();
+
     let rawText: string;
     const file = req.file as UploadedFile | undefined;
 
     if (file?.buffer) {
-      rawText = await extractTextFromPdf(file.buffer);
+      rawText = await extractTextFromPdf(file.buffer, { signal });
     } else if (req.body?.jobText?.trim()) {
       rawText = normalizeString(req.body.jobText);
     } else {
@@ -34,7 +39,11 @@ export const createJob = async (req: Request, res: Response) => {
       });
     }
 
-    const parsed = await extractJobData(rawText);
+    signal.throwIfAborted();
+
+    const parsed = await extractJobData(rawText, { signal });
+
+    signal.throwIfAborted();
 
     const createdJob = await Job.create({
       ownerId: identity.id,
@@ -42,6 +51,8 @@ export const createJob = async (req: Request, res: Response) => {
       rawText,
       parsed,
     });
+
+    signal.throwIfAborted();
 
     await auditLog({
       event: 'JOB_CREATED',
@@ -61,7 +72,15 @@ export const createJob = async (req: Request, res: Response) => {
       job: createdJob,
     });
   } catch (err) {
+    if (signal.aborted || (err instanceof Error && err.name === 'AbortError')) {
+      console.warn('[createJob] aborted (timeout or disconnect)', {
+        requestId: req.requestId,
+      });
+      return;
+    }
+
     console.error('[createJob]', err);
+
     return res.status(500).json({
       error: 'Failed to create job',
     });

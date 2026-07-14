@@ -28,7 +28,7 @@ export default function HomePage() {
           </h1>
 
           <p className="text-sm text-secondary max-w-xl mx-auto leading-relaxed">
-            Paste your CV and a job listing — get a tailored cover letter, match score, and email
+            Paste your CV and a job listing: get a tailored cover letter, match score, and email
             draft.
           </p>
 
@@ -65,7 +65,7 @@ export default function HomePage() {
         variant="steps"
         overline="The process"
         title="How it works"
-        subtitle="Three steps — under a minute."
+        subtitle="Three steps: under a minute."
         items={HOW_IT_WORKS}
       />
 
@@ -74,7 +74,7 @@ export default function HomePage() {
         variant="cards"
         overline="Deliverables"
         title="What you get"
-        subtitle="Not just a letter — a complete application package."
+        subtitle="Not just a letter: a complete application package."
         items={WHAT_YOU_GET}
       />
 

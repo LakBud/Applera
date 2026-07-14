@@ -22,7 +22,10 @@ import type { CVParsed, JobParsed } from '@applera/schemas';
  * 4. Validate schema
  * 5. Repair/normalize structured output
  */
-export async function extractCVData(cvText: string): Promise<CVParsed> {
+export async function extractCVData(
+  cvText: string,
+  { signal }: { signal?: AbortSignal } = {},
+): Promise<CVParsed> {
   const safeText = sanitise(cvText, 'cvText');
 
   return cachedLLM<CVParsed>({
@@ -35,6 +38,7 @@ export async function extractCVData(cvText: string): Promise<CVParsed> {
         userContent: safeText,
         temperature: 0.2,
         maxTokens: 800,
+        signal,
       });
 
       const parsed = CVExtractionSchema.safeParse(result);
@@ -62,7 +66,10 @@ export async function extractCVData(cvText: string): Promise<CVParsed> {
  * 4. Validate schema
  * 5. Repair/normalize structured output
  */
-export async function extractJobData(jobText: string): Promise<JobParsed> {
+export async function extractJobData(
+  jobText: string,
+  { signal }: { signal?: AbortSignal } = {},
+): Promise<JobParsed> {
   const safeText = sanitise(jobText, 'jobText');
 
   return cachedLLM<JobParsed>({
@@ -75,6 +82,7 @@ export async function extractJobData(jobText: string): Promise<JobParsed> {
         userContent: safeText,
         temperature: 0.2,
         maxTokens: 800,
+        signal,
       });
 
       const parsed = JobExtractionSchema.safeParse(result);

@@ -21,7 +21,7 @@ export async function findOrCreateUser(input: ClerkUserInput) {
       },
     },
     {
-      new: true,
+      returnDocument: 'after',
       upsert: true,
     },
   );

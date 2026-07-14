@@ -8,9 +8,9 @@ import type { CVParsed, JobParsed } from '@applera/schemas';
 
 export type Input = Buffer | string;
 
-// ─────────────────────────────────────────────────────────────
-// Main pipeline
-// ─────────────────────────────────────────────────────────────
+export interface PipelineOptions {
+  signal?: AbortSignal;
+}
 
 /**
  * Pipeline starting from already-parsed CV and job data.
@@ -20,16 +20,23 @@ export async function runApplicationPipelineFromParsed(
   cv: CVParsed,
   job: JobParsed,
   rawText: string,
+  opts: PipelineOptions = {},
 ): Promise<PipelineResult> {
-  // Step 1: repair/normalize
+  const { signal } = opts;
+
+  // Step 1: repair/normalize (sync, nothing to cancel)
   const cleanCV = repairCV(cv);
   const cleanJob = repairJob(job);
 
+  signal?.throwIfAborted();
+
   // Step 2: match scoring
-  const match = await matchCVToJob(cleanCV, cleanJob);
+  const match = await matchCVToJob(cleanCV, cleanJob, { signal });
+
+  signal?.throwIfAborted();
 
   // Step 3: application generation
-  const application = await generateApplication(cleanCV, cleanJob, rawText, match);
+  const application = await generateApplication(cleanCV, cleanJob, rawText, match, { signal });
   const applicationLetter = application.application_letter ?? {};
 
   return {

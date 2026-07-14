@@ -5,12 +5,14 @@ import {
   type ApplicationStatus,
 } from '@applera/schemas';
 
+import { getAbortSignal } from '../middleware/timeout.middleware.js';
 import Application from '../models/Application.js';
 import CVModel from '../models/CV.js';
 import JobModel from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { runApplicationPipelineFromParsed } from '../services/pipeline/pipeline.service.js';
 import { getParam } from '../utils/shared/param.utils.js';
+import { maskIp } from '../utils/shared/sanitize.utils.js';
 
 import type { Request, Response } from 'express';
 
@@ -120,7 +122,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
         $set: { status },
       },
       {
-        new: true,
+        returnDocument: 'after',
       },
     )
       .populate('cv', 'parsed applicationsCount lastUsedAt')
@@ -138,7 +140,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
       userType: ownerType,
       resourceId: id,
       requestId: req.requestId,
-      ip: req.ip,
+      ip: req.ip ? maskIp(req.ip) : '',
       metadata: {
         status,
       },
@@ -189,7 +191,7 @@ export const deleteApplication = async (req: Request, res: Response) => {
       userType: ownerType,
       resourceId: id,
       requestId: req.requestId,
-      ip: req.ip,
+      ip: req.ip ? maskIp(req.ip) : '',
     });
 
     return res.json({
@@ -225,7 +227,6 @@ export const createApplication = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'cvId and jobId must be strings' });
     }
 
-    // DB lookups
     const [cv, job] = await Promise.all([
       CVModel.findOne({
         _id: { $eq: cvId },
@@ -244,16 +245,16 @@ export const createApplication = async (req: Request, res: Response) => {
     }
 
     if (!cv.parsed) return res.status(404).json({ error: 'CV not parsed' });
-
     if (!job.parsed) return res.status(404).json({ error: 'Job not parsed' });
 
     const parsedCV = CVParsedSchema.parse(cv.parsed);
     const parsedJob = JobParsedSchema.parse(job.parsed);
 
-    // delegate all business logic to pipeline
-    const result = await runApplicationPipelineFromParsed(parsedCV, parsedJob, job.rawText ?? '');
+    // only this needs the signal — it's the only slow, cancellable part
+    const result = await runApplicationPipelineFromParsed(parsedCV, parsedJob, job.rawText ?? '', {
+      signal: getAbortSignal(res),
+    });
 
-    // DB write
     const application = await Application.create({
       ownerId,
       ownerType,
@@ -271,7 +272,6 @@ export const createApplication = async (req: Request, res: Response) => {
       status: 'generated',
     });
 
-    // Match getApplications populate fields exactly
     await application.populate('cv', 'parsed applicationsCount lastUsedAt');
     await application.populate('job', 'parsed company location');
 
@@ -281,13 +281,20 @@ export const createApplication = async (req: Request, res: Response) => {
       userType: ownerType,
       resourceId: String(application._id),
       requestId: req.requestId,
-      ip: req.ip,
+      ip: req.ip ? maskIp(req.ip) : '',
     });
 
     return res.status(201).json({
       application: application.toObject(),
     });
   } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      console.warn('[createApplication] aborted (timeout or disconnect)', {
+        requestId: req.requestId,
+      });
+      return; // noopLateWrites already suppressed the actual res.json call
+    }
+
     console.error('[createApplication]', err);
     return res.status(500).json({ error: 'Failed to create application' });
   }

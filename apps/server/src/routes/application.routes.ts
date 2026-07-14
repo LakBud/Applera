@@ -19,11 +19,11 @@ const router = express.Router();
 // POST /api/application
 router.post(
   '/',
-  validateRequest('createApplication'),
   idempotency,
+  aiTimeout(60_000),
+  validateRequest('createApplication'),
   applicationLimiter,
   usageLimiter,
-  aiTimeout(60_000),
   validateResponse('applicationResponse'),
   createApplication,
 );

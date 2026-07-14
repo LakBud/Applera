@@ -17,13 +17,22 @@ interface InterviewPrepOutput {
   general_tips: string[];
 }
 
+interface GenerateInterviewPrepOptions {
+  signal?: AbortSignal;
+}
+
 export async function generateInterviewPrep(
   cv: CVParsed,
   job: JobParsed,
   rawText: string | null | undefined,
   match: MatchReport,
-  applicationId: string, // used as cache key
+  applicationId: string,
+  options?: GenerateInterviewPrepOptions,
 ): Promise<InterviewPrepOutput> {
+  const signal = options?.signal;
+
+  signal?.throwIfAborted();
+
   return cachedLLM<InterviewPrepOutput>({
     cacheKey: `interview:${CACHE_VERSIONS.interview}:${applicationId}`,
     ttl: INTERVIEW_TTL,
@@ -33,6 +42,7 @@ export async function generateInterviewPrep(
         userContent: buildInterviewPrepPrompt(cv, job, match, rawText),
         temperature: 0.3,
         maxTokens: 1500,
+        signal,
       }) as Promise<InterviewPrepOutput>,
   });
 }
