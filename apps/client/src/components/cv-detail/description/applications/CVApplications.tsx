@@ -5,7 +5,7 @@ import { Button } from '../../../ui/button';
 import { CVApplicationRow } from './CVApplicationRow';
 import { CVApplicationRowSkeleton } from './CVApplicationRowSkeleton';
 
-import type { DashboardCV } from '@/api/cv/cv.schemas';
+import type { DashboardCV } from '@applera/schemas';
 
 type DashboardApplication = DashboardCV['applications'][number];
 interface CVApplicationsProps {

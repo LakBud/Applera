@@ -1,6 +1,8 @@
 import { ALLOWED_SENIORITY } from '@applera/schemas';
 import mongoose from 'mongoose';
 
+import { serializeTimestamps } from '../utils/shared/serializeTimestamps.utils.js';
+
 const CVSchema = new mongoose.Schema(
   {
     ownerId: {
@@ -90,6 +92,9 @@ const CVSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
+    toJSON: {
+      transform: serializeTimestamps(['createdAt', 'updatedAt', 'lastUsedAt', 'deletedAt']),
+    },
   },
 );
 

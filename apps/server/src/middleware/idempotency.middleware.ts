@@ -1,5 +1,5 @@
-import { redis } from '../../config/redis.js';
-import { hashRequest } from '../../utils/shared/hash.utils.js';
+import { redis } from '../config/redis.js';
+import { hashRequest } from '../utils/shared/hash.utils.js';
 
 import type { NextFunction, Request, Response } from 'express';
 

@@ -1,6 +1,10 @@
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
-import { INTERVIEW_PREP_PROMPT } from '../../prompts/interviewPrepPrompt.js';
+import { INTERVIEW_PREP_PROMPT } from '../../prompts/interview/interviewPrep.system.js';
+import { buildInterviewPrepPrompt } from '../../prompts/interview/interviewPrep.user.js';
 import { cachedLLM, callLLM } from '../llm/llm.service.js';
+
+import type { MatchReport } from '../../types/schemas/match.schemas.js';
+import type { CVParsed, JobParsed } from '@applera/schemas';
 
 const INTERVIEW_TTL = 60 * 60 * 24; // 24 hours — questions don't change unless regenerated
 
@@ -14,9 +18,10 @@ interface InterviewPrepOutput {
 }
 
 export async function generateInterviewPrep(
-  cv: object,
-  job: object,
-  match: object,
+  cv: CVParsed,
+  job: JobParsed,
+  rawText: string | null | undefined,
+  match: MatchReport,
   applicationId: string, // used as cache key
 ): Promise<InterviewPrepOutput> {
   return cachedLLM<InterviewPrepOutput>({
@@ -25,18 +30,9 @@ export async function generateInterviewPrep(
     fn: () =>
       callLLM({
         systemPrompt: INTERVIEW_PREP_PROMPT,
-        userContent: [
-          'CV:',
-          JSON.stringify(cv, null, 2),
-          '',
-          'JOB:',
-          JSON.stringify(job, null, 2),
-          '',
-          'MATCH:',
-          JSON.stringify(match, null, 2),
-        ].join('\n'),
-        temperature: 0.4,
-        maxTokens: 3000,
+        userContent: buildInterviewPrepPrompt(cv, job, match, rawText),
+        temperature: 0.3,
+        maxTokens: 1500,
       }) as Promise<InterviewPrepOutput>,
   });
 }

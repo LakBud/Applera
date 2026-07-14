@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 import { queryKeys } from '../queryKeys';
 import { handleMutationError } from '../utils/errors';
-import { createJobFile, createJobText, deleteJob, getJobById, getJobs } from './job.api';
+import { createJobFile, createJobText, deleteJobById, getJobById, getJobs } from './job.api';
 
 import type { ClientError } from '../types';
 
@@ -30,7 +30,7 @@ export function useDeleteJob() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (jobId: string) => deleteJob(jobId),
+    mutationFn: (jobId: string) => deleteJobById(jobId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.job.all });
       toast.success('Job deleted');

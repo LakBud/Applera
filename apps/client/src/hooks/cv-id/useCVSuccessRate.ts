@@ -1,9 +1,7 @@
 import { useMemo } from 'react';
 
-import { ApplicationStatusSchema } from '@applera/schemas';
+import { ApplicationStatusSchema, type DashboardCV } from '@applera/schemas';
 import { z } from 'zod';
-
-import type { DashboardCV } from '@/api/cv/cv.schemas';
 
 export const SuccessStatusSchema = ApplicationStatusSchema.extract([
   'applied',

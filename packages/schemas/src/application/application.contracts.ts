@@ -1,5 +1,7 @@
-import { ApplicationSchema, ApplicationStatusSchema } from '@applera/schemas';
 import { z } from 'zod';
+
+import { ApplicationStatusSchema } from '../common/status.schemas';
+import { ApplicationSchema } from './application.schemas';
 
 // Requests
 export const CreateApplicationRequestSchema = z.object({
@@ -11,7 +13,6 @@ export type CreateApplicationRequest = z.infer<typeof CreateApplicationRequestSc
 
 export const UpdateApplicationStatusRequestSchema = z.object({
   status: ApplicationStatusSchema,
-  notes: z.string().optional(),
 });
 
 export type UpdateApplicationStatusRequest = z.infer<typeof UpdateApplicationStatusRequestSchema>;
@@ -21,10 +22,10 @@ export const ApplicationResponseSchema = z.object({
   application: ApplicationSchema,
 });
 
-export const ApplicationsResponseSchema = z.object({
+export type ApplicationResponse = z.infer<typeof ApplicationResponseSchema>;
+
+export const ApplicationListResponseSchema = z.object({
   applications: z.array(ApplicationSchema),
 });
 
-export type ApplicationResponse = z.infer<typeof ApplicationResponseSchema>;
-
-export type ApplicationsResponse = z.infer<typeof ApplicationsResponseSchema>;
+export type ApplicationListResponse = z.infer<typeof ApplicationListResponseSchema>;

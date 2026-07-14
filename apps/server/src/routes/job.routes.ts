@@ -5,20 +5,18 @@ import { parseJobPdf } from '../middleware/pdf/parsePdf.middleware.js';
 import { concurrencyLimit } from '../middleware/rate/concurrency.middleware.js';
 import { parseLimiter } from '../middleware/rate/rateLimiter.middleware.js';
 import { usageLimiter } from '../middleware/rate/usageLimiter.middleware.js';
-import { aiTimeout } from '../middleware/request/timeout.middleware.js';
-import { validate } from '../middleware/request/validate/validate.middleware.js';
+import { aiTimeout } from '../middleware/timeout.middleware.js';
 import {
   handleUploadError,
   uploadJob,
   validatePdfMagic,
 } from '../middleware/upload/upload.middleware.js';
+import { validateRequest } from '../middleware/validate/request/validateRequest.middleware.js';
+import { validateResponse } from '../middleware/validate/response/validateResponse.middleware.js';
 
 const router = express.Router();
 
-// ─────────────────────────────────────────────
-// CREATE JOB
 // POST /api/job
-// ─────────────────────────────────────────────
 router.post(
   '/',
   concurrencyLimit(5),
@@ -28,24 +26,24 @@ router.post(
   handleUploadError,
   validatePdfMagic,
   parseJobPdf,
-  validate('createJob'),
+  validateRequest('createJob'),
   aiTimeout(60_000),
+  validateResponse('createJobResponse'),
   createJob,
 );
 
-// ─────────────────────────────────────────────
-// GET ALL JOBS
-// ─────────────────────────────────────────────
-router.get('/', getJobs);
+// GET /api/job
+router.get('/', validateResponse('jobListResponse'), getJobs);
 
-// ─────────────────────────────────────────────
-// GET JOB BY ID
-// ─────────────────────────────────────────────
-router.get('/:id', getJobById);
+// GET /api/job/:id
+router.get('/:id', validateRequest('getJobById'), validateResponse('jobDocument'), getJobById);
 
-// ─────────────────────────────────────────────
-// DELETE JOB
-// ─────────────────────────────────────────────
-router.delete('/:id', deleteJob);
+// DELETE /api/job/:id
+router.delete(
+  '/:id',
+  validateRequest('deleteJobById'),
+  validateResponse('messageResponse'),
+  deleteJob,
+);
 
 export default router;

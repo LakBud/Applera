@@ -7,49 +7,52 @@ import {
   getApplications,
   updateApplicationStatus,
 } from '../controllers/application.controller.js';
+import { idempotency } from '../middleware/idempotency.middleware.js';
 import { applicationLimiter } from '../middleware/rate/rateLimiter.middleware.js';
 import { usageLimiter } from '../middleware/rate/usageLimiter.middleware.js';
-import { idempotency } from '../middleware/request/idempotency.middleware.js';
-import { aiTimeout } from '../middleware/request/timeout.middleware.js';
-import { validate } from '../middleware/request/validate/validate.middleware.js';
+import { aiTimeout } from '../middleware/timeout.middleware.js';
+import { validateRequest } from '../middleware/validate/request/validateRequest.middleware.js';
+import { validateResponse } from '../middleware/validate/response/validateResponse.middleware.js';
 
 const router = express.Router();
 
-// ─────────────────────────────────────────────
 // POST /api/application
-// Create application (LLM pipeline)
-// ─────────────────────────────────────────────
 router.post(
   '/',
-  validate('createApplication'),
+  validateRequest('createApplication'),
   idempotency,
   applicationLimiter,
   usageLimiter,
   aiTimeout(60_000),
+  validateResponse('applicationResponse'),
   createApplication,
 );
-// ─────────────────────────────────────────────
+
 // GET /api/application
-// List applications
-// ─────────────────────────────────────────────
-router.get('/', getApplications);
+router.get('/', validateResponse('applicationListResponse'), getApplications);
 
-// ─────────────────────────────────────────────
 // GET /api/application/:id
-// Get single application
-// ─────────────────────────────────────────────
-router.get('/:id', getApplicationById);
+router.get(
+  '/:id',
+  validateRequest('getApplicationById'),
+  validateResponse('applicationResponse'),
+  getApplicationById,
+);
 
-// ─────────────────────────────────────────────
 // PATCH /api/application/:id/status
-// Update status
-// ─────────────────────────────────────────────
-router.patch('/:id/status', updateApplicationStatus);
+router.patch(
+  '/:id/status',
+  validateRequest('updateApplicationStatus'),
+  validateResponse('applicationResponse'),
+  updateApplicationStatus,
+);
 
-// ─────────────────────────────────────────────
 // DELETE /api/application/:id
-// Delete application
-// ─────────────────────────────────────────────
-router.delete('/:id', deleteApplication);
+router.delete(
+  '/:id',
+  validateRequest('deleteApplication'),
+  validateResponse('messageResponse'),
+  deleteApplication,
+);
 
 export default router;

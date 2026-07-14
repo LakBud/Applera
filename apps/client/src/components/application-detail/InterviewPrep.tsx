@@ -104,26 +104,6 @@ export function InterviewPrepSection({ applicationId }: { applicationId: string 
             </ul>
           </div>
         )}
-
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={isPending}
-          onClick={() => generate(applicationId)}
-          className="w-full sm:w-auto"
-        >
-          {isPending ? (
-            <>
-              <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-              Regenerating...
-            </>
-          ) : (
-            <>
-              <Lightbulb className="w-3.5 h-3.5 mr-1.5" />
-              Regenerate
-            </>
-          )}
-        </Button>
       </div>
     </ApplicationAccordion>
   );

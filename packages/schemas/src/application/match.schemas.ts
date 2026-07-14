@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ConfidenceSchema } from '../common/confidence.schema';
+import { ConfidenceSchema } from '../common/confidence.schemas';
 import { SENIORITY_FIT_VALUES } from '../types/seniority.types';
 
 export const SeniorityFitSchema = z.enum(SENIORITY_FIT_VALUES);

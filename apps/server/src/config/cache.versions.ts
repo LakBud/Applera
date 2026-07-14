@@ -3,5 +3,5 @@ export const CACHE_VERSIONS = {
   job: 'v8',
   match: 'v8',
   application: 'v5',
-  interview: 'v3',
+  interview: 'v4',
 } as const;

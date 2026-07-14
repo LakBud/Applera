@@ -7,7 +7,7 @@ import { STATUS_STYLES } from '@/utils/ui/statusStyles';
 import { Badge } from '../../../ui/badge';
 import { RowBase } from '../../../ui/row';
 
-import type { DashboardCV } from '@/api/cv/cv.schemas';
+import type { DashboardCV } from '@applera/schemas';
 
 type DashboardApplication = DashboardCV['applications'][number];
 

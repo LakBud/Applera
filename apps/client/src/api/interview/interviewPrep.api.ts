@@ -1,7 +1,6 @@
-import { type InterviewPrep } from '@applera/schemas';
+import { InterviewPrepResponseSchema, type InterviewPrep } from '@applera/schemas';
 
 import { client } from '../client';
-import { InterviewPrepResponseSchema } from './interviewPrep.schemas';
 
 // POST /api/interview/:applicationId
 export async function generateInterviewPrep(applicationId: string): Promise<InterviewPrep> {

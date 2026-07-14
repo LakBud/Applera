@@ -1,6 +1,8 @@
 import { ALLOWED_SENIORITY } from '@applera/schemas';
 import mongoose from 'mongoose';
 
+import { serializeTimestamps } from '../utils/shared/serializeTimestamps.utils.js';
+
 const JobSchema = new mongoose.Schema(
   {
     ownerId: { type: String, required: true, index: true, trim: true },
@@ -20,7 +22,11 @@ const JobSchema = new mongoose.Schema(
     },
     deletedAt: Date,
   },
-  { timestamps: true, versionKey: false },
+  {
+    timestamps: true,
+    versionKey: false,
+    toJSON: { transform: serializeTimestamps() },
+  },
 );
 
 JobSchema.index({ ownerId: 1, createdAt: -1 });

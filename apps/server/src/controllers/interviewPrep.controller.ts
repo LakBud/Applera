@@ -41,10 +41,11 @@ export const generatePrep = async (req: Request, res: Response) => {
 
     // IMPORTANT: parsed must already exist on stored refs OR be fetched separately
     const cvDoc = await CV.findById(application.cv).select('parsed').lean();
-    const jobDoc = await Job.findById(application.job).select('parsed').lean();
+    const jobDoc = await Job.findById(application.job).select('parsed rawText').lean();
 
     const cv = cvDoc?.parsed;
     const job = jobDoc?.parsed;
+    const rawText = jobDoc?.rawText;
     const match = application.match as MatchReport | undefined;
 
     if (!cv || !job) {
@@ -79,7 +80,14 @@ export const generatePrep = async (req: Request, res: Response) => {
     if (!parsedCV.success || !parsedJob.success) {
       return res.status(400).json({ error: 'Invalid CV or Job parsed data.' });
     }
-    const prep = await generateInterviewPrep(parsedCV.data, parsedJob.data, match, applicationId);
+
+    const prep = await generateInterviewPrep(
+      parsedCV.data,
+      parsedJob.data,
+      rawText,
+      match,
+      applicationId,
+    );
 
     const saved = await InterviewPrep.findOneAndUpdate(
       {

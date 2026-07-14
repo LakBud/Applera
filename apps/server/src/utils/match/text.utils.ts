@@ -77,6 +77,7 @@ function detectStopwords(text: string): Set<string> {
   const lang: SupportedLang =
     code && SUPPORTED_LANGS.has(code as SupportedLang) ? (code as SupportedLang) : 'eng';
 
+  // oxlint-disable-next-line import/namespace -- dynamic language lookup is safe because `lang` is restricted by SUPPORTED_LANGS.
   return new Set(sw[lang] as string[]);
 }
 
