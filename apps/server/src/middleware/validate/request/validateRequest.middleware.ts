@@ -20,6 +20,10 @@ export function validateRequest<T extends requestSchemaName>(schemaName: T) {
       });
     }
 
+    req.body = result.data.body;
+    req.params = result.data.params;
+    req.query = result.data.query;
+
     next();
   };
 }

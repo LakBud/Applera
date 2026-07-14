@@ -13,12 +13,6 @@ export function validateResponse<T extends responseSchemaName>(schemaName: T) {
         return originalJson(body);
       }
 
-      const validationEnabled = process.env.NODE_ENV !== 'production';
-
-      if (!validationEnabled) {
-        return originalJson(body);
-      }
-
       // Force Mongoose documents (and anything with a toJSON) to serialize
       // before validating, so schema checks run against the real wire shape.
       const serialized = JSON.parse(JSON.stringify(body));
@@ -28,14 +22,13 @@ export function validateResponse<T extends responseSchemaName>(schemaName: T) {
       if (!result.success) {
         console.error(
           `[validateResponse] ${schemaName} failed:`,
-          result.error.issues.map(({ code, path, message }) => ({
-            code,
+          result.error.issues.map(({ path, message }) => ({
             path,
             message,
           })),
         );
 
-        const error = new Error(`Response validation failed for ${schemaName}`);
+        const error = new Error('Response validation failed');
         error.name = 'ResponseValidationError';
 
         Object.assign(error, {
@@ -48,7 +41,7 @@ export function validateResponse<T extends responseSchemaName>(schemaName: T) {
         return res;
       }
 
-      return originalJson(body);
+      return originalJson(result.data);
     };
 
     next();
