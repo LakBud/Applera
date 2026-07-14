@@ -11,7 +11,7 @@ const FAQ = [
   },
   {
     q: 'How does the match score work?',
-    a: 'It compares your CV against the job description using skills, keywords, and experience. It highlights your strengths and gaps — not to decide your eligibility, but to help you apply smarter.',
+    a: 'It compares your CV against the job description using skills, keywords, and experience. It highlights your strengths and gaps, not to decide your eligibility, but to help you apply smarter.',
   },
   {
     q: 'Can I use the generated cover letter directly?',
@@ -23,7 +23,7 @@ const FAQ = [
   },
   {
     q: 'What AI model powers Applera?',
-    a: 'Applera uses a large language model via Groq for fast quality generation of cover letters, application emails, and match analysis.',
+    a: 'Applera uses a large language model via Groq for fast quality generation of cover letters, application emails and match analysis.',
   },
   {
     q: 'Is there a free plan?',

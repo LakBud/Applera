@@ -4,10 +4,12 @@ import { cloudinary } from '../config/cloudinary.js';
 import { deleteCache, getCache, setCache } from '../lib/cache.js';
 import { uploadImage } from '../lib/cloudinary/cloudinary.upload.js';
 import { extractTextFromPdf } from '../lib/pdfParser.js';
+import { getAbortSignal } from '../middleware/timeout.middleware.js';
 import Application from '../models/Application.js';
 import CVModel from '../models/CV.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { extractCVData } from '../services/extractors.service.js';
+import { LLMError } from '../services/llm/llm.service.js';
 import { normalizeParsedCV } from '../utils/cv/cv.normalize.utils.js';
 import { hash } from '../utils/shared/hash.utils.js';
 import { getParam } from '../utils/shared/param.utils.js';
@@ -47,10 +49,14 @@ function isMongoError(err: unknown): err is { code: number } {
 // ─────────────────────────────────────────────
 
 export const createCV = async (req: Request, res: Response) => {
+  const signal = getAbortSignal(res);
+
   try {
     if (!req.identity) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
+
+    signal.throwIfAborted();
 
     const file = req.file as Express.Multer.File | undefined;
 
@@ -64,34 +70,57 @@ export const createCV = async (req: Request, res: Response) => {
     // ─────────────────────────────
 
     if (file?.buffer) {
-      rawText = await extractTextFromPdf(file.buffer);
+      rawText = await extractTextFromPdf(file.buffer, { signal });
+
+      signal.throwIfAborted();
+
       contentHash = hash(file.buffer.toString('base64'));
 
       const existing = await findExistingCV(req.identity.id, contentHash);
+
       if (existing) {
-        return res.status(200).json({ message: 'CV already exists', cv: existing });
+        return res.status(200).json({
+          message: 'CV already exists',
+          cv: existing,
+        });
       }
 
+      signal.throwIfAborted();
+
       const upload = await uploadImage(file.buffer, req.identity.id);
+
       cloudinaryPublicId = upload.public_id;
       pdfUrl = upload.secure_url;
     } else if (req.body?.cvText?.trim()) {
       rawText = req.body.cvText.trim();
+
+      signal.throwIfAborted();
+
       contentHash = hash(rawText);
 
       const existing = await findExistingCV(req.identity.id, contentHash);
+
       if (existing) {
-        return res.status(200).json({ message: 'CV already exists', cv: existing });
+        return res.status(200).json({
+          message: 'CV already exists',
+          cv: existing,
+        });
       }
     } else {
-      return res.status(400).json({ error: 'Provide a CV as PDF or text' });
+      return res.status(400).json({
+        error: 'Provide a CV as PDF or text',
+      });
     }
 
     // ─────────────────────────────
     // AI PROCESSING
     // ─────────────────────────────
 
-    const parsedRaw = await extractCVData(rawText);
+    signal.throwIfAborted();
+
+    const parsedRaw = await extractCVData(rawText, { signal });
+
+    signal.throwIfAborted();
 
     const parsed = normalizeParsedCV(parsedRaw);
 
@@ -102,6 +131,8 @@ export const createCV = async (req: Request, res: Response) => {
     let createdCV;
 
     try {
+      signal.throwIfAborted();
+
       createdCV = await CVModel.create({
         ownerId: req.identity.id,
         ownerType: req.identity.type,
@@ -117,8 +148,13 @@ export const createCV = async (req: Request, res: Response) => {
           ownerId: req.identity.id,
           contentHash,
         });
-        return res.status(200).json({ message: 'CV already exists', cv: existing });
+
+        return res.status(200).json({
+          message: 'CV already exists',
+          cv: existing,
+        });
       }
+
       throw err;
     }
 
@@ -126,7 +162,10 @@ export const createCV = async (req: Request, res: Response) => {
     // CACHE + INVALIDATION
     // ─────────────────────────────
 
+    signal.throwIfAborted();
+
     const cacheKey = cvHashKey(req.identity.id, contentHash);
+
     await setCache(cacheKey, createdCV, 60 * 10);
     await deleteCache(cvListKey(req.identity.id, req.identity.type));
 
@@ -141,13 +180,33 @@ export const createCV = async (req: Request, res: Response) => {
       requestId: req.requestId,
       ip: req.ip,
       resourceId: String(createdCV._id),
-      metadata: { cvId: String(createdCV._id) },
+      metadata: {
+        cvId: String(createdCV._id),
+      },
     });
 
-    return res.status(201).json({ message: 'CV created successfully', cv: createdCV });
+    return res.status(201).json({
+      message: 'CV created successfully',
+      cv: createdCV,
+    });
   } catch (err) {
+    if (
+      signal.aborted ||
+      (err instanceof Error && err.name === 'AbortError') ||
+      (err instanceof LLMError && err.type === 'aborted')
+    ) {
+      console.warn('[createCV] aborted (timeout or disconnect)', {
+        requestId: req.requestId,
+      });
+
+      return;
+    }
+
     console.error('[createCV]', err);
-    return res.status(500).json({ error: 'Failed to create CV' });
+
+    return res.status(500).json({
+      error: 'Failed to create CV',
+    });
   }
 };
 

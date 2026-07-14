@@ -197,7 +197,7 @@ importers:
         version: link:../../packages/schemas
       '@clerk/express':
         specifier: ^2.1.40
-        version: 2.1.40(express@5.2.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 2.1.40(express@5.2.1(supports-color@5.5.0))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@upstash/ratelimit':
         specifier: ^2.0.8
         version: 2.0.8(@upstash/redis@1.38.0)
@@ -221,10 +221,13 @@ importers:
         version: 17.4.2
       express:
         specifier: ^5.2.1
-        version: 5.2.1
+        version: 5.2.1(supports-color@5.5.0)
       express-serve-static-core:
         specifier: ^0.1.1
         version: 0.1.1
+      fast-json-stable-stringify:
+        specifier: ^2.1.0
+        version: 2.1.0
       franc-min:
         specifier: ^6.2.0
         version: 6.2.0
@@ -265,6 +268,9 @@ importers:
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
+      '@types/fast-json-stable-stringify':
+        specifier: ^2.1.2
+        version: 2.1.2
       '@types/hpp':
         specifier: ^0.2.7
         version: 0.2.7
@@ -2377,6 +2383,10 @@ packages:
 
   '@types/express@5.0.6':
     resolution: {integrity: sha512-sKYVuV7Sv9fbPIt/442koC7+IIwK5olP1KWeD88e/idgoJqDm3JV/YUiPwkoKK92ylff2MGxSz1CSjsXelx0YA==}
+
+  '@types/fast-json-stable-stringify@2.1.2':
+    resolution: {integrity: sha512-vsxcbfLDdjytnCnHXtinE40Xl46Wr7l/VGRGt7ewJwCPMKEHOdEsTxXX8xwgoR7cbc+6dE8SB4jlMrOV2zAg7g==}
+    deprecated: This is a stub types definition. fast-json-stable-stringify provides its own type definitions, so you do not need this installed.
 
   '@types/hpp@0.2.7':
     resolution: {integrity: sha512-YSQBkTwZepklRez0wgsljeewMytGNKgBAZR1YbmE0X49+elqkZ+fr/gvB407wL9Dl7a/Kv3W04yJueRmEHytBw==}
@@ -6053,11 +6063,11 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/express@2.1.40(express@5.2.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@clerk/express@2.1.40(express@5.2.1(supports-color@5.5.0))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@clerk/backend': 3.11.4(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@clerk/shared': 4.25.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      express: 5.2.1
+      express: 5.2.1(supports-color@5.5.0)
       tslib: 2.8.1
     transitivePeerDependencies:
       - react
@@ -6389,7 +6399,7 @@ snapshots:
       cross-spawn: 7.0.6
       eventsource: 3.0.7
       eventsource-parser: 3.1.0
-      express: 5.2.1
+      express: 5.2.1(supports-color@5.5.0)
       express-rate-limit: 8.5.2(express@5.2.1)
       hono: 4.12.27
       jose: 6.2.3
@@ -7739,6 +7749,10 @@ snapshots:
       '@types/express-serve-static-core': 5.1.1
       '@types/serve-static': 2.2.0
 
+  '@types/fast-json-stable-stringify@2.1.2':
+    dependencies:
+      fast-json-stable-stringify: 2.1.0
+
   '@types/hpp@0.2.7':
     dependencies:
       '@types/express': 5.0.6
@@ -8348,7 +8362,7 @@ snapshots:
 
   binary-extensions@2.3.0: {}
 
-  body-parser@2.3.0:
+  body-parser@2.3.0(supports-color@5.5.0):
     dependencies:
       bytes: 3.1.2
       content-type: 2.0.0
@@ -8932,15 +8946,15 @@ snapshots:
 
   express-rate-limit@8.5.2(express@5.2.1):
     dependencies:
-      express: 5.2.1
+      express: 5.2.1(supports-color@5.5.0)
       ip-address: 10.2.0
 
   express-serve-static-core@0.1.1: {}
 
-  express@5.2.1:
+  express@5.2.1(supports-color@5.5.0):
     dependencies:
       accepts: 2.0.0
-      body-parser: 2.3.0
+      body-parser: 2.3.0(supports-color@5.5.0)
       content-disposition: 1.1.0
       content-type: 1.0.5
       cookie: 0.7.2
@@ -8950,7 +8964,7 @@ snapshots:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
-      finalhandler: 2.1.1
+      finalhandler: 2.1.1(supports-color@5.5.0)
       fresh: 2.0.0
       http-errors: 2.0.1
       merge-descriptors: 2.0.0
@@ -8961,8 +8975,8 @@ snapshots:
       proxy-addr: 2.0.7
       qs: 6.15.2
       range-parser: 1.2.1
-      router: 2.2.0
-      send: 1.2.1
+      router: 2.2.0(supports-color@5.5.0)
+      send: 1.2.1(supports-color@5.5.0)
       serve-static: 2.2.1
       statuses: 2.0.2
       type-is: 2.1.0
@@ -9024,7 +9038,7 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  finalhandler@2.1.1:
+  finalhandler@2.1.1(supports-color@5.5.0):
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
       encodeurl: 2.0.0
@@ -10311,7 +10325,7 @@ snapshots:
       '@rolldown/binding-win32-arm64-msvc': 1.1.5
       '@rolldown/binding-win32-x64-msvc': 1.1.5
 
-  router@2.2.0:
+  router@2.2.0(supports-color@5.5.0):
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
       depd: 2.0.0
@@ -10343,7 +10357,7 @@ snapshots:
 
   semver@7.8.5: {}
 
-  send@1.2.1:
+  send@1.2.1(supports-color@5.5.0):
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
       encodeurl: 2.0.0
@@ -10370,7 +10384,7 @@ snapshots:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       parseurl: 1.3.3
-      send: 1.2.1
+      send: 1.2.1(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 

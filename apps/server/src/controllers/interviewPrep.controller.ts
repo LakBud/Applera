@@ -1,6 +1,7 @@
 import { CVParsedSchema, JobParsedSchema } from '@applera/schemas';
 
 import { deleteCache } from '../lib/cache.js';
+import { getAbortSignal } from '../middleware/timeout.middleware.js';
 import Application from '../models/Application.js';
 import CV from '../models/CV.js';
 import InterviewPrep from '../models/InterviewPrep.js';
@@ -10,12 +11,14 @@ import { generateInterviewPrep } from '../services/interview/interviewPrep.servi
 import { getParam } from '../utils/shared/param.utils.js';
 
 import type { MatchReport } from '../types/schemas/match.schemas.js';
-import type { Request, Response } from 'express';
-
 // ─────────────────────────────────────────────
 // POST /api/interview/:applicationId
 // ─────────────────────────────────────────────
+import type { Request, Response } from 'express';
+
 export const generatePrep = async (req: Request, res: Response) => {
+  const signal = getAbortSignal(res);
+
   try {
     const applicationId = getParam(req.params.applicationId);
 
@@ -24,6 +27,8 @@ export const generatePrep = async (req: Request, res: Response) => {
     if (!identity) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
+
+    signal.throwIfAborted();
 
     const application = await Application.findOne({
       _id: applicationId,
@@ -39,8 +44,10 @@ export const generatePrep = async (req: Request, res: Response) => {
       });
     }
 
-    // IMPORTANT: parsed must already exist on stored refs OR be fetched separately
+    signal.throwIfAborted();
+
     const cvDoc = await CV.findById(application.cv).select('parsed').lean();
+
     const jobDoc = await Job.findById(application.job).select('parsed rawText').lean();
 
     const cv = cvDoc?.parsed;
@@ -60,6 +67,8 @@ export const generatePrep = async (req: Request, res: Response) => {
       });
     }
 
+    signal.throwIfAborted();
+
     const existing = await InterviewPrep.findOne({
       application: applicationId,
       ownerId: identity.id,
@@ -69,17 +78,25 @@ export const generatePrep = async (req: Request, res: Response) => {
       .lean();
 
     if (existing && existing.regenerationCount >= 3) {
-      return res.status(429).json({ error: 'Maximum regenerations reached.' });
+      return res.status(429).json({
+        error: 'Maximum regenerations reached.',
+      });
     }
 
     await deleteCache(`interview:${applicationId}`);
+
+    signal.throwIfAborted();
 
     const parsedCV = CVParsedSchema.safeParse(cv);
     const parsedJob = JobParsedSchema.safeParse(job);
 
     if (!parsedCV.success || !parsedJob.success) {
-      return res.status(400).json({ error: 'Invalid CV or Job parsed data.' });
+      return res.status(400).json({
+        error: 'Invalid CV or Job parsed data.',
+      });
     }
+
+    signal.throwIfAborted();
 
     const prep = await generateInterviewPrep(
       parsedCV.data,
@@ -87,7 +104,10 @@ export const generatePrep = async (req: Request, res: Response) => {
       rawText,
       match,
       applicationId,
+      { signal },
     );
+
+    signal.throwIfAborted();
 
     const saved = await InterviewPrep.findOneAndUpdate(
       {
@@ -105,7 +125,7 @@ export const generatePrep = async (req: Request, res: Response) => {
       },
       {
         upsert: true,
-        new: true,
+        returnDocument: 'after',
       },
     );
 
@@ -126,6 +146,14 @@ export const generatePrep = async (req: Request, res: Response) => {
       prep: saved,
     });
   } catch (err: unknown) {
+    if (signal.aborted || (err instanceof Error && err.name === 'AbortError')) {
+      console.warn('[generatePrep] aborted (timeout or disconnect)', {
+        requestId: req.requestId,
+      });
+
+      return;
+    }
+
     const message = err instanceof Error ? err.message : 'Unknown error';
 
     console.error('[generatePrep]', message);

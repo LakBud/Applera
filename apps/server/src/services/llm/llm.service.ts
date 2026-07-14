@@ -11,7 +11,7 @@ const BASE_DELAY_MS = 500;
 export class LLMError extends Error {
   constructor(
     message: string,
-    public type: 'timeout' | 'api' | 'parse' | 'unknown',
+    public type: 'timeout' | 'api' | 'parse' | 'unknown' | 'aborted',
   ) {
     super(message);
   }
@@ -20,10 +20,27 @@ export class LLMError extends Error {
 const MAX_RETRIES = 1; // 2 attempts max
 const TIMEOUT_MS = 25_000; // 25s per attempt → ~52s worst case, well under 90s
 
-function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: number): Promise<T> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), ms);
-  return fn(controller.signal).finally(() => clearTimeout(timeout));
+/**
+ * Combines the caller's external signal (request-level deadline) with a
+ * per-attempt timeout, so whichever fires first cancels the call.
+ */
+async function withTimeout<T>(
+  fn: (signal: AbortSignal) => Promise<T>,
+  ms: number,
+  externalSignal?: AbortSignal,
+): Promise<T> {
+  const timeoutController = new AbortController();
+  const timeout = setTimeout(() => timeoutController.abort(), ms);
+
+  const signal = externalSignal
+    ? AbortSignal.any([externalSignal, timeoutController.signal])
+    : timeoutController.signal;
+
+  try {
+    return await fn(signal);
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 // Debug logger (safe in dev only
@@ -48,6 +65,7 @@ type CallLLMParams = {
   jsonMode?: boolean;
   maxTokens?: number;
   requestId?: string;
+  signal?: AbortSignal;
 };
 
 export async function callLLM({
@@ -57,23 +75,38 @@ export async function callLLM({
   jsonMode = true,
   maxTokens = 1000,
   requestId = randomUUID(),
+  signal,
 }: CallLLMParams): Promise<unknown> {
   let lastError: unknown;
 
   const totalAttempts = MAX_RETRIES + 1;
 
   for (let attempt = 0; attempt < totalAttempts; attempt++) {
+    if (signal?.aborted) {
+      throw new LLMError(`Aborted before attempt ${attempt + 1}`, 'aborted');
+    }
+
     try {
       if (attempt > 0) {
         const delay = BASE_DELAY_MS * 2 ** attempt;
 
         console.warn(`[llm:${requestId}] retry ${attempt}/${MAX_RETRIES} in ${delay}ms`);
 
-        await new Promise((r) => setTimeout(r, delay));
+        await new Promise<void>((resolve) => {
+          const timer = setTimeout(resolve, delay);
+          signal?.addEventListener(
+            'abort',
+            () => {
+              clearTimeout(timer);
+              resolve();
+            },
+            { once: true },
+          );
+        });
       }
 
       const response = await withTimeout(
-        (signal) =>
+        (attemptSignal) =>
           openai.chat.completions.create(
             {
               model,
@@ -85,9 +118,10 @@ export async function callLLM({
                 { role: 'user', content: userContent },
               ],
             },
-            { signal },
+            { signal: attemptSignal },
           ),
         TIMEOUT_MS,
+        signal,
       );
 
       const content = response.choices?.[0]?.message?.content?.trim();
@@ -111,7 +145,17 @@ export async function callLLM({
       if (err instanceof LLMError && err.type === 'parse') {
         break;
       }
+
+      // External deadline/disconnect — stop retrying, no point burning the
+      // remaining attempt on a request that's already dead.
+      if (signal?.aborted) {
+        break;
+      }
     }
+  }
+
+  if (signal?.aborted) {
+    throw new LLMError('LLM call aborted (timeout or disconnect)', 'aborted');
   }
 
   throw new LLMError(

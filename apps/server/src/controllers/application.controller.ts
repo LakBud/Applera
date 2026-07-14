@@ -5,6 +5,7 @@ import {
   type ApplicationStatus,
 } from '@applera/schemas';
 
+import { getAbortSignal } from '../middleware/timeout.middleware.js';
 import Application from '../models/Application.js';
 import CVModel from '../models/CV.js';
 import JobModel from '../models/Job.js';
@@ -120,7 +121,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
         $set: { status },
       },
       {
-        new: true,
+        returnDocument: 'after',
       },
     )
       .populate('cv', 'parsed applicationsCount lastUsedAt')
@@ -209,6 +210,8 @@ export const deleteApplication = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 
 export const createApplication = async (req: Request, res: Response) => {
+  const signal = getAbortSignal(res);
+
   try {
     if (!req.identity) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -225,7 +228,6 @@ export const createApplication = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'cvId and jobId must be strings' });
     }
 
-    // DB lookups
     const [cv, job] = await Promise.all([
       CVModel.findOne({
         _id: { $eq: cvId },
@@ -244,16 +246,15 @@ export const createApplication = async (req: Request, res: Response) => {
     }
 
     if (!cv.parsed) return res.status(404).json({ error: 'CV not parsed' });
-
     if (!job.parsed) return res.status(404).json({ error: 'Job not parsed' });
 
     const parsedCV = CVParsedSchema.parse(cv.parsed);
     const parsedJob = JobParsedSchema.parse(job.parsed);
 
-    // delegate all business logic to pipeline
-    const result = await runApplicationPipelineFromParsed(parsedCV, parsedJob, job.rawText ?? '');
+    const result = await runApplicationPipelineFromParsed(parsedCV, parsedJob, job.rawText ?? '', {
+      signal,
+    });
 
-    // DB write
     const application = await Application.create({
       ownerId,
       ownerType,
@@ -271,7 +272,6 @@ export const createApplication = async (req: Request, res: Response) => {
       status: 'generated',
     });
 
-    // Match getApplications populate fields exactly
     await application.populate('cv', 'parsed applicationsCount lastUsedAt');
     await application.populate('job', 'parsed company location');
 
@@ -288,6 +288,13 @@ export const createApplication = async (req: Request, res: Response) => {
       application: application.toObject(),
     });
   } catch (err) {
+    if (signal.aborted || (err instanceof Error && err.name === 'AbortError')) {
+      console.warn('[createApplication] aborted (timeout or disconnect)', {
+        requestId: req.requestId,
+      });
+      return; // noopLateWrites already suppressed the actual res.json call
+    }
+
     console.error('[createApplication]', err);
     return res.status(500).json({ error: 'Failed to create application' });
   }

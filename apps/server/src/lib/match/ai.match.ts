@@ -11,6 +11,7 @@ export async function runAIEnrichment(
   cv: CVParsed,
   job: JobParsed,
   mathResult: Omit<MatchReport, 'ai_insights'>,
+  { signal }: { signal?: AbortSignal } = {},
 ): Promise<MatchReport['ai_insights']> {
   const cacheKey = `match:ai:${CACHE_VERSIONS.match}:${hash(
     JSON.stringify({
@@ -33,6 +34,7 @@ export async function runAIEnrichment(
         temperature: 0.1,
         systemPrompt,
         userContent,
+        signal,
       });
 
       const parsed = MatchReportSchema.shape.ai_insights.parse(raw);

@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { createJob, deleteJob, getJobById, getJobs } from '../controllers/job.controller.js';
+import { idempotency } from '../middleware/idempotency.middleware.js';
 import { parseJobPdf } from '../middleware/pdf/parsePdf.middleware.js';
 import { concurrencyLimit } from '../middleware/rate/concurrency.middleware.js';
 import { parseLimiter } from '../middleware/rate/rateLimiter.middleware.js';
@@ -24,10 +25,11 @@ router.post(
   parseLimiter,
   uploadJob,
   handleUploadError,
+  aiTimeout(60_000),
+  idempotency,
   validatePdfMagic,
   parseJobPdf,
   validateRequest('createJob'),
-  aiTimeout(60_000),
   validateResponse('createJobResponse'),
   createJob,
 );

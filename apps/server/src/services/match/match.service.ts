@@ -9,10 +9,15 @@ import { cachedLLM } from '../llm/llm.service.js';
 
 import type { CVParsed, JobParsed } from '@applera/schemas';
 
+export interface MatchOptions {
+  skipAI?: boolean;
+  signal?: AbortSignal;
+}
+
 export async function matchCVToJob(
   cv: CVParsed,
   job: JobParsed,
-  { skipAI = false }: { skipAI?: boolean } = {},
+  { skipAI = false, signal }: MatchOptions = {},
 ): Promise<MatchReport> {
   const cacheKey = `match:${CACHE_VERSIONS.match}:${hash(
     JSON.stringify({
@@ -32,7 +37,9 @@ export async function matchCVToJob(
 
       const needsAI = !skipAI && (mathResult.confidence === 'low' || mathResult.score <= 75);
 
-      const ai_insights = needsAI ? await runAIEnrichment(cv, job, mathResult) : null;
+      signal?.throwIfAborted(); // don't kick off the AI call if we're already past the deadline
+
+      const ai_insights = needsAI ? await runAIEnrichment(cv, job, mathResult, { signal }) : null;
 
       const coveredByAI = new Set(
         [...(ai_insights?.semantic_matches ?? []), ...(ai_insights?.implicit_skills ?? [])].map(

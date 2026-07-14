@@ -9,6 +9,7 @@ import {
   getCVs,
   pinCV,
 } from '../controllers/cv.controller.js';
+import { idempotency } from '../middleware/idempotency.middleware.js';
 import { parseCvPdf } from '../middleware/pdf/parsePdf.middleware.js';
 import { concurrencyLimit } from '../middleware/rate/concurrency.middleware.js';
 import { deleteCVLimiter, parseLimiter } from '../middleware/rate/rateLimiter.middleware.js';
@@ -34,11 +35,12 @@ router.post(
   parseLimiter,
   uploadCV,
   handleUploadError,
+  aiTimeout(60_000),
+  idempotency,
   validatePdfMagic,
   parseCvPdf,
   validateRequest('uploadCV'),
   usageLimiter,
-  aiTimeout(60_000),
   validateResponse('uploadCVResponse'),
   createCV,
 );

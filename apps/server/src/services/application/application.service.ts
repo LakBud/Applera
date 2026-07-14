@@ -16,6 +16,7 @@ export async function generateApplication(
   job: JobParsed,
   rawText: string,
   match: MatchReport,
+  { signal }: { signal?: AbortSignal } = {},
 ): Promise<ApplicationLLMOutput> {
   const cacheKey = buildCacheKey(CACHE_VERSIONS.application, cv, job, rawText, match);
 
@@ -29,6 +30,7 @@ export async function generateApplication(
         temperature: 0.3,
         jsonMode: true,
         maxTokens: 1500,
+        signal,
       });
     },
   });

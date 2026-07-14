@@ -1,20 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
 
-// Enforces a response deadline for requests.
-//
-// Without this, a stalled operation (OpenAI call, database query, external API,
-// etc.) can leave the HTTP connection open until the underlying operation
-// eventually resolves or fails.
-//
-// Timeouts configured on individual dependencies (axios/fetch, database clients,
-// etc.) handle specific operations, but this middleware provides a final
-// request-level deadline for anything that exceeds the allowed response time.
-//
-// Once the deadline fires and a 503 response is sent, later response write
-// attempts from downstream code (controller logic still resolving,
-// validateResponse, etc.) are suppressed to prevent duplicate responses and
-// potential ERR_HTTP_HEADERS_SENT errors.
-
 /**
  * Returns true if this response has already been timed out by aiTimeout.
  * Response-writing middleware (e.g. validateResponse) can check this before
@@ -23,6 +8,24 @@ import type { NextFunction, Request, Response } from 'express';
  */
 export function isResponseTimedOut(res: Response): boolean {
   return Boolean(res.locals.aiTimedOut);
+}
+
+/**
+ * Returns the AbortSignal for this request, wired up by aiTimeout. Pass this
+ * into fetch/axios/OpenAI SDK calls, DB queries, etc. so they get cancelled
+ * when the deadline fires or the client disconnects.
+ *
+ * Throws if aiTimeout middleware hasn't run for this request, so callers
+ * fail loudly instead of silently running with no cancellation.
+ */
+export function getAbortSignal(res: Response): AbortSignal {
+  const controller = res.locals.aiAbortController as AbortController | undefined;
+
+  if (!controller) {
+    throw new Error('getAbortSignal called without aiTimeout middleware installed');
+  }
+
+  return controller.signal;
 }
 
 function noopLateWrites(res: Response): void {
@@ -41,12 +44,21 @@ function noopLateWrites(res: Response): void {
   res.end = suppressWrite as typeof res.end;
 }
 
+function abortError(message: string): Error {
+  const err = new Error(message);
+  err.name = 'AbortError';
+  return err;
+}
+
 /**
  * @param {number} ms  Timeout in milliseconds
  */
 export function aiTimeout(ms: number) {
   return (req: Request, res: Response, next: NextFunction): void => {
     let finished = false;
+
+    const controller = new AbortController();
+    res.locals.aiAbortController = controller;
 
     const timer = setTimeout(() => {
       if (finished) {
@@ -64,6 +76,9 @@ export function aiTimeout(ms: number) {
       // Prevent any late write from downstream (controller still resolving,
       // validateResponse, etc.) from touching the response after this point.
       noopLateWrites(res);
+
+      // Cancel any downstream work still in flight (OpenAI call, DB query, etc).
+      controller.abort(abortError('Request timed out'));
     }, ms);
 
     res.on('finish', () => {
@@ -74,6 +89,13 @@ export function aiTimeout(ms: number) {
     res.on('close', () => {
       finished = true;
       clearTimeout(timer);
+
+      // Client disconnected before we finished — no point continuing
+      // downstream work either, even though this wasn't a deadline timeout.
+      if (!controller.signal.aborted) {
+        noopLateWrites(res);
+        controller.abort(abortError('Client disconnected'));
+      }
     });
 
     next();
