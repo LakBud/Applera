@@ -1,17 +1,19 @@
 import type { NextFunction, Request, Response } from 'express';
 
-// Enforces a hard deadline on requests and closes hung connections.
+// Enforces a response deadline for requests.
 //
-// Without this, a stalled OpenAI call holds the connection open indefinitely.
-// Enough of these will exhaust Node's connection pool and take down the server.
+// Without this, a stalled operation (OpenAI call, database query, external API,
+// etc.) can leave the HTTP connection open until the underlying operation
+// eventually resolves or fails.
 //
-// The axios/fetch timeout in the LLM client handles the AI call itself,
-// but this middleware catches anything else that might stall (DB writes, etc).
+// Timeouts configured on individual dependencies (axios/fetch, database clients,
+// etc.) handle specific operations, but this middleware provides a final
+// request-level deadline for anything that exceeds the allowed response time.
 //
-// Once the deadline fires and the 503 is sent, any later write attempt from
-// downstream (controller logic still resolving, validateResponse, etc.) is
-// no-op'd rather than allowed through — writing twice would throw
-// ERR_HTTP_HEADERS_SENT and could crash the process.
+// Once the deadline fires and a 503 response is sent, later response write
+// attempts from downstream code (controller logic still resolving,
+// validateResponse, etc.) are suppressed to prevent duplicate responses and
+// potential ERR_HTTP_HEADERS_SENT errors.
 
 /**
  * Returns true if this response has already been timed out by aiTimeout.
@@ -26,11 +28,17 @@ export function isResponseTimedOut(res: Response): boolean {
 function noopLateWrites(res: Response): void {
   res.locals.aiTimedOut = true;
 
-  const noop = () => res;
+  const suppressWrite = (...args: unknown[]): Response => {
+    const callback = args.find((arg): arg is () => void => typeof arg === 'function');
 
-  res.json = noop as typeof res.json;
-  res.send = noop as typeof res.send;
-  res.end = noop as typeof res.end;
+    callback?.();
+
+    return res;
+  };
+
+  res.json = suppressWrite as typeof res.json;
+  res.send = suppressWrite as typeof res.send;
+  res.end = suppressWrite as typeof res.end;
 }
 
 /**
