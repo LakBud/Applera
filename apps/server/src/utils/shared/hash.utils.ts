@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import stringify from 'fast-json-stable-stringify';
 
 export function hash(input: unknown): string {
   try {
@@ -15,5 +16,5 @@ export function hashBuffer(buffer: Buffer): string {
 }
 
 export function hashRequest(input: unknown): string {
-  return hash(JSON.stringify(input));
+  return hash(stringify(input));
 }
