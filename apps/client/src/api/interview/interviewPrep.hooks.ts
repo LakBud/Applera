@@ -36,12 +36,6 @@ export function useGenerateInterviewPrep() {
       toast.success('Interview prep generated');
     },
     onError: (error: ClientError) => {
-      if (error.code === 'RATE_LIMITED') {
-        toast.error('Maximum regenerations reached', {
-          description: "You've reached the maximum of 3 regenerations for this application.",
-        });
-        return;
-      }
       handleMutationError(error, 'Failed to generate interview prep. Please try again.');
     },
   });

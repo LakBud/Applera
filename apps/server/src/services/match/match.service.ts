@@ -7,17 +7,17 @@ import { extractAllText } from '../../utils/match/text.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
 import { cachedLLM } from '../llm/llm.service.js';
 
+import type { LLMExecutionOptions } from '../../types/llm.types.js';
 import type { CVParsed, JobParsed } from '@applera/schemas';
 
-export interface MatchOptions {
+export interface MatchOptions extends LLMExecutionOptions {
   skipAI?: boolean;
-  signal?: AbortSignal;
 }
 
 export async function matchCVToJob(
   cv: CVParsed,
   job: JobParsed,
-  { skipAI = false, signal }: MatchOptions = {},
+  { skipAI = false, signal, reserveUsage, refundUsage }: MatchOptions = {},
 ): Promise<MatchReport> {
   const cacheKey = `match:${CACHE_VERSIONS.match}:${hash(
     JSON.stringify({
@@ -32,14 +32,21 @@ export async function matchCVToJob(
   return cachedLLM({
     cacheKey,
     ttl: 60 * 60 * 24,
+
     fn: async () => {
       const mathResult = runMathMatch(cv, job);
 
       const needsAI = !skipAI && (mathResult.confidence === 'low' || mathResult.score <= 75);
 
-      signal?.throwIfAborted(); // don't kick off the AI call if we're already past the deadline
+      signal?.throwIfAborted();
 
-      const ai_insights = needsAI ? await runAIEnrichment(cv, job, mathResult, { signal }) : null;
+      const ai_insights = needsAI
+        ? await runAIEnrichment(cv, job, mathResult, {
+            signal,
+            reserveUsage,
+            refundUsage,
+          })
+        : null;
 
       const coveredByAI = new Set(
         [...(ai_insights?.semantic_matches ?? []), ...(ai_insights?.implicit_skills ?? [])].map(
@@ -69,7 +76,7 @@ export async function matchCVToJob(
         ai_insights,
       };
 
-      return MatchReportSchema.parse(result); // validates the whole thing before caching
+      return MatchReportSchema.parse(result);
     },
   });
 }

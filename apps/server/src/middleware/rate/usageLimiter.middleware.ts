@@ -1,8 +1,12 @@
 import { redis } from '../../config/redis.js';
+import { UsageLimitError } from '../../utils/errors/usage.errors.js';
+import { usageKey } from '../../utils/shared/usageKey.utils.js';
 import { getUsageLimit } from '../../utils/user/getUsageLimit.utils.js';
 import { getUserId } from '../../utils/user/getUserId.utils.js';
 
 import type { NextFunction, Request, Response } from 'express';
+
+const ROLLING_WINDOW_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 export async function usageLimiter(req: Request, res: Response, next: NextFunction) {
   const userId = getUserId(req);
@@ -14,38 +18,64 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
   }
 
   const limit = getUsageLimit(req);
-
-  const key = `usage:${userId}`;
+  const key = usageKey(userId);
 
   try {
-    const count = await redis.incr(key);
+    let charged = false;
 
-    // first request → set expiry (rolling window)
-    if (count === 1) {
-      await redis.expire(key, 60 * 60 * 24 * 7); // 7 days rolling
-    }
+    req.reserveUsage = async () => {
+      if (charged) {
+        const count = Number((await redis.get(key)) ?? 0);
 
-    console.log({
-      userId,
-      count,
-      limit,
-    });
+        return {
+          count,
+          limit,
+          remaining: Math.max(limit - count, 0),
+        };
+      }
 
-    if (count > limit) {
-      return res.status(402).json({
-        error: 'USAGE_LIMIT_REACHED',
-        message: `LLM call limit of ${limit} reached`,
-        limit,
+      const count = await redis.incr(key);
+      charged = true;
+
+      if (count === 1) {
+        await redis.expire(key, ROLLING_WINDOW_SECONDS);
+      }
+
+      if (count > limit) {
+        try {
+          await redis.decr(key);
+          charged = false;
+        } catch (rollbackErr) {
+          console.error('[usageLimiter rollback]', rollbackErr);
+        }
+
+        throw new UsageLimitError();
+      }
+
+      console.log({ userId, count, limit });
+
+      return {
         count,
-        remaining: 0,
-      });
-    }
+        limit,
+        remaining: Math.max(limit - count, 0),
+      };
+    };
 
-    // optional: attach usage info for downstream
+    req.refundUsage = async () => {
+      if (!charged) {
+        return;
+      }
+
+      await redis.decr(key);
+      charged = false;
+    };
+
+    const current = Number((await redis.get(key)) ?? 0);
+
     res.locals.usage = {
-      count,
+      count: current,
       limit,
-      remaining: limit - count,
+      remaining: Math.max(limit - current, 0),
     };
 
     return next();

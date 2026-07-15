@@ -4,13 +4,10 @@ import { repairCV } from '../cv/cvRepair.service.js';
 import { repairJob } from '../job/jobRepair.service.js';
 import { matchCVToJob } from '../match/match.service.js';
 
+import type { LLMExecutionOptions } from '../../types/llm.types.js';
 import type { CVParsed, JobParsed } from '@applera/schemas';
 
 export type Input = Buffer | string;
-
-export interface PipelineOptions {
-  signal?: AbortSignal;
-}
 
 /**
  * Pipeline starting from already-parsed CV and job data.
@@ -20,9 +17,9 @@ export async function runApplicationPipelineFromParsed(
   cv: CVParsed,
   job: JobParsed,
   rawText: string,
-  opts: PipelineOptions = {},
+  opts: LLMExecutionOptions = {},
 ): Promise<PipelineResult> {
-  const { signal } = opts;
+  const { signal, reserveUsage, refundUsage } = opts;
 
   // Step 1: repair/normalize (sync, nothing to cancel)
   const cleanCV = repairCV(cv);
@@ -31,26 +28,26 @@ export async function runApplicationPipelineFromParsed(
   signal?.throwIfAborted();
 
   // Step 2: match scoring
-  const match = await matchCVToJob(cleanCV, cleanJob, { signal });
+  const match = await matchCVToJob(cleanCV, cleanJob, {
+    signal,
+    reserveUsage,
+    refundUsage,
+  });
 
   signal?.throwIfAborted();
 
   // Step 3: application generation
-  const application = await generateApplication(cleanCV, cleanJob, rawText, match, { signal });
-  const applicationLetter = application.application_letter ?? {};
+  const application = await generateApplication(cleanCV, cleanJob, rawText, match, {
+    signal,
+    reserveUsage,
+    refundUsage,
+  });
 
   return {
     cv: cleanCV,
     job: cleanJob,
     match,
-    application: {
-      ...application,
-      application_letter: {
-        introduction: applicationLetter.introduction ?? '',
-        body: applicationLetter.body ?? '',
-        closing: applicationLetter.closing ?? '',
-      },
-    },
+    application,
     snapshot: {
       cvNameSnapshot: cleanCV.name?.trim() || 'CV',
       jobTitleSnapshot: cleanJob.title?.trim() || 'Untitled Role',

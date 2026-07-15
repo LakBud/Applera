@@ -5,6 +5,8 @@ import { model, openai } from '../../config/openai.js';
 import { getCache, setCache } from '../../lib/cache.js';
 import parseModelJson from '../../lib/parseModelJson.js';
 
+import type { RefundUsage, ReserveUsage } from '../../types/llm.types.js';
+
 const BASE_DELAY_MS = 500;
 
 // Error class
@@ -43,7 +45,7 @@ async function withTimeout<T>(
   }
 }
 
-// Debug logger (safe in dev only
+// Debug logger (safe in dev only)
 function debugLog(label: string, content: unknown, requestId: string): void {
   if (IS_PROD) {
     return;
@@ -164,26 +166,44 @@ export async function callLLM({
   );
 }
 
-// ─────────────────────────────────────────────
-// Cached LLM wrapper (ZOD will validate OUTSIDE this)
-// ─────────────────────────────────────────────
-
 export async function cachedLLM<T>({
   cacheKey,
   ttl,
   fn,
+  reserveUsage,
+  refundUsage,
 }: {
   cacheKey: string;
   ttl: number;
   fn: () => Promise<T>;
+  reserveUsage?: ReserveUsage;
+  refundUsage?: RefundUsage;
 }): Promise<T> {
   const cached = await getCache<T>(cacheKey);
+
   if (cached) {
     return cached;
   }
 
-  const result = await fn();
-
-  await setCache(cacheKey, result, ttl);
-  return result;
+  try {
+    await reserveUsage?.();
+    const result = await fn();
+    try {
+      await setCache(cacheKey, result, ttl);
+    } catch (cacheError) {
+      console.error('[cachedLLM] Cache write failed', {
+        message: cacheError instanceof Error ? cacheError.message : 'Unknown error',
+      });
+    }
+    return result;
+  } catch (err) {
+    try {
+      await refundUsage?.();
+    } catch (refundErr) {
+      console.error('[cachedLLM] Refund failed', {
+        message: refundErr instanceof Error ? refundErr.message : 'Unknown error',
+      });
+    }
+    throw err;
+  }
 }

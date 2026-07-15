@@ -69,20 +69,6 @@ export const generatePrep = async (req: Request, res: Response) => {
 
     signal.throwIfAborted();
 
-    const existing = await InterviewPrep.findOne({
-      application: applicationId,
-      ownerId: identity.id,
-      ownerType: identity.type,
-    })
-      .select('regenerationCount')
-      .lean();
-
-    if (existing && existing.regenerationCount >= 3) {
-      return res.status(429).json({
-        error: 'Maximum regenerations reached.',
-      });
-    }
-
     await deleteCache(`interview:${applicationId}`);
 
     signal.throwIfAborted();
@@ -104,7 +90,7 @@ export const generatePrep = async (req: Request, res: Response) => {
       rawText,
       match,
       applicationId,
-      { signal },
+      { signal, reserveUsage: req.reserveUsage, refundUsage: req.refundUsage },
     );
 
     signal.throwIfAborted();
@@ -119,9 +105,7 @@ export const generatePrep = async (req: Request, res: Response) => {
         application: applicationId,
         ownerId: identity.id,
         ownerType: identity.type,
-        questions: prep.questions,
-        general_tips: prep.general_tips,
-        $inc: { regenerationCount: 1 },
+        parsed: prep,
       },
       {
         upsert: true,
@@ -154,13 +138,7 @@ export const generatePrep = async (req: Request, res: Response) => {
       return;
     }
 
-    const message = err instanceof Error ? err.message : 'Unknown error';
-
-    console.error('[generatePrep]', message);
-
-    return res.status(500).json({
-      error: message,
-    });
+    throw err;
   }
 };
 
@@ -169,37 +147,27 @@ export const generatePrep = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 
 export const getPrep = async (req: Request, res: Response) => {
-  try {
-    const applicationId = getParam(req.params.applicationId);
+  const applicationId = getParam(req.params.applicationId);
 
-    const identity = req.identity;
+  const identity = req.identity;
 
-    if (!identity) {
-      return res.status(401).json({
-        error: 'Unauthorized',
-      });
-    }
-
-    const prep = await InterviewPrep.findOne({
-      application: applicationId,
-      ownerId: identity.id,
-      ownerType: identity.type,
-    });
-
-    if (!prep) {
-      return res.status(404).json({
-        error: 'No interview prep found. Generate one first.',
-      });
-    }
-
-    return res.json({ prep });
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-
-    console.error('[getPrep]', message);
-
-    return res.status(500).json({
-      error: message,
+  if (!identity) {
+    return res.status(401).json({
+      error: 'Unauthorized',
     });
   }
+
+  const prep = await InterviewPrep.findOne({
+    application: applicationId,
+    ownerId: identity.id,
+    ownerType: identity.type,
+  });
+
+  if (!prep) {
+    return res.status(404).json({
+      error: 'No interview prep found. Generate one first.',
+    });
+  }
+
+  return res.json({ prep });
 };
