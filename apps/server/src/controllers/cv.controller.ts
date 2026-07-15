@@ -7,6 +7,7 @@ import { extractTextFromPdf } from '../lib/pdfParser.js';
 import { getAbortSignal } from '../middleware/timeout.middleware.js';
 import Application from '../models/Application.js';
 import CVModel from '../models/CV.js';
+import User from '../models/User.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { extractCVData } from '../services/extractors.service.js';
 import { LLMError } from '../services/llm/llm.service.js';
@@ -352,44 +353,80 @@ export const deleteCV = async (req: UserRequest, res: Response) => {
 // PATCH /api/cv/:id/pin
 // ─────────────────────────────────────────────
 
+import mongoose from 'mongoose';
+
 export const pinCV = async (req: UserRequest, res: Response) => {
   const { id: ownerId, type: ownerType } = req.identity;
   const id = getParam(req.params.id);
 
-  const cv = await CVModel.findOne({ _id: id, ownerId, ownerType });
+  const session = await mongoose.startSession();
 
-  if (!cv) {
-    throw new NotFoundError('CV not found');
-  }
+  try {
+    const response = await session.withTransaction(async () => {
+      const cv = await CVModel.findOne({
+        _id: id,
+        ownerId,
+        ownerType,
+      }).session(session);
 
-  // Unpin
-  if (cv.pinned) {
-    cv.pinned = false;
-    await cv.save();
+      if (!cv) {
+        throw new NotFoundError('CV not found');
+      }
+
+      // Unpin
+      if (cv.pinned) {
+        cv.pinned = false;
+        await cv.save({ session });
+
+        await User.updateOne({ clerkId: ownerId }, { $inc: { pinnedCVCount: -1 } }, { session });
+
+        return { cv, pinned: false };
+      }
+
+      const user = await User.findOne({ clerkId: ownerId });
+      console.log(user?.pinnedCVCount);
+
+      // Reserve pin slot
+      const reservation = await User.updateOne(
+        {
+          clerkId: ownerId,
+          pinnedCVCount: { $lt: 5 },
+        },
+        {
+          $inc: { pinnedCVCount: 1 },
+        },
+        {
+          session,
+        },
+      );
+
+      if (reservation.modifiedCount !== 1) {
+        throw new BadRequestError('You can only pin up to 5 CVs. Unpin one first.');
+      }
+
+      cv.pinned = true;
+      await cv.save({ session });
+
+      return { cv, pinned: true };
+    });
+
     await deleteCache(cvListKey(ownerId, ownerType));
-    return res.json({ cv, pinned: false });
+
+    if (response.pinned) {
+      await auditLog({
+        event: 'CV_PINNED',
+        userId: ownerId,
+        userType: ownerType,
+        resourceId: id,
+        requestId: req.requestId,
+        ip: req.ip,
+      });
+    }
+
+    return res.json(response);
+  } finally {
+    await session.endSession();
   }
-
-  // Enforce max 5 pinned
-  const pinnedCount = await CVModel.countDocuments({ ownerId, ownerType, pinned: true });
-  if (pinnedCount >= 5) {
-    throw new BadRequestError('You can only pin up to 5 CVs. Unpin one first.');
-  }
-
-  cv.pinned = true;
-  await cv.save();
-  await deleteCache(cvListKey(ownerId, ownerType));
-
-  await auditLog({
-    event: 'CV_PINNED',
-    userId: ownerId,
-    userType: ownerType,
-    resourceId: id,
-    requestId: req.requestId,
-    ip: req.ip,
-  });
-
-  return res.json({ cv, pinned: true });
 };
 
 // GET /api/cv/:id/preview

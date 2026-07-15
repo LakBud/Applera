@@ -75,6 +75,6 @@ export function withIdentity(
   handler: (req: IdentifiedRequest, res: Response, next: NextFunction) => unknown,
 ): RequestHandler {
   return (req, res, next) => {
-    Promise.resolve(handler(req as IdentifiedRequest, res, next)).catch(next);
+    return handler(req as IdentifiedRequest, res, next);
   };
 }

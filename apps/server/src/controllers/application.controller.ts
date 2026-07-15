@@ -11,6 +11,7 @@ import CVModel from '../models/CV.js';
 import JobModel from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { runApplicationPipelineFromParsed } from '../services/pipeline/pipeline.service.js';
+import { BadRequestError } from '../utils/errors/badRequest.error.js';
 import { NotFoundError } from '../utils/errors/notFound.error.js';
 import { getParam } from '../utils/shared/param.utils.js';
 
@@ -71,7 +72,7 @@ export const updateApplicationStatus = async (req: UserRequest, res: Response) =
   const { status } = req.body;
 
   if (!APPLICATION_STATUSES.includes(status as ApplicationStatus)) {
-    throw new NotFoundError(`Invalid status. Must be one of: ${APPLICATION_STATUSES.join(', ')}`);
+    throw new BadRequestError(`Invalid status. Must be one of: ${APPLICATION_STATUSES.join(', ')}`);
   }
 
   const updated = await Application.findOneAndUpdate(
@@ -171,8 +172,8 @@ export const createApplication = async (req: UserRequest, res: Response) => {
       throw new NotFoundError('CV or Job not found');
     }
 
-    if (!cv.parsed) throw new NotFoundError('CV not parsed');
-    if (!job.parsed) throw new NotFoundError('Job not parsed');
+    if (!cv.parsed) throw new BadRequestError('CV not parsed');
+    if (!job.parsed) throw new BadRequestError('Job not parsed');
 
     const parsedCV = CVParsedSchema.parse(cv.parsed);
     const parsedJob = JobParsedSchema.parse(job.parsed);

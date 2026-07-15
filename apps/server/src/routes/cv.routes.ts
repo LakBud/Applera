@@ -9,6 +9,7 @@ import {
   getCVs,
   pinCV,
 } from '../controllers/cv.controller.js';
+import { withUser } from '../middleware/global/user.middleware.js';
 import { idempotency } from '../middleware/idempotency.middleware.js';
 import { parseCvPdf } from '../middleware/pdf/parsePdf.middleware.js';
 import { concurrencyLimit } from '../middleware/rate/concurrency.middleware.js';
@@ -22,7 +23,6 @@ import {
 } from '../middleware/upload/upload.middleware.js';
 import { validateRequest } from '../middleware/validate/request/validateRequest.middleware.js';
 import { validateResponse } from '../middleware/validate/response/validateResponse.middleware.js';
-import { withUser } from '../types/requests.js';
 
 const router = express.Router();
 

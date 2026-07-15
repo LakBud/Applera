@@ -32,10 +32,17 @@ const UserSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+
     plan: {
       type: String,
       enum: ['free', 'pro', 'enterprise'],
       default: 'free',
+    },
+
+    pinnedCVCount: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
   },
   {

@@ -7,13 +7,13 @@ import {
   getApplications,
   updateApplicationStatus,
 } from '../controllers/application.controller.js';
+import { withUser } from '../middleware/global/user.middleware.js';
 import { idempotency } from '../middleware/idempotency.middleware.js';
 import { applicationLimiter } from '../middleware/rate/rateLimiter.middleware.js';
 import { usageLimiter } from '../middleware/rate/usageLimiter.middleware.js';
 import { aiTimeout } from '../middleware/timeout.middleware.js';
 import { validateRequest } from '../middleware/validate/request/validateRequest.middleware.js';
 import { validateResponse } from '../middleware/validate/response/validateResponse.middleware.js';
-import { withUser } from '../types/requests.js';
 
 const router = express.Router();
 
@@ -43,6 +43,7 @@ router.get(
 // PATCH /api/application/:id/status
 router.patch(
   '/:id/status',
+  idempotency,
   validateRequest('updateApplicationStatus'),
   validateResponse('applicationResponse'),
   withUser(updateApplicationStatus),
