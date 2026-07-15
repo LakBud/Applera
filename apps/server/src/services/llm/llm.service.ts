@@ -169,21 +169,37 @@ export async function cachedLLM<T>({
   ttl,
   fn,
   reserveUsage,
+  refundUsage,
 }: {
   cacheKey: string;
   ttl: number;
   fn: () => Promise<T>;
   reserveUsage?: () => Promise<unknown>;
+  refundUsage?: () => Promise<void>;
 }): Promise<T> {
   const cached = await getCache<T>(cacheKey);
+
   if (cached) {
     return cached;
   }
 
-  const result = await fn();
-
   await reserveUsage?.();
-  await setCache(cacheKey, result, ttl);
 
-  return result;
+  try {
+    const result = await fn();
+
+    try {
+      await setCache(cacheKey, result, ttl);
+    } catch (cacheError) {
+      console.error('[cachedLLM] Cache write failed', {
+        message: cacheError instanceof Error ? cacheError.message : 'Unknown error',
+      });
+    }
+
+    return result;
+  } catch (err) {
+    await refundUsage?.();
+
+    throw err;
+  }
 }

@@ -254,6 +254,7 @@ export const createApplication = async (req: Request, res: Response) => {
     const result = await runApplicationPipelineFromParsed(parsedCV, parsedJob, job.rawText ?? '', {
       signal,
       reserveUsage: req.reserveUsage,
+      refundUsage: req.refundUsage,
     });
 
     const application = await Application.create({

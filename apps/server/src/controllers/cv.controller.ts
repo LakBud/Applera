@@ -121,6 +121,7 @@ export const createCV = async (req: Request, res: Response) => {
     const parsedRaw = await extractCVData(rawText, {
       signal,
       reserveUsage: req.reserveUsage,
+      refundUsage: req.refundUsage,
     });
 
     signal.throwIfAborted();

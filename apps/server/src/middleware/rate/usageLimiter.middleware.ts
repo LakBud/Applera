@@ -20,35 +20,32 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
   const key = usageKey(userId);
 
   try {
-    const current = Number((await redis.get(key)) ?? 0);
-
-    if (current >= limit) {
-      return res.status(402).json({
-        error: 'USAGE_LIMIT_REACHED',
-        message: `LLM call limit of ${limit} reached`,
-        limit,
-        count: current,
-        remaining: 0,
-      });
-    }
-
     let charged = false;
 
     req.reserveUsage = async () => {
       if (charged) {
+        const count = Number((await redis.get(key)) ?? 0);
+
         return {
-          count: current,
+          count,
           limit,
-          remaining: Math.max(limit - current, 0),
+          remaining: Math.max(limit - count, 0),
         };
       }
-      charged = true;
 
       const count = await redis.incr(key);
 
       if (count === 1) {
         await redis.expire(key, ROLLING_WINDOW_SECONDS);
       }
+
+      if (count > limit) {
+        await redis.decr(key);
+
+        throw new Error('USAGE_LIMIT_REACHED');
+      }
+
+      charged = true;
 
       console.log({ userId, count, limit });
 
@@ -58,6 +55,17 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
         remaining: Math.max(limit - count, 0),
       };
     };
+
+    req.refundUsage = async () => {
+      if (!charged) {
+        return;
+      }
+
+      await redis.decr(key);
+      charged = false;
+    };
+
+    const current = Number((await redis.get(key)) ?? 0);
 
     res.locals.usage = {
       count: current,

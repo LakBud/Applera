@@ -15,29 +15,21 @@ import type { MatchReport } from '../../types/schemas/match.schemas.js';
 
 const INTERVIEW_TTL = 60 * 60 * 24; // 24 hours — questions don't change unless regenerated
 
-interface InterviewPrepOutput {
-  questions: {
-    category: string;
-    question: string;
-    tip: string;
-  }[];
-  general_tips: string[];
-}
-
 export async function generateInterviewPrep(
   cv: CVParsed,
   job: JobParsed,
   rawText: string | null | undefined,
   match: MatchReport,
   applicationId: string,
-  { signal, reserveUsage }: LLMExecutionOptions = {},
-): Promise<InterviewPrepOutput> {
+  { signal, reserveUsage, refundUsage }: LLMExecutionOptions = {},
+): Promise<InterviewPrepParsed> {
   signal?.throwIfAborted();
 
   return cachedLLM<InterviewPrepParsed>({
     cacheKey: `interview:${CACHE_VERSIONS.interview}:${applicationId}`,
     ttl: INTERVIEW_TTL,
     reserveUsage,
+    refundUsage,
 
     fn: async () => {
       const result = await callLLM({

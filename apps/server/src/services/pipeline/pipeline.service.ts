@@ -19,7 +19,7 @@ export async function runApplicationPipelineFromParsed(
   rawText: string,
   opts: LLMExecutionOptions = {},
 ): Promise<PipelineResult> {
-  const { signal, reserveUsage } = opts;
+  const { signal, reserveUsage, refundUsage } = opts;
 
   // Step 1: repair/normalize (sync, nothing to cancel)
   const cleanCV = repairCV(cv);
@@ -31,6 +31,7 @@ export async function runApplicationPipelineFromParsed(
   const match = await matchCVToJob(cleanCV, cleanJob, {
     signal,
     reserveUsage,
+    refundUsage,
   });
 
   signal?.throwIfAborted();
@@ -39,22 +40,14 @@ export async function runApplicationPipelineFromParsed(
   const application = await generateApplication(cleanCV, cleanJob, rawText, match, {
     signal,
     reserveUsage,
+    refundUsage,
   });
-
-  const applicationLetter = application.application_letter ?? {};
 
   return {
     cv: cleanCV,
     job: cleanJob,
     match,
-    application: {
-      ...application,
-      application_letter: {
-        introduction: applicationLetter.introduction ?? '',
-        body: applicationLetter.body ?? '',
-        closing: applicationLetter.closing ?? '',
-      },
-    },
+    application,
     snapshot: {
       cvNameSnapshot: cleanCV.name?.trim() || 'CV',
       jobTitleSnapshot: cleanJob.title?.trim() || 'Untitled Role',

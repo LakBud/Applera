@@ -17,7 +17,7 @@ export interface MatchOptions extends LLMExecutionOptions {
 export async function matchCVToJob(
   cv: CVParsed,
   job: JobParsed,
-  { skipAI = false, signal, reserveUsage }: MatchOptions = {},
+  { skipAI = false, signal, reserveUsage, refundUsage }: MatchOptions = {},
 ): Promise<MatchReport> {
   const cacheKey = `match:${CACHE_VERSIONS.match}:${hash(
     JSON.stringify({
@@ -32,7 +32,6 @@ export async function matchCVToJob(
   return cachedLLM({
     cacheKey,
     ttl: 60 * 60 * 24,
-    reserveUsage,
 
     fn: async () => {
       const mathResult = runMathMatch(cv, job);
@@ -45,6 +44,7 @@ export async function matchCVToJob(
         ? await runAIEnrichment(cv, job, mathResult, {
             signal,
             reserveUsage,
+            refundUsage,
           })
         : null;
 

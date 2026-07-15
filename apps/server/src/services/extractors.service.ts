@@ -25,7 +25,7 @@ import type { CVParsed, JobParsed } from '@applera/schemas';
  */
 export async function extractCVData(
   cvText: string,
-  { signal, reserveUsage }: LLMExecutionOptions = {},
+  { signal, reserveUsage, refundUsage }: LLMExecutionOptions = {},
 ): Promise<CVParsed> {
   const safeText = sanitise(cvText, 'cvText');
 
@@ -33,6 +33,7 @@ export async function extractCVData(
     cacheKey: `cv:${CACHE_VERSIONS.cv}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
     reserveUsage,
+    refundUsage,
 
     fn: async () => {
       const result = await callLLM({
@@ -70,7 +71,7 @@ export async function extractCVData(
  */
 export async function extractJobData(
   jobText: string,
-  { signal, reserveUsage }: LLMExecutionOptions = {},
+  { signal, reserveUsage, refundUsage }: LLMExecutionOptions = {},
 ): Promise<JobParsed> {
   const safeText = sanitise(jobText, 'jobText');
 
@@ -78,6 +79,7 @@ export async function extractJobData(
     cacheKey: `job:${CACHE_VERSIONS.job}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
     reserveUsage,
+    refundUsage,
 
     fn: async () => {
       const result = await callLLM({

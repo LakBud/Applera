@@ -12,7 +12,7 @@ export async function runAIEnrichment(
   cv: CVParsed,
   job: JobParsed,
   mathResult: Omit<MatchReport, 'ai_insights'>,
-  { signal, reserveUsage }: LLMExecutionOptions = {},
+  { signal, reserveUsage, refundUsage }: LLMExecutionOptions = {},
 ): Promise<MatchReport['ai_insights']> {
   const cacheKey = `match:ai:${CACHE_VERSIONS.match}:${hash(
     JSON.stringify({
@@ -29,6 +29,7 @@ export async function runAIEnrichment(
     cacheKey,
     ttl: 60 * 60 * 24,
     reserveUsage,
+    refundUsage,
 
     fn: async () => {
       const raw = await callLLM({

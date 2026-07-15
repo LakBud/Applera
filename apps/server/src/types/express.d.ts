@@ -2,7 +2,7 @@ import '@clerk/express';
 import 'multer';
 import { Identity } from './schemas/identity.schemas.js';
 
-import type { ReserveUsage } from './llm.types.ts';
+import type { RefundUsage, ReserveUsage } from './llm.types.js';
 
 declare global {
   namespace Express {
@@ -20,6 +20,7 @@ declare global {
       jobPdfText?: string;
 
       reserveUsage?: ReserveUsage;
+      refundUsage?: RefundUsage;
     }
   }
 }

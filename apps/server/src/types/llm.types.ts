@@ -6,7 +6,10 @@ export type UsageResult = {
 
 export type ReserveUsage = () => Promise<UsageResult>;
 
+export type RefundUsage = () => Promise<void>;
+
 export type LLMExecutionOptions = {
   signal?: AbortSignal;
   reserveUsage?: ReserveUsage;
+  refundUsage?: RefundUsage;
 };

@@ -39,11 +39,6 @@ const InterviewPrepSchema = new mongoose.Schema(
         },
       ],
     },
-
-    regenerationCount: {
-      type: Number,
-      default: 0,
-    },
   },
   {
     timestamps: true,

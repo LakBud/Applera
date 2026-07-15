@@ -69,20 +69,6 @@ export const generatePrep = async (req: Request, res: Response) => {
 
     signal.throwIfAborted();
 
-    const existing = await InterviewPrep.findOne({
-      application: applicationId,
-      ownerId: identity.id,
-      ownerType: identity.type,
-    })
-      .select('regenerationCount')
-      .lean();
-
-    if (existing && existing.regenerationCount >= 3) {
-      return res.status(429).json({
-        error: 'Maximum regenerations reached.',
-      });
-    }
-
     await deleteCache(`interview:${applicationId}`);
 
     signal.throwIfAborted();
@@ -104,7 +90,7 @@ export const generatePrep = async (req: Request, res: Response) => {
       rawText,
       match,
       applicationId,
-      { signal, reserveUsage: req.reserveUsage },
+      { signal, reserveUsage: req.reserveUsage, refundUsage: req.refundUsage },
     );
 
     signal.throwIfAborted();
@@ -120,7 +106,6 @@ export const generatePrep = async (req: Request, res: Response) => {
         ownerId: identity.id,
         ownerType: identity.type,
         parsed: prep,
-        $inc: { regenerationCount: 1 },
       },
       {
         upsert: true,
