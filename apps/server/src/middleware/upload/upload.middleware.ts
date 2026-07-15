@@ -1,5 +1,7 @@
 import multer from 'multer';
 
+import { BadRequestError, MulterUploadError } from '../../utils/errors/badRequest.error.js';
+
 import type { NextFunction, Request, Response } from 'express';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -46,10 +48,7 @@ export function validatePdfMagic(req: Request, res: Response, next: NextFunction
   const header = req.file.buffer.subarray(0, 4);
 
   if (!header.equals(PDF_MAGIC)) {
-    res.status(400).json({
-      error: 'Invalid file. Only real PDFs are accepted',
-    });
-    return;
+    throw new BadRequestError('Invalid file. Only real PDFs are accepted');
   }
 
   next();
@@ -72,7 +71,5 @@ export function handleUploadError(
     LIMIT_UNEXPECTED_FILE: 'Invalid file type. Only PDF files are accepted.',
   };
 
-  return res.status(400).json({
-    error: messages[err.code] ?? 'Upload error',
-  });
+  next(new MulterUploadError(messages[err.code] ?? 'Upload error', err.code));
 }

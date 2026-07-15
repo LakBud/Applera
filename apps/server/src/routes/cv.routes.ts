@@ -22,11 +22,12 @@ import {
 } from '../middleware/upload/upload.middleware.js';
 import { validateRequest } from '../middleware/validate/request/validateRequest.middleware.js';
 import { validateResponse } from '../middleware/validate/response/validateResponse.middleware.js';
+import { withUser } from '../types/requests.js';
 
 const router = express.Router();
 
 // GET /api/cv
-router.get('/', validateResponse('cvListResponse'), getCVs);
+router.get('/', validateResponse('cvListResponse'), withUser(getCVs));
 
 // POST /api/cv — upload CV (file or text)
 router.post(
@@ -42,17 +43,22 @@ router.post(
   validateRequest('uploadCV'),
   usageLimiter,
   validateResponse('uploadCVResponse'),
-  createCV,
+  withUser(createCV),
 );
 
 // GET /api/cv/:id
-router.get('/:id', validateRequest('getCVById'), validateResponse('cvDocument'), getCVById);
+router.get(
+  '/:id',
+  validateRequest('getCVById'),
+  validateResponse('cvDocument'),
+  withUser(getCVById),
+);
 
 // GET /api/cv/:id/pdf
-router.get('/:id/pdf', getCVPdf);
+router.get('/:id/pdf', withUser(getCVPdf));
 
 // GET /api/cv/:id/preview
-router.get('/:id/preview', getCVPreview);
+router.get('/:id/preview', withUser(getCVPreview));
 
 // DELETE /api/cv/:id
 router.delete(
@@ -60,10 +66,15 @@ router.delete(
   deleteCVLimiter,
   validateRequest('deleteCVById'),
   validateResponse('messageResponse'),
-  deleteCV,
+  withUser(deleteCV),
 );
 
 // PATCH /api/cv/:id/pin
-router.patch('/:id/pin', validateRequest('pinCV'), validateResponse('pinCVResponse'), pinCV);
+router.patch(
+  '/:id/pin',
+  validateRequest('pinCV'),
+  validateResponse('pinCVResponse'),
+  withUser(pinCV),
+);
 
 export default router;

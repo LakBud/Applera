@@ -55,6 +55,8 @@ ${JSON.stringify(
 LANGUAGE:
 Detect the language ONLY from this reference text: "${langSample}"
 
+Write all generated content exclusively in the detected language.
+
 TASK:
 Generate a structured job application JSON strictly following the schema.
 `.trim();

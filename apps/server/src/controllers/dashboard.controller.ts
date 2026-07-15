@@ -1,21 +1,17 @@
 import Application from '../models/Application.js';
 import CV from '../models/CV.js';
+import { NotFoundError } from '../utils/errors/notFound.error.js';
 import { getParam } from '../utils/shared/param.utils.js';
 
-import type { Request, Response } from 'express';
+import type { UserRequest } from '../types/requests.js';
+import type { Response } from 'express';
 
 // GET /api/dashboard/:cvId
 // Returns aggregated stats for all applications made with a given CV
-export const getDashboard = async (req: Request, res: Response) => {
+export const getDashboard = async (req: UserRequest, res: Response) => {
   const cvId = getParam(req.params.cvId);
 
   const identity = req.identity;
-
-  if (!identity) {
-    return res.status(401).json({
-      error: 'Unauthorized',
-    });
-  }
 
   const ownerId = identity.id;
   const ownerType = identity.type;
@@ -28,9 +24,7 @@ export const getDashboard = async (req: Request, res: Response) => {
   }).lean();
 
   if (!cvDoc) {
-    return res.status(404).json({
-      error: 'CV not found',
-    });
+    throw new NotFoundError('CV not found');
   }
 
   // ── Applications ───────────────────────────────────

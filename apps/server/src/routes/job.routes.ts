@@ -14,6 +14,7 @@ import {
 } from '../middleware/upload/upload.middleware.js';
 import { validateRequest } from '../middleware/validate/request/validateRequest.middleware.js';
 import { validateResponse } from '../middleware/validate/response/validateResponse.middleware.js';
+import { withUser } from '../types/requests.js';
 
 const router = express.Router();
 
@@ -31,21 +32,26 @@ router.post(
   parseJobPdf,
   validateRequest('createJob'),
   validateResponse('createJobResponse'),
-  createJob,
+  withUser(createJob),
 );
 
 // GET /api/job
-router.get('/', validateResponse('jobListResponse'), getJobs);
+router.get('/', validateResponse('jobListResponse'), withUser(getJobs));
 
 // GET /api/job/:id
-router.get('/:id', validateRequest('getJobById'), validateResponse('jobDocument'), getJobById);
+router.get(
+  '/:id',
+  validateRequest('getJobById'),
+  validateResponse('jobDocument'),
+  withUser(getJobById),
+);
 
 // DELETE /api/job/:id
 router.delete(
   '/:id',
   validateRequest('deleteJobById'),
   validateResponse('messageResponse'),
-  deleteJob,
+  withUser(deleteJob),
 );
 
 export default router;

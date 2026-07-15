@@ -5,8 +5,8 @@ import { ApplicationSchema } from './application.schemas';
 
 // Requests
 export const CreateApplicationRequestSchema = z.object({
-  cvId: z.string(),
-  jobId: z.string(),
+  cvId: z.string().regex(/^[a-f\d]{24}$/i, { message: 'cvId must be a valid MongoDB ObjectId.' }),
+  jobId: z.string().regex(/^[a-f\d]{24}$/i, { message: 'jobId must be a valid MongoDB ObjectId.' }),
 });
 
 export type CreateApplicationRequest = z.infer<typeof CreateApplicationRequestSchema>;

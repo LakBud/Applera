@@ -7,6 +7,7 @@ import Application from '../models/Application.js';
 import CV from '../models/CV.js';
 import InterviewPrep from '../models/InterviewPrep.js';
 import User from '../models/User.js';
+import { BadRequestError } from '../utils/errors/badRequest.error.js';
 
 import type { WebhookEvent } from '@clerk/express';
 import type { Request, Response } from 'express';
@@ -23,21 +24,18 @@ export async function handleClerkWebhook(req: Request, res: Response) {
     }) as WebhookEvent;
   } catch (err) {
     console.error('[webhook] Invalid signature', err);
-    res.status(400).json({ error: 'Invalid signature' });
-    return;
+    throw new BadRequestError('Invalid signature');
   }
 
   if (event.type === 'user.deleted') {
     if (!event.data.id) {
-      res.status(400).json({ error: 'Missing user id' });
-      return;
+      throw new BadRequestError('Missing user id');
     }
     await handleUserDeleted(event.data.id);
   }
 
   res.json({ received: true });
 }
-
 async function handleUserDeleted(clerkId: string) {
   console.log(`[webhook] Deleting all data for user: ${clerkId}`);
 

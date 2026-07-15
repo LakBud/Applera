@@ -6,27 +6,20 @@ export function validateRequest<T extends requestSchemaName>(schemaName: T) {
   const schema = requestSchemas[schemaName];
 
   return (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse({
+    const result = schema.parse({
       body: req.body ?? {},
       params: req.params ?? {},
       query: req.query ?? {},
     });
 
-    if (!result.success) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        message: result.error.issues[0]?.message ?? 'Invalid request',
-      });
-    }
-
-    req.body = result.data.body;
-    req.params = result.data.params;
+    req.body = result.body;
+    req.params = result.params;
 
     Object.keys(req.query).forEach((key) => {
       delete req.query[key];
     });
 
-    Object.assign(req.query, result.data.query);
+    Object.assign(req.query, result.query);
 
     next();
   };

@@ -11,10 +11,13 @@ import { auditLog } from '../services/audit/audit.service.js';
 import { extractCVData } from '../services/extractors.service.js';
 import { LLMError } from '../services/llm/llm.service.js';
 import { normalizeParsedCV } from '../utils/cv/cv.normalize.utils.js';
+import { BadRequestError } from '../utils/errors/badRequest.error.js';
+import { NotFoundError } from '../utils/errors/notFound.error.js';
 import { hash } from '../utils/shared/hash.utils.js';
 import { getParam } from '../utils/shared/param.utils.js';
 
-import type { Request, Response } from 'express';
+import type { UserRequest } from '../types/requests.js';
+import type { Response } from 'express';
 
 const cvHashKey = (userId: string, hash: string) => `cv:hash:${userId}:${hash}`;
 const cvListKey = (userId: string, type: string) => `cvs:${userId}:${type}`;
@@ -69,14 +72,10 @@ const pipeStreamOrFail = (
 // POST /api/cv
 // ─────────────────────────────────────────────
 
-export const createCV = async (req: Request, res: Response) => {
+export const createCV = async (req: UserRequest, res: Response) => {
   const signal = getAbortSignal(res);
 
   try {
-    if (!req.identity) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
     signal.throwIfAborted();
 
     const file = req.file as Express.Multer.File | undefined;
@@ -128,9 +127,7 @@ export const createCV = async (req: Request, res: Response) => {
         });
       }
     } else {
-      return res.status(400).json({
-        error: 'Provide a CV as PDF or text',
-      });
+      throw new BadRequestError('Provide a CV as PDF or text');
     }
 
     // ─────────────────────────────
@@ -235,11 +232,7 @@ export const createCV = async (req: Request, res: Response) => {
 // GET /api/cv
 // ─────────────────────────────────────────────
 
-export const getCVs = async (req: Request, res: Response) => {
-  if (!req.identity) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
+export const getCVs = async (req: UserRequest, res: Response) => {
   const key = cvListKey(req.identity.id, req.identity.type);
 
   const cached = await getCache(key);
@@ -290,11 +283,7 @@ export const getCVs = async (req: Request, res: Response) => {
 // GET /api/cv/:id
 // ─────────────────────────────────────────────
 
-export const getCVById = async (req: Request, res: Response) => {
-  if (!req.identity) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
+export const getCVById = async (req: UserRequest, res: Response) => {
   const id = getParam(req.params.id);
 
   const cv = await CVModel.findOne({
@@ -304,7 +293,7 @@ export const getCVById = async (req: Request, res: Response) => {
   }).lean();
 
   if (!cv) {
-    return res.status(404).json({ error: 'CV not found' });
+    throw new NotFoundError('CV not found');
   }
 
   const applicationsCount = await Application.countDocuments({
@@ -326,11 +315,7 @@ export const getCVById = async (req: Request, res: Response) => {
 // DELETE /api/cv/:id
 // ─────────────────────────────────────────────
 
-export const deleteCV = async (req: Request, res: Response) => {
-  if (!req.identity) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
+export const deleteCV = async (req: UserRequest, res: Response) => {
   const id = getParam(req.params.id);
 
   const deleted = await CVModel.findOneAndDelete({
@@ -340,7 +325,7 @@ export const deleteCV = async (req: Request, res: Response) => {
   });
 
   if (!deleted) {
-    return res.status(404).json({ error: 'CV not found' });
+    throw new NotFoundError('CV not found');
   }
 
   if (deleted.cloudinaryPublicId) {
@@ -367,18 +352,14 @@ export const deleteCV = async (req: Request, res: Response) => {
 // PATCH /api/cv/:id/pin
 // ─────────────────────────────────────────────
 
-export const pinCV = async (req: Request, res: Response) => {
-  if (!req.identity) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
+export const pinCV = async (req: UserRequest, res: Response) => {
   const { id: ownerId, type: ownerType } = req.identity;
   const id = getParam(req.params.id);
 
   const cv = await CVModel.findOne({ _id: id, ownerId, ownerType });
 
   if (!cv) {
-    return res.status(404).json({ error: 'CV not found' });
+    throw new NotFoundError('CV not found');
   }
 
   // Unpin
@@ -392,9 +373,7 @@ export const pinCV = async (req: Request, res: Response) => {
   // Enforce max 5 pinned
   const pinnedCount = await CVModel.countDocuments({ ownerId, ownerType, pinned: true });
   if (pinnedCount >= 5) {
-    return res.status(400).json({
-      error: 'You can only pin up to 5 CVs. Unpin one first.',
-    });
+    throw new BadRequestError('You can only pin up to 5 CVs. Unpin one first.');
   }
 
   cv.pinned = true;
@@ -414,11 +393,7 @@ export const pinCV = async (req: Request, res: Response) => {
 };
 
 // GET /api/cv/:id/preview
-export const getCVPreview = async (req: Request, res: Response) => {
-  if (!req.identity) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
+export const getCVPreview = async (req: UserRequest, res: Response) => {
   const id = getParam(req.params.id);
 
   const cv = await CVModel.findOne({
@@ -428,7 +403,7 @@ export const getCVPreview = async (req: Request, res: Response) => {
   });
 
   if (!cv || !cv.cloudinaryPublicId) {
-    return res.status(404).json({ error: 'Not found' });
+    throw new NotFoundError('Image not found');
   }
 
   const url = cloudinary.url(cv.cloudinaryPublicId, {
@@ -449,11 +424,7 @@ export const getCVPreview = async (req: Request, res: Response) => {
 };
 
 // GET /api/cv/:id/pdf
-export const getCVPdf = async (req: Request, res: Response) => {
-  if (!req.identity) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
+export const getCVPdf = async (req: UserRequest, res: Response) => {
   const id = getParam(req.params.id);
 
   const cv = await CVModel.findOne({
@@ -463,7 +434,7 @@ export const getCVPdf = async (req: Request, res: Response) => {
   });
 
   if (!cv || !cv.cloudinaryPublicId) {
-    return res.status(404).json({ error: 'Not found' });
+    throw new NotFoundError('Image not found');
   }
 
   const url = cloudinary.url(cv.cloudinaryPublicId, {
