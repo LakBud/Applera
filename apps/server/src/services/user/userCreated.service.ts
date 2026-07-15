@@ -1,14 +1,17 @@
 import User from '../../models/User.js';
+import { getPrimaryEmail } from '../../utils/user/getPrimaryEmail.utils.js';
 
 import type { UserJSON } from '@clerk/express';
 
 export async function handleUserCreated(user: UserJSON) {
+  const primaryEmail = getPrimaryEmail(user);
+
   await User.findOneAndUpdate(
     { clerkId: user.id },
     {
       $setOnInsert: {
         clerkId: user.id,
-        email: user.email_addresses[0]?.email_address ?? '',
+        email: primaryEmail ?? '',
         username: user.username ?? '',
         firstName: user.first_name ?? '',
         lastName: user.last_name ?? '',

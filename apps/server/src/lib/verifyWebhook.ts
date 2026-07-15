@@ -1,5 +1,7 @@
 import { Webhook } from 'svix';
 
+import { BadRequestError } from '../utils/errors/badRequest.error.js';
+
 import type { WebhookEvent } from '@clerk/express';
 
 export function verifyWebhook(
@@ -13,5 +15,9 @@ export function verifyWebhook(
 ): WebhookEvent {
   const wh = new Webhook(secret);
 
-  return wh.verify(payload, headers) as WebhookEvent;
+  try {
+    return wh.verify(payload, headers) as WebhookEvent;
+  } catch {
+    throw new BadRequestError('Invalid webhook signature');
+  }
 }
