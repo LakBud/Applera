@@ -17,7 +17,7 @@ export async function generateApplication(
   job: JobParsed,
   rawText: string,
   match: MatchReport,
-  { signal, reserveUsage }: LLMExecutionOptions = {},
+  { signal, reserveUsage, refundUsage }: LLMExecutionOptions = {},
 ): Promise<ApplicationLLMOutput> {
   const cacheKey = buildCacheKey(CACHE_VERSIONS.application, cv, job, rawText, match);
 
@@ -25,6 +25,7 @@ export async function generateApplication(
     cacheKey,
     ttl: 60 * 60 * 24 * 7, // 7 days
     reserveUsage,
+    refundUsage,
 
     fn: async () => {
       const raw = await callLLM({
