@@ -377,14 +377,13 @@ export const pinCV = async (req: UserRequest, res: Response) => {
       if (cv.pinned) {
         cv.pinned = false;
         await cv.save({ session });
-
-        await User.updateOne({ clerkId: ownerId }, { $inc: { pinnedCVCount: -1 } }, { session });
-
+        await User.updateOne(
+          { clerkId: ownerId, pinnedCVCount: { $gt: 0 } },
+          { $inc: { pinnedCVCount: -1 } },
+          { session },
+        );
         return { cv, pinned: false };
       }
-
-      const user = await User.findOne({ clerkId: ownerId });
-      console.log(user?.pinnedCVCount);
 
       // Reserve pin slot
       const reservation = await User.updateOne(
