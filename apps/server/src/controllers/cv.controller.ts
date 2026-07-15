@@ -446,8 +446,6 @@ export const getCVPreview = async (req: Request, res: Response) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 
   pipeStreamOrFail(response.data, res, 'getCVPreview', 'Failed to stream preview');
-
-  response.data.pipe(res);
 };
 
 // GET /api/cv/:id/pdf
@@ -488,8 +486,5 @@ export const getCVPdf = async (req: Request, res: Response) => {
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', 'inline');
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-
   pipeStreamOrFail(response.data, res, 'getCVPdf', 'Failed to stream PDF');
-
-  response.data.pipe(res);
 };
