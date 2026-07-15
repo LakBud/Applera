@@ -41,7 +41,7 @@ export const createJob = async (req: Request, res: Response) => {
 
     signal.throwIfAborted();
 
-    const parsed = await extractJobData(rawText, { signal });
+    const parsed = await extractJobData(rawText, { signal, reserveUsage: req.reserveUsage });
 
     signal.throwIfAborted();
 

@@ -1,6 +1,7 @@
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { buildMatchEnrichPrompt } from '../../prompts/matchEnrichPrompt.js';
 import { cachedLLM, callLLM } from '../../services/llm/llm.service.js';
+import { type LLMExecutionOptions } from '../../types/llm.types.js';
 import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
 import { extractAllText } from '../../utils/match/text.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
@@ -11,7 +12,7 @@ export async function runAIEnrichment(
   cv: CVParsed,
   job: JobParsed,
   mathResult: Omit<MatchReport, 'ai_insights'>,
-  { signal }: { signal?: AbortSignal } = {},
+  { signal, reserveUsage }: LLMExecutionOptions = {},
 ): Promise<MatchReport['ai_insights']> {
   const cacheKey = `match:ai:${CACHE_VERSIONS.match}:${hash(
     JSON.stringify({
@@ -27,6 +28,8 @@ export async function runAIEnrichment(
   return cachedLLM({
     cacheKey,
     ttl: 60 * 60 * 24,
+    reserveUsage,
+
     fn: async () => {
       const raw = await callLLM({
         jsonMode: true,
@@ -38,6 +41,7 @@ export async function runAIEnrichment(
       });
 
       const parsed = MatchReportSchema.shape.ai_insights.parse(raw);
+
       return parsed;
     },
   });

@@ -61,7 +61,7 @@ export function InterviewPrepSection({ applicationId }: { applicationId: string 
     <ApplicationAccordion title="Interview preparation">
       <div className="p-4 sm:p-5 space-y-8">
         {Object.entries(
-          prep.questions.reduce<Record<string, typeof prep.questions>>((acc, q) => {
+          prep.parsed.questions.reduce<Record<string, typeof prep.parsed.questions>>((acc, q) => {
             acc[q.category] = [...(acc[q.category] ?? []), q];
             return acc;
           }, {}),
@@ -90,12 +90,12 @@ export function InterviewPrepSection({ applicationId }: { applicationId: string 
           </div>
         ))}
 
-        {prep.general_tips.length > 0 && (
+        {prep.parsed?.general_tips.length > 0 && (
           <div className="space-y-3">
             <SectionHeading>General tips</SectionHeading>
 
             <ul className="space-y-2">
-              {prep.general_tips.map((tip, i) => (
+              {prep.parsed?.general_tips.map((tip, i) => (
                 <li key={i} className="text-xs sm:text-sm text-tx-muted flex gap-2 leading-relaxed">
                   <span className="mt-1 shrink-0 text-tx-caption">•</span>
                   <span>{tip}</span>

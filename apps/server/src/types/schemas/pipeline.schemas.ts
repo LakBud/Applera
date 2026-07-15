@@ -1,7 +1,7 @@
 import { CVParsedSchema, JobParsedSchema } from '@applera/schemas';
 import { z } from 'zod';
 
-import { ApplicationLLMSchema } from './llm.schemas.js';
+import { ApplicationLLMSchema } from './application.schemas.js';
 import { MatchReportSchema } from './match.schemas.js';
 
 const SnapshotSchema = z.object({

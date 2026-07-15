@@ -104,7 +104,7 @@ export const generatePrep = async (req: Request, res: Response) => {
       rawText,
       match,
       applicationId,
-      { signal },
+      { signal, reserveUsage: req.reserveUsage },
     );
 
     signal.throwIfAborted();
@@ -119,8 +119,7 @@ export const generatePrep = async (req: Request, res: Response) => {
         application: applicationId,
         ownerId: identity.id,
         ownerType: identity.type,
-        questions: prep.questions,
-        general_tips: prep.general_tips,
+        parsed: prep,
         $inc: { regenerationCount: 1 },
       },
       {

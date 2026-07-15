@@ -8,6 +8,7 @@ import { repairCV } from './cv/cvRepair.service.js';
 import { repairJob } from './job/jobRepair.service.js';
 import { cachedLLM, callLLM } from './llm/llm.service.js';
 
+import type { LLMExecutionOptions } from '../types/llm.types.js';
 import type { CVParsed, JobParsed } from '@applera/schemas';
 
 // ─────────────────────────────────────────────────────────────
@@ -24,13 +25,14 @@ import type { CVParsed, JobParsed } from '@applera/schemas';
  */
 export async function extractCVData(
   cvText: string,
-  { signal }: { signal?: AbortSignal } = {},
+  { signal, reserveUsage }: LLMExecutionOptions = {},
 ): Promise<CVParsed> {
   const safeText = sanitise(cvText, 'cvText');
 
   return cachedLLM<CVParsed>({
     cacheKey: `cv:${CACHE_VERSIONS.cv}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
+    reserveUsage,
 
     fn: async () => {
       const result = await callLLM({
@@ -68,13 +70,14 @@ export async function extractCVData(
  */
 export async function extractJobData(
   jobText: string,
-  { signal }: { signal?: AbortSignal } = {},
+  { signal, reserveUsage }: LLMExecutionOptions = {},
 ): Promise<JobParsed> {
   const safeText = sanitise(jobText, 'jobText');
 
   return cachedLLM<JobParsed>({
     cacheKey: `job:${CACHE_VERSIONS.job}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
+    reserveUsage,
 
     fn: async () => {
       const result = await callLLM({

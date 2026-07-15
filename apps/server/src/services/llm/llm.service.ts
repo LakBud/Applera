@@ -43,7 +43,7 @@ async function withTimeout<T>(
   }
 }
 
-// Debug logger (safe in dev only
+// Debug logger (safe in dev only)
 function debugLog(label: string, content: unknown, requestId: string): void {
   if (IS_PROD) {
     return;
@@ -164,18 +164,16 @@ export async function callLLM({
   );
 }
 
-// ─────────────────────────────────────────────
-// Cached LLM wrapper (ZOD will validate OUTSIDE this)
-// ─────────────────────────────────────────────
-
 export async function cachedLLM<T>({
   cacheKey,
   ttl,
   fn,
+  reserveUsage,
 }: {
   cacheKey: string;
   ttl: number;
   fn: () => Promise<T>;
+  reserveUsage?: () => Promise<unknown>;
 }): Promise<T> {
   const cached = await getCache<T>(cacheKey);
   if (cached) {
@@ -184,6 +182,8 @@ export async function cachedLLM<T>({
 
   const result = await fn();
 
+  await reserveUsage?.();
   await setCache(cacheKey, result, ttl);
+
   return result;
 }
