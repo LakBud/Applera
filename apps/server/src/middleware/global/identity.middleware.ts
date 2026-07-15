@@ -6,7 +6,8 @@ import { auditLog } from '../../services/audit/audit.service.js';
 import { IdentitySchema } from '../../types/schemas/identity.schemas.js';
 import { getAuthenticatedUserId, getValidGuestId } from '../../utils/user/getUserId.utils.js';
 
-import type { NextFunction, Request, Response } from 'express';
+import type { IdentifiedRequest } from '../../types/requests.js';
+import type { NextFunction, Request, Response, RequestHandler } from 'express';
 
 export async function attachIdentity(req: Request, res: Response, next: NextFunction) {
   try {
@@ -70,11 +71,10 @@ export async function attachIdentity(req: Request, res: Response, next: NextFunc
   }
 }
 
-export function requireUser(req: Request, res: Response, next: NextFunction) {
-  if (!req.identity || req.identity.type !== 'user') {
-    return res.status(401).json({
-      error: 'You need to sign in to access this feature',
-    });
-  }
-  return next();
+export function withIdentity(
+  handler: (req: IdentifiedRequest, res: Response, next: NextFunction) => unknown,
+): RequestHandler {
+  return (req, res, next) => {
+    return handler(req as IdentifiedRequest, res, next);
+  };
 }

@@ -1,4 +1,5 @@
 import { extractTextFromPdf } from '../../lib/pdfParser.js';
+import { BadRequestError } from '../../utils/errors/badRequest.error.js';
 
 import type { NextFunction, Request, Response } from 'express';
 
@@ -11,8 +12,7 @@ function parsePdf(label: 'cv' | 'job') {
     if (!file) return next();
 
     if (!file.buffer) {
-      res.status(400).json({ error: `Invalid ${label} upload: missing buffer` });
-      return;
+      return next(new BadRequestError(`Invalid ${label} upload: missing buffer`));
     }
 
     extractTextFromPdf(file.buffer)
@@ -20,8 +20,7 @@ function parsePdf(label: 'cv' | 'job') {
         const cleaned = text?.trim();
 
         if (!cleaned || cleaned.length < MIN_LENGTH) {
-          res.status(400).json({ error: `${label} PDF is empty or unreadable` });
-          return;
+          return next(new BadRequestError(`${label} PDF is empty or unreadable`));
         }
 
         if (label === 'cv') {
@@ -38,7 +37,7 @@ function parsePdf(label: 'cv' | 'job') {
       })
       .catch((err) => {
         console.error(`[parse${label}Pdf]`, err);
-        res.status(400).json({ error: `Failed to parse ${label} PDF` });
+        next(new BadRequestError(`Failed to parse ${label} PDF`));
       });
   };
 }

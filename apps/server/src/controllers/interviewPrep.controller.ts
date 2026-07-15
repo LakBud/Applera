@@ -8,25 +8,25 @@ import InterviewPrep from '../models/InterviewPrep.js';
 import Job from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { generateInterviewPrep } from '../services/interview/interviewPrep.service.js';
+import { BadRequestError } from '../utils/errors/badRequest.error.js';
+import { NotFoundError } from '../utils/errors/notFound.error.js';
 import { getParam } from '../utils/shared/param.utils.js';
 
+import type { UserRequest } from '../types/requests.js';
 import type { MatchReport } from '../types/schemas/match.schemas.js';
+import type { Response } from 'express';
+
 // ─────────────────────────────────────────────
 // POST /api/interview/:applicationId
 // ─────────────────────────────────────────────
-import type { Request, Response } from 'express';
 
-export const generatePrep = async (req: Request, res: Response) => {
+export const generatePrep = async (req: UserRequest, res: Response) => {
   const signal = getAbortSignal(res);
 
   try {
     const applicationId = getParam(req.params.applicationId);
 
     const identity = req.identity;
-
-    if (!identity) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
 
     signal.throwIfAborted();
 
@@ -39,9 +39,7 @@ export const generatePrep = async (req: Request, res: Response) => {
       .lean();
 
     if (!application) {
-      return res.status(404).json({
-        error: 'Application not found.',
-      });
+      throw new NotFoundError('Application not found');
     }
 
     signal.throwIfAborted();
@@ -56,15 +54,11 @@ export const generatePrep = async (req: Request, res: Response) => {
     const match = application.match as MatchReport | undefined;
 
     if (!cv || !job) {
-      return res.status(400).json({
-        error: 'Missing CV or Job parsed data.',
-      });
+      throw new BadRequestError('Missing CV or Job parsed data');
     }
 
     if (!match) {
-      return res.status(400).json({
-        error: 'Missing match data.',
-      });
+      throw new BadRequestError('Missing match data');
     }
 
     signal.throwIfAborted();
@@ -77,9 +71,7 @@ export const generatePrep = async (req: Request, res: Response) => {
     const parsedJob = JobParsedSchema.safeParse(job);
 
     if (!parsedCV.success || !parsedJob.success) {
-      return res.status(400).json({
-        error: 'Invalid CV or Job parsed data.',
-      });
+      throw new BadRequestError('Invalid CV or Job parsed data.');
     }
 
     signal.throwIfAborted();
@@ -130,7 +122,7 @@ export const generatePrep = async (req: Request, res: Response) => {
       prep: saved,
     });
   } catch (err: unknown) {
-    if (signal.aborted || (err instanceof Error && err.name === 'AbortError')) {
+    if (signal.aborted) {
       console.warn('[generatePrep] aborted (timeout or disconnect)', {
         requestId: req.requestId,
       });
@@ -146,16 +138,10 @@ export const generatePrep = async (req: Request, res: Response) => {
 // GET /api/interview/:applicationId
 // ─────────────────────────────────────────────
 
-export const getPrep = async (req: Request, res: Response) => {
+export const getPrep = async (req: UserRequest, res: Response) => {
   const applicationId = getParam(req.params.applicationId);
 
   const identity = req.identity;
-
-  if (!identity) {
-    return res.status(401).json({
-      error: 'Unauthorized',
-    });
-  }
 
   const prep = await InterviewPrep.findOne({
     application: applicationId,
@@ -164,9 +150,7 @@ export const getPrep = async (req: Request, res: Response) => {
   });
 
   if (!prep) {
-    return res.status(404).json({
-      error: 'No interview prep found. Generate one first.',
-    });
+    throw new NotFoundError('No interview prep found. Generate one first.');
   }
 
   return res.json({ prep });

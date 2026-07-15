@@ -7,8 +7,9 @@ import helmet from 'helmet';
 import { connectDB } from './config/db.js';
 import { CLIENT_URL, IS_PROD, PORT } from './config/env.js';
 import { errorHandler } from './middleware/global/error.middleware.js';
-import { attachIdentity, requireUser } from './middleware/global/identity.middleware.js';
+import { attachIdentity } from './middleware/global/identity.middleware.js';
 import { sanitizeHpp } from './middleware/global/sanitize.middleware.js';
+import { requireUser } from './middleware/global/user.middleware.js';
 import { requestLogger } from './middleware/log/request.logger.js';
 import {
   earlyLimiter,
@@ -19,9 +20,10 @@ import applicationRoutes from './routes/application.routes.js';
 import cvRoutes from './routes/cv.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import interviewRoutes from './routes/interviewPrep.routes.js';
+import './workers/audit.boot.js';
 import jobRoutes from './routes/job.routes.js';
 import webhookRoutes from './routes/webhook.routes.js';
-import './workers/audit.boot.js';
+import { NotFoundError } from './utils/errors/notFound.error.js';
 import { stripObject } from './utils/shared/sanitize.utils.js';
 
 const app: express.Application = express();
@@ -181,8 +183,8 @@ app.use('/api/dashboard', requireUser, dashboardRoutes);
 // 404 catch-all (must come after all routes)
 // ─────────────────────────────────────────────
 
-app.use((_req: Request, res: Response) => {
-  res.status(404).json({ error: 'Not found' });
+app.use((req: Request, _res: Response, next: NextFunction) => {
+  next(new NotFoundError(`Route ${req.method} ${req.originalUrl} not found`));
 });
 
 // ─────────────────────────────────────────────

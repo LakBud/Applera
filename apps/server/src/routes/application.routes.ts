@@ -7,6 +7,7 @@ import {
   getApplications,
   updateApplicationStatus,
 } from '../controllers/application.controller.js';
+import { withUser } from '../middleware/global/user.middleware.js';
 import { idempotency } from '../middleware/idempotency.middleware.js';
 import { applicationLimiter } from '../middleware/rate/rateLimiter.middleware.js';
 import { usageLimiter } from '../middleware/rate/usageLimiter.middleware.js';
@@ -25,26 +26,27 @@ router.post(
   applicationLimiter,
   usageLimiter,
   validateResponse('applicationResponse'),
-  createApplication,
+  withUser(createApplication),
 );
 
 // GET /api/application
-router.get('/', validateResponse('applicationListResponse'), getApplications);
+router.get('/', validateResponse('applicationListResponse'), withUser(getApplications));
 
 // GET /api/application/:id
 router.get(
   '/:id',
   validateRequest('getApplicationById'),
   validateResponse('applicationResponse'),
-  getApplicationById,
+  withUser(getApplicationById),
 );
 
 // PATCH /api/application/:id/status
 router.patch(
   '/:id/status',
+  idempotency,
   validateRequest('updateApplicationStatus'),
   validateResponse('applicationResponse'),
-  updateApplicationStatus,
+  withUser(updateApplicationStatus),
 );
 
 // DELETE /api/application/:id
@@ -52,7 +54,7 @@ router.delete(
   '/:id',
   validateRequest('deleteApplication'),
   validateResponse('messageResponse'),
-  deleteApplication,
+  withUser(deleteApplication),
 );
 
 export default router;

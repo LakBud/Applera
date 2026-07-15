@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { createJob, deleteJob, getJobById, getJobs } from '../controllers/job.controller.js';
+import { withUser } from '../middleware/global/user.middleware.js';
 import { idempotency } from '../middleware/idempotency.middleware.js';
 import { parseJobPdf } from '../middleware/pdf/parsePdf.middleware.js';
 import { concurrencyLimit } from '../middleware/rate/concurrency.middleware.js';
@@ -31,21 +32,26 @@ router.post(
   parseJobPdf,
   validateRequest('createJob'),
   validateResponse('createJobResponse'),
-  createJob,
+  withUser(createJob),
 );
 
 // GET /api/job
-router.get('/', validateResponse('jobListResponse'), getJobs);
+router.get('/', validateResponse('jobListResponse'), withUser(getJobs));
 
 // GET /api/job/:id
-router.get('/:id', validateRequest('getJobById'), validateResponse('jobDocument'), getJobById);
+router.get(
+  '/:id',
+  validateRequest('getJobById'),
+  validateResponse('jobDocument'),
+  withUser(getJobById),
+);
 
 // DELETE /api/job/:id
 router.delete(
   '/:id',
   validateRequest('deleteJobById'),
   validateResponse('messageResponse'),
-  deleteJob,
+  withUser(deleteJob),
 );
 
 export default router;

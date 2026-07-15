@@ -26,8 +26,11 @@ export function errorHandler(err: unknown, req: Request, res: Response, next: Ne
       message: err.message,
     });
 
+    const message =
+      IS_PROD && err.statusCode >= 500 ? 'An unexpected error occurred.' : err.message;
+
     return res.status(err.statusCode).json({
-      error: err.message,
+      error: message,
       code: err.code,
       requestId,
     });

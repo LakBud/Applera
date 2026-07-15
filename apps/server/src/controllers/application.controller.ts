@@ -11,21 +11,18 @@ import CVModel from '../models/CV.js';
 import JobModel from '../models/Job.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { runApplicationPipelineFromParsed } from '../services/pipeline/pipeline.service.js';
+import { BadRequestError } from '../utils/errors/badRequest.error.js';
+import { NotFoundError } from '../utils/errors/notFound.error.js';
 import { getParam } from '../utils/shared/param.utils.js';
 
-import type { Request, Response } from 'express';
+import type { UserRequest } from '../types/requests.js';
+import type { Response } from 'express';
 
 // ─────────────────────────────────────────────
 // GET /api/application
 // ─────────────────────────────────────────────
 
-export const getApplications = async (req: Request, res: Response) => {
-  if (!req.identity) {
-    return res.status(401).json({
-      error: 'Unauthorized',
-    });
-  }
-
+export const getApplications = async (req: UserRequest, res: Response) => {
   const { id: ownerId, type: ownerType } = req.identity;
 
   const applications = await Application.find({
@@ -45,13 +42,7 @@ export const getApplications = async (req: Request, res: Response) => {
 // GET /api/application/:id
 // ─────────────────────────────────────────────
 
-export const getApplicationById = async (req: Request, res: Response) => {
-  if (!req.identity) {
-    return res.status(401).json({
-      error: 'Unauthorized',
-    });
-  }
-
+export const getApplicationById = async (req: UserRequest, res: Response) => {
   const id = getParam(req.params.id);
 
   const application = await Application.findOne({
@@ -63,9 +54,7 @@ export const getApplicationById = async (req: Request, res: Response) => {
     .populate('job');
 
   if (!application) {
-    return res.status(404).json({
-      error: 'Application not found.',
-    });
+    throw new NotFoundError('Application not found');
   }
 
   return res.json({
@@ -77,21 +66,13 @@ export const getApplicationById = async (req: Request, res: Response) => {
 // PATCH /api/application/:id/status
 // ─────────────────────────────────────────────
 
-export const updateApplicationStatus = async (req: Request, res: Response) => {
-  if (!req.identity) {
-    return res.status(401).json({
-      error: 'Unauthorized',
-    });
-  }
-
+export const updateApplicationStatus = async (req: UserRequest, res: Response) => {
   const { id: ownerId, type: ownerType } = req.identity;
   const id = getParam(req.params.id);
   const { status } = req.body;
 
   if (!APPLICATION_STATUSES.includes(status as ApplicationStatus)) {
-    return res.status(400).json({
-      error: `Invalid status. Must be one of: ${APPLICATION_STATUSES.join(', ')}`,
-    });
+    throw new BadRequestError(`Invalid status. Must be one of: ${APPLICATION_STATUSES.join(', ')}`);
   }
 
   const updated = await Application.findOneAndUpdate(
@@ -111,9 +92,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
     .populate('job', 'parsed company location');
 
   if (!updated) {
-    return res.status(404).json({
-      error: 'Application not found',
-    });
+    throw new NotFoundError('Application not found');
   }
 
   await auditLog({
@@ -137,13 +116,7 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
 // DELETE /api/application/:id
 // ─────────────────────────────────────────────
 
-export const deleteApplication = async (req: Request, res: Response) => {
-  if (!req.identity) {
-    return res.status(401).json({
-      error: 'Unauthorized',
-    });
-  }
-
+export const deleteApplication = async (req: UserRequest, res: Response) => {
   const { id: ownerId, type: ownerType } = req.identity;
   const id = getParam(req.params.id);
 
@@ -154,9 +127,7 @@ export const deleteApplication = async (req: Request, res: Response) => {
   });
 
   if (!deleted) {
-    return res.status(404).json({
-      error: 'Application not found',
-    });
+    throw new NotFoundError('Application not found');
   }
 
   await auditLog({
@@ -177,24 +148,12 @@ export const deleteApplication = async (req: Request, res: Response) => {
 // POST /api/application
 // ─────────────────────────────────────────────
 
-export const createApplication = async (req: Request, res: Response) => {
+export const createApplication = async (req: UserRequest, res: Response) => {
   const signal = getAbortSignal(res);
 
   try {
-    if (!req.identity) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
     const { id: ownerId, type: ownerType } = req.identity;
     const { cvId, jobId } = req.body;
-
-    if (!cvId || !jobId) {
-      return res.status(400).json({ error: 'cvId and jobId are required' });
-    }
-
-    if (typeof cvId !== 'string' || typeof jobId !== 'string') {
-      return res.status(400).json({ error: 'cvId and jobId must be strings' });
-    }
 
     const [cv, job] = await Promise.all([
       CVModel.findOne({
@@ -210,11 +169,11 @@ export const createApplication = async (req: Request, res: Response) => {
     ]);
 
     if (!cv || !job) {
-      return res.status(404).json({ error: 'CV or Job not found' });
+      throw new NotFoundError('CV or Job not found');
     }
 
-    if (!cv.parsed) return res.status(404).json({ error: 'CV not parsed' });
-    if (!job.parsed) return res.status(404).json({ error: 'Job not parsed' });
+    if (!cv.parsed) throw new BadRequestError('CV not parsed');
+    if (!job.parsed) throw new BadRequestError('Job not parsed');
 
     const parsedCV = CVParsedSchema.parse(cv.parsed);
     const parsedJob = JobParsedSchema.parse(job.parsed);
@@ -258,7 +217,7 @@ export const createApplication = async (req: Request, res: Response) => {
       application: application.toObject(),
     });
   } catch (err) {
-    if (signal.aborted || (err instanceof Error && err.name === 'AbortError')) {
+    if (signal.aborted) {
       console.warn('[createApplication] aborted (timeout or disconnect)', {
         requestId: req.requestId,
       });

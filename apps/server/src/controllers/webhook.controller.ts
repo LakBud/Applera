@@ -7,8 +7,9 @@ import Application from '../models/Application.js';
 import CV from '../models/CV.js';
 import InterviewPrep from '../models/InterviewPrep.js';
 import User from '../models/User.js';
+import { BadRequestError } from '../utils/errors/badRequest.error.js';
 
-import type { WebhookEvent } from '@clerk/express';
+import type { UserJSON, WebhookEvent } from '@clerk/express';
 import type { Request, Response } from 'express';
 
 export async function handleClerkWebhook(req: Request, res: Response) {
@@ -23,19 +24,67 @@ export async function handleClerkWebhook(req: Request, res: Response) {
     }) as WebhookEvent;
   } catch (err) {
     console.error('[webhook] Invalid signature', err);
-    res.status(400).json({ error: 'Invalid signature' });
-    return;
+    throw new BadRequestError('Invalid signature');
   }
 
-  if (event.type === 'user.deleted') {
-    if (!event.data.id) {
-      res.status(400).json({ error: 'Missing user id' });
-      return;
-    }
-    await handleUserDeleted(event.data.id);
+  switch (event.type) {
+    case 'user.created':
+      await handleUserCreated(event.data);
+      break;
+
+    case 'user.updated':
+      await handleUserUpdated(event.data);
+      break;
+
+    case 'user.deleted':
+      if (!event.data.id) {
+        throw new BadRequestError('Missing user id');
+      }
+
+      await handleUserDeleted(event.data.id);
+      break;
   }
 
   res.json({ received: true });
+}
+
+async function handleUserCreated(user: UserJSON) {
+  await User.findOneAndUpdate(
+    { clerkId: user.id },
+    {
+      $setOnInsert: {
+        clerkId: user.id,
+        email: user.email_addresses[0]?.email_address ?? '',
+        firstName: user.first_name ?? '',
+        lastName: user.last_name ?? '',
+        imageUrl: user.image_url ?? '',
+        pinnedCVCount: 0,
+      },
+    },
+    {
+      upsert: true,
+    },
+  );
+
+  console.log(`[webhook] Created user: ${user.id}`);
+}
+
+async function handleUserUpdated(user: UserJSON) {
+  if (!user.id) {
+    throw new BadRequestError('Missing user id');
+  }
+
+  await User.updateOne(
+    { clerkId: user.id },
+    {
+      $set: {
+        email: user.email_addresses?.[0]?.email_address ?? '',
+        firstName: user.first_name ?? '',
+        lastName: user.last_name ?? '',
+        imageUrl: user.image_url ?? '',
+      },
+    },
+  );
 }
 
 async function handleUserDeleted(clerkId: string) {

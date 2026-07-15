@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { generatePrep, getPrep } from '../controllers/interviewPrep.controller.js';
+import { withUser } from '../middleware/global/user.middleware.js';
 import { idempotency } from '../middleware/idempotency.middleware.js';
 import { interviewPrepLimiter } from '../middleware/rate/rateLimiter.middleware.js';
 import { usageLimiter } from '../middleware/rate/usageLimiter.middleware.js';
@@ -19,7 +20,7 @@ router.post(
   interviewPrepLimiter,
   usageLimiter,
   validateResponse('interviewPrepResponse'),
-  generatePrep,
+  withUser(generatePrep),
 );
 
 // GET /api/interview/:applicationId
@@ -27,7 +28,7 @@ router.get(
   '/:applicationId',
   validateRequest('getInterviewPrep'),
   validateResponse('interviewPrepResponse'),
-  getPrep,
+  withUser(getPrep),
 );
 
 export default router;
