@@ -44,6 +44,27 @@ function isMongoError(err: unknown): err is { code: number } {
   return typeof err === 'object' && err !== null && 'code' in err;
 }
 
+const pipeStreamOrFail = (
+  stream: NodeJS.ReadableStream,
+  res: Response,
+  logLabel: string,
+  errorMessage: string,
+) => {
+  stream.on('error', (err: unknown) => {
+    console.error(`[${logLabel} stream]`, err);
+
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: errorMessage,
+      });
+    } else {
+      res.destroy();
+    }
+  });
+
+  stream.pipe(res);
+};
+
 // ─────────────────────────────────────────────
 // POST /api/cv
 // ─────────────────────────────────────────────
@@ -424,17 +445,7 @@ export const getCVPreview = async (req: Request, res: Response) => {
   res.setHeader('Cache-Control', 'private, max-age=3600'); // browser caches for 1hr
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 
-  response.data.on('error', (err: unknown) => {
-    console.error('[getCVPreview stream]', err);
-
-    if (!res.headersSent) {
-      res.status(500).json({
-        error: 'Failed to stream preview',
-      });
-    } else {
-      res.destroy();
-    }
-  });
+  pipeStreamOrFail(response.data, res, 'getCVPreview', 'Failed to stream preview');
 
   response.data.pipe(res);
 };
@@ -478,17 +489,7 @@ export const getCVPdf = async (req: Request, res: Response) => {
   res.setHeader('Content-Disposition', 'inline');
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 
-  response.data.on('error', (err: unknown) => {
-    console.error('[getCVPdf stream]', err);
-
-    if (!res.headersSent) {
-      res.status(500).json({
-        error: 'Failed to stream PDF',
-      });
-    } else {
-      res.destroy();
-    }
-  });
+  pipeStreamOrFail(response.data, res, 'getCVPdf', 'Failed to stream PDF');
 
   response.data.pipe(res);
 };

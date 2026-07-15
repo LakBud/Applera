@@ -35,18 +35,22 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
       }
 
       const count = await redis.incr(key);
+      charged = true;
 
       if (count === 1) {
         await redis.expire(key, ROLLING_WINDOW_SECONDS);
       }
 
       if (count > limit) {
-        await redis.decr(key);
+        try {
+          await redis.decr(key);
+          charged = false;
+        } catch (rollbackErr) {
+          console.error('[usageLimiter rollback]', rollbackErr);
+        }
 
         throw new UsageLimitError();
       }
-
-      charged = true;
 
       console.log({ userId, count, limit });
 

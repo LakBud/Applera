@@ -5,6 +5,8 @@ import { model, openai } from '../../config/openai.js';
 import { getCache, setCache } from '../../lib/cache.js';
 import parseModelJson from '../../lib/parseModelJson.js';
 
+import type { RefundUsage, ReserveUsage } from '../../types/llm.types.js';
+
 const BASE_DELAY_MS = 500;
 
 // Error class
@@ -174,8 +176,8 @@ export async function cachedLLM<T>({
   cacheKey: string;
   ttl: number;
   fn: () => Promise<T>;
-  reserveUsage?: () => Promise<unknown>;
-  refundUsage?: () => Promise<void>;
+  reserveUsage?: () => ReserveUsage;
+  refundUsage?: () => RefundUsage;
 }): Promise<T> {
   const cached = await getCache<T>(cacheKey);
 
@@ -185,9 +187,7 @@ export async function cachedLLM<T>({
 
   try {
     await reserveUsage?.();
-
     const result = await fn();
-
     try {
       await setCache(cacheKey, result, ttl);
     } catch (cacheError) {
@@ -195,11 +195,15 @@ export async function cachedLLM<T>({
         message: cacheError instanceof Error ? cacheError.message : 'Unknown error',
       });
     }
-
     return result;
   } catch (err) {
-    await refundUsage?.();
-
+    try {
+      await refundUsage?.();
+    } catch (refundErr) {
+      console.error('[cachedLLM] Refund failed', {
+        message: refundErr instanceof Error ? refundErr.message : 'Unknown error',
+      });
+    }
     throw err;
   }
 }

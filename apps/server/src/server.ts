@@ -5,7 +5,7 @@ import express, { type NextFunction, type Request, type Response } from 'express
 import helmet from 'helmet';
 
 import { connectDB } from './config/db.js';
-import { CLIENT_URL } from './config/env.js';
+import { CLIENT_URL, IS_PROD, PORT } from './config/env.js';
 import { errorHandler } from './middleware/global/error.middleware.js';
 import { attachIdentity, requireUser } from './middleware/global/identity.middleware.js';
 import { sanitizeHpp } from './middleware/global/sanitize.middleware.js';
@@ -25,9 +25,6 @@ import './workers/audit.boot.js';
 import { stripObject } from './utils/shared/sanitize.utils.js';
 
 const app: express.Application = express();
-
-const PORT: number = Number(process.env.PORT) || 5005;
-const IS_PROD: boolean = process.env.NODE_ENV === 'production';
 
 // Core security middleware
 if (IS_PROD) app.set('trust proxy', 1);

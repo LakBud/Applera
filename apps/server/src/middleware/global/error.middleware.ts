@@ -6,7 +6,11 @@ import { AppError } from '../../utils/errors/app.error.js';
 
 import type { NextFunction, Request, Response } from 'express';
 
-export function errorHandler(err: unknown, req: Request, res: Response, _next: NextFunction) {
+export function errorHandler(err: unknown, req: Request, res: Response, next: NextFunction) {
+  if (res.headersSent) {
+    return next(err);
+  }
+
   const requestId = res.locals.requestId;
 
   // Application errors
