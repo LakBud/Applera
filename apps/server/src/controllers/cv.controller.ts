@@ -377,11 +377,17 @@ export const pinCV = async (req: UserRequest, res: Response) => {
       if (cv.pinned) {
         cv.pinned = false;
         await cv.save({ session });
-        await User.updateOne(
+
+        const result = await User.updateOne(
           { clerkId: ownerId, pinnedCVCount: { $gt: 0 } },
           { $inc: { pinnedCVCount: -1 } },
           { session },
         );
+
+        if (result.modifiedCount !== 1) {
+          throw new Error('Failed to decrement pinned CV count');
+        }
+
         return { cv, pinned: false };
       }
 
