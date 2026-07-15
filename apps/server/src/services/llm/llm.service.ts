@@ -176,8 +176,8 @@ export async function cachedLLM<T>({
   cacheKey: string;
   ttl: number;
   fn: () => Promise<T>;
-  reserveUsage?: () => ReserveUsage;
-  refundUsage?: () => RefundUsage;
+  reserveUsage?: ReserveUsage;
+  refundUsage?: RefundUsage;
 }): Promise<T> {
   const cached = await getCache<T>(cacheKey);
 
