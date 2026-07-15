@@ -378,7 +378,7 @@ export const pinCV = async (req: UserRequest, res: Response) => {
         await cv.save({ session });
 
         const result = await User.updateOne(
-          { clerkId: ownerId, pinnedCVCount: { $gt: 0 } },
+          { clerkId: ownerId, pinnedCVCount: mongoose.trusted({ $gt: 0 }) },
           { $inc: { pinnedCVCount: -1 } },
           { session },
         );
