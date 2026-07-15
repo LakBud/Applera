@@ -183,9 +183,9 @@ export async function cachedLLM<T>({
     return cached;
   }
 
-  await reserveUsage?.();
-
   try {
+    await reserveUsage?.();
+
     const result = await fn();
 
     try {

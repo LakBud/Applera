@@ -20,8 +20,9 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 import interviewRoutes from './routes/interviewPrep.routes.js';
 import jobRoutes from './routes/job.routes.js';
 import webhookRoutes from './routes/webhook.routes.js';
-import { stripObject } from './utils/shared/sanitize.utils.js';
+import { UsageLimitError } from './utils/errors/usage.errors.js';
 import './workers/audit.boot.js';
+import { stripObject } from './utils/shared/sanitize.utils.js';
 
 const app: express.Application = express();
 
@@ -194,13 +195,31 @@ app.use((_req: Request, res: Response) => {
 app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
   console.error('[server]', {
     requestId: res.locals.requestId,
-    error: err,
+    error:
+      err instanceof Error
+        ? {
+            name: err.name,
+            message: err.message,
+            stack: IS_PROD ? undefined : err.stack,
+          }
+        : {
+            message: String(err),
+          },
   });
 
-  const message = err instanceof Error ? err.message : 'Unknown server error';
+  if (err instanceof UsageLimitError) {
+    return res.status(402).json({
+      error: err.message,
+      requestId: res.locals.requestId,
+    });
+  }
 
-  res.status(500).json({
-    error: IS_PROD ? 'An unexpected error occurred.' : message,
+  return res.status(500).json({
+    error: IS_PROD
+      ? 'An unexpected error occurred.'
+      : err instanceof Error
+        ? err.message
+        : 'Unknown server error',
     requestId: res.locals.requestId,
   });
 });

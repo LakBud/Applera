@@ -1,4 +1,5 @@
 import { redis } from '../../config/redis.js';
+import { UsageLimitError } from '../../utils/errors/usage.errors.js';
 import { usageKey } from '../../utils/shared/usageKey.utils.js';
 import { getUsageLimit } from '../../utils/user/getUsageLimit.utils.js';
 import { getUserId } from '../../utils/user/getUserId.utils.js';
@@ -42,7 +43,7 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
       if (count > limit) {
         await redis.decr(key);
 
-        throw new Error('USAGE_LIMIT_REACHED');
+        throw new UsageLimitError();
       }
 
       charged = true;
