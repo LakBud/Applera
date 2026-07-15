@@ -206,11 +206,7 @@ export const createCV = async (req: Request, res: Response) => {
       return;
     }
 
-    console.error('[createCV]', err);
-
-    return res.status(500).json({
-      error: 'Failed to create CV',
-    });
+    throw err;
   }
 };
 
@@ -219,59 +215,54 @@ export const createCV = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 
 export const getCVs = async (req: Request, res: Response) => {
-  try {
-    if (!req.identity) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const key = cvListKey(req.identity.id, req.identity.type);
-
-    const cached = await getCache(key);
-    if (cached) {
-      return res.json(cached);
-    }
-
-    const cvs = await CVModel.find({
-      ownerId: req.identity.id,
-      ownerType: req.identity.type,
-    })
-      .sort({ pinned: -1, createdAt: -1 })
-      .select('-rawText')
-      .lean();
-
-    const cvIds = cvs.map((cv) => cv._id);
-
-    const counts = await Application.aggregate([
-      {
-        $match: {
-          ownerId: req.identity.id,
-          ownerType: req.identity.type,
-          cv: { $in: cvIds },
-        },
-      },
-      {
-        $group: {
-          _id: '$cv',
-          count: { $sum: 1 },
-        },
-      },
-    ]);
-
-    const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]));
-
-    const enriched = cvs.map((cv) => ({
-      ...cv,
-      applicationsCount: countMap.get(cv._id.toString()) ?? 0,
-      previewUrl: cv.cloudinaryPublicId ? `/api/cv/${cv._id}/preview` : null,
-    }));
-
-    await setCache(key, enriched, 60 * 10);
-
-    return res.json(enriched);
-  } catch (err) {
-    console.error('[getCVs]', err);
-    return res.status(500).json({ error: 'Failed to fetch CVs' });
+  if (!req.identity) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
+
+  const key = cvListKey(req.identity.id, req.identity.type);
+
+  const cached = await getCache(key);
+  if (cached) {
+    return res.json(cached);
+  }
+
+  const cvs = await CVModel.find({
+    ownerId: req.identity.id,
+    ownerType: req.identity.type,
+  })
+    .sort({ pinned: -1, createdAt: -1 })
+    .select('-rawText')
+    .lean();
+
+  const cvIds = cvs.map((cv) => cv._id);
+
+  const counts = await Application.aggregate([
+    {
+      $match: {
+        ownerId: req.identity.id,
+        ownerType: req.identity.type,
+        cv: { $in: cvIds },
+      },
+    },
+    {
+      $group: {
+        _id: '$cv',
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]));
+
+  const enriched = cvs.map((cv) => ({
+    ...cv,
+    applicationsCount: countMap.get(cv._id.toString()) ?? 0,
+    previewUrl: cv.cloudinaryPublicId ? `/api/cv/${cv._id}/preview` : null,
+  }));
+
+  await setCache(key, enriched, 60 * 10);
+
+  return res.json(enriched);
 };
 
 // ─────────────────────────────────────────────
@@ -279,85 +270,76 @@ export const getCVs = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 
 export const getCVById = async (req: Request, res: Response) => {
-  try {
-    if (!req.identity) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const id = getParam(req.params.id);
-
-    const cv = await CVModel.findOne({
-      _id: id,
-      ownerId: req.identity.id,
-      ownerType: req.identity.type,
-    }).lean();
-
-    if (!cv) {
-      return res.status(404).json({ error: 'CV not found' });
-    }
-
-    const applicationsCount = await Application.countDocuments({
-      cv: cv._id,
-      ownerId: req.identity.id,
-      ownerType: req.identity.type,
-    });
-
-    const previewUrl = cv.cloudinaryPublicId ? `/api/cv/${cv._id}/preview` : null;
-
-    return res.json({
-      ...cv,
-      applicationsCount,
-      previewUrl,
-    });
-  } catch (err) {
-    console.error('[getCVById]', err);
-    return res.status(500).json({ error: 'Failed to fetch CV' });
+  if (!req.identity) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
+
+  const id = getParam(req.params.id);
+
+  const cv = await CVModel.findOne({
+    _id: id,
+    ownerId: req.identity.id,
+    ownerType: req.identity.type,
+  }).lean();
+
+  if (!cv) {
+    return res.status(404).json({ error: 'CV not found' });
+  }
+
+  const applicationsCount = await Application.countDocuments({
+    cv: cv._id,
+    ownerId: req.identity.id,
+    ownerType: req.identity.type,
+  });
+
+  const previewUrl = cv.cloudinaryPublicId ? `/api/cv/${cv._id}/preview` : null;
+
+  return res.json({
+    ...cv,
+    applicationsCount,
+    previewUrl,
+  });
 };
+
 // ─────────────────────────────────────────────
 // DELETE /api/cv/:id
 // ─────────────────────────────────────────────
 
 export const deleteCV = async (req: Request, res: Response) => {
-  try {
-    if (!req.identity) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const id = getParam(req.params.id);
-
-    const deleted = await CVModel.findOneAndDelete({
-      _id: id,
-      ownerId: req.identity.id,
-      ownerType: req.identity.type,
-    });
-
-    if (!deleted) {
-      return res.status(404).json({ error: 'CV not found' });
-    }
-
-    if (deleted.cloudinaryPublicId) {
-      await cloudinary.uploader.destroy(deleted.cloudinaryPublicId, { resource_type: 'image' });
-    }
-
-    await deleteCache(cvListKey(req.identity.id, req.identity.type));
-    await deleteCache(cvHashKey(req.identity.id, deleted.contentHash));
-
-    await auditLog({
-      event: 'CV_DELETED',
-      userId: req.identity.id,
-      userType: req.identity.type,
-      requestId: req.requestId,
-      ip: req.ip,
-      resourceId: id,
-      metadata: { cvId: id },
-    });
-
-    return res.json({ message: 'CV deleted successfully' });
-  } catch (err) {
-    console.error('[deleteCV]', err);
-    return res.status(500).json({ error: 'Failed to delete CV' });
+  if (!req.identity) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
+
+  const id = getParam(req.params.id);
+
+  const deleted = await CVModel.findOneAndDelete({
+    _id: id,
+    ownerId: req.identity.id,
+    ownerType: req.identity.type,
+  });
+
+  if (!deleted) {
+    return res.status(404).json({ error: 'CV not found' });
+  }
+
+  if (deleted.cloudinaryPublicId) {
+    await cloudinary.uploader.destroy(deleted.cloudinaryPublicId, { resource_type: 'image' });
+  }
+
+  await deleteCache(cvListKey(req.identity.id, req.identity.type));
+  await deleteCache(cvHashKey(req.identity.id, deleted.contentHash));
+
+  await auditLog({
+    event: 'CV_DELETED',
+    userId: req.identity.id,
+    userType: req.identity.type,
+    requestId: req.requestId,
+    ip: req.ip,
+    resourceId: id,
+    metadata: { cvId: id },
+  });
+
+  return res.json({ message: 'CV deleted successfully' });
 };
 
 // ─────────────────────────────────────────────
@@ -365,138 +347,148 @@ export const deleteCV = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 
 export const pinCV = async (req: Request, res: Response) => {
-  try {
-    if (!req.identity) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+  if (!req.identity) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
-    const { id: ownerId, type: ownerType } = req.identity;
-    const id = getParam(req.params.id);
+  const { id: ownerId, type: ownerType } = req.identity;
+  const id = getParam(req.params.id);
 
-    const cv = await CVModel.findOne({ _id: id, ownerId, ownerType });
+  const cv = await CVModel.findOne({ _id: id, ownerId, ownerType });
 
-    if (!cv) {
-      return res.status(404).json({ error: 'CV not found' });
-    }
+  if (!cv) {
+    return res.status(404).json({ error: 'CV not found' });
+  }
 
-    // Unpin
-    if (cv.pinned) {
-      cv.pinned = false;
-      await cv.save();
-      await deleteCache(cvListKey(ownerId, ownerType));
-      return res.json({ cv, pinned: false });
-    }
-
-    // Enforce max 5 pinned
-    const pinnedCount = await CVModel.countDocuments({ ownerId, ownerType, pinned: true });
-    if (pinnedCount >= 5) {
-      return res.status(400).json({
-        error: 'You can only pin up to 5 CVs. Unpin one first.',
-      });
-    }
-
-    cv.pinned = true;
+  // Unpin
+  if (cv.pinned) {
+    cv.pinned = false;
     await cv.save();
     await deleteCache(cvListKey(ownerId, ownerType));
-
-    await auditLog({
-      event: 'CV_PINNED',
-      userId: ownerId,
-      userType: ownerType,
-      resourceId: id,
-      requestId: req.requestId,
-      ip: req.ip,
-    });
-
-    return res.json({ cv, pinned: true });
-  } catch (err) {
-    console.error('[pinCV]', err);
-    return res.status(500).json({ error: 'Failed to pin CV' });
+    return res.json({ cv, pinned: false });
   }
+
+  // Enforce max 5 pinned
+  const pinnedCount = await CVModel.countDocuments({ ownerId, ownerType, pinned: true });
+  if (pinnedCount >= 5) {
+    return res.status(400).json({
+      error: 'You can only pin up to 5 CVs. Unpin one first.',
+    });
+  }
+
+  cv.pinned = true;
+  await cv.save();
+  await deleteCache(cvListKey(ownerId, ownerType));
+
+  await auditLog({
+    event: 'CV_PINNED',
+    userId: ownerId,
+    userType: ownerType,
+    resourceId: id,
+    requestId: req.requestId,
+    ip: req.ip,
+  });
+
+  return res.json({ cv, pinned: true });
 };
 
 // GET /api/cv/:id/preview
 export const getCVPreview = async (req: Request, res: Response) => {
-  try {
-    if (!req.identity) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const id = getParam(req.params.id);
-
-    const cv = await CVModel.findOne({
-      _id: id,
-      ownerId: req.identity.id,
-      ownerType: req.identity.type,
-    });
-
-    if (!cv || !cv.cloudinaryPublicId) {
-      return res.status(404).json({ error: 'Not found' });
-    }
-
-    const url = cloudinary.url(cv.cloudinaryPublicId, {
-      resource_type: 'image',
-      secure: true,
-      format: 'jpg',
-      sign_url: true,
-      type: 'authenticated',
-    });
-
-    const response = await axios.get(url, { responseType: 'stream', timeout: 10_000 });
-
-    res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Cache-Control', 'private, max-age=3600'); // browser caches for 1hr
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-
-    response.data.pipe(res);
-  } catch (err) {
-    console.error('[getCVPreview]', err);
-    res.status(500).json({ error: 'Failed to fetch preview' });
+  if (!req.identity) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
+
+  const id = getParam(req.params.id);
+
+  const cv = await CVModel.findOne({
+    _id: id,
+    ownerId: req.identity.id,
+    ownerType: req.identity.type,
+  });
+
+  if (!cv || !cv.cloudinaryPublicId) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+
+  const url = cloudinary.url(cv.cloudinaryPublicId, {
+    resource_type: 'image',
+    secure: true,
+    format: 'jpg',
+    sign_url: true,
+    type: 'authenticated',
+  });
+
+  const response = await axios.get(url, { responseType: 'stream', timeout: 10_000 });
+
+  res.setHeader('Content-Type', 'image/jpeg');
+  res.setHeader('Cache-Control', 'private, max-age=3600'); // browser caches for 1hr
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+
+  response.data.on('error', (err: unknown) => {
+    console.error('[getCVPreview stream]', err);
+
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: 'Failed to stream preview',
+      });
+    } else {
+      res.destroy();
+    }
+  });
+
+  response.data.pipe(res);
 };
 
 // GET /api/cv/:id/pdf
 export const getCVPdf = async (req: Request, res: Response) => {
-  try {
-    if (!req.identity) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const id = getParam(req.params.id);
-
-    const cv = await CVModel.findOne({
-      _id: id,
-      ownerId: req.identity.id,
-      ownerType: req.identity.type,
-    });
-
-    if (!cv || !cv.cloudinaryPublicId) {
-      return res.status(404).json({ error: 'Not found' });
-    }
-
-    const url = cloudinary.url(cv.cloudinaryPublicId, {
-      resource_type: 'image',
-      secure: true,
-      sign_url: true,
-      type: 'authenticated',
-      expires_at: Math.floor(Date.now() / 1000) + 60 * 60,
-    });
-
-    const response = await axios.get(url, { responseType: 'stream', timeout: 10_000 });
-
-    const allowedHeaders = ['content-type', 'content-length'];
-    Object.keys(response.headers).forEach((key) => {
-      if (allowedHeaders.includes(key.toLowerCase())) {
-        res.setHeader(key, response.headers[key]);
-      }
-    });
-
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'inline');
-    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
-    response.data.pipe(res);
-  } catch (err) {
-    console.error('[getCVPdf]', err);
-    res.status(500).json({ error: 'Failed to fetch PDF' });
+  if (!req.identity) {
+    return res.status(401).json({ error: 'Unauthorized' });
   }
+
+  const id = getParam(req.params.id);
+
+  const cv = await CVModel.findOne({
+    _id: id,
+    ownerId: req.identity.id,
+    ownerType: req.identity.type,
+  });
+
+  if (!cv || !cv.cloudinaryPublicId) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+
+  const url = cloudinary.url(cv.cloudinaryPublicId, {
+    resource_type: 'image',
+    secure: true,
+    sign_url: true,
+    type: 'authenticated',
+    expires_at: Math.floor(Date.now() / 1000) + 60 * 60,
+  });
+
+  const response = await axios.get(url, { responseType: 'stream', timeout: 10_000 });
+
+  const allowedHeaders = ['content-type', 'content-length'];
+  Object.keys(response.headers).forEach((key) => {
+    if (allowedHeaders.includes(key.toLowerCase())) {
+      res.setHeader(key, response.headers[key]);
+    }
+  });
+
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'inline');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+
+  response.data.on('error', (err: unknown) => {
+    console.error('[getCVPdf stream]', err);
+
+    if (!res.headersSent) {
+      res.status(500).json({
+        error: 'Failed to stream PDF',
+      });
+    } else {
+      res.destroy();
+    }
+  });
+
+  response.data.pipe(res);
 };

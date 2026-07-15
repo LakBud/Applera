@@ -6,6 +6,7 @@ import helmet from 'helmet';
 
 import { connectDB } from './config/db.js';
 import { CLIENT_URL } from './config/env.js';
+import { errorHandler } from './middleware/global/error.middleware.js';
 import { attachIdentity, requireUser } from './middleware/global/identity.middleware.js';
 import { sanitizeHpp } from './middleware/global/sanitize.middleware.js';
 import { requestLogger } from './middleware/log/request.logger.js';
@@ -20,7 +21,6 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 import interviewRoutes from './routes/interviewPrep.routes.js';
 import jobRoutes from './routes/job.routes.js';
 import webhookRoutes from './routes/webhook.routes.js';
-import { UsageLimitError } from './utils/errors/usage.errors.js';
 import './workers/audit.boot.js';
 import { stripObject } from './utils/shared/sanitize.utils.js';
 
@@ -192,37 +192,7 @@ app.use((_req: Request, res: Response) => {
 // Global error handler
 // ─────────────────────────────────────────────
 
-app.use((err: unknown, req: Request, res: Response, _next: NextFunction) => {
-  console.error('[server]', {
-    requestId: res.locals.requestId,
-    error:
-      err instanceof Error
-        ? {
-            name: err.name,
-            message: err.message,
-            stack: IS_PROD ? undefined : err.stack,
-          }
-        : {
-            message: String(err),
-          },
-  });
-
-  if (err instanceof UsageLimitError) {
-    return res.status(402).json({
-      error: err.message,
-      requestId: res.locals.requestId,
-    });
-  }
-
-  return res.status(500).json({
-    error: IS_PROD
-      ? 'An unexpected error occurred.'
-      : err instanceof Error
-        ? err.message
-        : 'Unknown server error',
-    requestId: res.locals.requestId,
-  });
-});
+app.use(errorHandler);
 
 // ─────────────────────────────────────────────
 // Start server

@@ -1,6 +1,7 @@
-export class UsageLimitError extends Error {
+import { AppError } from './app.error.js';
+
+export class UsageLimitError extends AppError {
   constructor() {
-    super('USAGE_LIMIT_REACHED');
-    this.name = 'UsageLimitError';
+    super('LLM usage limit reached', 402, 'USAGE_LIMIT_REACHED');
   }
 }

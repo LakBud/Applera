@@ -20,33 +20,25 @@ import type { Request, Response } from 'express';
 // ─────────────────────────────────────────────
 
 export const getApplications = async (req: Request, res: Response) => {
-  try {
-    if (!req.identity) {
-      return res.status(401).json({
-        error: 'Unauthorized',
-      });
-    }
-
-    const { id: ownerId, type: ownerType } = req.identity;
-
-    const applications = await Application.find({
-      ownerId,
-      ownerType,
-    })
-      .populate('cv', 'parsed applicationsCount lastUsedAt')
-      .populate('job', 'parsed company location')
-      .sort({ createdAt: -1 });
-
-    return res.json({
-      applications,
-    });
-  } catch (err) {
-    console.error('[getApplications]', err);
-
-    return res.status(500).json({
-      error: 'Failed to fetch applications',
+  if (!req.identity) {
+    return res.status(401).json({
+      error: 'Unauthorized',
     });
   }
+
+  const { id: ownerId, type: ownerType } = req.identity;
+
+  const applications = await Application.find({
+    ownerId,
+    ownerType,
+  })
+    .populate('cv', 'parsed applicationsCount lastUsedAt')
+    .populate('job', 'parsed company location')
+    .sort({ createdAt: -1 });
+
+  return res.json({
+    applications,
+  });
 };
 
 // ─────────────────────────────────────────────
@@ -54,39 +46,31 @@ export const getApplications = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 
 export const getApplicationById = async (req: Request, res: Response) => {
-  try {
-    if (!req.identity) {
-      return res.status(401).json({
-        error: 'Unauthorized',
-      });
-    }
-
-    const id = getParam(req.params.id);
-
-    const application = await Application.findOne({
-      _id: id,
-      ownerId: req.identity.id,
-      ownerType: req.identity.type,
-    })
-      .populate('cv')
-      .populate('job');
-
-    if (!application) {
-      return res.status(404).json({
-        error: 'Application not found.',
-      });
-    }
-
-    return res.json({
-      application,
-    });
-  } catch (err) {
-    console.error('[getApplicationById]', err);
-
-    return res.status(500).json({
-      error: 'Failed to fetch application',
+  if (!req.identity) {
+    return res.status(401).json({
+      error: 'Unauthorized',
     });
   }
+
+  const id = getParam(req.params.id);
+
+  const application = await Application.findOne({
+    _id: id,
+    ownerId: req.identity.id,
+    ownerType: req.identity.type,
+  })
+    .populate('cv')
+    .populate('job');
+
+  if (!application) {
+    return res.status(404).json({
+      error: 'Application not found.',
+    });
+  }
+
+  return res.json({
+    application,
+  });
 };
 
 // ─────────────────────────────────────────────
@@ -94,67 +78,59 @@ export const getApplicationById = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 
 export const updateApplicationStatus = async (req: Request, res: Response) => {
-  try {
-    if (!req.identity) {
-      return res.status(401).json({
-        error: 'Unauthorized',
-      });
-    }
-
-    const { id: ownerId, type: ownerType } = req.identity;
-    const id = getParam(req.params.id);
-    const { status } = req.body;
-
-    if (!APPLICATION_STATUSES.includes(status as ApplicationStatus)) {
-      return res.status(400).json({
-        error: `Invalid status. Must be one of: ${APPLICATION_STATUSES.join(', ')}`,
-      });
-    }
-
-    const updated = await Application.findOneAndUpdate(
-      {
-        _id: id,
-        ownerId,
-        ownerType,
-      },
-      {
-        $set: { status },
-      },
-      {
-        returnDocument: 'after',
-      },
-    )
-      .populate('cv', 'parsed applicationsCount lastUsedAt')
-      .populate('job', 'parsed company location');
-
-    if (!updated) {
-      return res.status(404).json({
-        error: 'Application not found',
-      });
-    }
-
-    await auditLog({
-      event: 'APPLICATION_STATUS_UPDATED',
-      userId: ownerId,
-      userType: ownerType,
-      resourceId: id,
-      requestId: req.requestId,
-      ip: req.ip,
-      metadata: {
-        status,
-      },
-    });
-
-    return res.json({
-      application: updated,
-    });
-  } catch (err) {
-    console.error('[updateApplicationStatus]', err);
-
-    return res.status(500).json({
-      error: 'Failed to update status',
+  if (!req.identity) {
+    return res.status(401).json({
+      error: 'Unauthorized',
     });
   }
+
+  const { id: ownerId, type: ownerType } = req.identity;
+  const id = getParam(req.params.id);
+  const { status } = req.body;
+
+  if (!APPLICATION_STATUSES.includes(status as ApplicationStatus)) {
+    return res.status(400).json({
+      error: `Invalid status. Must be one of: ${APPLICATION_STATUSES.join(', ')}`,
+    });
+  }
+
+  const updated = await Application.findOneAndUpdate(
+    {
+      _id: id,
+      ownerId,
+      ownerType,
+    },
+    {
+      $set: { status },
+    },
+    {
+      returnDocument: 'after',
+    },
+  )
+    .populate('cv', 'parsed applicationsCount lastUsedAt')
+    .populate('job', 'parsed company location');
+
+  if (!updated) {
+    return res.status(404).json({
+      error: 'Application not found',
+    });
+  }
+
+  await auditLog({
+    event: 'APPLICATION_STATUS_UPDATED',
+    userId: ownerId,
+    userType: ownerType,
+    resourceId: id,
+    requestId: req.requestId,
+    ip: req.ip,
+    metadata: {
+      status,
+    },
+  });
+
+  return res.json({
+    application: updated,
+  });
 };
 
 // ─────────────────────────────────────────────
@@ -162,47 +138,39 @@ export const updateApplicationStatus = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 
 export const deleteApplication = async (req: Request, res: Response) => {
-  try {
-    if (!req.identity) {
-      return res.status(401).json({
-        error: 'Unauthorized',
-      });
-    }
-
-    const { id: ownerId, type: ownerType } = req.identity;
-    const id = getParam(req.params.id);
-
-    const deleted = await Application.findOneAndDelete({
-      _id: id,
-      ownerId,
-      ownerType,
-    });
-
-    if (!deleted) {
-      return res.status(404).json({
-        error: 'Application not found',
-      });
-    }
-
-    await auditLog({
-      event: 'APPLICATION_DELETED',
-      userId: ownerId,
-      userType: ownerType,
-      resourceId: id,
-      requestId: req.requestId,
-      ip: req.ip,
-    });
-
-    return res.json({
-      message: 'Application deleted',
-    });
-  } catch (err) {
-    console.error('[deleteApplication]', err);
-
-    return res.status(500).json({
-      error: 'Failed to delete application',
+  if (!req.identity) {
+    return res.status(401).json({
+      error: 'Unauthorized',
     });
   }
+
+  const { id: ownerId, type: ownerType } = req.identity;
+  const id = getParam(req.params.id);
+
+  const deleted = await Application.findOneAndDelete({
+    _id: id,
+    ownerId,
+    ownerType,
+  });
+
+  if (!deleted) {
+    return res.status(404).json({
+      error: 'Application not found',
+    });
+  }
+
+  await auditLog({
+    event: 'APPLICATION_DELETED',
+    userId: ownerId,
+    userType: ownerType,
+    resourceId: id,
+    requestId: req.requestId,
+    ip: req.ip,
+  });
+
+  return res.json({
+    message: 'Application deleted',
+  });
 };
 
 // ─────────────────────────────────────────────
@@ -297,7 +265,6 @@ export const createApplication = async (req: Request, res: Response) => {
       return; // noopLateWrites already suppressed the actual res.json call
     }
 
-    console.error('[createApplication]', err);
-    return res.status(500).json({ error: 'Failed to create application' });
+    throw err;
   }
 };
