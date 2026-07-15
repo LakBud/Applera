@@ -1,4 +1,5 @@
 import axios from 'axios';
+import mongoose from 'mongoose';
 
 import { cloudinary } from '../config/cloudinary.js';
 import { deleteCache, getCache, setCache } from '../lib/cache.js';
@@ -353,8 +354,6 @@ export const deleteCV = async (req: UserRequest, res: Response) => {
 // PATCH /api/cv/:id/pin
 // ─────────────────────────────────────────────
 
-import mongoose from 'mongoose';
-
 export const pinCV = async (req: UserRequest, res: Response) => {
   const { id: ownerId, type: ownerType } = req.identity;
   const id = getParam(req.params.id);
@@ -391,11 +390,10 @@ export const pinCV = async (req: UserRequest, res: Response) => {
         return { cv, pinned: false };
       }
 
-      // Reserve pin slot
       const reservation = await User.updateOne(
         {
           clerkId: ownerId,
-          pinnedCVCount: { $lt: 5 },
+          pinnedCVCount: mongoose.trusted({ $lt: 5 }),
         },
         {
           $inc: { pinnedCVCount: 1 },

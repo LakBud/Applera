@@ -6,6 +6,7 @@ import { deleteCache, deleteCachePattern } from '../lib/cache.js';
 import Application from '../models/Application.js';
 import CV from '../models/CV.js';
 import InterviewPrep from '../models/InterviewPrep.js';
+import Job from '../models/Job.js';
 import User from '../models/User.js';
 import { BadRequestError } from '../utils/errors/badRequest.error.js';
 
@@ -55,6 +56,7 @@ async function handleUserCreated(user: UserJSON) {
       $setOnInsert: {
         clerkId: user.id,
         email: user.email_addresses[0]?.email_address ?? '',
+        username: user.username ?? '',
         firstName: user.first_name ?? '',
         lastName: user.last_name ?? '',
         imageUrl: user.image_url ?? '',
@@ -79,6 +81,7 @@ async function handleUserUpdated(user: UserJSON) {
     {
       $set: {
         email: user.email_addresses?.[0]?.email_address ?? '',
+        username: user.username ?? '',
         firstName: user.first_name ?? '',
         lastName: user.last_name ?? '',
         imageUrl: user.image_url ?? '',
@@ -125,6 +128,7 @@ async function handleUserDeleted(clerkId: string) {
       InterviewPrep.deleteMany({ application: { $in: applicationIds } }),
       Application.deleteMany({ ownerId: clerkId }),
       CV.deleteMany({ ownerId: clerkId }),
+      Job.deleteMany({ ownerId: clerkId }),
       User.deleteOne({ clerkId }),
       deleteCachePattern(`*${clerkId}*`),
     ]);
