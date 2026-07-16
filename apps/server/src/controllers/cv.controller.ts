@@ -14,6 +14,7 @@ import { extractCVData } from '../services/extractors.service.js';
 import { LLMError } from '../services/llm/llm.service.js';
 import { normalizeParsedCV } from '../utils/cv/cv.normalize.utils.js';
 import { BadRequestError } from '../utils/errors/badRequest.error.js';
+import { ExternalServiceError } from '../utils/errors/externalService.error.js';
 import { NotFoundError } from '../utils/errors/notFound.error.js';
 import { hash } from '../utils/shared/hash.utils.js';
 import { getParam } from '../utils/shared/param.utils.js';
@@ -336,7 +337,11 @@ export const deleteCV = async (req: UserRequest, res: Response) => {
   }
 
   if (deleted.cloudinaryPublicId) {
-    await cloudinary.uploader.destroy(deleted.cloudinaryPublicId, { resource_type: 'image' });
+    try {
+      await cloudinary.uploader.destroy(deleted.cloudinaryPublicId, { resource_type: 'image' });
+    } catch {
+      throw new ExternalServiceError(`Failed to upload CV. Please try again.`);
+    }
   }
 
   await deleteCache(cvListKey(ownerId, ownerType));
