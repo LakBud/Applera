@@ -1,46 +1,60 @@
+import { deleteCache } from '../../lib/cache.js';
+import InterviewPrep from '../../models/InterviewPrep.js';
+import { NotFoundError } from '../../utils/errors/notFound.error.js';
 import {
-  InterviewPrepParsedSchema,
-  type CVParsed,
-  type InterviewPrepParsed,
-  type JobParsed,
-} from '@applera/schemas';
-
-import { CACHE_VERSIONS } from '../../config/cache.versions.js';
-import { INTERVIEW_PREP_PROMPT } from '../../prompts/interview/interviewPrep.system.js';
-import { buildInterviewPrepPrompt } from '../../prompts/interview/interviewPrep.user.js';
-import { cachedLLM, callLLM } from '../llm/llm.service.js';
+  loadApplicationContext,
+  saveInterviewPrep,
+  validateContext,
+} from './createInterviewPrep.helpers.js';
+import { generateInterviewPrep } from './generateInterviewPrep.service.js';
 
 import type { LLMExecutionOptions } from '../../types/llm.types.js';
-import type { MatchReport } from '../../types/schemas/match.schemas.js';
+import type { Identity } from '../../types/schemas/identity.schemas.js';
 
-const INTERVIEW_TTL = 60 * 60 * 24; // 24 hours — questions don't change unless regenerated
-
-export async function generateInterviewPrep(
-  cv: CVParsed,
-  job: JobParsed,
-  rawText: string | null | undefined,
-  match: MatchReport,
+// Service for POST /api/interview/:applicationId
+export async function createInterviewPrep(
   applicationId: string,
+  identity: Identity,
   { signal, reserveUsage, refundUsage }: LLMExecutionOptions = {},
-): Promise<InterviewPrepParsed> {
+) {
   signal?.throwIfAborted();
 
-  return cachedLLM<InterviewPrepParsed>({
-    cacheKey: `interview:${CACHE_VERSIONS.interview}:${applicationId}`,
-    ttl: INTERVIEW_TTL,
+  const { cv, job, rawText, match } = await loadApplicationContext(applicationId, identity);
+
+  signal?.throwIfAborted();
+
+  await deleteCache(`interview:${applicationId}`);
+
+  signal?.throwIfAborted();
+
+  const { cv: parsedCV, job: parsedJob } = validateContext(cv, job);
+
+  signal?.throwIfAborted();
+
+  const prep = await generateInterviewPrep(parsedCV, parsedJob, rawText, match, applicationId, {
+    signal,
     reserveUsage,
     refundUsage,
-
-    fn: async () => {
-      const result = await callLLM({
-        systemPrompt: INTERVIEW_PREP_PROMPT,
-        userContent: buildInterviewPrepPrompt(cv, job, match, rawText),
-        temperature: 0.3,
-        maxTokens: 1500,
-        signal,
-      });
-
-      return InterviewPrepParsedSchema.parse(result);
-    },
   });
+
+  signal?.throwIfAborted();
+
+  const saved = await saveInterviewPrep(applicationId, identity, prep);
+
+  return { prep, saved };
+}
+
+// Service for GET /api/interview/:applicationId
+export async function getInterviewPrep(applicationId: string, identity: Identity) {
+  const prep = await InterviewPrep.findOne({
+    application: applicationId,
+    ownerId: identity.id,
+    ownerType: identity.type,
+  });
+
+  if (!prep) {
+    throw new NotFoundError('No interview prep found. Generate one first.');
+  }
+
+  return prep;
 }

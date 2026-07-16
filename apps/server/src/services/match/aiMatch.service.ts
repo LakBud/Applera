@@ -1,10 +1,10 @@
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { buildMatchEnrichPrompt } from '../../prompts/matchEnrichPrompt.js';
-import { cachedLLM, callLLM } from '../../services/llm/llm.service.js';
 import { type LLMExecutionOptions } from '../../types/llm.types.js';
 import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
 import { extractAllText } from '../../utils/match/text.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
+import { cachedLLM, callLLM } from '../llm/llm.service.js';
 
 import type { CVParsed, JobParsed } from '@applera/schemas';
 
