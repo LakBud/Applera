@@ -1,12 +1,13 @@
+import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { deleteCache } from '../../lib/cache.js';
 import InterviewPrep from '../../models/InterviewPrep.js';
 import { NotFoundError } from '../../utils/errors/notFound.error.js';
+import { generateInterviewPrep } from './generateInterviewPrep.service.js';
 import {
   loadApplicationContext,
   saveInterviewPrep,
   validateContext,
-} from './createInterviewPrep.helpers.js';
-import { generateInterviewPrep } from './generateInterviewPrep.service.js';
+} from './interviewPrep.helpers.service.js';
 
 import type { LLMExecutionOptions } from '../../types/llm.types.js';
 import type { Identity } from '../../types/schemas/identity.schemas.js';
@@ -23,7 +24,7 @@ export async function createInterviewPrep(
 
   signal?.throwIfAborted();
 
-  await deleteCache(`interview:${applicationId}`);
+  await deleteCache(`interview:${CACHE_VERSIONS.interview}:${applicationId}`);
 
   signal?.throwIfAborted();
 

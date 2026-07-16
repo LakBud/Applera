@@ -1,7 +1,9 @@
-import { clearUserCache } from '../../lib/user/clearUserCache.js';
-import { deleteUserCloudinaryAssets } from '../../lib/user/deleteCloudinary.js';
-import { deleteUserRecords } from '../../lib/user/deleteUserRecords.js';
 import Application from '../../models/Application.js';
+import {
+  clearUserCache,
+  deleteUserCloudinaryAssets,
+  deleteUserRecords,
+} from './userDeleted.helpers.service.js';
 
 export async function handleUserDeleted(clerkId: string) {
   console.log(`[webhook] Deleting all data for user: ${clerkId}`);
