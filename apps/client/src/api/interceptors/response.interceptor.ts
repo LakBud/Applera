@@ -30,46 +30,44 @@ export function createResponseErrorInterceptor(axiosInstance: ReturnType<typeof 
       });
     }
 
-    switch (status) {
-      case 401:
-        if (!window.location.pathname.startsWith('/auth/')) {
-          window.location.replace('/auth/sign-up/');
-        }
-        return Promise.reject({ code: 'UNAUTHORIZED', message: data?.error || 'Unauthorized' });
-
-      case 403:
-        resetCsrfToken();
-        if (config && !config._csrfRetried) {
-          config._csrfRetried = true;
-          return axiosInstance(config);
-        }
-        return Promise.reject({ code: 'FORBIDDEN', message: data?.error || 'Forbidden' });
-
-      case 404:
-        return Promise.reject({ code: 'NOT_FOUND', message: 'Not found' });
-
-      case 429:
-        return Promise.reject({
-          code: 'RATE_LIMITED',
-          message: 'Too many requests. Please wait and try again.',
-        });
-
-      case 402:
-        if (data?.error === 'USAGE_LIMIT_REACHED') {
-          return Promise.reject({
-            code: 'USAGE_LIMIT_REACHED',
-            message: data.message || 'Usage limit reached',
-            meta: {
-              limit: data.limit,
-              count: data.count,
-              remaining: data.remaining,
-            },
-          });
-        }
+    // Side-effecting cases that need real logic, not just passthrough
+    if (status === 401) {
+      if (!window.location.pathname.startsWith('/auth/')) {
+        window.location.replace('/auth/sign-up/');
+      }
+      return Promise.reject({
+        code: data?.code || 'UNAUTHORIZED',
+        message: data?.error || 'Unauthorized',
+      });
     }
 
+    if (status === 403) {
+      resetCsrfToken();
+      if (config && !config._csrfRetried) {
+        config._csrfRetried = true;
+        return axiosInstance(config);
+      }
+      return Promise.reject({
+        code: data?.code || 'FORBIDDEN',
+        message: data?.error || 'Forbidden',
+      });
+    }
+
+    if (status === 402 && data?.error === 'USAGE_LIMIT_REACHED') {
+      return Promise.reject({
+        code: 'USAGE_LIMIT_REACHED',
+        message: data.message || 'Usage limit reached',
+        meta: {
+          limit: data.limit,
+          count: data.count,
+          remaining: data.remaining,
+        },
+      });
+    }
+
+    // Everything else: trust the backend
     return Promise.reject({
-      code: 'UNKNOWN',
+      code: data?.code || 'UNKNOWN',
       message: data?.message || data?.error || axiosError.message || 'Something went wrong',
     });
   };

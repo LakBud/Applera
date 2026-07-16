@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-import { AggregateError } from '../../utils/errors/aggregate.error.js';
+import { AppAggregateError } from '../../utils/errors/aggregate.error.js';
 import { deleteCache, deleteCachePattern } from '../cache.js';
 
 export async function clearUserCache(clerkId: string, applicationIds: Types.ObjectId[]) {
@@ -22,7 +22,7 @@ export async function clearUserCache(clerkId: string, applicationIds: Types.Obje
   );
 
   if (rejected.length > 0) {
-    throw new AggregateError(
+    throw new AppAggregateError(
       rejected.map((result) => result.reason),
       `Failed to invalidate ${rejected.length} of ${results.length} cache entr${
         rejected.length === 1 ? 'y' : 'ies'

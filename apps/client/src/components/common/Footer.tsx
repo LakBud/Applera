@@ -9,9 +9,10 @@ const PRODUCT_LINKS = [
   { label: 'CVs', to: '/cvs' },
 ];
 
-const LEGAL_LINKS = [
+const OTHER_LINKS = [
   { label: 'Privacy', to: '/privacy' },
   { label: 'Terms', to: '/terms' },
+  { label: 'Contact', href: 'mailto:support@applera.site' },
 ];
 
 export function Footer() {
@@ -64,16 +65,25 @@ export function Footer() {
 
         {/* Info */}
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-tx-muted">Legal</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-tx-muted">Other</p>
           <ul className="space-y-2">
-            {LEGAL_LINKS.map(({ label, to }) => (
+            {OTHER_LINKS.map(({ label, href, to }) => (
               <li key={label}>
-                <Link
-                  to={to}
-                  className="text-xs text-tx-muted hover:text-tx-body transition-colors"
-                >
-                  {label}
-                </Link>
+                {to ? (
+                  <Link
+                    to={to}
+                    className="text-xs text-tx-muted hover:text-tx-body transition-colors"
+                  >
+                    {label}
+                  </Link>
+                ) : (
+                  <a
+                    href={href}
+                    className="text-xs text-tx-muted hover:text-tx-body transition-colors"
+                  >
+                    {label}
+                  </a>
+                )}
               </li>
             ))}
           </ul>

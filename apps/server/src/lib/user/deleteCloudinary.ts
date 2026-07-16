@@ -1,6 +1,6 @@
 import { cloudinary } from '../../config/cloudinary.js';
 import CV from '../../models/CV.js';
-import { AggregateError } from '../../utils/errors/aggregate.error.js';
+import { AppAggregateError } from '../../utils/errors/aggregate.error.js';
 
 export async function deleteUserCloudinaryAssets(clerkId: string) {
   const cvs = await CV.find({
@@ -19,7 +19,7 @@ export async function deleteUserCloudinaryAssets(clerkId: string) {
   );
 
   if (rejected.length > 0) {
-    throw new AggregateError(
+    throw new AppAggregateError(
       rejected.map((result) => result.reason),
       `Failed to delete ${rejected.length} of ${ids.length} Cloudinary asset(s) for user ${clerkId}`,
     );

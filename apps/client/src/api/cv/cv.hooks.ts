@@ -43,9 +43,8 @@ export function useDeleteCV() {
       qc.invalidateQueries({ queryKey: queryKeys.cv.all });
       toast.success('CV deleted');
     },
-    onError: () => {
-      toast.error('Failed to delete CV. Please try again.');
-    },
+    onError: (error: ClientError) =>
+      handleMutationError(error, 'Failed to delete CV. Please try again.'),
   });
 }
 

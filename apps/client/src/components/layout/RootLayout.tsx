@@ -40,9 +40,9 @@ export function RootLayout() {
           unstyled: true,
           classNames: {
             toast:
-              'flex items-center gap-3 bg-white border border-green-100 text-green-900 text-sm font-sans px-4 py-3 rounded-md shadow-md w-full',
-            success: 'border-green-200 [&>[data-icon]]:text-green-600',
-            error: 'border-red-200 text-red-800 [&>[data-icon]]:text-red-500',
+              'flex items-center gap-3 bg-white border border-green-100 text-green-800 text-sm font-sans px-4 py-3 rounded-md shadow-md w-full',
+            success: 'border-green-700 [&>[data-icon]]:text-green-700',
+            error: '!border-black !text-black [&>[data-icon]]:!text-black',
             title: 'font-medium',
             description: 'text-xs opacity-70',
           },

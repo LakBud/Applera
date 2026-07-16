@@ -319,28 +319,33 @@ export const getCVById = async (req: UserRequest, res: Response) => {
 
 export const deleteCV = async (req: UserRequest, res: Response) => {
   const id = getParam(req.params.id);
+  const { id: ownerId, type: ownerType } = req.identity;
 
   const deleted = await CVModel.findOneAndDelete({
     _id: id,
-    ownerId: req.identity.id,
-    ownerType: req.identity.type,
+    ownerId,
+    ownerType,
+    pinned: false,
   });
 
   if (!deleted) {
-    throw new NotFoundError('CV not found');
+    const exists = await CVModel.exists({ _id: id, ownerId, ownerType });
+    throw exists
+      ? new BadRequestError('Unpin this CV before deleting it')
+      : new NotFoundError('CV not found');
   }
 
   if (deleted.cloudinaryPublicId) {
     await cloudinary.uploader.destroy(deleted.cloudinaryPublicId, { resource_type: 'image' });
   }
 
-  await deleteCache(cvListKey(req.identity.id, req.identity.type));
-  await deleteCache(cvHashKey(req.identity.id, deleted.contentHash));
+  await deleteCache(cvListKey(ownerId, ownerType));
+  await deleteCache(cvHashKey(ownerId, deleted.contentHash));
 
   await auditLog({
     event: 'CV_DELETED',
-    userId: req.identity.id,
-    userType: req.identity.type,
+    userId: ownerId,
+    userType: ownerType,
     requestId: req.requestId,
     ip: req.ip,
     resourceId: id,

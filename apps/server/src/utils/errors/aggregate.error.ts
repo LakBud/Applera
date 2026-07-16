@@ -1,6 +1,6 @@
 import { AppError } from './app.error.js';
 
-export class AggregateError extends AppError {
+export class AppAggregateError extends AppError {
   constructor(
     public errors: unknown[],
     message: string,
