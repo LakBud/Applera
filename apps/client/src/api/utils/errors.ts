@@ -11,7 +11,8 @@ export const handleMutationError = (error: ClientError, fallback: string) => {
     );
     return;
   }
-  toast.error(fallback);
+
+  toast.error(error.message || fallback);
 };
 
 export function isClientError(error: unknown): error is ClientError {

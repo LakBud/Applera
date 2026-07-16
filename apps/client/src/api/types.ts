@@ -1,11 +1,11 @@
 export interface ApiError {
   error: string;
   message?: string;
+  code?: string;
   limit?: number;
   count?: number;
   remaining?: number;
 }
-
 export type ClientErrorCode =
   | 'TIMEOUT'
   | 'NETWORK_ERROR'

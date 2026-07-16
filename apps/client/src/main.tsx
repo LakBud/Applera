@@ -6,8 +6,8 @@ import '@fontsource-variable/geist';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRoot } from 'react-dom/client';
 
-import { App } from './core/App';
 import './globals.css';
+import { App } from './core/App';
 import { queryClient } from './core/queryClient';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;

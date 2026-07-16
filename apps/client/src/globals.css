@@ -128,8 +128,8 @@
 
     --clr-success: #22c55e;
     --clr-warning: #f59e0b;
-    --clr-error: #ef4444;
-    --clr-info: #3b82f6;
+    --clr-error: #000000;
+    --clr-info: #166534;
 
     /* TYPOGRAPHY */
     --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
@@ -150,19 +150,21 @@
     --clerk-color-background: var(--surface);
     --clerk-color-foreground: var(--text-body);
 
-    --clerk-color-input: var(--surface);
+    --clerk-color-input: rgb(248, 255, 248);
     --clerk-color-input-foreground: var(--text-body);
 
     --clerk-color-neutral: var(--text-secondary);
+    --clerk-color-muted: var(--surface-muted);
+    --clerk-color-muted-foreground: var(--text-h4);
 
     --clerk-color-danger: var(--clr-error);
     --clerk-color-success: var(--clr-success);
     --clerk-color-warning: var(--clr-warning);
 
     --clerk-color-ring: hsl(var(--ring));
+    --clerk-color-shadow: rgb(30 45 34 / 0.09);
 
     --clerk-color-modal-backdrop: rgba(0, 0, 0, 0.4);
-
     --clerk-color-shimmer: var(--surface-muted);
 
     --clerk-border-radius: var(--radius);
