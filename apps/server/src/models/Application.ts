@@ -118,4 +118,6 @@ ApplicationSchema.index({ ownerId: 1, createdAt: -1 });
 ApplicationSchema.index({ cv: 1 });
 ApplicationSchema.index({ job: 1 });
 
+export type ApplicationType = mongoose.InferSchemaType<typeof ApplicationSchema>;
+
 export default mongoose.model('Application', ApplicationSchema);

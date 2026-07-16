@@ -1,11 +1,11 @@
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
-import { runAIEnrichment } from '../../lib/match/ai.match.js';
-import { runMathMatch } from '../../lib/match/math.match.js';
 import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
 import { normalizeSkill } from '../../utils/match/skills/skill.utils.js';
 import { extractAllText } from '../../utils/match/text.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
 import { cachedLLM } from '../llm/llm.service.js';
+import { runAIEnrichment } from './aiMatch.service.js';
+import { runMathMatch } from './mathMatch.service.js';
 
 import type { LLMExecutionOptions } from '../../types/llm.types.js';
 import type { CVParsed, JobParsed } from '@applera/schemas';

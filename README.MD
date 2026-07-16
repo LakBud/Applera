@@ -61,35 +61,35 @@ A **Node.js + Express 5** REST API built with:
 
 ## Userflow
 ```
-   ┌────────────────────────┐    ┌────────────────┐   ┌───────────────┐
-   │        CV Stats        │ <- │   CV upload    │ + │  Job upload   │
-   │ GET /api/tracker/:cvId │    │  POST /api/cv  │   │ POST /api/job │
-   └──────-─────────────────┘    └───────┬────────┘   └──────┬────────┘
-                                         │                   │
-                                         │                   │
-                                         ▼                   ▼
-                                    ┌──────────────────────────────┐
-                                    │ Generate application         │
-                                    │ POST /api/application        │
-                                    └──────────────────────────────┘
+   ┌──────────────────────────┐    ┌────────────────┐   ┌───────────────┐
+   │       CV Dashboard       │ <- │   CV upload    │ + │  Job upload   │
+   │ GET /api/dashboard/:cvId │    │  POST /api/cv  │   │ POST /api/job │
+   └──────-───────────────────┘    └───────┬────────┘   └──────┬────────┘
+               ^                           │                   │
+               │                           │                   │
+               │                           ▼                   ▼
+               │                      ┌──────────────────────────────┐
+               │                      │ Generate application         │
+               │                      │ POST /api/application        │
+               │                      └──────────────────────────────┘
+               │                                     │
+               │                                     ▼
+               │                      ┌──────────────────────────────┐
+               │                      │ Application result           │
+               └──────────────────────│ GET /api/application         │ 
+                                      └──────────────────────────────┘
                                                     │
                                                     ▼
-                                    ┌──────────────────────────────┐
-                                    │ Application result           │
-                                    │ GET /api/application         │ 
-                                    └──────────────────────────────┘
-                                                    │
-                                                    ▼
-                                    ┌──────────────────────────────┐
-                                    │ Interview prep               │
-                                    │ POST /api/interview/:id      │
-                                    └──────────────────────────────┘
+                                      ┌──────────────────────────────┐
+                                      │ Interview prep               │
+                                      │ POST /api/interview/:id      │
+                                      └──────────────────────────────┘
 ```
 
 - The frontend collects a CV and a job listing on the homepage generator.
-- `POST /api/cv` uploads the CV and creates a tracker record at `GET /api/tracker/:cvId`.
+- `POST /api/cv` uploads the CV and creates a dashboard at `GET /api/dashboard/:cvId`.
 - `POST /api/job` uploads the job listing and stores it alongside the CV data.
-- `POST /api/application` generates a tailored job application from the saved CV and job details.
+- `POST /api/application` generates a tailored job application from the saved CV and job details which feeds into `GET /api/dashboard/:cvId`.
 - `GET /api/application` returns the generated application result.
 - `POST /api/interview/:id` generates interview prep for the saved application.
 
