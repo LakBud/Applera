@@ -382,43 +382,53 @@ export const pinCV = async (req: UserRequest, res: Response) => {
         throw new NotFoundError('CV not found');
       }
 
+      const user = await User.findOne({ clerkId: ownerId }).session(session);
+
+      if (!user) {
+        throw new NotFoundError('User not found');
+      }
+
+      const actualPinnedCount = await CVModel.countDocuments({
+        ownerId,
+        ownerType,
+        pinned: true,
+      }).session(session);
+
       // Unpin
       if (cv.pinned) {
         cv.pinned = false;
         await cv.save({ session });
 
-        const result = await User.updateOne(
-          { clerkId: ownerId, pinnedCVCount: mongoose.trusted({ $gt: 0 }) },
-          { $inc: { pinnedCVCount: -1 } },
+        await User.updateOne(
+          { clerkId: ownerId },
+          {
+            $set: {
+              pinnedCVCount: Math.max(actualPinnedCount - 1, 0),
+            },
+          },
           { session },
         );
-
-        if (result.modifiedCount !== 1) {
-          throw new Error('Failed to decrement pinned CV count');
-        }
 
         return { cv, pinned: false };
       }
 
-      const reservation = await User.updateOne(
-        {
-          clerkId: ownerId,
-          pinnedCVCount: mongoose.trusted({ $lt: 5 }),
-        },
-        {
-          $inc: { pinnedCVCount: 1 },
-        },
-        {
-          session,
-        },
-      );
-
-      if (reservation.modifiedCount !== 1) {
+      // Pin limit
+      if (actualPinnedCount >= 5) {
         throw new BadRequestError('You can only pin up to 5 CVs. Unpin one first.');
       }
 
       cv.pinned = true;
       await cv.save({ session });
+
+      await User.updateOne(
+        { clerkId: ownerId },
+        {
+          $set: {
+            pinnedCVCount: actualPinnedCount + 1,
+          },
+        },
+        { session },
+      );
 
       return { cv, pinned: true };
     });
