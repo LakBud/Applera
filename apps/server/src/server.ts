@@ -31,25 +31,34 @@ const app: express.Application = express();
 // Core security middleware
 if (IS_PROD) app.set('trust proxy', 1);
 
-// Strict CSP via Helmet
+// Headers
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"], // tighten if you control styles
+        styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],
         connectSrc: ["'self'", CLIENT_URL, ...(IS_PROD ? [] : ['http://localhost:5173'])],
         fontSrc: ["'self'"],
         objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
         frameAncestors: ["'none'"],
-        upgradeInsecureRequests: IS_PROD ? [] : null,
+        ...(IS_PROD ? { upgradeInsecureRequests: [] } : {}),
       },
     },
-    crossOriginEmbedderPolicy: false, // only enable if you need COEP isolation
+    crossOriginEmbedderPolicy: false,
+    hsts: IS_PROD ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
   }),
 );
+
+// Permission policy
+app.use((req, res, next) => {
+  res.setHeader('Permissions-Policy', 'geolocation=(), camera=(), microphone=(), payment=()');
+  next();
+});
 
 // Request ID FIRST
 // Also writes X-Request-ID to the response
