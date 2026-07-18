@@ -90,10 +90,46 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-border/50">
+      <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-border/50 flex items-center justify-between">
         <p className="text-xs text-tx-muted">
           © {new Date().getFullYear()} Applera. All rights reserved.
         </p>
+
+        <div className="flex gap-3">
+          <a
+            href="https://open-launch.com/projects/applera"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://open-launch.com/api/badge/cd998bd8-05dd-4336-ace6-724b45f5b5a7/featured-light.svg"
+              alt="Featured on Open-Launch"
+              width="200"
+              height="50"
+            />
+          </a>
+          <a
+            href="https://www.producthunt.com/products/applera/reviews/new?utm_source=badge-product_review&utm_medium=badge&utm_source=badge-applera"
+            target="_blank"
+          >
+            <img
+              src="https://api.producthunt.com/widgets/embed-image/v1/product_review.svg?product_id=1260265&theme=neutral"
+              alt="Applera - Turn&#0032;any&#0032;CV&#0032;&#0043;&#0032;job&#0032;post&#0032;into&#0032;a&#0032;tailored&#0032;application | Product Hunt"
+            />
+          </a>
+          <a
+            href="https://findly.tools/applera?utm_source=applera"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://findly.tools/badges/findly-tools-badge-light.svg"
+              alt="Featured on Findly.tools"
+              width="175"
+              height="56"
+            />
+          </a>
+        </div>
       </div>
     </footer>
   );
