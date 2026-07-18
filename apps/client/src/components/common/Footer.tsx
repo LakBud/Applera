@@ -117,18 +117,6 @@ export function Footer() {
               alt="Applera - Turn&#0032;any&#0032;CV&#0032;&#0043;&#0032;job&#0032;post&#0032;into&#0032;a&#0032;tailored&#0032;application | Product Hunt"
             />
           </a>
-          <a
-            href="https://findly.tools/applera?utm_source=applera"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="https://findly.tools/badges/findly-tools-badge-light.svg"
-              alt="Featured on Findly.tools"
-              width="175"
-              height="56"
-            />
-          </a>
         </div>
       </div>
     </footer>
