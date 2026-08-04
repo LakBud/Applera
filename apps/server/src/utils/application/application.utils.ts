@@ -31,24 +31,26 @@ export function buildCacheKey(...inputs: unknown[]): string {
 }
 // ── Placeholder scrubber ───────────────────────────────────────────────
 
-export function scrubPlaceholders(value: unknown): unknown {
+export function scrubPlaceholders<T>(value: T): T {
   if (typeof value === 'string') {
     return value
       .replace(/\[.*?\]/g, '')
       .replace(/\s{2,}/g, ' ')
-      .trim();
+      .trim() as T;
   }
 
   if (Array.isArray(value)) {
-    return value.map(scrubPlaceholders);
+    return value.map(scrubPlaceholders) as T;
   }
 
   if (value && typeof value === 'object') {
     const out: Record<string, unknown> = {};
+
     for (const [k, v] of Object.entries(value)) {
       out[k] = scrubPlaceholders(v);
     }
-    return out;
+
+    return out as T;
   }
 
   return value;

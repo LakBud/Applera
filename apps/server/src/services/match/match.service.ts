@@ -3,7 +3,7 @@ import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.s
 import { normalizeSkill } from '../../utils/match/skills/skill.utils.js';
 import { extractAllText } from '../../utils/match/text.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
-import { cachedLLM } from '../llm/llm.service.js';
+import { cachedCall } from '../llm/llm.service.js';
 import { runAIEnrichment } from './aiMatch.service.js';
 import { runMathMatch } from './mathMatch.service.js';
 
@@ -29,9 +29,12 @@ export async function matchCVToJob(
     }),
   )}`;
 
-  return cachedLLM({
+  return cachedCall({
     cacheKey,
     ttl: 60 * 60 * 24,
+    signal,
+    reserveUsage,
+    refundUsage,
 
     fn: async () => {
       const mathResult = runMathMatch(cv, job);

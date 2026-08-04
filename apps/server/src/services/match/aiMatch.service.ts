@@ -4,7 +4,7 @@ import { type LLMExecutionOptions } from '../../types/llm.types.js';
 import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
 import { extractAllText } from '../../utils/match/text.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
-import { cachedLLM, callLLM } from '../llm/llm.service.js';
+import { cachedLLM } from '../llm/llm.service.js';
 
 import type { CVParsed, JobParsed } from '@applera/schemas';
 
@@ -28,22 +28,16 @@ export async function runAIEnrichment(
   return cachedLLM({
     cacheKey,
     ttl: 60 * 60 * 24,
+    call: {
+      jsonMode: true,
+      maxTokens: 600,
+      temperature: 0.1,
+      systemPrompt,
+      userContent,
+      signal,
+      schema: MatchReportSchema.shape.ai_insights,
+    },
     reserveUsage,
     refundUsage,
-
-    fn: async () => {
-      const raw = await callLLM({
-        jsonMode: true,
-        maxTokens: 600,
-        temperature: 0.1,
-        systemPrompt,
-        userContent,
-        signal,
-      });
-
-      const parsed = MatchReportSchema.shape.ai_insights.parse(raw);
-
-      return parsed;
-    },
   });
 }
