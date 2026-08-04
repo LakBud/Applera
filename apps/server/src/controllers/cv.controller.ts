@@ -1,5 +1,6 @@
 import axios from 'axios';
 import mongoose from 'mongoose';
+import { isLLMError } from 'vern-llm';
 
 import { cloudinary } from '../config/cloudinary.js';
 import { deleteCache, getCache, setCache } from '../lib/cache.js';
@@ -11,7 +12,6 @@ import CVModel from '../models/CV.js';
 import User from '../models/User.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { extractCVData } from '../services/extractors.service.js';
-import { isLLMError } from '../services/llm/llm.service.js';
 import { normalizeParsedCV } from '../utils/cv/cv.normalize.utils.js';
 import { BadRequestError } from '../utils/errors/badRequest.error.js';
 import { ExternalServiceError } from '../utils/errors/externalService.error.js';

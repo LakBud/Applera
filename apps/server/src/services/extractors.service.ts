@@ -6,7 +6,7 @@ import { hash } from '../utils/shared/hash.utils.js';
 import { sanitise } from '../utils/shared/sanitize.utils.js';
 import { repairCV } from './cv/cvRepair.service.js';
 import { repairJob } from './job/jobRepair.service.js';
-import { cachedLLM } from './llm/llm.service.js';
+import { llm } from './llm/llm.service.js';
 
 import type { LLMExecutionOptions } from '../types/llm.types.js';
 import type { CVParsed, JobParsed } from '@applera/schemas';
@@ -29,7 +29,7 @@ export async function extractCVData(
 ): Promise<CVParsed> {
   const safeText = sanitise(cvText, 'cvText');
 
-  const result = await cachedLLM<CVParsed>({
+  const result = await llm.cachedLLMCall<CVParsed>({
     cacheKey: `cv:${CACHE_VERSIONS.cv}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
     call: {
@@ -46,6 +46,7 @@ export async function extractCVData(
 
   return repairCV(result);
 }
+
 // ─────────────────────────────────────────────────────────────
 // Job extractor
 // ─────────────────────────────────────────────────────────────
@@ -64,7 +65,7 @@ export async function extractJobData(
 ): Promise<JobParsed> {
   const safeText = sanitise(jobText, 'jobText');
 
-  const result = await cachedLLM<JobParsed>({
+  const result = await llm.cachedLLMCall<JobParsed>({
     cacheKey: `job:${CACHE_VERSIONS.job}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
     call: {

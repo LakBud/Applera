@@ -8,7 +8,7 @@ import {
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { INTERVIEW_PREP_PROMPT } from '../../prompts/interview/interviewPrep.system.js';
 import { buildInterviewPrepPrompt } from '../../prompts/interview/interviewPrep.user.js';
-import { cachedLLM } from '../llm/llm.service.js';
+import { llm } from '../llm/llm.service.js';
 
 import type { LLMExecutionOptions } from '../../types/llm.types.js';
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
@@ -25,7 +25,7 @@ export async function generateInterviewPrep(
 ): Promise<InterviewPrepParsed> {
   signal?.throwIfAborted();
 
-  const result = await cachedLLM<InterviewPrepParsed>({
+  const result = await llm.cachedLLMCall<InterviewPrepParsed>({
     cacheKey: `interview:${CACHE_VERSIONS.interview}:${applicationId}`,
     ttl: INTERVIEW_TTL,
     call: {
