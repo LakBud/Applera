@@ -1,3 +1,4 @@
+import { IS_PROD } from '../../config/env.js';
 import { redis } from '../../config/redis.js';
 import { UsageLimitError } from '../../utils/errors/usage.errors.js';
 import { usageKey } from '../../utils/shared/usageKey.utils.js';
@@ -22,12 +23,9 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
 
   try {
     let charged = false;
+    let inFlight: Promise<void> | null = null;
 
-    req.reserveUsage = async ({ coalesced } = { coalesced: false }) => {
-      if (charged) {
-        return;
-      }
-
+    const doCharge = async (coalesced: boolean) => {
       const count = await redis.incr(key);
       charged = true;
 
@@ -46,7 +44,26 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
         throw new UsageLimitError();
       }
 
-      console.log({ userId, count, limit, coalesced });
+      if (!IS_PROD) {
+        console.debug('[usageLimiter] charged', {
+          userId,
+          count,
+          limit,
+          coalesced,
+        });
+      }
+    };
+
+    req.reserveUsage = async ({ coalesced } = { coalesced: false }) => {
+      if (charged) {
+        return;
+      }
+
+      inFlight ??= doCharge(coalesced).finally(() => {
+        inFlight = null;
+      });
+
+      return inFlight;
     };
 
     req.refundUsage = async () => {

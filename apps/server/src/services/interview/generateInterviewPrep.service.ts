@@ -25,7 +25,7 @@ export async function generateInterviewPrep(
 ): Promise<InterviewPrepParsed> {
   signal?.throwIfAborted();
 
-  const result = await cachedLLM<unknown>({
+  const result = await cachedLLM<InterviewPrepParsed>({
     cacheKey: `interview:${CACHE_VERSIONS.interview}:${applicationId}`,
     ttl: INTERVIEW_TTL,
     call: {
@@ -34,20 +34,11 @@ export async function generateInterviewPrep(
       temperature: 0.2,
       maxTokens: 2500,
       signal,
+      schema: InterviewPrepParsedSchema,
     },
     reserveUsage,
     refundUsage,
   });
 
-  const parsed = InterviewPrepParsedSchema.safeParse(result);
-
-  if (!parsed.success) {
-    console.error('[INTERVIEW PREP VALIDATION ERROR]', parsed.error.format());
-
-    console.dir(result, { depth: null });
-
-    throw new Error('[INTERVIEW PREP] Invalid LLM output shape');
-  }
-
-  return parsed.data;
+  return result;
 }

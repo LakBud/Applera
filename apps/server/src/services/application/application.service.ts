@@ -6,7 +6,7 @@ import {
   ApplicationLLMSchema,
 } from '../../types/schemas/application.schemas.js';
 import { buildCacheKey, scrubPlaceholders } from '../../utils/application/application.utils.js';
-import { cachedLLM } from '../llm/llm.service.js';
+import { cachedCall, callLLM } from '../llm/llm.service.js';
 
 import type { LLMExecutionOptions } from '../../types/llm.types.js';
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
@@ -21,34 +21,25 @@ export async function generateApplication(
 ): Promise<ApplicationLLMOutput> {
   const cacheKey = buildCacheKey(CACHE_VERSIONS.application, cv, job, rawText, match);
 
-  // Not passing `schema` to `call` here: scrubPlaceholders() has to run on
-  // the raw parsed JSON *before* validation, so schema validation stays
-  // manual rather than using VernLLM's built-in schema option. This means
-  // a validation failure below still throws before cachedLLM's cache write,
-  // same guarantee as before.
-  const raw = await cachedLLM<unknown>({
+  return cachedCall<ApplicationLLMOutput>({
     cacheKey,
     ttl: 60 * 60 * 24 * 7, // 7 days
-    call: {
-      systemPrompt: APP_GEN_PROMPT,
-      userContent: buildApplicationPrompt(cv, job, rawText, match),
-      temperature: 0.3,
-      jsonMode: true,
-      maxTokens: 1500,
-      signal,
-    },
+    signal,
     reserveUsage,
     refundUsage,
+
+    fn: async (): Promise<ApplicationLLMOutput> => {
+      const result = await callLLM<ApplicationLLMOutput>({
+        systemPrompt: APP_GEN_PROMPT,
+        userContent: buildApplicationPrompt(cv, job, rawText, match),
+        temperature: 0.3,
+        jsonMode: true,
+        maxTokens: 1500,
+        signal,
+        schema: ApplicationLLMSchema,
+      });
+
+      return scrubPlaceholders(result);
+    },
   });
-
-  const cleaned = scrubPlaceholders(raw);
-
-  const parsed = ApplicationLLMSchema.safeParse(cleaned);
-
-  if (!parsed.success) {
-    console.error('[generateApplication INVALID OUTPUT]', parsed.error);
-    throw new Error('[generateApplication] Invalid LLM output schema');
-  }
-
-  return parsed.data;
 }

@@ -29,7 +29,7 @@ export async function extractCVData(
 ): Promise<CVParsed> {
   const safeText = sanitise(cvText, 'cvText');
 
-  const result = await cachedLLM<unknown>({
+  const result = await cachedLLM<CVParsed>({
     cacheKey: `cv:${CACHE_VERSIONS.cv}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
     call: {
@@ -38,19 +38,13 @@ export async function extractCVData(
       temperature: 0.2,
       maxTokens: 800,
       signal,
+      schema: CVExtractionSchema,
     },
     reserveUsage,
     refundUsage,
   });
 
-  const parsed = CVExtractionSchema.safeParse(result);
-
-  if (!parsed.success) {
-    console.error('[CV VALIDATION ERROR]', parsed.error.issues);
-    throw new Error('[CV] Invalid LLM output shape');
-  }
-
-  return repairCV(parsed.data);
+  return repairCV(result);
 }
 // ─────────────────────────────────────────────────────────────
 // Job extractor
@@ -70,7 +64,7 @@ export async function extractJobData(
 ): Promise<JobParsed> {
   const safeText = sanitise(jobText, 'jobText');
 
-  const result = await cachedLLM<unknown>({
+  const result = await cachedLLM<JobParsed>({
     cacheKey: `job:${CACHE_VERSIONS.job}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
     call: {
@@ -79,17 +73,11 @@ export async function extractJobData(
       temperature: 0.2,
       maxTokens: 800,
       signal,
+      schema: JobExtractionSchema,
     },
     reserveUsage,
     refundUsage,
   });
 
-  const parsed = JobExtractionSchema.safeParse(result);
-
-  if (!parsed.success) {
-    console.error('[JOB VALIDATION ERROR]', parsed.error.format());
-    throw new Error('[JOB] Invalid LLM output shape');
-  }
-
-  return repairJob(parsed.data);
+  return repairJob(result);
 }
