@@ -42,3 +42,29 @@ export async function deleteCachePattern(pattern: string) {
     cursor = nextCursor;
   } while (cursor !== '0');
 }
+
+import type { CacheAdapter } from 'vern-llm';
+
+export class UpstashCacheAdapter<T = unknown> implements CacheAdapter<T> {
+  async get(key: string): Promise<{ hit: boolean; value: T | null }> {
+    const raw = await redis.get<string>(key);
+
+    if (raw === null || raw === undefined) {
+      return { hit: false, value: null };
+    }
+
+    try {
+      return { hit: true, value: JSON.parse(raw) as T };
+    } catch {
+      return { hit: false, value: null };
+    }
+  }
+
+  async set(key: string, value: T, ttl: number): Promise<void> {
+    await redis.set(key, JSON.stringify(value), { ex: ttl });
+  }
+
+  async delete(key: string): Promise<void> {
+    await redis.del(key);
+  }
+}

@@ -6,7 +6,7 @@ import { hash } from '../utils/shared/hash.utils.js';
 import { sanitise } from '../utils/shared/sanitize.utils.js';
 import { repairCV } from './cv/cvRepair.service.js';
 import { repairJob } from './job/jobRepair.service.js';
-import { cachedLLM, callLLM } from './llm/llm.service.js';
+import { cachedLLM } from './llm/llm.service.js';
 
 import type { LLMExecutionOptions } from '../types/llm.types.js';
 import type { CVParsed, JobParsed } from '@applera/schemas';
@@ -29,33 +29,28 @@ export async function extractCVData(
 ): Promise<CVParsed> {
   const safeText = sanitise(cvText, 'cvText');
 
-  return cachedLLM<CVParsed>({
+  const result = await cachedLLM<unknown>({
     cacheKey: `cv:${CACHE_VERSIONS.cv}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
+    call: {
+      systemPrompt: EXTRACT_CV_PROMPT,
+      userContent: safeText,
+      temperature: 0.2,
+      maxTokens: 800,
+      signal,
+    },
     reserveUsage,
     refundUsage,
-
-    fn: async () => {
-      const result = await callLLM({
-        systemPrompt: EXTRACT_CV_PROMPT,
-        userContent: safeText,
-        temperature: 0.2,
-        maxTokens: 800,
-        signal,
-      });
-
-      const parsed = CVExtractionSchema.safeParse(result);
-
-      if (!parsed.success) {
-        console.error('[CV VALIDATION ERROR]', parsed.error.issues);
-        throw new Error('[CV] Invalid LLM output shape');
-      }
-
-      const cleaned = repairCV(parsed.data);
-
-      return cleaned;
-    },
   });
+
+  const parsed = CVExtractionSchema.safeParse(result);
+
+  if (!parsed.success) {
+    console.error('[CV VALIDATION ERROR]', parsed.error.issues);
+    throw new Error('[CV] Invalid LLM output shape');
+  }
+
+  return repairCV(parsed.data);
 }
 // ─────────────────────────────────────────────────────────────
 // Job extractor
@@ -75,31 +70,26 @@ export async function extractJobData(
 ): Promise<JobParsed> {
   const safeText = sanitise(jobText, 'jobText');
 
-  return cachedLLM<JobParsed>({
+  const result = await cachedLLM<unknown>({
     cacheKey: `job:${CACHE_VERSIONS.job}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
+    call: {
+      systemPrompt: EXTRACT_JOB_PROMPT,
+      userContent: safeText,
+      temperature: 0.2,
+      maxTokens: 800,
+      signal,
+    },
     reserveUsage,
     refundUsage,
-
-    fn: async () => {
-      const result = await callLLM({
-        systemPrompt: EXTRACT_JOB_PROMPT,
-        userContent: safeText,
-        temperature: 0.2,
-        maxTokens: 800,
-        signal,
-      });
-
-      const parsed = JobExtractionSchema.safeParse(result);
-
-      if (!parsed.success) {
-        console.error('[JOB VALIDATION ERROR]', parsed.error.format());
-        throw new Error('[JOB] Invalid LLM output shape');
-      }
-
-      const cleaned = repairJob(parsed.data);
-
-      return cleaned;
-    },
   });
+
+  const parsed = JobExtractionSchema.safeParse(result);
+
+  if (!parsed.success) {
+    console.error('[JOB VALIDATION ERROR]', parsed.error.format());
+    throw new Error('[JOB] Invalid LLM output shape');
+  }
+
+  return repairJob(parsed.data);
 }

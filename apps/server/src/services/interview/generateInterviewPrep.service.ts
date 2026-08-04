@@ -8,7 +8,7 @@ import {
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
 import { INTERVIEW_PREP_PROMPT } from '../../prompts/interview/interviewPrep.system.js';
 import { buildInterviewPrepPrompt } from '../../prompts/interview/interviewPrep.user.js';
-import { cachedLLM, callLLM } from '../llm/llm.service.js';
+import { cachedLLM } from '../llm/llm.service.js';
 
 import type { LLMExecutionOptions } from '../../types/llm.types.js';
 import type { MatchReport } from '../../types/schemas/match.schemas.js';
@@ -25,22 +25,29 @@ export async function generateInterviewPrep(
 ): Promise<InterviewPrepParsed> {
   signal?.throwIfAborted();
 
-  return cachedLLM<InterviewPrepParsed>({
+  const result = await cachedLLM<unknown>({
     cacheKey: `interview:${CACHE_VERSIONS.interview}:${applicationId}`,
     ttl: INTERVIEW_TTL,
+    call: {
+      systemPrompt: INTERVIEW_PREP_PROMPT,
+      userContent: buildInterviewPrepPrompt(cv, job, match, rawText),
+      temperature: 0.2,
+      maxTokens: 2500,
+      signal,
+    },
     reserveUsage,
     refundUsage,
-
-    fn: async () => {
-      const result = await callLLM({
-        systemPrompt: INTERVIEW_PREP_PROMPT,
-        userContent: buildInterviewPrepPrompt(cv, job, match, rawText),
-        temperature: 0.3,
-        maxTokens: 1500,
-        signal,
-      });
-
-      return InterviewPrepParsedSchema.parse(result);
-    },
   });
+
+  const parsed = InterviewPrepParsedSchema.safeParse(result);
+
+  if (!parsed.success) {
+    console.error('[INTERVIEW PREP VALIDATION ERROR]', parsed.error.format());
+
+    console.dir(result, { depth: null });
+
+    throw new Error('[INTERVIEW PREP] Invalid LLM output shape');
+  }
+
+  return parsed.data;
 }

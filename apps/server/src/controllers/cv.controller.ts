@@ -11,7 +11,7 @@ import CVModel from '../models/CV.js';
 import User from '../models/User.js';
 import { auditLog } from '../services/audit/audit.service.js';
 import { extractCVData } from '../services/extractors.service.js';
-import { LLMError } from '../services/llm/llm.service.js';
+import { isLLMError } from '../services/llm/llm.service.js';
 import { normalizeParsedCV } from '../utils/cv/cv.normalize.utils.js';
 import { BadRequestError } from '../utils/errors/badRequest.error.js';
 import { ExternalServiceError } from '../utils/errors/externalService.error.js';
@@ -218,7 +218,7 @@ export const createCV = async (req: UserRequest, res: Response) => {
     if (
       signal.aborted ||
       (err instanceof Error && err.name === 'AbortError') ||
-      (err instanceof LLMError && err.type === 'aborted')
+      (isLLMError(err) && err.type === 'aborted')
     ) {
       console.warn('[createCV] aborted (timeout or disconnect)', {
         requestId: req.requestId,

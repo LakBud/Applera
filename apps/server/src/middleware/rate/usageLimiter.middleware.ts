@@ -23,15 +23,9 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
   try {
     let charged = false;
 
-    req.reserveUsage = async () => {
+    req.reserveUsage = async ({ coalesced } = { coalesced: false }) => {
       if (charged) {
-        const count = Number((await redis.get(key)) ?? 0);
-
-        return {
-          count,
-          limit,
-          remaining: Math.max(limit - count, 0),
-        };
+        return;
       }
 
       const count = await redis.incr(key);
@@ -52,13 +46,7 @@ export async function usageLimiter(req: Request, res: Response, next: NextFuncti
         throw new UsageLimitError();
       }
 
-      console.log({ userId, count, limit });
-
-      return {
-        count,
-        limit,
-        remaining: Math.max(limit - count, 0),
-      };
+      console.log({ userId, count, limit, coalesced });
     };
 
     req.refundUsage = async () => {

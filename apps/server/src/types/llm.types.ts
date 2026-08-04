@@ -1,12 +1,12 @@
+import type { ReserveUsage, RefundUsage } from 'vern-llm';
+
 export type UsageResult = {
   count: number;
   limit: number;
   remaining: number;
 };
 
-export type ReserveUsage = () => Promise<UsageResult>;
-
-export type RefundUsage = () => Promise<void>;
+export type { ReserveUsage, RefundUsage };
 
 export type LLMExecutionOptions = {
   signal?: AbortSignal;
