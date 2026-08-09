@@ -18,9 +18,9 @@
   "type": "module",
   "dependencies": {
     "@applera/schemas": "workspace:*",
-    "@clerk/express": "^2.1.48",
+    "@clerk/express": "^2.1.50",
     "@upstash/ratelimit": "^2.0.8",
-    "@upstash/redis": "^1.38.0",
+    "@upstash/redis": "^1.38.2",
     "axios": "^1.19.0",
     "cloudinary": "^2.10.0",
     "cookie-parser": "^1.4.7",
@@ -32,13 +32,13 @@
     "franc-min": "^6.2.0",
     "helmet": "^8.3.0",
     "hpp": "^0.2.3",
-    "mongoose": "^9.8.1",
+    "mongoose": "^9.9.1",
     "multer": "^2.2.0",
     "openai": "^6.49.0",
     "pdfjs-dist": "^6.2.108",
     "stopword": "^3.1.5",
     "svix": "^1.98.0",
-    "vern-llm": "^1.6.0",
+    "vern-llm": "^1.7.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -52,13 +52,13 @@
     "@types/supertest": "^7.2.1",
     "@vitest/coverage-v8": "^4.1.10",
     "cross-env": "^10.1.0",
-    "csv-parse": "^7.0.1",
+    "csv-parse": "^7.0.2",
     "esbuild": "^0.28.1",
     "mongodb-memory-server": "^11.2.0",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
-    "tsx": "^4.23.1",
+    "tsx": "^4.23.9",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   }
