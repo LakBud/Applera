@@ -1,10 +1,26 @@
 import mongoose from 'mongoose';
+import { isLLMError, type LLMErrorType } from 'vern-llm';
 import { ZodError } from 'zod';
 
 import { IS_PROD } from '../../config/env.js';
 import { AppError } from '../../utils/errors/app.error.js';
 
 import type { NextFunction, Request, Response } from 'express';
+
+const LLM_ERROR_STATUS: Record<LLMErrorType, number> = {
+  timeout: 504,
+  api: 502,
+  network: 502,
+  parse: 502,
+  validation: 502,
+  invalid_params: 500,
+  rate_limited: 429,
+  quota_exceeded: 429,
+  circuit_open: 503,
+  fallback_exhausted: 502,
+  aborted: 499,
+  unknown: 502,
+};
 
 export function errorHandler(err: unknown, req: Request, res: Response, next: NextFunction) {
   if (res.headersSent) {
@@ -77,6 +93,34 @@ export function errorHandler(err: unknown, req: Request, res: Response, next: Ne
     return res.status(409).json({
       error: 'Resource already exists',
       code: 'DUPLICATE_RESOURCE',
+      requestId,
+    });
+  }
+
+  // LLM errors (vern-llm)
+
+  if (isLLMError(err)) {
+    if (err.type === 'aborted') {
+      console.warn('[llm aborted]', { requestId });
+      return;
+    }
+
+    console.error('[llm error]', {
+      requestId,
+      method: req.method,
+      path: req.originalUrl,
+      type: err.type,
+      code: err.code,
+      status: err.status,
+      retryable: err.retryable,
+      attempts: err.attempts?.length,
+    });
+
+    const statusCode = LLM_ERROR_STATUS[err.type] ?? 502;
+
+    return res.status(statusCode).json({
+      error: IS_PROD ? 'The AI service is unavailable. Please try again shortly.' : err.message,
+      code: err.code ?? err.type.toUpperCase(),
       requestId,
     });
   }

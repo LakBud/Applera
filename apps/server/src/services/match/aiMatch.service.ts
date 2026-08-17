@@ -25,7 +25,7 @@ export async function runAIEnrichment(
 
   const { systemPrompt, userContent } = buildMatchEnrichPrompt(cv, job, mathResult);
 
-  return llm.cachedLLMCall({
+  return llm.cachedCall({
     cacheKey,
     ttl: 60 * 60 * 24,
     call: {

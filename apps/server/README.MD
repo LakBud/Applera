@@ -8,7 +8,9 @@ Express + TypeScript REST API powering the Applera job application platform.
 - **Framework**: Express 5
 - **Database**: MongoDB via Mongoose
 - **Auth**: Clerk (JWT, header-based) + signed guest-session cookie for anonymous requests
-- **AI**: Groq (llama-3.3-70b-versatile)
+- **AI**: [vern-llm](https://vernllm.vercel.app) resilience layer over Mistral (primary) with
+  Groq (fallback) — retries, timeouts, circuit breaking, local rate limiting, and caching behind
+  one typed interface
 - **File storage**: Cloudinary
 - **Cache / Rate limiting**: Upstash Redis
 - **Validation**: Zod
@@ -21,6 +23,7 @@ Express + TypeScript REST API powering the Applera job application platform.
 - pnpm@11.8.0
 - MongoDB Atlas account
 - Clerk account
+- Mistral API key
 - Groq API key
 - Cloudinary account
 - Upstash Redis account
@@ -30,43 +33,59 @@ Express + TypeScript REST API powering the Applera job application platform.
 
 From the repo root:
 
-\```bash
+```bash
 pnpm install
-\```
+```
 
 Or from this directory:
 
-\```bash
+```bash
 cd apps/server
 pnpm install
-\```
+```
 
 ### Environment Variables
 
 Copy `.env.example` to `.env.development` and `.env.production` and fill in the values:
 
-\```bash
+```bash
 cp .env.example .env.development
 cp .env.example .env.production
-\```
+```
 
-| Variable                   | Required | Description                                            |
-|----------------------------|----------| -------------------------------------------------------|
-| `NODE_ENV`                 | Yes      | `development` or `production` if deployment (render)   |
-| `PORT`                     | No       | Server port (default: 5005)                            |
-| `CLIENT_URL`               | No       | Frontend URL for CORS (default: http://localhost:5173) |
-| `MONGO_URI`                | Yes      | MongoDB Atlas connection string                        |
-| `GROQ_API_KEY`             | Yes      | Groq API key                                           |
-| `GROQ_MODEL`               | No       | Model to use (default: llama-3.3-70b-versatile)        |
-| `CLERK_SECRET_KEY`         | Yes      | Clerk secret key (use `sk_test_...` for dev)           |
-| `CLERK_PUBLISHABLE_KEY`    | Yes      | Clerk publishable key (use `pk_test_...` for dev)      |
-| `CLERK_WEBHOOK_SECRET`     | Yes      | Clerk webhook signing secret                           |
-| `COOKIE_SECRET`            | Yes      | Secret for cookie signing                              |
-| `UPSTASH_REDIS_REST_URL`   | Yes      | Upstash Redis REST URL                                 |
-| `UPSTASH_REDIS_REST_TOKEN` | Yes      | Upstash Redis REST token                               |
-| `CLOUDINARY_CLOUD_NAME`    | Yes      | Cloudinary cloud name                                  |
-| `CLOUDINARY_API_KEY`       | Yes      | Cloudinary API key                                     |
-| `CLOUDINARY_API_SECRET`    | Yes      | Cloudinary API secret                                  |
+| Variable                     | Required | Description                                                     |
+| ----------------------------- | -------- | ----------------------------------------------------------------- |
+| `NODE_ENV`                   | Yes      | `development` or `production` if deployment (render)            |
+| `PORT`                       | No       | Server port (default: 5005)                                     |
+| `CLIENT_URL`                 | No       | Frontend URL for CORS (default: http://localhost:5173)          |
+| `MONGO_URI`                  | Yes      | MongoDB Atlas connection string                                 |
+| `MISTRAL_API_KEY`            | Yes      | Mistral API key — primary AI provider                           |
+| `MISTRAL_MODEL`              | No       | Model to use (default: `mistral-small-latest`)                  |
+| `MISTRAL_REQUESTS_PER_MINUTE`| No       | Local rate limit cap, tune to your Mistral plan (default: 250)  |
+| `MISTRAL_TOKENS_PER_MINUTE`  | No       | Local rate limit cap, tune to your Mistral plan (default: 150000) |
+| `MISTRAL_MAX_CONCURRENT`     | No       | Local concurrency cap, tune to your Mistral plan (default: 20)  |
+| `GROQ_API_KEY`                | Yes      | Groq API key — fallback AI provider                             |
+| `GROQ_MODEL`                  | No       | Model to use (default: `qwen/qwen3.6-27b`)                      |
+| `GROQ_REQUESTS_PER_MINUTE`    | No       | Local rate limit cap, tune to your Groq plan (default: 250)     |
+| `GROQ_TOKENS_PER_MINUTE`      | No       | Local rate limit cap, tune to your Groq plan (default: 150000)  |
+| `GROQ_MAX_CONCURRENT`         | No       | Local concurrency cap, tune to your Groq plan (default: 20)     |
+| `CLERK_SECRET_KEY`           | Yes      | Clerk secret key (use `sk_test_...` for dev)                    |
+| `CLERK_PUBLISHABLE_KEY`      | Yes      | Clerk publishable key (use `pk_test_...` for dev)                |
+| `CLERK_WEBHOOK_SECRET`       | Yes      | Clerk webhook signing secret                                     |
+| `COOKIE_SECRET`              | Yes      | Secret for cookie signing                                        |
+| `UPSTASH_REDIS_REST_URL`     | Yes      | Upstash Redis REST URL                                           |
+| `UPSTASH_REDIS_REST_TOKEN`   | Yes      | Upstash Redis REST token                                         |
+| `CLOUDINARY_CLOUD_NAME`      | Yes      | Cloudinary cloud name                                            |
+| `CLOUDINARY_API_KEY`         | Yes      | Cloudinary API key                                               |
+| `CLOUDINARY_API_SECRET`      | Yes      | Cloudinary API secret                                            |
+
+> **Why two AI providers?** The LLM client (`src/services/llm/llm.service.ts`) is built on
+> [vern-llm](https://vernllm.vercel.app), which wraps Mistral as the primary provider and
+> automatically retries against Groq if Mistral is down, rate limited past recovery, or its
+> circuit opens. Each provider has its own independent circuit breaker and rate limiter. Groq's
+> current free-tier text models (`openai/gpt-oss-120b`, `qwen/qwen3.6-27b`) have shown
+> inconsistent structured JSON output in production, so Groq was demoted to fallback rather than
+> dropped entirely.
 
 ### Webhook Setup
 
@@ -78,15 +97,15 @@ Clerk sends `user.created`, `user.updated`, and `user.deleted` events to `/api/w
 
    Using `cloudflared`:
 
-   \```bash
+   ```bash
    cloudflared tunnel --url http://localhost:5005
-   \```
+   ```
 
    Or using `ngrok`:
 
-   \```bash
+   ```bash
    ngrok http 5005
-   \```
+   ```
 
    Either will print a public HTTPS URL (e.g. `https://xxxx.trycloudflare.com` or `https://xxxx.ngrok-free.app`). Note that free-tier URLs change on every restart — if you want a stable URL, set up a [named Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/) routed to a subdomain you control.
 
@@ -100,78 +119,6 @@ Clerk sends `user.created`, `user.updated`, and `user.deleted` events to `/api/w
 4. **Verify it's working** — sign up or update your profile via the app (or use Clerk's "Send test event" button), and confirm the corresponding `[webhook]` log line appears in your server output.
 
 Without this setup, no `User` document will be created on sign-up locally, which will cause user-dependent routes (e.g. CV pinning) to fail with "not found" style errors even though the request itself is valid.
-
-### Download Skill Aliases (or use the one currently on the repo)
-
-Follow steps here: [scripts/README.md](scripts/README.md).
-
-### Development
-
-From the repo root:
-
-\```bash
-pnpm dev:server
-\```
-
-Or from this directory:
-
-\```bash
-pnpm dev
-\```
-
-Starts the server with `tsx watch` for hot reloading on `http://localhost:5005`.
-
-### Prerequisites
-
-- Node.js 20+
-- pnpm@11.8.0
-- MongoDB Atlas account
-- Clerk account
-- Groq API key
-- Cloudinary account
-- Upstash Redis account
-
-### Installation
-
-From the repo root:
-
-```bash
-pnpm install
-```
-
-Or from this directory:
-
-```bash
-cd apps/server
-pnpm install
-```
-
-### Environment Variables
-
-Copy `.env.example` to `.env.development` and `.env.production` and fill in the values:
-
-```bash
-cp .env.example .env.development
-cp .env.example .env.production
-```
-
-| Variable                   | Required | Description                                            |
-| -------------------------- | -------- | ------------------------------------------------------ |
-| `NODE_ENV`                 | Yes      | `development` or `production` if deployment (render)   |
-| `PORT`                     | No       | Server port (default: 5005)                            |
-| `CLIENT_URL`               | No       | Frontend URL for CORS (default: http://localhost:5173) |
-| `MONGO_URI`                | Yes      | MongoDB Atlas connection string                        |
-| `GROQ_API_KEY`             | Yes      | Groq API key                                           |
-| `GROQ_MODEL`               | No       | Model to use (default: llama-3.3-70b-versatile)        |
-| `CLERK_SECRET_KEY`         | Yes      | Clerk secret key                                       |
-| `CLERK_PUBLISHABLE_KEY`    | Yes      | Clerk publishable key                                  |
-| `CLERK_WEBHOOK_SECRET`     | Yes      | Clerk webhook signing secret                           |
-| `COOKIE_SECRET`            | Yes      | Secret for cookie signing                              |
-| `UPSTASH_REDIS_REST_URL`   | Yes      | Upstash Redis REST URL                                 |
-| `UPSTASH_REDIS_REST_TOKEN` | Yes      | Upstash Redis REST token                               |
-| `CLOUDINARY_CLOUD_NAME`    | Yes      | Cloudinary cloud name                                  |
-| `CLOUDINARY_API_KEY`       | Yes      | Cloudinary API key                                     |
-| `CLOUDINARY_API_SECRET`    | Yes      | Cloudinary API secret                                  |
 
 ### Download Skill Aliases (or use the one currently on the repo)
 
@@ -344,13 +291,29 @@ When a user deletes their account via Clerk, a `user.deleted` webhook fires and 
 Audit log entries associated with the account are **not** deleted as part of this flow — they
 are retained for up to 90 days for security purposes, independent of account or record deletion.
 
-## Flaws
+## AI Provider Resilience
 
-- A noticeable flaw in the official Applera deployment is that it uses the `llama-3.1-70b-versatile` LLM for AI-generated content.
-- Since this is a free-tier model, it does not consistently follow prompts or produce reliable structured outputs.
-- **Fix:** Replace it with a more capable LLM by updating the provider configuration and replacing the Groq API key with the new provider's API key in [src/config/openai.ts](src/config/openai.ts).
-- It is recommended to use a model that supports **JSON Object Mode** or **JSON Schema Mode**, as these features significantly improve the reliability of structured AI responses.
+The LLM client (`src/services/llm/llm.service.ts`) is built on
+[vern-llm](https://vernllm.vercel.app), a resilience layer for LLM calls: retries, timeouts,
+caching, and circuit breaking behind one typed interface, with independent configuration per
+provider.
 
+- **Primary**: Mistral (`mistral-small-latest` by default)
+- **Fallback**: Groq (`qwen/qwen3.6-27b` by default) — automatically retried if Mistral is down,
+  rate limited past recovery, or its circuit opens
+- Both providers have their own circuit breaker, their own local rate limiter (proactively
+  staying under each provider's request/token/concurrency limits before a call is ever sent),
+  and their own retry budget
+- A `400` response is treated as retryable rather than immediately fatal, since a JSON generation
+  failure from either provider (e.g. Groq's `json_validate_failed`) is usually a one-off sampling
+  issue rather than a genuinely malformed request
+
+Groq previously ran as primary on `llama-3.3-70b-versatile`, which Groq deprecated in June 2026
+and fully decommissioned in August 2026. Both of Groq's own recommended replacements
+(`openai/gpt-oss-120b`, `qwen/qwen3.6-27b`) showed inconsistent structured JSON output in
+production — the exact workload this app depends on for CV/job extraction — so Groq was demoted
+to fallback rather than dropped, and Mistral was promoted to primary after proving reliable on
+the same workload.
 
 ## Deployment
 

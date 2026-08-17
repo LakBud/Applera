@@ -55,7 +55,8 @@ A **Node.js + Express 5** REST API built with:
 - **Express 5** for HTTP handling
 - **MongoDB + Mongoose** for persistence
 - **Clerk** for auth and webhook handling
-- **Groq** for AI-powered CV parsing, application generation, and interview prep
+- **Mistral (primary) + Groq (fallback)**, via [vern-llm](https://vernllm.vercel.app), for
+  AI-powered CV parsing, application generation, and interview prep
 - **Cloudinary** for PDF storage
 - **Upstash Redis** for caching and rate limiting
 
@@ -233,7 +234,7 @@ Applera
 | Backend          | Node.js, Express 5, TypeScript                    |
 | Database         | MongoDB Atlas, Mongoose                           |
 | Auth             | Clerk                                             |
-| AI               | Groq                                              |
+| AI               | Mistral (primary), Groq (fallback), via vern-llm  |
 | Storage          | Cloudinary                                        |
 | Cache / rate limit | Upstash Redis                                  |
 | Styling          | Tailwind CSS v4, shadcn/ui                        |
@@ -270,4 +271,3 @@ Personal and noncommercial use is permitted free of charge.
 Commercial use requires a separate paid license.
 
 Full license terms: [`LICENSE`](./LICENSE)
-

@@ -29,14 +29,14 @@ export async function extractCVData(
 ): Promise<CVParsed> {
   const safeText = sanitise(cvText, 'cvText');
 
-  const result = await llm.cachedLLMCall<CVParsed>({
+  const result = await llm.cachedCall<CVParsed>({
     cacheKey: `cv:${CACHE_VERSIONS.cv}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
     call: {
       systemPrompt: EXTRACT_CV_PROMPT,
       userContent: safeText,
       temperature: 0.2,
-      maxTokens: 800,
+      maxTokens: 1600,
       signal,
       schema: CVExtractionSchema,
     },
@@ -65,14 +65,14 @@ export async function extractJobData(
 ): Promise<JobParsed> {
   const safeText = sanitise(jobText, 'jobText');
 
-  const result = await llm.cachedLLMCall<JobParsed>({
+  const result = await llm.cachedCall<JobParsed>({
     cacheKey: `job:${CACHE_VERSIONS.job}:${hash(safeText)}`,
     ttl: 60 * 60 * 24,
     call: {
       systemPrompt: EXTRACT_JOB_PROMPT,
       userContent: safeText,
       temperature: 0.2,
-      maxTokens: 800,
+      maxTokens: 1200,
       signal,
       schema: JobExtractionSchema,
     },

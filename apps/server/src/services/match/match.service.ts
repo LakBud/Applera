@@ -1,9 +1,9 @@
 import { CACHE_VERSIONS } from '../../config/cache.versions.js';
+import { getCache, setCache } from '../../lib/cache.js';
 import { type MatchReport, MatchReportSchema } from '../../types/schemas/match.schemas.js';
 import { normalizeSkill } from '../../utils/match/skills/skill.utils.js';
 import { extractAllText } from '../../utils/match/text.utils.js';
 import { hash } from '../../utils/shared/hash.utils.js';
-import { llm } from '../llm/llm.service.js';
 import { runAIEnrichment } from './aiMatch.service.js';
 import { runMathMatch } from './mathMatch.service.js';
 
@@ -29,57 +29,55 @@ export async function matchCVToJob(
     }),
   )}`;
 
-  return llm.cachedCall({
-    cacheKey,
-    ttl: 60 * 60 * 24,
-    signal,
-    reserveUsage,
-    refundUsage,
+  const cached = await getCache<MatchReport>(cacheKey);
+  if (cached) {
+    return cached;
+  }
 
-    fn: async () => {
-      const mathResult = runMathMatch(cv, job);
+  const mathResult = runMathMatch(cv, job);
 
-      const needsAI = !skipAI && (mathResult.confidence === 'low' || mathResult.score <= 75);
+  const needsAI = !skipAI && (mathResult.confidence === 'low' || mathResult.score <= 75);
 
-      signal?.throwIfAborted();
+  signal?.throwIfAborted();
 
-      const ai_insights = needsAI
-        ? await runAIEnrichment(cv, job, mathResult, {
-            signal,
-            reserveUsage,
-            refundUsage,
-          })
-        : null;
+  const ai_insights = needsAI
+    ? await runAIEnrichment(cv, job, mathResult, {
+        signal,
+        reserveUsage,
+        refundUsage,
+      })
+    : null;
 
-      const coveredByAI = new Set(
-        [...(ai_insights?.semantic_matches ?? []), ...(ai_insights?.implicit_skills ?? [])].map(
-          normalizeSkill,
-        ),
-      );
+  const coveredByAI = new Set(
+    [...(ai_insights?.semantic_matches ?? []), ...(ai_insights?.implicit_skills ?? [])].map(
+      normalizeSkill,
+    ),
+  );
 
-      const adjustedScore =
-        ai_insights?.adjusted_score !== undefined &&
-        Math.abs(ai_insights.adjusted_score - mathResult.score) <= 40
-          ? ai_insights.adjusted_score
-          : mathResult.score;
+  const adjustedScore =
+    ai_insights?.adjusted_score !== undefined &&
+    Math.abs(ai_insights.adjusted_score - mathResult.score) <= 40
+      ? ai_insights.adjusted_score
+      : mathResult.score;
 
-      const result: MatchReport = {
-        ...mathResult,
-        score: adjustedScore,
-        seniority_fit: ai_insights?.seniority_fit ?? mathResult.seniority_fit,
-        domain_mismatch: ai_insights?.domain_mismatch ?? mathResult.domain_mismatch,
-        confidence: ai_insights?.confidence ?? mathResult.confidence,
-        strengths: [
-          ...mathResult.strengths,
-          ...mathResult.missing_skills.filter((s) => coveredByAI.has(normalizeSkill(s))),
-        ],
-        missing_skills: mathResult.missing_skills.filter(
-          (s) => !coveredByAI.has(normalizeSkill(s)),
-        ),
-        ai_insights,
-      };
+  const result: MatchReport = {
+    ...mathResult,
+    score: adjustedScore,
+    seniority_fit: ai_insights?.seniority_fit ?? mathResult.seniority_fit,
+    domain_mismatch: ai_insights?.domain_mismatch ?? mathResult.domain_mismatch,
+    confidence: ai_insights?.confidence ?? mathResult.confidence,
+    strengths: [
+      ...mathResult.strengths,
+      ...mathResult.missing_skills.filter((s) => coveredByAI.has(normalizeSkill(s))),
+    ],
+    missing_skills: mathResult.missing_skills.filter((s) => !coveredByAI.has(normalizeSkill(s))),
+    ai_insights,
+  };
 
-      return MatchReportSchema.parse(result);
-    },
-  });
+  const parsed = MatchReportSchema.parse(result);
+
+  signal?.throwIfAborted();
+  await setCache(cacheKey, parsed, 60 * 60 * 24);
+
+  return parsed;
 }

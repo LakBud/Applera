@@ -25,7 +25,7 @@ export async function generateInterviewPrep(
 ): Promise<InterviewPrepParsed> {
   signal?.throwIfAborted();
 
-  const result = await llm.cachedLLMCall<InterviewPrepParsed>({
+  const result = await llm.cachedCall<InterviewPrepParsed>({
     cacheKey: `interview:${CACHE_VERSIONS.interview}:${applicationId}`,
     ttl: INTERVIEW_TTL,
     call: {
