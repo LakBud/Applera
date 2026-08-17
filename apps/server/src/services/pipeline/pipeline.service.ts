@@ -1,5 +1,5 @@
 import { type PipelineResult } from '../../types/schemas/pipeline.schemas.js';
-import { generateApplication } from '../application/application.service.js';
+import { generateApplication } from '../application/generateApplication.service.js';
 import { repairCV } from '../cv/cvRepair.service.js';
 import { repairJob } from '../job/jobRepair.service.js';
 import { matchCVToJob } from '../match/match.service.js';
