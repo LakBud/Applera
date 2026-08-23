@@ -18,11 +18,11 @@
   "type": "module",
   "dependencies": {
     "@applera/schemas": "workspace:*",
-    "@clerk/express": "^2.1.55",
+    "@clerk/express": "^2.1.60",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.2",
     "axios": "^1.19.0",
-    "cloudinary": "^2.10.0",
+    "cloudinary": "^2.10.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -32,7 +32,7 @@
     "franc-min": "^6.2.0",
     "helmet": "^8.3.0",
     "hpp": "^0.2.3",
-    "mongoose": "^9.9.2",
+    "mongoose": "^9.9.3",
     "multer": "^2.2.0",
     "openai": "^6.49.0",
     "pdfjs-dist": "^6.2.108",
@@ -50,7 +50,7 @@
     "@types/node": "^26.2.0",
     "@types/stopword": "^2.0.3",
     "@types/supertest": "^7.2.1",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.11",
     "cross-env": "^10.1.0",
     "csv-parse": "^7.0.2",
     "esbuild": "^0.28.2",
@@ -60,6 +60,6 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.23.12",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }
