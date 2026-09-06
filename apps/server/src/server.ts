@@ -111,6 +111,9 @@ publicRouter.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Browser noise — never a real route, never worth an auth check or an error log.
+publicRouter.get('/favicon.ico', (_req, res) => res.status(204).end());
+
 app.use(publicRouter);
 
 app.get('/', (req, res) => res.status(200).json({ status: 'ok' }));

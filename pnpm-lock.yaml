@@ -256,8 +256,8 @@ importers:
         specifier: ^1.98.0
         version: 1.99.1
       vern-llm:
-        specifier: ^2.4.2
-        version: 2.4.2
+        specifier: ^2.6.2
+        version: 2.6.2
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -5755,9 +5755,9 @@ packages:
     resolution: {integrity: sha512-w2Eo8LSIIoW7qxNBzT7/17k+bh8plXo7G3dHjEIDqPlnluhzaxr9JX8F28VSYEtDvc1/a3WBDih6xNUZseebXg==}
     engines: {node: '>=18.12.0'}
 
-  vern-llm@2.4.2:
-    resolution: {integrity: sha512-SODln4MNtAoAtdsOiAt1c1bLWkxybaKKerwue8NyzOQMLauCrVV7nv/OMTTg73trtgUjBD5gBRi28MoyIw0mtw==}
-    engines: {node: '>=20'}
+  vern-llm@2.6.2:
+    resolution: {integrity: sha512-DGKz3/KZKD+6QIHvUPgmKX8CP+1CN4wNZCL9IScIrNQ1A8EestnFfkxrrZHaiJlGCH5wbwKa/m2wD8hODxSMUw==}
+    engines: {node: '>=22.22.0'}
 
   vite@8.2.2:
     resolution: {integrity: sha512-cFKLV/PRgAUlIRm5WjMjJ86jrftzpqcgH+Us+DS8mI3CDNiH30Whrz8uHL3+MOLPAgqbMBAqWdAHAphOAM+z/Q==}
@@ -9281,10 +9281,6 @@ snapshots:
     dependencies:
       reusify: 1.1.0
 
-  fdir@6.5.0(picomatch@4.0.5):
-    optionalDependencies:
-      picomatch: 4.0.5
-
   fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
       picomatch: 4.0.7
@@ -11016,8 +11012,8 @@ snapshots:
 
   tinyglobby@0.2.17:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.5)
-      picomatch: 4.0.5
+      fdir: 6.5.0(picomatch@4.0.7)
+      picomatch: 4.0.7
 
   tinypool@2.1.0: {}
 
@@ -11273,7 +11269,7 @@ snapshots:
 
   verkit@0.3.1: {}
 
-  vern-llm@2.4.2: {}
+  vern-llm@2.6.2: {}
 
   vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0):
     dependencies:

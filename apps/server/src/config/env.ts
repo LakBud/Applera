@@ -46,6 +46,52 @@ export const MISTRAL_REQUESTS_PER_MINUTE = Number(
 export const MISTRAL_TOKENS_PER_MINUTE = Number(optionalEnv('MISTRAL_TOKENS_PER_MINUTE', '150000'));
 export const MISTRAL_MAX_CONCURRENT = Number(optionalEnv('MISTRAL_MAX_CONCURRENT', '20'));
 
+// ── AI (VernLLM tuning) ───────────────────────────────────────────────────────
+
+export const LLM_MAX_RETRIES = Number(optionalEnv('LLM_MAX_RETRIES', '3'));
+export const LLM_TIMEOUT_MS = Number(optionalEnv('LLM_TIMEOUT_MS', '15000'));
+export const LLM_DEFAULT_MAX_TOKENS = Number(optionalEnv('LLM_DEFAULT_MAX_TOKENS', '1200'));
+export const LLM_DEFAULT_TEMPERATURE = Number(optionalEnv('LLM_DEFAULT_TEMPERATURE', '0.2'));
+
+// Retry budget: once >= minCalls land in the trailing window and the retry ratio
+// crosses retryRatio, further retries against that target fail fast instead of
+// piling onto an already-struggling provider.
+export const LLM_RETRY_BUDGET_WINDOW_MS = Number(
+  optionalEnv('LLM_RETRY_BUDGET_WINDOW_MS', '60000'),
+);
+export const LLM_RETRY_BUDGET_MIN_CALLS = Number(optionalEnv('LLM_RETRY_BUDGET_MIN_CALLS', '20'));
+export const LLM_RETRY_BUDGET_RATIO = Number(optionalEnv('LLM_RETRY_BUDGET_RATIO', '0.3'));
+
+// AIMD (additive-increase/multiplicative-decrease) against the requests-per-minute
+// ceiling: creeps the ceiling up on clean releases, and cuts it down hard on a real
+// 429 (or proactively, once a provider hint reports we're close to its own limit).
+export const LLM_AIMD_INCREASE_BY = Number(optionalEnv('LLM_AIMD_INCREASE_BY', '5'));
+export const LLM_AIMD_DECREASE_FACTOR = Number(optionalEnv('LLM_AIMD_DECREASE_FACTOR', '0.5'));
+export const LLM_AIMD_PROACTIVE_FLOOR = Number(optionalEnv('LLM_AIMD_PROACTIVE_FLOOR', '5'));
+
+// Circuit breaker: opens after repeated failures, backs off cooldown on repeat
+// opens, and requires more than one clean probe before fully closing again.
+export const LLM_CIRCUIT_THRESHOLD = Number(optionalEnv('LLM_CIRCUIT_THRESHOLD', '5'));
+export const LLM_CIRCUIT_COOLDOWN_MS = Number(optionalEnv('LLM_CIRCUIT_COOLDOWN_MS', '30000'));
+export const LLM_CIRCUIT_COOLDOWN_MULTIPLIER = Number(
+  optionalEnv('LLM_CIRCUIT_COOLDOWN_MULTIPLIER', '2'),
+);
+export const LLM_CIRCUIT_COOLDOWN_MAX_MS = Number(
+  optionalEnv('LLM_CIRCUIT_COOLDOWN_MAX_MS', '300000'),
+);
+export const LLM_CIRCUIT_HALF_OPEN_PROBES = Number(
+  optionalEnv('LLM_CIRCUIT_HALF_OPEN_PROBES', '3'),
+);
+export const LLM_CIRCUIT_HALF_OPEN_SUCCESS_RATIO = Number(
+  optionalEnv('LLM_CIRCUIT_HALF_OPEN_SUCCESS_RATIO', '0.7'),
+);
+
+// Caps how many entries the Upstash-backed cache tracks. 'fifo' evicts the
+// oldest inserted key once the cap is hit; 'lru' evicts whichever key was
+// least recently read or written instead.
+export const LLM_CACHE_MAX_SIZE = Number(optionalEnv('LLM_CACHE_MAX_SIZE', '5000'));
+export const LLM_CACHE_EVICTION = optionalEnv('LLM_CACHE_EVICTION', 'lru') as 'fifo' | 'lru';
+
 // ── Auth (Clerk) ──────────────────────────────────────────────────────────────
 
 export const COOKIE_SECRET = requireEnv('COOKIE_SECRET');
