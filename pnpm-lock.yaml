@@ -244,8 +244,8 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0
       openai:
-        specifier: ^6.49.0
-        version: 6.49.0(ws@8.21.0)(zod@4.5.4)
+        specifier: ^7.9.0
+        version: 7.9.0(undici@7.29.0)(ws@8.21.0)(zod@4.5.4)
       pdfjs-dist:
         specifier: ^6.3.289
         version: 6.3.289
@@ -4773,13 +4773,15 @@ packages:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
 
-  openai@6.49.0:
-    resolution: {integrity: sha512-aYCc0C6L864eR6WSYIwQGyXriw/nIyZx0ObvhzOEVuk0zoBDpynjSbrionWI7q65B5H8jJX0DXR9snEzM6bfPg==}
+  openai@7.9.0:
+    resolution: {integrity: sha512-Qfx4qKmPllnilbuP6NgEj5KPUxLShYxrlRPWh3ZRQgNgs5B1V52PrfAdEQbW9MTGq7MquDYFMm+K/KXxiY736w==}
+    engines: {node: '>=22.0.0'}
     peerDependencies:
       '@aws-sdk/credential-provider-node': '>=3.972.0 <4'
       '@smithy/hash-node': '>=4.3.0 <5'
       '@smithy/signature-v4': '>=5.4.0 <6'
-      ws: ^8.18.0
+      undici: '>=5 <9'
+      ws: ^8.21.0
       zod: ^3.25 || ^4.0
     peerDependenciesMeta:
       '@aws-sdk/credential-provider-node':
@@ -4787,6 +4789,8 @@ packages:
       '@smithy/hash-node':
         optional: true
       '@smithy/signature-v4':
+        optional: true
+      undici:
         optional: true
       ws:
         optional: true
@@ -10194,8 +10198,9 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openai@6.49.0(ws@8.21.0)(zod@4.5.4):
+  openai@7.9.0(undici@7.29.0)(ws@8.21.0)(zod@4.5.4):
     optionalDependencies:
+      undici: 7.29.0
       ws: 8.21.0
       zod: 4.5.4
 
