@@ -18,9 +18,9 @@
   "type": "module",
   "dependencies": {
     "@applera/schemas": "workspace:*",
-    "@clerk/express": "^2.1.66",
+    "@clerk/express": "^2.1.67",
     "@upstash/ratelimit": "^2.0.8",
-    "@upstash/redis": "^1.38.3",
+    "@upstash/redis": "^1.38.4",
     "axios": "^1.20.0",
     "cloudinary": "^2.11.0",
     "cookie-parser": "^1.4.7",
@@ -32,14 +32,14 @@
     "franc-min": "^6.2.0",
     "helmet": "^8.3.0",
     "hpp": "^0.2.3",
-    "mongoose": "^9.9.4",
+    "mongoose": "^9.9.5",
     "multer": "^2.3.0",
     "openai": "^6.49.0",
     "pdfjs-dist": "^6.3.289",
     "stopword": "^3.1.5",
     "svix": "^1.98.0",
-    "vern-llm": "^2.6.2",
-    "zod": "^4.5.4"
+    "vern-llm": "^2.8.0",
+    "zod": "^4.6.1"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
@@ -47,7 +47,7 @@
     "@types/express": "^5.0.6",
     "@types/hpp": "^0.2.7",
     "@types/multer": "^2.2.0",
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.5.1",
     "@types/stopword": "^2.0.3",
     "@types/supertest": "^7.2.1",
     "@vitest/coverage-v8": "^4.1.11",
