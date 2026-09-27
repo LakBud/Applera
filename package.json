@@ -38,7 +38,7 @@
     ]
   },
   "devDependencies": {
-    "@vitest/ui": "^4.1.11",
+    "@vitest/ui": "^5.0.1",
     "cross-env": "^10.1.0",
     "depcheck": "^1.4.7",
     "husky": "^9.1.7",
